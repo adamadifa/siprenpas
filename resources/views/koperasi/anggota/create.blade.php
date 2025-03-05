@@ -11,7 +11,7 @@
             <x-input-with-icon-label icon="ti ti-credit-card" label="Nomor Identitas" name="nik" />
             <x-input-with-icon-label icon="ti ti-user" label="Nama Anggota" name="nama_lengkap" />
             <x-input-with-icon-label icon="ti ti-map-pin" label="Tempat Lahir" name="tempat_lahir" />
-            <x-input-with-icon-label icon="ti ti-calendar" label="Tanggal Lahir" name="tanggal_lahir" />
+            <x-input-with-icon-label icon="ti ti-calendar" label="Tanggal Lahir" name="tanggal_lahir" datepicker="flatpickr-date" />
             <div class="form-group mb-3">
                 <label for="exampleFormControlInput1" style="font-weight: 600" class="form-label">Jenis Kelamin</label>
                 <select name="jenis_kelamin" id="jenis_kelamin" class="form-select">
@@ -100,6 +100,7 @@
 
 <script>
     $(function() {
+        $('.flatpickr-validation').flatpickr();
         const formAnggota = $('#formAnggota');
 
         formAnggota.submit(function(e) {
