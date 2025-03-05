@@ -507,7 +507,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/presensi', 'index')->name('presensi.index')->can('presensi.index');
         Route::get('/presensi/create', 'create')->name('presensi.create')->can('presensi.create');
         Route::post('/presensi', 'store')->name('presensi.store')->can('presensi.create');
-        Route::put('/presensi/{id}', 'update')->name('presensi.update')->can('presensi.edit');
+        Route::post('/presensi/update', 'update')->name('presensi.update')->can('presensi.edit');
         Route::delete('/presensi/{id}/delete', 'destroy')->name('presensi.delete')->can('presensi.delete');
         Route::get('/presensi/{id}/{status}/show', 'show')->name('presensi.show');
         Route::post('/presensi/edit', 'edit')->name('presensi.edit')->can('presensi.edit');
