@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\Userkaryawan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 
 class PresensiController extends Controller
@@ -407,5 +408,49 @@ class PresensiController extends Controller
         $data['tanggal'] = $tanggal;
 
         return view('presensi.edit', $data);
+    }
+
+
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'npp' => 'required',
+            'tanggal' => 'required',
+            'kode_jam_kerja' => 'required',
+            'status' => 'required',
+        ]);
+
+        $npp = Crypt::decrypt($request->npp);
+        $tanggal = $request->tanggal;
+        $kode_jam_kerja = $request->kode_jam_kerja;
+        $jam_in = $request->jam_in;
+        $jam_out = $request->jam_out;
+        $status = $request->status;
+
+        try {
+            $cekpresensi = Presensi::where('npp', $npp)->where('tanggal', $tanggal)->first();
+            if (!empty($cekpresensi)) {
+                Presensi::where('npp', $npp)->where('tanggal', $tanggal)->update([
+                    'jam_in' => $jam_in,
+                    'jam_out' => $jam_out,
+                    'status' => $status,
+                    'kode_jam_kerja' => $kode_jam_kerja,
+                ]);
+            } else {
+                Presensi::create([
+                    'npp' => $npp,
+                    'tanggal' => $tanggal,
+                    'jam_in' => $jam_in,
+                    'jam_out' => $jam_out,
+                    'kode_jam_kerja' => $kode_jam_kerja,
+                    'status' => $status
+                ]);
+            }
+
+            return Redirect::back()->with(messageSuccess('Data Berhasil Disimpan'));
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError($e->getMessage()));
+        }
     }
 }
