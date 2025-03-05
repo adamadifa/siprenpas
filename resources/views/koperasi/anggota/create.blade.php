@@ -100,7 +100,7 @@
 
 <script>
     $(function() {
-        $('.flatpickr-validation').flatpickr();
+        $('.flatpickr-date').flatpickr();
         const formAnggota = $('#formAnggota');
 
         formAnggota.submit(function(e) {
