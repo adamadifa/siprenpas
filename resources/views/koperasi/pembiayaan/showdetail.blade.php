@@ -114,9 +114,12 @@
                     </thead>
                     <tbody>
                         @foreach ($rencanapembiayaan as $d)
+                            @php
+                                $jatuhtempo = $d->tahun . '-' . $d->bulan . '-05';
+                            @endphp
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ date('d/m/y', strtotime($d->jatuh_tempo)) }}</td>
+                                <td>{{ date('d/m/y', strtotime($jatuhtempo)) }}</td>
                                 <td class="text-end">{{ formatAngka($d->jumlah) }}</td>
                                 <td class="text-end">{{ formatAngka($d->bayar) }}</td>
                                 <td class="text-end">{{ formatAngka($d->jumlah - $d->bayar) }}</td>
