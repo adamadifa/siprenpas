@@ -19,7 +19,7 @@
                         <form action="{{ URL::current() }}">
                             <div class="row">
                                 <div class="col-lg-10 col-sm-12 col-md-12">
-                                    <x-input-with-icon label="Cari Nama Anggota Koperasi" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
+                                    <x-input-with-icon label="Cari Nama Anggota Koperasi" value="{{ Request('nama_anggota') }}" name="nama_anggota"
                                         icon="ti ti-search" />
                                 </div>
                                 <div class="col-lg-2 col-sm-12 col-md-12">
