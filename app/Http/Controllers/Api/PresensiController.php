@@ -102,7 +102,7 @@ class PresensiController extends Controller
             ->where('tanggal', $tanggal_presensi)
             ->first();
 
-        if ($status_scan == 0) {
+        if (in_array($status_scan, [0, 2, 4, 6, 8])) {
             if ($presensi_hariini && $presensi_hariini->jam_in != null) {
                 return response()->json(['status' => false, 'message' => 'Anda Sudah Absen Masuk Hari Ini', 'notifikasi' => 'notifikasi_sudahabsen'], 400);
             } else {
