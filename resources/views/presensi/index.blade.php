@@ -143,7 +143,8 @@
 @endsection
 @push('myscript')
 <script>
-    $(document).on('click', '.koreksiPresensi', function() {
+    $(document).on('click', '.koreksiPresensi', function(e) {
+        e.preventDefault();
         let npp = $(this).attr('npp');
         let tanggal = $(this).attr('tanggal');
         $.ajax({
