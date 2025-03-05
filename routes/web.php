@@ -507,10 +507,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/presensi', 'index')->name('presensi.index')->can('presensi.index');
         Route::get('/presensi/create', 'create')->name('presensi.create')->can('presensi.create');
         Route::post('/presensi', 'store')->name('presensi.store')->can('presensi.create');
-        Route::get('/presensi/{id}/edit', 'edit')->name('presensi.edit')->can('presensi.edit');
         Route::put('/presensi/{id}', 'update')->name('presensi.update')->can('presensi.edit');
         Route::delete('/presensi/{id}/delete', 'destroy')->name('presensi.delete')->can('presensi.delete');
         Route::get('/presensi/{id}/{status}/show', 'show')->name('presensi.show');
+        Route::post('/presensi/edit', 'edit')->name('presensi.edit')->can('presensi.edit');
 
         Route::post('/presensi/getdatamesin', 'getdatamesin')->name('presensi.getdatamesin');
         Route::post('/presensi/{pin}/{status_scan}/updatefrommachine', 'updatefrommachine')->name('presensi.updatefrommachine');
