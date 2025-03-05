@@ -115,7 +115,7 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex">
-                                                    <a href="#" class="me-1 koreksiPresensi" npp="{{ Crypt::encrypt($d->nik) }}"
+                                                    <a href="#" class="me-1 koreksiPresensi" npp="{{ Crypt::encrypt($d->npp) }}"
                                                         tanggal="{{ $tanggal_presensi }}"><i class="ti ti-edit text-success"></i> </a>
 
                                                     <a href="#" class="btngetDatamesin" pin="{{ $d->pin }}"
