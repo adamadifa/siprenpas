@@ -115,7 +115,7 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex">
-                                                    <a href="#" class="me-1 koreksiPresensi" nik="{{ Crypt::encrypt($d->nik) }}"
+                                                    <a href="#" class="me-1 koreksiPresensi" npp="{{ Crypt::encrypt($d->nik) }}"
                                                         tanggal="{{ $tanggal_presensi }}"><i class="ti ti-edit text-success"></i> </a>
 
                                                     <a href="#" class="btngetDatamesin" pin="{{ $d->pin }}"
@@ -143,6 +143,25 @@
 @endsection
 @push('myscript')
 <script>
+    $(document).on('click', '.koreksiPresensi', function() {
+        let npp = $(this).attr('npp');
+        let tanggal = $(this).attr('tanggal');
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('presensi.edit') }}",
+            data: {
+                _token: "{{ csrf_token() }}",
+                npp: npp,
+                tanggal: tanggal
+            },
+            cache: false,
+            success: function(res) {
+                $('#modal').modal('show');
+                $('#modal').find('.modal-title').text('Koreksi Presensi');
+                $('#loadmodal').html(res);
+            }
+        });
+    });
     $(".btnShowpresensi_in, .btnShowpresensi_out").click(function(e) {
         e.preventDefault();
         const id = $(this).attr("id");

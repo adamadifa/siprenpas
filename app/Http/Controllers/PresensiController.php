@@ -12,6 +12,7 @@ use App\Models\Unit;
 use App\Models\User;
 use App\Models\Userkaryawan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 
 class PresensiController extends Controller
@@ -389,5 +390,22 @@ class PresensiController extends Controller
 
 
         return view('presensi.getdatamesin', compact('filtered_array'));
+    }
+
+
+    public function edit(Request $request)
+    {
+        $npp = Crypt::decrypt($request->npp);
+        $tanggal = $request->tanggal;
+
+        $karyawan = Karyawan::where('npp', $npp)->first();
+        $jam_kerja = Jamkerja::all();
+        $presensi = Presensi::where('npp', $npp)->where('tanggal', $tanggal)->first();
+        $data['presensi'] = $presensi;
+        $data['karyawan'] = $karyawan;
+        $data['jam_kerja'] = $jam_kerja;
+        $data['tanggal'] = $tanggal;
+
+        return view('presensi.edit', $data);
     }
 }
