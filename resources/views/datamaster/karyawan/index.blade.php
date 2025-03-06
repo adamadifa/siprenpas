@@ -46,6 +46,7 @@
                                         <th>No. HP</th>
                                         <th>Foto</th>
                                         <th>PIN</th>
+                                        <th>Status</th>
                                         <th>#</th>
                                     </tr>
                                 </thead>
@@ -82,6 +83,15 @@
 
                                             </td>
                                             <td>{{ $d->pin }}</td>
+                                            <td>
+                                                <a href="{{ route('karyawan.updatestatus', Crypt::encrypt($d->npp)) }}">
+                                                    @if ($d->status == 1)
+                                                        <span class="badge bg-success">Aktif</span>
+                                                    @else
+                                                        <span class="badge bg-danger">Tidak Aktif</span>
+                                                    @endif
+                                                </a>
+                                            </td>
                                             <td>
                                                 <div class="d-flex">
                                                     @can('karyawan.create')

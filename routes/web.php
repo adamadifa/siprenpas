@@ -151,6 +151,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/karyawa/deletejamkerjabydate', 'deletejamkerjabydate')->name('karyawan.deletejamkerjabydate');
 
         Route::get('/karyawan/{npp}/createuser', 'createuser')->name('karyawan.createuser');
+        Route::get('/karyawan/{npp}/updatestatus', 'updatestatus')->name('karyawan.updatestatus');
     });
 
     Route::controller(SiswaController::class)->group(function () {

@@ -327,4 +327,17 @@ class KaryawanController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
+
+    public function updatestatus($npp)
+    {
+        $npp = Crypt::decrypt($npp);
+        $karyawan = Karyawan::where('npp', $npp)->first();
+        if ($karyawan->status == 1) {
+            $karyawan->status = 0;
+        } else {
+            $karyawan->status = 1;
+        }
+        $karyawan->save();
+        return Redirect::back()->with(messageSuccess('Status Berhasil Diubah'));
+    }
 }
