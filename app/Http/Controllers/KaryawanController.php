@@ -62,6 +62,7 @@ class KaryawanController extends Controller
             'pendidikan_terakhir' => 'required',
             'kode_jabatan' => 'required',
             'kode_unit' => 'required',
+
         ]);
 
 
@@ -119,6 +120,7 @@ class KaryawanController extends Controller
             'pendidikan_terakhir' => 'required',
             'kode_jabatan' => 'required',
             'kode_unit' => 'required',
+            'status' => 'required',
         ]);
 
 
@@ -139,7 +141,8 @@ class KaryawanController extends Controller
                 'pendidikan_terakhir' => $request->pendidikan_terakhir,
                 'kode_jabatan' => $request->kode_jabatan,
                 'kode_unit' => $request->kode_unit,
-                'password' => bcrypt('12345678')
+                // 'password' => bcrypt('12345678'),
+                'status' => $request->status
             ]);
 
             return Redirect::back()->with(messageSuccess('Data Berhasil Disimpan'));

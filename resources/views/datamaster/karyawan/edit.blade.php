@@ -4,8 +4,7 @@
     <x-input-with-icon-label icon="ti ti-barcode" label="NPP" name="npp" value="{{ $karyawan->npp }}" />
     <x-input-with-icon-label icon="ti ti-credit-card" label="No. KK" name="no_kk" value="{{ $karyawan->no_kk }}" />
     <x-input-with-icon-label icon="ti ti-credit-card" label="No. KTP" name="no_ktp" value="{{ $karyawan->no_ktp }}" />
-    <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap" name="nama_lengkap"
-        value="{{ $karyawan->nama_lengkap }}" />
+    <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap" name="nama_lengkap" value="{{ $karyawan->nama_lengkap }}" />
     <div class="form-group mb-3">
         <label for="exampleFormControlInput1" style="font-weight: 600" class="form-label">Jenis Kelamin</label>
         <select name="jenis_kelamin" id="jenis_kelamin" class="form-select">
@@ -16,12 +15,11 @@
     </div>
     <div class="row">
         <div class="col-lg-6 col-md-12 col-sm-12">
-            <x-input-with-icon-label icon="ti ti-map-pin" label="Tempat Lahir" name="tempat_lahir"
-                value="{{ $karyawan->tempat_lahir }}" />
+            <x-input-with-icon-label icon="ti ti-map-pin" label="Tempat Lahir" name="tempat_lahir" value="{{ $karyawan->tempat_lahir }}" />
         </div>
         <div class="col-lg-6 col-md-12 col-sm-12">
-            <x-input-with-icon-label icon="ti ti-calendar" label="Tanggal Lahir" name="tanggal_lahir"
-                value="{{ $karyawan->tanggal_lahir }}" datepicker="flatpickr-date" />
+            <x-input-with-icon-label icon="ti ti-calendar" label="Tanggal Lahir" name="tanggal_lahir" value="{{ $karyawan->tanggal_lahir }}"
+                datepicker="flatpickr-date" />
         </div>
     </div>
     <div class="form-group mb-3">
@@ -66,10 +64,18 @@
         </select>
     </div>
 
-    <x-select-label label="Jabatan" name="kode_jabatan" selected="{{ $karyawan->kode_jabatan }}" :data="$jabatan"
-        key="kode_jabatan" textShow="nama_jabatan" />
-    <x-select-label label="Unit" name="kode_unit" selected="{{ $karyawan->kode_unit }}" :data="$unit"
-        key="kode_unit" textShow="nama_unit" upperCase="true" />
+    <x-select-label label="Jabatan" name="kode_jabatan" selected="{{ $karyawan->kode_jabatan }}" :data="$jabatan" key="kode_jabatan"
+        textShow="nama_jabatan" />
+    <x-select-label label="Unit" name="kode_unit" selected="{{ $karyawan->kode_unit }}" :data="$unit" key="kode_unit" textShow="nama_unit"
+        upperCase="true" />
+    <div class="form-group mb-3" datepicker="flatpickr-date">
+        <label for="exampleFormControlInput1" style="font-weight: 600" class="form-label">Status</label>
+        <select name="status" id="status" class="form-select">
+            <option value="">Status</option>
+            <option value="1" {{ $karyawan->status == 1 ? 'selected' : '' }}>Aktif</option>
+            <option value="0" {{ $karyawan->status == 0 ? 'selected' : '' }}>Tidak Aktif"></option>
+        </select>
+    </div>
     <div class="form-group">
         <button class="btn btn-primary w-100" type="submit">
             <ion-icon name="send-outline" class="me-1"></ion-icon>

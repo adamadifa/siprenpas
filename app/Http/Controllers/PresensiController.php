@@ -70,6 +70,7 @@ class PresensiController extends Controller
         if (!empty($request->nama_karyawan)) {
             $query->where('karyawan.nama_lengkap', 'like', '%' . $request->nama_karyawan . '%');
         }
+        $query->where('karyawan.status', 1);
         $query->orderBy('nama_lengkap', 'asc');
         $karyawan = $query->paginate(30);
         $karyawan->appends(request()->all());
