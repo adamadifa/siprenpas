@@ -35,7 +35,7 @@
     <x-input-with-icon-label icon="ti ti-phone" label="No. HP" name="no_hp" value="{{ $karyawan->no_hp }}" />
     <x-textarea-label name="alamat_ktp" label="Alamat KTP" value="{{ $karyawan->alamat_ktp }}" />
     <x-textarea-label name="alamat_tinggal" label="Alamat Tinggal" value="{{ $karyawan->alamat_tinggal }}" />
-    <x-input-with-icon-label icon="ti ti-calendar" label="TMT" name="tmt" value="{{ $karyawan->tmt }}" />
+    <x-input-with-icon-label icon="ti ti-calendar" label="TMT" name="tmt" value="{{ $karyawan->tmt }}" datepicker="flatpickr-date" />
     <div class="form-group mb-3" datepicker="flatpickr-date">
         <label for="exampleFormControlInput1" style="font-weight: 600" class="form-label">Status Karyawan</label>
         <select name="status_karyawan" id="status_karyawan" class="form-select">
@@ -91,8 +91,6 @@
 <script src="{{ asset('assets/js/pages/karyawan/edit.js') }}"></script>
 <script>
     $(function() {
-        $(".flatpickr-date").flatpickr({
-
-        });
+        $(".flatpickr-date").flatpickr();
     });
 </script>
