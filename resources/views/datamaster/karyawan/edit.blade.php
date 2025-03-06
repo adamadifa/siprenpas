@@ -73,7 +73,7 @@
         <select name="status" id="status" class="form-select">
             <option value="">Status</option>
             <option value="1" {{ $karyawan->status == 1 ? 'selected' : '' }}>Aktif</option>
-            <option value="0" {{ $karyawan->status == 0 ? 'selected' : '' }}>Tidak Aktif"></option>
+            <option value="0" {{ $karyawan->status == 0 ? 'selected' : '' }}>Tidak Aktif</option>
         </select>
     </div>
     <div class="form-group">
