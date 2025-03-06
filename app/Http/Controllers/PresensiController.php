@@ -52,7 +52,7 @@ class PresensiController extends Controller
             'jam_pulang',
             'jam_in',
             'jam_out',
-            'status',
+            'presensi.status',
             'nama_jabatan',
             'nama_unit',
             'presensi.id',
