@@ -21,6 +21,7 @@ use App\Http\Controllers\KategoriledgerController;
 use App\Http\Controllers\KategoripemasukanController;
 use App\Http\Controllers\KategoripengeluaranController;
 use App\Http\Controllers\KegiatanibadahController;
+use App\Http\Controllers\LaporankoperasiController;
 use App\Http\Controllers\LedgerController;
 use App\Http\Controllers\LedgertransaksiController;
 use App\Http\Controllers\PembayaranpendidikanController;
@@ -538,6 +539,12 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(ChecklistibadahController::class)->group(function () {
         Route::get('/checklistibadah/create', 'create')->name('checklistibadah.create');
+    });
+
+    Route::controller(LaporankoperasiController::class)->group(function () {
+        Route::get('/laporankoperasi', 'index')->name('laporankoperasi.index');
+        Route::post('/laporankoperasi/cetaksimpanan', 'cetaksimpanan')->name('laporankoperasi.cetaksimpanan');
+        Route::post('/laporankoperasi/cetaktabungan', 'cetaktabungan')->name('laporankoperasi.cetaktabungan');
     });
 });
 

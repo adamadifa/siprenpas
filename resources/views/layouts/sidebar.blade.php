@@ -209,7 +209,12 @@
                             </a>
                         </li>
                     @endif
-
+                    <li class="menu-item {{ request()->is(['laporankoperasi', 'laporankoperasi/*']) ? 'active' : '' }}">
+                        <a href="{{ route('laporankoperasi.index') }}" class="menu-link">
+                            <i class="menu-icon tf-icons ti ti-file-description"></i>
+                            <div>Laporan</div>
+                        </a>
+                    </li>
 
                 </ul>
 
