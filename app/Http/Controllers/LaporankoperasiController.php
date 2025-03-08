@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Historibayarpembiayaan;
 use App\Models\Jenissimpanan;
 use App\Models\Jenistabungan;
 use App\Models\Simpanan;
@@ -65,5 +66,24 @@ class LaporankoperasiController extends Controller
         $data['sampai'] = $request->sampai;
         $data['jenis_tabungan'] = $jenis_tabungan;
         return view('koperasi.laporan.tabungan_cetak', $data);
+    }
+
+
+    public function cetakpembiayaan(Request $request)
+    {
+        $request->validate([
+            'dari' => 'required',
+            'sampai' => 'required',
+        ]);
+
+        $pembiayaan = Historibayarpembiayaan::select('koperasi_pembiayaan_historibayar.*', 'keperluan', 'koperasi_pembiayaan.no_anggota', 'nama_lengkap', 'name')
+            ->join('koperasi_pembiayaan', 'koperasi_pembiayaan_historibayar.no_akad', '=', 'koperasi_pembiayaan.no_akad')
+            ->join('koperasi_anggota', 'koperasi_pembiayaan.no_anggota', '=', 'koperasi_anggota.no_anggota')
+            ->leftJoin('users', 'koperasi_pembiayaan_historibayar.id_petugas', '=', 'users.id')
+            ->whereBetween('koperasi_pembiayaan_historibayar.tanggal', [$request->dari, $request->sampai])->get();
+        $data['dari'] = $request->dari;
+        $data['sampai'] = $request->sampai;
+        $data['pembiayaan'] = $pembiayaan;
+        return view('koperasi.laporan.pembiayaan_cetak', $data);
     }
 }

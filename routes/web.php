@@ -545,6 +545,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporankoperasi', 'index')->name('laporankoperasi.index');
         Route::post('/laporankoperasi/cetaksimpanan', 'cetaksimpanan')->name('laporankoperasi.cetaksimpanan');
         Route::post('/laporankoperasi/cetaktabungan', 'cetaktabungan')->name('laporankoperasi.cetaktabungan');
+        Route::post('/laporankoperasi/cetakpembiayaan', 'cetakpembiayaan')->name('laporankoperasi.cetakpembiayaan');
     });
 });
 

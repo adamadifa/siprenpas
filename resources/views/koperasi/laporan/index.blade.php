@@ -26,6 +26,14 @@
                         </button>
                     </li>
                 @endcan
+                @can('pembiayaan.index')
+                    <li class="nav-item" role="presentation">
+                        <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#pembiayaan"
+                            aria-controls="pembiayaan" aria-selected="false" tabindex="-1">
+                            Pembiayaan
+                        </button>
+                    </li>
+                @endcan
             </ul>
             <div class="tab-content">
                 @can('simpanan.index')
@@ -38,6 +46,11 @@
                         @include('koperasi.laporan.tabungan')
                     </div>
                 @endcan
+                @can('pembiayaan.index')
+                    <div class="tab-pane fade" id="pembiayaan" role="tabpanel">
+                        @include('koperasi.laporan.pembiayaan')
+                    </div>
+                @endcan
             </div>
         </div>
     </div>
@@ -47,6 +60,7 @@
 <script>
     const formLaporanSimpanan = $("#formLaporanSimpanan");
     const formLaporanTabungan = $("#formLaporanTabungan");
+    const formLaporanPembiayaan = $("#formLaporanPembiayaan");
 
 
     const select2Kodejenissimpanan = $(".select2Kodejenissimpanan");
@@ -119,6 +133,48 @@
 
         formLaporanTabungan.submit(function(e) {
             let kode_tabungan = formLaporanTabungan.find('select[name="kode_tabungan"]').val();
+            let dari = formLaporanTabungan.find('input[name="dari"]').val();
+            let sampai = formLaporanTabungan.find('input[name="sampai"]').val();
+            const start = new Date(dari);
+            const end = new Date(sampai);
+            if (dari == "") {
+                Swal.fire({
+                    title: "Oops!",
+                    text: "Dari Tanggal Harus Diisi !",
+                    icon: "warning",
+                    showConfirmButton: true,
+                    didClose: (e) => {
+                        $(this).find("#dari").focus();
+                    },
+                });
+                return false;
+            } else if (sampai == "") {
+                Swal.fire({
+                    title: "Oops!",
+                    text: "Sampai Tanggal Harus Diisi !",
+                    icon: "warning",
+                    showConfirmButton: true,
+                    didClose: (e) => {
+                        $(this).find("#sampai").focus();
+                    },
+                });
+                return false;
+            } else if (start.getTime() > end.getTime()) {
+                Swal.fire({
+                    title: "Oops!",
+                    text: "Periode Tidak Valid !, Periode Sampai Harus Lebih Akhir dari Periode Dari",
+                    icon: "warning",
+                    showConfirmButton: true,
+                    didClose: (e) => {
+                        $(this).find("#sampai").focus();
+                    },
+                });
+                return false;
+            }
+        });
+
+
+        formLaporanPembiayaan.submit(function(e) {
             let dari = formLaporanTabungan.find('input[name="dari"]').val();
             let sampai = formLaporanTabungan.find('input[name="sampai"]').val();
             const start = new Date(dari);

@@ -91,9 +91,7 @@
         <table style="width: 100%" border="0">
             <tr>
                 <td style="text-align: center">
-                    <h1 class="judul2">DATA SETORAN
-                        {{ $jenis_simpanan != null ? strtoupper($jenis_simpanan->jenis_simpanan) : ' Semua Jenis Simpanan' }}
-                        <br>
+                    <h1 class="judul2">DATA PEMBAYARAN PEMBIAYAAN <br>
                         Periode {{ date('d-m-Y', strtotime($dari)) }} s/d {{ date('d-m-Y', strtotime($sampai)) }}
                     </h1>
                 </td>
@@ -101,56 +99,40 @@
         </table>
 
         <table class="datatable3">
-            <thead>
-                <tr>
-                    <th>NO</th>
-                    <th>No. Bukti</th>
-                    <th>Tgl Transaksi</th>
-                    <th>No. Anggota</th>
-                    <th>Nama Anggota</th>
-                    <th>Setor</th>
-                    <th>Tarik</th>
-                    <th>Petugas</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                    $totalsetor = 0;
-                    $totaltarik = 0;
-                @endphp
-                @foreach ($simpanan as $d)
-                    @if ($d->jenis_transaksi == 'S')
-                        @php
-                            $setor = $d->jumlah;
-                            $tarik = 0;
-                        @endphp
-                    @else
-                        @php
-                            $setor = 0;
-                            $tarik = $d->jumlah;
-                        @endphp
-                    @endif
-                    @php
-                        $totalsetor += $setor;
-                        $totaltarik += $tarik;
-                    @endphp
-                    <tr>
-                        <td align="center">{{ $loop->iteration }}</td>
-                        <td align="center">{{ $d->no_transaksi }}</td>
-                        <td align="center">{{ date('d-m-Y', strtotime($d->tanggal)) }}</td>
-                        <td align="center">{{ $d->no_anggota }}</td>
-                        <td>{{ $d->nama_lengkap }}</td>
-                        <td align="right">{{ number_format($setor, '0', '', '.') }}</td>
-                        <td align="right">{{ number_format($tarik, '0', '', '.') }}</td>
-                        <td align="center">{{ $d->name }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
             <tr>
-                <th align="center" colspan="5">TOTAL</th>
-                <th align="right" style="text-align: right !important">{{ number_format($totalsetor, '0', '', '.') }}</th>
-                <th align="right" style="text-align: right !important">{{ number_format($totaltarik, '0', '', '.') }}</th>
-                <th></th>
+                <th>NO</th>
+                <th>No. Bukti</th>
+                <th>Tgl Transaksi</th>
+                <th>No. Akad</th>
+                <th>Keperluan</th>
+                <th>Nama Anggota</th>
+                <th>Jumlah</th>
+                <th>Ket.</th>
+                <th>Petugas</th>
+            </tr>
+            @php
+                $total = 0;
+            @endphp
+            @foreach ($pembiayaan as $d)
+                @php
+                    $total += $d->jumlah;
+                @endphp
+                <tr>
+                    <td align="center">{{ $loop->iteration }}</td>
+                    <td align="center">{{ $d->no_transaksi }}</td>
+                    <td align="center">{{ date('d-m-Y', strtotime($d->tanggal)) }}</td>
+                    <td align="center">{{ $d->no_akad }}</td>
+                    <td align="left">{{ $d->keperluan }}</td>
+                    <td align="left">{{ $d->nama_lengkap }}</td>
+                    <td align="right">{{ number_format($d->jumlah, '0', '', '.') }}</td>
+                    <td align="left">Cicilan Ke {{ $d->cicilan_ke }}</td>
+                    <td align="center">{{ $d->name }}</td>
+                </tr>
+            @endforeach
+            <tr>
+                <th align="center" colspan="6">TOTAL</th>
+                <th align="right" style="text-align: right !important">{{ number_format($total, '0', '', '.') }}</th>
+                <th colspan="2"></th>
             </tr>
         </table>
     </section>

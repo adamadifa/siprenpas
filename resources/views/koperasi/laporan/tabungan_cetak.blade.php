@@ -92,7 +92,10 @@
             <tr>
                 <td style="text-align: center">
                     <h1 class="judul2">DATA SETORAN TABUNGAN
-                        {{ $jenis_tabungan != null ? strtoupper($jenis_tabungan->jenis_tabungan) : ' Semua Jenis Tabungan' }}</h1>
+                        {{ $jenis_tabungan != null ? strtoupper($jenis_tabungan->jenis_tabungan) : ' Semua Jenis Tabungan' }}
+                        <br>
+                        Periode {{ date('d-m-Y', strtotime($dari)) }} s/d {{ date('d-m-Y', strtotime($sampai)) }}
+                    </h1>
                 </td>
             </tr>
         </table>
