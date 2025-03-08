@@ -105,6 +105,7 @@
                     <th>Tgl Transaksi</th>
                     <th>No. Rekening</th>
                     <th>No. Anggota</th>
+                    <th>Jenis Tabungan</th>
                     <th>Nama Anggota</th>
                     <th>Setor</th>
                     <th>Tarik</th>
@@ -138,6 +139,7 @@
                         <td align="center">{{ date('d-m-Y', strtotime($d->tanggal)) }}</td>
                         <td align="center">{{ $d->no_rekening }}</td>
                         <td align="center">{{ $d->no_anggota }}</td>
+                        <td align="center">{{ $d->jenis_tabungan }}</td>
                         <td>{{ $d->nama_lengkap }}</td>
                         <td align="right">{{ number_format($setor, '0', '', '.') }}</td>
                         <td align="right">{{ number_format($tarik, '0', '', '.') }}</td>
@@ -146,7 +148,7 @@
                 @endforeach
             </tbody>
             <tr>
-                <th align="center" colspan="6">TOTAL</th>
+                <th align="center" colspan="7">TOTAL</th>
                 <th align="right" style="text-align: right !important">{{ number_format($totalsetor, '0', '', '.') }}</th>
                 <th align="right" style="text-align: right !important">{{ number_format($totaltarik, '0', '', '.') }}</th>
                 <th></th>
