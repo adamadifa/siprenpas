@@ -544,23 +544,26 @@ class PembiayaanController extends Controller
 
             $tagihan = str_replace(".", "", $request->jumlah) + (str_replace(".", "", $request->jumlah) * ($request->persentase / 100));
 
-            $cicilanperbulan = $tagihan / $request->jangka_waktu;
-            if ($this->is_decimal($cicilanperbulan)) {
-                $jmlangsuran = $cicilanperbulan;
-                $jmlangsuran = ceil($jmlangsuran);
-                //dd(substr($jmlangsuran, -3));
-                if (substr($jmlangsuran, -3) > 500) {
-                    $jumlah_angsuran = round($jmlangsuran, -3);
-                } else {
-                    $jumlah_angsuran = round($jmlangsuran, -3) + 1000;
-                }
-            } else {
-                $jumlah_angsuran = $cicilanperbulan;
-            }
+            $cicilanperbulan = ROUND($tagihan / $request->jangka_waktu);
+            $cicilan_terakhir = $cicilanperbulan + ($tagihan - ($cicilanperbulan * $request->jangka_waktu));
 
-            $angsuran = $request->jangka_waktu;
 
-            $cicilan_terakhir =  ($tagihan - ($jumlah_angsuran * ($angsuran - 1)));
+            // if ($this->is_decimal($cicilanperbulan)) {
+            //     $jmlangsuran = $cicilanperbulan;
+            //     $jmlangsuran = ceil($jmlangsuran);
+            //     //dd(substr($jmlangsuran, -3));
+            //     if (substr($jmlangsuran, -3) > 500) {
+            //         $jumlah_angsuran = round($jmlangsuran, -3);
+            //     } else {
+            //         $jumlah_angsuran = round($jmlangsuran, -3) + 1000;
+            //     }
+            // } else {
+            //     $jumlah_angsuran = $cicilanperbulan;
+            // }
+
+            // $angsuran = $request->jangka_waktu;
+
+            // $cicilan_terakhir =  ($tagihan - ($jumlah_angsuran * ($angsuran - 1)));
 
 
             Anggota::where('no_anggota', $request->no_anggota)->update($dataanggota);
@@ -580,39 +583,69 @@ class PembiayaanController extends Controller
                 'kartu_keluarga' => 1,
                 'struk_gaji' => 1,
             ]);
-            $bln = $bulan + 1;
-            for ($i = 1; $i <= $angsuran; $i++) {
-                if ($bln > 12) {
-                    $blncicilan = $bln - 12;
-                    $tahun = $tahun + 1;
+            $bulan_cicilan = $bulan + 1;
+            $tahun_cicilan = $tahun;
+            $thncicilan = $tahun_cicilan;
+            for ($i = 1; $i <= $request->jangka_waktu; $i++) {
+                if ($bulan_cicilan > 12) {
+                    $blncicilan = $bulan_cicilan - 12;
+                    $thncicilan = $thncicilan + 1;
+                    $bulan_cicilan = 1;
                 } else {
-                    $blncicilan = $bln;
-                    $tahun = $tahun;
+                    $blncicilan = $bulan_cicilan;
+                    $thncicilan = $thncicilan;
                 }
 
-
-                if ($i == $angsuran) {
+                if ($i == $request->jangka_waktu) {
                     $cicilan = $cicilan_terakhir;
                 } else {
-                    $cicilan = $jumlah_angsuran;
+                    $cicilan = $cicilanperbulan;
                 }
+
 
                 Rencanapembiayaan::create([
                     'no_akad' => $no_akad,
                     'cicilan_ke' => $i,
                     'bulan' => $blncicilan,
-                    'tahun' => $tahun,
+                    'tahun' => $thncicilan,
                     'jumlah' => $cicilan,
                     'bayar' => 0
                 ]);
 
-                // echo "No Akad :" . $no_akad . "<br>";
-                // echo "Cicilan Ke :" . $i . "<br>";
-                // echo "Bulan :" . $blncicilan . "<br>";
-                // echo "Tahun :" . $tahun . "<br>";
-                // echo "Jumlah :" . $cicilan . "<br>";
-                $bln++;
+                $bulan_cicilan++;
             }
+            // for ($i = 1; $i <= $angsuran; $i++) {
+            //     if ($bln > 12) {
+            //         $blncicilan = $bln - 12;
+            //         $tahun = $tahun + 1;
+            //     } else {
+            //         $blncicilan = $bln;
+            //         $tahun = $tahun;
+            //     }
+
+
+            //     if ($i == $angsuran) {
+            //         $cicilan = $cicilan_terakhir;
+            //     } else {
+            //         $cicilan = $jumlah_angsuran;
+            //     }
+
+            //     Rencanapembiayaan::create([
+            //         'no_akad' => $no_akad,
+            //         'cicilan_ke' => $i,
+            //         'bulan' => $blncicilan,
+            //         'tahun' => $tahun,
+            //         'jumlah' => $cicilan,
+            //         'bayar' => 0
+            //     ]);
+
+            //     // echo "No Akad :" . $no_akad . "<br>";
+            //     // echo "Cicilan Ke :" . $i . "<br>";
+            //     // echo "Bulan :" . $blncicilan . "<br>";
+            //     // echo "Tahun :" . $tahun . "<br>";
+            //     // echo "Jumlah :" . $cicilan . "<br>";
+            //     $bln++;
+            // }
 
             DB::commit();
             return Redirect::back()->with(messageSuccess('Berhasil Disimpan'));

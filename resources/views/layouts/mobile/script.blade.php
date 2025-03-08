@@ -23,6 +23,7 @@
 <script src="https://cdn.jsdelivr.net/npm/rolldate@3.1.3/dist/rolldate.min.js"></script>
 <script src="{{ asset('assets/vendor/libs/toastr/toastr.js') }}"></script>
 <script src="{{ asset('assets/vendor/libs/swiper/swiper-bundle.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/rolldate@3.1.3/dist/rolldate.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 <style>
     .toast-bottom-full-width {

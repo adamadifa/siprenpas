@@ -279,15 +279,17 @@
     <div id="app-section2">
         <div class="row">
             <div class="col-3">
-                <div class="card">
-                    <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                        <img src="{{ asset('assets/template/img/3d/prayingman64.png') }}" alt="" style="width: 50px" class="mb-1">
-                        <br>
-                        <span style="font-size: 0.8rem; font-weight:500">
-                            Ibadah
-                        </span>
+                <a href="{{ route('checklistibadah.create') }}">
+                    <div class="card">
+                        <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
+                            <img src="{{ asset('assets/template/img/3d/prayingman64.png') }}" alt="" style="width: 50px" class="mb-1">
+                            <br>
+                            <span style="font-size: 0.8rem; font-weight:500">
+                                Ibadah
+                            </span>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-3">
                 <a href="{{ route('simpanan.showmobile', Crypt::encrypt($karyawan->npp)) }}">

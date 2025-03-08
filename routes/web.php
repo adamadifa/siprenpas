@@ -4,6 +4,7 @@ use App\Http\Controllers\AgendakegiatanController;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\AsalsekolahController;
 use App\Http\Controllers\BiayaController;
+use App\Http\Controllers\ChecklistibadahController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartemenConroller;
 use App\Http\Controllers\DistrictController;
@@ -533,6 +534,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/kegiatanibadah/{id}/edit', 'edit')->name('kegiatanibadah.edit')->can('kegiatanibadah.edit');
         Route::put('/kegiatanibadah/{id}', 'update')->name('kegiatanibadah.update')->can('kegiatanibadah.edit');
         Route::delete('/kegiatanibadah/{id}/delete', 'destroy')->name('kegiatanibadah.delete')->can('kegiatanibadah.delete');
+    });
+
+    Route::controller(ChecklistibadahController::class)->group(function () {
+        Route::get('/checklistibadah/create', 'create')->name('checklistibadah.create');
     });
 });
 
