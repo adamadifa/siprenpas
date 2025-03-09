@@ -149,7 +149,7 @@
                 @endforeach
             </tbody>
             <tr>
-                <th align="center" colspan="5">TOTAL</th>
+                <th align="center" colspan="6">TOTAL</th>
                 <th align="right" style="text-align: right !important">{{ number_format($totalsetor, '0', '', '.') }}</th>
                 <th align="right" style="text-align: right !important">{{ number_format($totaltarik, '0', '', '.') }}</th>
                 <th></th>
