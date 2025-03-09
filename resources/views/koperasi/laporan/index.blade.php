@@ -63,6 +63,20 @@
     const formLaporanPembiayaan = $("#formLaporanPembiayaan");
 
 
+
+    const select2Noanggotasimpanan = $(".select2Noanggotasimpanan");
+    if (select2Noanggotasimpanan.length) {
+        select2Noanggotasimpanan.each(function() {
+            var $this = $(this);
+            $this.wrap('<div class="position-relative"></div>').select2({
+                placeholder: 'Semua Anggota',
+                allowClear: true,
+                dropdownParent: $this.parent()
+            });
+        });
+    }
+
+
     const select2Kodejenissimpanan = $(".select2Kodejenissimpanan");
     if (select2Kodejenissimpanan.length) {
         select2Kodejenissimpanan.each(function() {

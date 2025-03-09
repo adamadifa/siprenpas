@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Anggota;
 use App\Models\Historibayarpembiayaan;
 use App\Models\Jenissimpanan;
 use App\Models\Jenistabungan;
@@ -14,6 +15,7 @@ class LaporankoperasiController extends Controller
 {
     public function index()
     {
+        $data['anggota'] = Anggota::orderBy('no_anggota', 'asc')->get();
         $data['jenis_simpanan'] = Jenissimpanan::orderBy('kode_simpanan', 'asc')->get();
         $data['jenis_tabungan'] = Jenistabungan::orderBy('kode_tabungan', 'asc')->get();
         return view('koperasi.laporan.index', $data);

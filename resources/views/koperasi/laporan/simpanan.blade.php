@@ -8,6 +8,14 @@
             @endforeach
         </select>
     </div>
+    <div class="form-group mb-3">
+        <select name="no_anggota" id="no_anggota" class="form-select select2Noanggotasimpanan">
+            <option value="">Semua Anggota</option>
+            @foreach ($anggota as $d)
+                <option value="{{ $d->no_anggota }}">{{ textUpperCase($d->nama_anggota) }}</option>
+            @endforeach
+        </select>
+    </div>
     <div class="row">
         <div class="col-lg-6 col-md-12 col-sm-12">
             <x-input-with-icon icon="ti ti-calendar" label="Dari" name="dari" datepicker="flatpickr-date" />
