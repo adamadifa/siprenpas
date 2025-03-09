@@ -12,7 +12,7 @@
         <select name="no_anggota" id="no_anggota" class="form-select select2Noanggotasimpanan">
             <option value="">Semua Anggota</option>
             @foreach ($anggota as $d)
-                <option value="{{ $d->no_anggota }}">{{ textUpperCase($d->nama_anggota) }}</option>
+                <option value="{{ $d->no_anggota }}">{{ textUpperCase($d->nama_lengkap) }}</option>
             @endforeach
         </select>
     </div>

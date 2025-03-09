@@ -37,6 +37,10 @@ class LaporankoperasiController extends Controller
         if (!empty($request->kode_simpanan)) {
             $query->where('koperasi_simpanan.kode_simpanan', $request->kode_simpanan);
         }
+
+        if (!empty($request->no_anggota)) {
+            $query->where('koperasi_simpanan.no_anggota', $request->no_anggota);
+        }
         $query->whereBetween('tanggal', [$request->dari, $request->sampai])->get();
         $data['simpanan'] = $query->get();
         $data['dari'] = $request->dari;
