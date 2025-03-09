@@ -108,6 +108,7 @@
                     <th>Tgl Transaksi</th>
                     <th>No. Anggota</th>
                     <th>Nama Anggota</th>
+                    <th>Jenis Simpanan</th>
                     <th>Setor</th>
                     <th>Tarik</th>
                     <th>Petugas</th>
@@ -140,6 +141,7 @@
                         <td align="center">{{ date('d-m-Y', strtotime($d->tanggal)) }}</td>
                         <td align="center">{{ $d->no_anggota }}</td>
                         <td>{{ $d->nama_lengkap }}</td>
+                        <td align="center">{{ $d->jenis_simpanan }}</td>
                         <td align="right">{{ number_format($setor, '0', '', '.') }}</td>
                         <td align="right">{{ number_format($tarik, '0', '', '.') }}</td>
                         <td align="center">{{ $d->name }}</td>
