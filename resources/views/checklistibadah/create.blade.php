@@ -217,12 +217,12 @@
             endYear: 2100,
             lang: lang,
             confirm: function(date) {
-                loadchecklistibadah();
+                loadchecklistibadah(date);
             }
         });
 
-        function loadchecklistibadah() {
-            var tanggal = $(".tanggal").val();
+        function loadchecklistibadah(date) {
+            var tanggal = date || $(".tanggal").val();
             $.ajax({
                 type: 'POST',
                 url: '/checklistibadah/getchecklistibadah',
