@@ -219,7 +219,7 @@
         });
 
         function loadchecklistibadah() {
-            var tanggal = $("#tanggal").val();
+            var tanggal = $(".tanggal").val();
             $.ajax({
                 type: 'POST',
                 url: '/checklistibadah/getchecklistibadah',
@@ -234,5 +234,41 @@
             });
         }
         loadchecklistibadah();
+
+
+        $(document).on('click', '.checklist', function() {
+            var tanggal = $(".tanggal").val();
+            var id = $(this).attr("data-id");
+            var kode = $(this).attr("data-kode");
+            if ($(this).prop("checked") == true) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/checklistibadah/store',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        tanggal: tanggal,
+                        id: id
+                    },
+                    cache: false,
+                    success: function() {
+                        //alert('success');
+                    }
+                });
+            } else if ($(this).prop("checked") == false) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/checklistibadah/delete',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        kode: kode,
+                        id: id
+                    },
+                    cache: false,
+                    success: function() {
+                        //alert('success');
+                    }
+                });
+            }
+        });
     </script>
 @endpush

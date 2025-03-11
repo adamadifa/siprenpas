@@ -540,6 +540,8 @@ Route::middleware('auth')->group(function () {
     Route::controller(ChecklistibadahController::class)->group(function () {
         Route::get('/checklistibadah/create', 'create')->name('checklistibadah.create');
         Route::post('/checklistibadah/getchecklistibadah', 'getchecklistibadah')->name('checklistibadah.getchecklistibadah');
+        Route::post('/checklistibadah/store', 'store')->name('checklistibadah.store');
+        Route::post('/checklistibadah/delete', 'delete')->name('checklistibadah.delete');
     });
 
     Route::controller(LaporankoperasiController::class)->group(function () {

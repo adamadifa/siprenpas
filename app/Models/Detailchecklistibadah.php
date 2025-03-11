@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Detailchecklistibadah extends Model
 {
     use HasFactory;
+    protected $guarded = [];
+    protected $table = 'checklist_ibadah_detail';
 }
