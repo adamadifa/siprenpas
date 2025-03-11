@@ -235,6 +235,9 @@
         }
         loadchecklistibadah();
 
+        $(".tanggal").change(function() {
+            loadchecklistibadah();
+        });
 
         $(document).on('click', '.checklist', function() {
             var tanggal = $(".tanggal").val();
