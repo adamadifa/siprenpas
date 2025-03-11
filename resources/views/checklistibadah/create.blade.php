@@ -216,6 +216,9 @@
             beginYear: 2000,
             endYear: 2100,
             lang: lang,
+            confirm: function(date) {
+                loadchecklistibadah();
+            }
         });
 
         function loadchecklistibadah() {
