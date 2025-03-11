@@ -539,6 +539,7 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(ChecklistibadahController::class)->group(function () {
         Route::get('/checklistibadah/create', 'create')->name('checklistibadah.create');
+        Route::post('/checklistibadah/getchecklistibadah', 'getchecklistibadah')->name('checklistibadah.getchecklistibadah');
     });
 
     Route::controller(LaporankoperasiController::class)->group(function () {

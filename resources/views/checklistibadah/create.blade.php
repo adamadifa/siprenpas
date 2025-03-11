@@ -187,23 +187,10 @@
         </div>
         <div class="row" style="padding-bottom: 100px !important">
             <div class="col">
-                <div class="transactions">
+                <div class="transactions" id="loadchecklistibadah">
                     <!-- item -->
 
-                    @foreach ($kegiatan_ibadah as $d)
-                        <div class="item">
-                            <div class="detail">
-                                <div class="avatar avatar-sm me-4">
-                                    <h4 class="font-weight-bold">{{ $d->nama_kegiatan }}</h4>
-                                    <span class="text-muted">{{ $d->kategori_ibadah }}</span></span>
-                                </div>
-                            </div>
-                            <div class="checkbox-wrapper-19">
-                                <input type="checkbox" id="cbtest-{{ $loop->iteration }}" />
-                                <label for="cbtest-{{ $loop->iteration }}" class="check-box">
-                            </div>
-                        </div>
-                    @endforeach
+
 
                 </div>
             </div>
@@ -230,5 +217,22 @@
             endYear: 2100,
             lang: lang,
         });
+
+        function loadchecklistibadah() {
+            var tanggal = $("#tanggal").val();
+            $.ajax({
+                type: 'POST',
+                url: '/checklistibadah/getchecklistibadah',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    tanggal: tanggal
+                },
+                cache: false,
+                success: function(respond) {
+                    $("#loadchecklistibadah").html(respond);
+                }
+            });
+        }
+        loadchecklistibadah();
     </script>
 @endpush
