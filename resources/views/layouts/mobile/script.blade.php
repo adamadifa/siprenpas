@@ -145,36 +145,7 @@
     });
 </script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        window.addEventListener("ajaxError", function(event) {
-            if (event.detail.status === 419) {
-                window.location.href = "/dashboard";
-            }
-        });
-    });
-
-    // Jika menggunakan Fetch API
-    function handleFetchErrors(response) {
-        if (response.status === 419) {
-            window.location.href = "/dashboard";
-        }
-        return response;
-    }
+    alert('test');
 </script>
-
-<script>
-    document.addEventListener('gesturestart', function(event) {
-        event.preventDefault();
-    });
-
-    document.addEventListener('wheel', function(event) {
-        if (event.ctrlKey) {
-            event.preventDefault();
-        }
-    }, {
-        passive: false
-    });
-</script>
-
 
 @stack('myscript')
