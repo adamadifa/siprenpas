@@ -7,7 +7,8 @@
             </div>
         </div>
         <div class="checkbox-wrapper-19">
-            <input type="checkbox" id="cbtest-{{ $loop->iteration }}" />
+            <input type="checkbox" class="checklist" data-id="{{ $d->id }}" data-kode="{{ $d->kode_checklist_ibadah }}"
+                id="cbtest-{{ $loop->iteration }}" {{ !empty($d->id_kegiatan_ibadah) ? 'checked' : '' }} />
             <label for="cbtest-{{ $loop->iteration }}" class="check-box">
         </div>
     </div>
