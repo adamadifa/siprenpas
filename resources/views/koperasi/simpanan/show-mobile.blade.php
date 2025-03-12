@@ -48,9 +48,11 @@
         }
 
         .transactions {
-            padding: 0px 10px;
+            padding-right: 10px;
+            padding-left: 10px;
+            padding-bottom: 100px;
             /* background-color: red; */
-            height: calc(65vh - 300px);
+            height: 100vh;
             overflow: scroll;
         }
 
