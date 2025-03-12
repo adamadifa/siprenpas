@@ -162,4 +162,19 @@
     }
 </script>
 
+<script>
+    document.addEventListener('gesturestart', function(event) {
+        event.preventDefault();
+    });
+
+    document.addEventListener('wheel', function(event) {
+        if (event.ctrlKey) {
+            event.preventDefault();
+        }
+    }, {
+        passive: false
+    });
+</script>
+
+
 @stack('myscript')
