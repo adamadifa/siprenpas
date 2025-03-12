@@ -52,17 +52,7 @@ class SimpananController extends Controller
 
         $dari = date('Y-m-d', strtotime('-30 days'));
         $sampai = date('Y-m-d');
-        if (isset($request->dari) and isset($request->sampai)) {
-            $lastdata = Simpanan::where('no_anggota', $no_anggota)
-                ->where('tanggal', '<', $request->dari)
-                ->orderBy('no_transaksi', 'desc')
-                ->first();
-        } else {
-            $lastdata = Simpanan::where('no_anggota', $no_anggota)
-                ->where('tanggal', '<', $dari)
-                ->orderBy('no_transaksi', 'desc')
-                ->first();
-        }
+
         $data['saldo_awal'] = $lastdata ? $lastdata->saldo : 0;
         $query = Simpanan::query();
 
@@ -76,7 +66,20 @@ class SimpananController extends Controller
         } else {
             $query->whereBetween('tanggal', [$dari, $sampai]);
         }
+        $transaksi_pertama = $query->first();
         $simpanan = $query->get();
+
+        if (isset($request->dari) and isset($request->sampai)) {
+            $lastdata = Simpanan::where('no_anggota', $no_anggota)
+                ->where('tanggal', '<', $request->dari)
+                ->orderBy('no_transaksi', 'desc')
+                ->first();
+        } else {
+            $lastdata = Simpanan::where('no_anggota', $no_anggota)
+                ->where('no_transaksi', '<', $transaksi_pertama->no_transaksi)
+                ->orderBy('no_transaksi', 'desc')
+                ->first();
+        }
 
         $data['saldosimpanan'] = Saldosimpanan::where('no_anggota', $no_anggota)
             ->select('no_anggota', DB::raw('SUM(jumlah) as total_saldo'))
