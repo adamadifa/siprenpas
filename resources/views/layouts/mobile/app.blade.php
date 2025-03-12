@@ -161,7 +161,7 @@
 </head>
 <style>
     body {
-        touch-action: manipulation;
+        touch-action: manipulation !important
     }
 </style>
 
