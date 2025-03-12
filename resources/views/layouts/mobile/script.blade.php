@@ -148,7 +148,7 @@
     document.addEventListener("DOMContentLoaded", function() {
         window.addEventListener("ajaxError", function(event) {
             if (event.detail.status === 419) {
-                window.location.href = "/home";
+                window.location.href = "/dashboard";
             }
         });
     });
@@ -156,7 +156,7 @@
     // Jika menggunakan Fetch API
     function handleFetchErrors(response) {
         if (response.status === 419) {
-            window.location.href = "/home";
+            window.location.href = "/dashboard";
         }
         return response;
     }
