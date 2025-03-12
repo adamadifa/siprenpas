@@ -159,6 +159,11 @@
         }
     </style> --}}
 </head>
+<style>
+    body {
+        touch-action: manipulation;
+    }
+</style>
 
 <body>
 
