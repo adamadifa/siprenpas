@@ -144,8 +144,8 @@
 
     });
 </script>
-<script>
+{{-- <script>
     alert('test');
-</script>
+</script> --}}
 
 @stack('myscript')
