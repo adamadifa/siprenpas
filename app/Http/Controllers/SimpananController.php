@@ -76,7 +76,7 @@ class SimpananController extends Controller
         } else {
             $query->whereBetween('tanggal', [$dari, $sampai]);
         }
-        $transaksi_pertama = $query->first();
+        // $transaksi_pertama = $query->first();
         $simpanan = $query->get();
 
         $data['saldosimpanan'] = Saldosimpanan::where('no_anggota', $no_anggota)
