@@ -52,7 +52,8 @@
             padding-left: 10px;
             padding-bottom: 100px;
             /* background-color: red; */
-            height: 100vh;
+            height: 65vh;
+            /* background-color: red; */
             overflow: scroll;
         }
 
