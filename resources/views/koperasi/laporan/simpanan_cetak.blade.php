@@ -145,7 +145,7 @@
                         <td align="center">{{ $d->jenis_simpanan }}</td>
                         <td align="right">{{ number_format($setor, '0', '', '.') }}</td>
                         <td align="right">{{ number_format($tarik, '0', '', '.') }}</td>
-                        <td align="center">{{ $d->berita }}</td>
+                        <td align="">{{ $d->berita }}</td>
                         <td align="center">{{ $d->name }}</td>
                     </tr>
                 @endforeach
