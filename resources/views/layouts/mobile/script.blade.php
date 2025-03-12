@@ -141,6 +141,18 @@
         $(window).resize(function() {
             adjustZoom(); // Panggil lagi saat ukuran layar berubah
         });
+
+    });
+</script>
+<script script>
+    if (window.history.replaceState) {
+        window.history.replaceState(null, "", window.location.href);
+    }
+
+    window.addEventListener("popstate", function(event) {
+        if (window.location.pathname === "/") {
+            window.location.href = "/dashboard"; // Redirect ke home jika kembali ke login
+        }
     });
 </script>
 @stack('myscript')
