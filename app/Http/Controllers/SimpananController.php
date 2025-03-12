@@ -53,7 +53,7 @@ class SimpananController extends Controller
         $dari = date('Y-m-d', strtotime('-30 days'));
         $sampai = date('Y-m-d');
 
-        $data['saldo_awal'] = $lastdata ? $lastdata->saldo : 0;
+
         $query = Simpanan::query();
 
         $query->select('koperasi_simpanan.*', 'jenis_simpanan', 'name');
@@ -80,6 +80,8 @@ class SimpananController extends Controller
                 ->orderBy('no_transaksi', 'desc')
                 ->first();
         }
+
+        $data['saldo_awal'] = $lastdata ? $lastdata->saldo : 0;
 
         $data['saldosimpanan'] = Saldosimpanan::where('no_anggota', $no_anggota)
             ->select('no_anggota', DB::raw('SUM(jumlah) as total_saldo'))
