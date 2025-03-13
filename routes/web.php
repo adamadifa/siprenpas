@@ -8,6 +8,8 @@ use App\Http\Controllers\ChecklistibadahController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartemenConroller;
 use App\Http\Controllers\DistrictController;
+use App\Http\Controllers\IzinabsenController;
+use App\Http\Controllers\IzinsakitController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\JamkerjaController;
 use App\Http\Controllers\JenisbiayaController;
@@ -27,6 +29,7 @@ use App\Http\Controllers\LedgertransaksiController;
 use App\Http\Controllers\PembayaranpendidikanController;
 use App\Http\Controllers\PembiayaanController;
 use App\Http\Controllers\PendaftaranController;
+use App\Http\Controllers\PengajuanizinController;
 use App\Http\Controllers\Permission_groupController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PresensiController;
@@ -78,7 +81,7 @@ use Spatie\Permission\Models\Role;
 // });
 
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware(['auth', 'verified']);
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index')->middleware(['auth', 'verified']);
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -549,6 +552,36 @@ Route::middleware('auth')->group(function () {
         Route::post('/laporankoperasi/cetaksimpanan', 'cetaksimpanan')->name('laporankoperasi.cetaksimpanan');
         Route::post('/laporankoperasi/cetaktabungan', 'cetaktabungan')->name('laporankoperasi.cetaktabungan');
         Route::post('/laporankoperasi/cetakpembiayaan', 'cetakpembiayaan')->name('laporankoperasi.cetakpembiayaan');
+    });
+
+    Route::controller(IzinabsenController::class)->group(function () {
+        Route::get('/izinabsen', 'index')->name('izinabsen.index')->can('izinabsen.index');
+        Route::get('/izinabsen/create', 'create')->name('izinabsen.create')->can('izinabsen.create');
+        Route::post('/izinabsen', 'store')->name('izinabsen.store')->can('izinabsen.create');
+        Route::get('/izinabsen/{kode_izin}/approve', 'approve')->name('izinabsen.approve')->can('izinabsen.approve');
+        Route::delete('/izinabsen/{kode_izin}/cancelapprove', 'cancelapprove')->name('izinabsen.cancelapprove')->can('izinabsen.approve');
+        Route::post('/izinabsen/{kode_izin}/storeapprove', 'storeapprove')->name('izinabsen.storeapprove')->can('izinabsen.approve');
+        Route::get('/izinabsen/{id}/edit', 'edit')->name('izinabsen.edit')->can('izinabsen.edit');
+        Route::put('/izinabsen/{id}', 'update')->name('izinabsen.update')->can('izinabsen.edit');
+        Route::get('/izinabsen/{kode_izin}/show', 'show')->name('izinabsen.show')->can('izinabsen.index');
+        Route::delete('/izinabsen/{id}/delete', 'destroy')->name('izinabsen.delete')->can('izinabsen.delete');
+    });
+
+    Route::controller(IzinsakitController::class)->group(function () {
+        Route::get('/izinsakit', 'index')->name('izinsakit.index')->can('izinsakit.index');
+        Route::get('/izinsakit/create', 'create')->name('izinsakit.create')->can('izinsakit.create');
+        Route::post('/izinsakit', 'store')->name('izinsakit.store')->can('izinsakit.create');
+        Route::get('/izinsakit/{kode_izin_sakit}/approve', 'approve')->name('izinsakit.approve')->can('izinsakit.approve');
+        Route::delete('/izinsakit/{kode_izin_sakit}/cancelapprove', 'cancelapprove')->name('izinsakit.cancelapprove')->can('izinsakit.approve');
+        Route::post('/izinsakit/{kode_izin_sakit}/storeapprove', 'storeapprove')->name('izinsakit.storeapprove')->can('izinsakit.approve');
+        Route::get('/izinsakit/{id}/edit', 'edit')->name('izinsakit.edit')->can('izinsakit.edit');
+        Route::put('/izinsakit/{kode_izin_sakit}', 'update')->name('izinsakit.update')->can('izinsakit.edit');
+        Route::get('/izinsakit/{kode_izin_sakit}/show', 'show')->name('izinsakit.show')->can('izinsakit.index');
+        Route::delete('/izinsakit/{id}/delete', 'destroy')->name('izinsakit.delete')->can('izinsakit.delete');
+    });
+
+    Route::controller(PengajuanizinController::class)->group(function () {
+        Route::get('/pengajuanizin', 'index')->name('pengajuanizin.index');
     });
 });
 

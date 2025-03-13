@@ -20,10 +20,10 @@
             </div>
         </div>
     </a>
-    <a href="#" class="item {{ request()->is('pengajuanizin') ? 'active' : '' }}">
+    <a href="{{ route('pengajuanizin.index') }}" class="item {{ request()->is('pengajuanizin') ? 'active' : '' }}">
         <div class="col">
             <ion-icon name="calendar-outline"></ion-icon>
-            <strong>Izin</strong>
+            <strong>Pengajuan Izin</strong>
         </div>
     </a>
     <a href="{{ route('users.editpassword', Crypt::encrypt(Auth::user()->id)) }}"

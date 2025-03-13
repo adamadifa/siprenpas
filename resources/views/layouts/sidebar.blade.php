@@ -248,6 +248,24 @@
 
             </li>
         @endif
+        @if (auth()->user()->hasAnyPermission(['izinabsen.index', 'izinsakit.index']))
+            <li class="menu-item {{ request()->is(['izinabsen', 'izinsakit']) ? 'open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons ti ti-moneybag"></i>
+                    <div>MSDM</div>
+                </a>
+                <ul class="menu-sub">
+                    @if (auth()->user()->hasAnyPermission(['izinabsen.index']))
+                        <li class="menu-item {{ request()->is(['izinabsen']) ? 'active' : '' }}">
+                            <a href="{{ route('izinabsen.index') }}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-file-description"></i>
+                                <div>Pengajuan Absen </div>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
         @if (auth()->user()->hasAnyPermission(['realkegiatan.index', 'agendakegiatan.index', 'programkerja.index', 'jobdesk.index']))
             <li class="menu-item {{ request()->is(['realisasikegiatan', 'agendakegiatan', 'programkerja', 'jobdesk']) ? 'open' : '' }}">
 

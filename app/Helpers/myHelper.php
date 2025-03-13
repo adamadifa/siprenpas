@@ -355,3 +355,25 @@ function hitungjamterlambat($jam_in, $jam_mulai)
         return [];
     }
 }
+
+function hitungHari($startDate, $endDate)
+{
+    if ($startDate && $endDate) {
+        $start = new DateTime($startDate);
+        $end = new DateTime($endDate);
+
+        // Tambahkan 1 hari agar penghitungan inklusif
+        $interval = $start->diff($end);
+        $dayDifference = $interval->days + 1;
+
+        return  $dayDifference;
+    } else {
+        return 0;
+    }
+}
+
+function getSid($file)
+{
+    $url = url('/storage/uploads/sid/' . $file);
+    return $url;
+}
