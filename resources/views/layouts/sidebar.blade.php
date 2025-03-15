@@ -2,7 +2,7 @@
 
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
-        <a href="{{ route('dashboard') }}" class="app-brand-link">
+        <a href="{{ route('dashboard.index') }}" class="app-brand-link">
             <span class="app-brand-logo demo">
                 <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="" width="52">
             </span>
@@ -18,7 +18,7 @@
     <div class="menu-inner-shadow"></div>
     <ul class="menu-inner py-1">
         <li class="menu-item {{ request()->is(['dashboard', 'dashboard/*']) ? 'active' : '' }}">
-            <a href="{{ route('dashboard') }}" class="menu-link">
+            <a href="{{ route('dashboard.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons ti ti-home"></i>
                 <div>Dashboard</div>
             </a>
@@ -168,14 +168,7 @@
                 </a>
             </li>
         @endif
-        @if (auth()->user()->hasAnyPermission(['presensi.index']))
-            <li class="menu-item {{ request()->is(['presensi', 'presensi/*']) ? 'active' : '' }}">
-                <a href="{{ route('presensi.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons ti ti-device-desktop"></i>
-                    <div>Monitoring Presensi</div>
-                </a>
-            </li>
-        @endif
+
         @if (auth()->user()->hasAnyPermission(['simpanan.index', 'pembiayaan.index', 'tabungan.index']))
             <li
                 class="menu-item {{ request()->is(['simpanan', 'pembiayaan', 'tabungan', 'tabungan/*', 'simpanan/*', 'pembiayaan/*']) ? 'open' : '' }}">
@@ -248,13 +241,21 @@
 
             </li>
         @endif
-        @if (auth()->user()->hasAnyPermission(['izinabsen.index', 'izinsakit.index']))
-            <li class="menu-item {{ request()->is(['izinabsen', 'izinsakit']) ? 'open' : '' }}">
+        @if (auth()->user()->hasAnyPermission(['izinabsen.index', 'izinsakit.index', 'presensi.index']))
+            <li class="menu-item {{ request()->is(['izinabsen', 'izinsakit', 'presensi']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-moneybag"></i>
                     <div>MSDM</div>
                 </a>
                 <ul class="menu-sub">
+                    @if (auth()->user()->hasAnyPermission(['presensi.index']))
+                        <li class="menu-item {{ request()->is(['presensi']) ? 'active' : '' }}">
+                            <a href="{{ route('presensi.index') }}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-heart-rate-monitor"></i>
+                                <div>Monitoring Presensi </div>
+                            </a>
+                        </li>
+                    @endif
                     @if (auth()->user()->hasAnyPermission(['izinabsen.index']))
                         <li class="menu-item {{ request()->is(['izinabsen']) ? 'active' : '' }}">
                             <a href="{{ route('izinabsen.index') }}" class="menu-link">
@@ -263,6 +264,7 @@
                             </a>
                         </li>
                     @endif
+
                 </ul>
             </li>
         @endif

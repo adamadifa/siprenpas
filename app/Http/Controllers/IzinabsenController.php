@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Approveizinabsen;
 use App\Models\Izinabsen;
+use App\Models\Izinsakit;
 use App\Models\Jamkerja;
 use App\Models\Karyawan;
 use App\Models\Presensi;
@@ -102,6 +103,9 @@ class IzinabsenController extends Controller
                 ->whereBetween('dari', [$request->dari, $request->sampai])
                 ->orWhereBetween('sampai', [$request->dari, $request->sampai])->first();
 
+            $cek_izin_sakit = Izinsakit::where('npp', $npp)
+                ->whereBetween('dari', [$request->dari, $request->sampai])
+                ->orWhereBetween('sampai', [$request->dari, $request->sampai])->first();
             // $cek_izin_sakit = Izinsakit::where('nik', $nik)
             //     ->whereBetween('dari', [$request->dari, $request->sampai])
             //     ->orWhereBetween('sampai', [$request->dari, $request->sampai])->first();
@@ -112,12 +116,12 @@ class IzinabsenController extends Controller
 
             if ($cek_izin_absen) {
                 return Redirect::back()->with(messageError('Anda Sudah Mengajukan Izin Absen/Sakit/Cuti Pada Rentang Tanggal Tersebut!'));
+            } else if ($cek_izin_sakit) {
+                return Redirect::back()->with(messageError('Anda Sudah Mengajukan Izin Absen/Sakit/Cuti Absen Pada Rentang Tanggal Tersebut!'));
             }
-            // else if ($cek_izin_sakit) {
-            //     return Redirect::back()->with(messageError('Anda Sudah Mengajukan Izin Absen/Sakit/Cuti Absen Pada Rentang Tanggal Tersebut!'));
-            // } else if ($cek_izin_cuti) {
-            //     return Redirect::back()->with(messageError('Anda Sudah Mengajukan Izin Absen/Sakit/Cuti Absen Pada Rentang Tanggal Tersebut!'));
-            // }
+            // else if ($cek_izin_cuti) {
+            // //     return Redirect::back()->with(messageError('Anda Sudah Mengajukan Izin Absen/Sakit/Cuti Absen Pada Rentang Tanggal Tersebut!'));
+            // // }
             $lastizin = Izinabsen::select('kode_izin')
                 ->whereRaw('YEAR(dari)="' . date('Y', strtotime($request->dari)) . '"')
                 ->whereRaw('MONTH(dari)="' . date('m', strtotime($request->dari)) . '"')

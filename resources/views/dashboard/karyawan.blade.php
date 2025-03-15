@@ -348,60 +348,108 @@
                     <div class="col">
                         {{-- {{ $d->jam_out != null ? 'historibordergreen' : 'historiborderred' }} --}}
                         @foreach ($datapresensi as $d)
-                            @php
-                                $jam_in = date('Y-m-d H:i', strtotime($d->jam_in));
-                                $jam_masuk = date('Y-m-d H:i', strtotime($d->tanggal . ' ' . $d->jam_masuk));
-                            @endphp
-                            <div class="card historicard historibordergreen mb-1">
-                                <div class="historicontent">
-                                    <div class="historidetail1">
-                                        <div class="iconpresence">
-                                            <ion-icon name="finger-print-outline" style="font-size: 48px"></ion-icon>
-                                        </div>
-                                        <div class="datepresence">
-                                            <h4>{{ DateToIndo($d->tanggal) }}</h4>
-                                            <span class="timepresence">
-                                                @if ($d->jam_in != null)
-                                                    {{ date('H:i', strtotime($d->jam_in)) }}
-                                                @else
-                                                    <ion-icon name="hourglass-outline"></ion-icon> Belum Absen
-                                                @endif
-                                                -
-                                                @if ($d->jam_out != null)
-                                                    {{ date('H:i', strtotime($d->jam_out)) }}
-                                                @else
-                                                    <span class="text-danger">
+                            @if ($d->status == 'h')
+                                @php
+                                    $jam_in = date('Y-m-d H:i', strtotime($d->jam_in));
+                                    $jam_masuk = date('Y-m-d H:i', strtotime($d->tanggal . ' ' . $d->jam_masuk));
+                                @endphp
+                                <div class="card historicard historibordergreen mb-1">
+                                    <div class="historicontent">
+                                        <div class="historidetail1">
+                                            <div class="iconpresence">
+                                                <ion-icon name="finger-print-outline" style="font-size: 48px"></ion-icon>
+                                            </div>
+                                            <div class="datepresence">
+                                                <h4>{{ DateToIndo($d->tanggal) }}</h4>
+                                                <span class="timepresence">
+                                                    @if ($d->jam_in != null)
+                                                        {{ date('H:i', strtotime($d->jam_in)) }}
+                                                    @else
                                                         <ion-icon name="hourglass-outline"></ion-icon> Belum Absen
-                                                    </span>
+                                                    @endif
+                                                    -
+                                                    @if ($d->jam_out != null)
+                                                        {{ date('H:i', strtotime($d->jam_out)) }}
+                                                    @else
+                                                        <span class="text-danger">
+                                                            <ion-icon name="hourglass-outline"></ion-icon> Belum Absen
+                                                        </span>
+                                                    @endif
+                                                </span>
+                                                <br>
+                                                @if ($d->jam_in != null)
+                                                    @php
+                                                        $terlambat = hitungjamterlambat(
+                                                            date('H:i', strtotime($jam_in)),
+                                                            date('H:i', strtotime($jam_masuk)),
+                                                        );
+
+                                                    @endphp
+                                                    @if (!empty($terlambat))
+                                                        <span style="color:red">Terlambat {{ $terlambat['show'] }} </span>
+                                                    @else
+                                                        <span style="color:green">Tepat Waktu</span>
+                                                    @endif
                                                 @endif
-                                            </span>
-                                            <br>
-                                            @if ($d->jam_in != null)
-                                                @php
-                                                    $terlambat = hitungjamterlambat(
-                                                        date('H:i', strtotime($jam_in)),
-                                                        date('H:i', strtotime($jam_masuk)),
-                                                    );
-
-                                                @endphp
-                                                @if (!empty($terlambat))
-                                                    <span style="color:red">Terlambat {{ $terlambat['show'] }} </span>
-                                                @else
-                                                    <span style="color:green">Tepat Waktu</span>
-                                                @endif
-                                            @endif
 
 
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="historidetail2">
-                                        <h4>REGULER</h4>
-                                        <span class="timepresence">
-                                            {{ date('H:i', strtotime($d->jam_masuk)) }} - {{ date('H:i', strtotime($d->jam_pulang)) }}
-                                        </span>
+                                        <div class="historidetail2">
+                                            <h4>REGULER</h4>
+                                            <span class="timepresence">
+                                                {{ date('H:i', strtotime($d->jam_masuk)) }} - {{ date('H:i', strtotime($d->jam_pulang)) }}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            @elseif($d->status == 'i')
+                                <div class="card historicard historibordergreen mb-1">
+                                    <div class="historicontent">
+                                        <div class="historidetail1">
+                                            <div class="iconpresence">
+                                                <ion-icon name="document-text-outline" style="font-size: 48px; color: #1f7ee4"></ion-icon>
+                                            </div>
+                                            <div class="datepresence">
+                                                <h4>{{ DateToIndo($d->tanggal) }}</h4>
+                                                <h4 class="timepresence">
+                                                    Izin Absen
+                                                </h4>
+                                                <span>{{ $d->keterangan_izin }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="historidetail2">
+                                            <h4>REGULER</h4>
+                                            <span class="timepresence">
+                                                {{ date('H:i', strtotime($d->jam_masuk)) }} - {{ date('H:i', strtotime($d->jam_pulang)) }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @elseif($d->status == 's')
+                                <div class="card historicard historibordergreen mb-1">
+                                    <div class="historicontent">
+                                        <div class="historidetail1">
+                                            <div class="iconpresence">
+                                                <ion-icon name="bag-add-outline" style="font-size: 48px; color: #d4095a"></ion-icon>
+                                            </div>
+                                            <div class="datepresence">
+                                                <h4>{{ DateToIndo($d->tanggal) }}</h4>
+                                                <h4 class="timepresence">
+                                                    Izin Sakit
+                                                </h4>
+                                                <span>{{ $d->keterangan_sakit }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="historidetail2">
+                                            <h4>REGULER</h4>
+                                            <span class="timepresence">
+                                                {{ date('H:i', strtotime($d->jam_masuk)) }} - {{ date('H:i', strtotime($d->jam_pulang)) }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         @endforeach
                     </div>
                 </div>

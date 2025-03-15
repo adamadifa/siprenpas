@@ -53,43 +53,94 @@
             <div class="col">
                 <div class="transactions">
                     @foreach ($pengajuan_izin as $d)
-                        <a href="#" class="item">
-                            <div class="detail">
-                                <div class="avatar avatar-sm me-4"><span class="avatar-initial rounded-circle bg-success">
-                                        {{ textUpperCase($d->ket) }}
-                                    </span></div>
-                                <div>
-                                    <strong>
-                                        @php
-                                            if ($d->ket == 'i') {
-                                                $ket = 'Izin Absen';
-                                            } elseif ($d->ket == 's') {
-                                                $ket = 'Izin Sakit';
-                                            } elseif ($d->ket == 'c') {
-                                                $ket = 'Izin Cuti';
-                                            }
-                                        @endphp
-                                        {{ $ket }}
-                                    </strong>
-                                    <p>{{ DateToIndo($d->dari) }} - {{ DateToIndo($d->sampai) }}</p>
-                                    <p>{{ $d->keterangan }}</p>
-                                </div>
-                            </div>
-                            <div class="right">
-                                <div class="price">
-                                    @if ($d->status_izin == '0')
-                                        <span class="badge bg-warning">Pending</span>
-                                    @elseif ($d->status_izin == '1')
-                                        <span class="badge bg-success">Disetujui</span>
-                                    @elseif ($d->status_izin == '2')
-                                        <span class="badge bg-danger">Ditolak</span>
-                                    @endif
-                                </div>
-                                <div class="status">
+                        @php
+                            if ($d->ket == 'i') {
+                                $route = 'izinabsen.delete';
+                            } elseif ($d->ket == 's') {
+                                $route = 'izinsakit.delete';
+                            }
+                        @endphp
+                        @if ($d->status_izin == '0')
+                            <form method="POST" name="deleteform" class="deleteform me-1 mb-1" action="{{ route($route, Crypt::encrypt($d->kode)) }}">
+                                @csrf
+                                @method('DELETE')
+                                <a href="#" class="cancel-confirm  item">
+                                    <div class="detail">
+                                        <div class="avatar avatar-sm me-4"><span class="avatar-initial rounded-circle bg-success">
+                                                {{ textUpperCase($d->ket) }}
+                                            </span></div>
+                                        <div>
+                                            <strong>
+                                                @php
+                                                    if ($d->ket == 'i') {
+                                                        $ket = 'Izin Absen';
+                                                    } elseif ($d->ket == 's') {
+                                                        $ket = 'Izin Sakit';
+                                                    } elseif ($d->ket == 'c') {
+                                                        $ket = 'Izin Cuti';
+                                                    }
+                                                @endphp
+                                                {{ $ket }}
+                                            </strong>
+                                            <p>{{ DateToIndo($d->dari) }} - {{ DateToIndo($d->sampai) }}</p>
+                                            <p>{{ $d->keterangan }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <div class="price">
+                                            @if ($d->status_izin == '0')
+                                                <span class="badge bg-warning">Pending</span>
+                                            @elseif ($d->status_izin == '1')
+                                                <span class="badge bg-success">Disetujui</span>
+                                            @elseif ($d->status_izin == '2')
+                                                <span class="badge bg-danger">Ditolak</span>
+                                            @endif
+                                        </div>
+                                        <div class="status">
 
+                                        </div>
+                                    </div>
+                                </a>
+                            </form>
+                        @else
+                            <a href="#" class="item">
+                                <div class="detail">
+                                    <div class="avatar avatar-sm me-4"><span class="avatar-initial rounded-circle bg-success">
+                                            {{ textUpperCase($d->ket) }}
+                                        </span></div>
+                                    <div>
+                                        <strong>
+                                            @php
+                                                if ($d->ket == 'i') {
+                                                    $ket = 'Izin Absen';
+                                                } elseif ($d->ket == 's') {
+                                                    $ket = 'Izin Sakit';
+                                                } elseif ($d->ket == 'c') {
+                                                    $ket = 'Izin Cuti';
+                                                }
+                                            @endphp
+                                            {{ $ket }}
+                                        </strong>
+                                        <p>{{ DateToIndo($d->dari) }} - {{ DateToIndo($d->sampai) }}</p>
+                                        <p>{{ $d->keterangan }}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
+                                <div class="right">
+                                    <div class="price">
+                                        @if ($d->status_izin == '0')
+                                            <span class="badge bg-warning">Pending</span>
+                                        @elseif ($d->status_izin == '1')
+                                            <span class="badge bg-success">Disetujui</span>
+                                        @elseif ($d->status_izin == '2')
+                                            <span class="badge bg-danger">Ditolak</span>
+                                        @endif
+                                    </div>
+                                    <div class="status">
+
+                                    </div>
+                                </div>
+                            </a>
+                        @endif
                     @endforeach
                 </div>
             </div>
