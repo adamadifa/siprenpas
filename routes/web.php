@@ -18,6 +18,7 @@ use App\Http\Controllers\JenissimpananController;
 use App\Http\Controllers\JenistabunganController;
 use App\Http\Controllers\JobdeskController;
 use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KategoriibadahController;
 use App\Http\Controllers\KategoriledgerController;
 use App\Http\Controllers\KategoripemasukanController;
@@ -26,12 +27,14 @@ use App\Http\Controllers\KegiatanibadahController;
 use App\Http\Controllers\LaporankoperasiController;
 use App\Http\Controllers\LedgerController;
 use App\Http\Controllers\LedgertransaksiController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PembayaranpendidikanController;
 use App\Http\Controllers\PembiayaanController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\PengajuanizinController;
 use App\Http\Controllers\Permission_groupController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProgramkerjaController;
@@ -582,6 +585,34 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(PengajuanizinController::class)->group(function () {
         Route::get('/pengajuanizin', 'index')->name('pengajuanizin.index');
+    });
+
+
+    Route::controller(KategoriController::class)->group(function () {
+        Route::get('/kategori', 'index')->name('kategori.index')->can('kategori.index');
+        Route::get('/kategori/create', 'create')->name('kategori.create')->can('kategori.create');
+        Route::post('/kategori', 'store')->name('kategori.store')->can('kategori.create');
+        Route::get('/kategori/{id}/edit', 'edit')->name('kategori.edit')->can('kategori.edit');
+        Route::put('/kategori/{id}/update', 'update')->name('kategori.update')->can('kategori.edit');
+        Route::delete('/kategori/{id}/delete', 'destroy')->name('kategori.delete')->can('kategori.delete');
+    });
+
+    Route::controller(PostController::class)->group(function () {
+        Route::get('/post', 'index')->name('post.index')->can('post.index');
+        Route::get('/post/create', 'create')->name('post.create')->can('post.create');
+        Route::post('/post', 'store')->name('post.store')->can('post.create');
+        Route::get('/post/{id}/edit', 'edit')->name('post.edit')->can('post.edit');
+        Route::put('/post/{id}/update', 'update')->name('post.update')->can('post.edit');
+        Route::delete('/post/{id}/delete', 'destroy')->name('post.delete')->can('post.delete');
+    });
+
+    Route::controller(PageController::class)->group(function () {
+        Route::get('/page', 'index')->name('pages.index')->can('pages.index');
+        Route::get('/page/create', 'create')->name('pages.create')->can('pages.create');
+        Route::post('/page', 'store')->name('pages.store')->can('pages.create');
+        Route::get('/page/{id}/edit', 'edit')->name('pages.edit')->can('pages.edit');
+        Route::put('/page/{id}/update', 'update')->name('pages.update')->can('pages.edit');
+        Route::delete('/page/{id}/delete', 'destroy')->name('pages.delete')->can('pages.delete');
     });
 });
 

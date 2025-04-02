@@ -19,3 +19,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::apiResource('/presensi', App\Http\Controllers\Api\PresensiController::class);
+
+Route::prefix('public')->group(function () {
+
+    //index posts
+    Route::get('/posts/getposthomepage', [App\Http\Controllers\Api\Public\PostController::class, 'getposthomepage']);
+    Route::get('/posts/getlastposthomepage', [App\Http\Controllers\Api\Public\PostController::class, 'getlastposthomepage']);
+    //show posts
+    Route::get('/posts/{slug}', [App\Http\Controllers\Api\Public\PostController::class, 'show']);
+});

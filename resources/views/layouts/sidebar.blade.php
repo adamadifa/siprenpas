@@ -311,6 +311,40 @@
 
             </li>
         @endif
+
+        @if (auth()->user()->hasAnyPermission(['kategori.index', 'post.index' . 'pages.index']))
+            <li class="menu-item {{ request()->is(['kategori', 'post', 'pages']) ? 'open' : '' }}">
+
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons ti ti-globe"></i>
+                    <div>Website</div>
+                </a>
+                <ul class="menu-sub">
+                    @can('kategori.index')
+                        <li class="menu-item {{ request()->is(['kategori', 'kategori/*']) ? 'active' : '' }}">
+                            <a href="{{ route('kategori.index') }}" class="menu-link">
+                                <div>Kategori</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('post.index')
+                        <li class="menu-item {{ request()->is(['post', 'post/*']) ? 'active' : '' }}">
+                            <a href="{{ route('post.index') }}" class="menu-link">
+                                <div>Post</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('pages.index')
+                        <li class="menu-item {{ request()->is(['pages', 'pages/*']) ? 'active' : '' }}">
+                            <a href="{{ route('pages.index') }}" class="menu-link">
+                                <div>Pages</div>
+                            </a>
+                        </li>
+                    @endcan
+                </ul>
+
+            </li>
+        @endif
         <!-- KONFIGURASI-->
         <li class="menu-item {{ request()->is(['jamkerja', 'jamkerja/*', 'tahunajaran', 'biaya']) ? 'open' : '' }}">
             @if (auth()->user()->hasAnyPermission(['jamkerja.index']))
