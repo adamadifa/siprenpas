@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\public;
+namespace App\Http\Controllers\Api\public;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
