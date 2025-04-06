@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -55,5 +56,16 @@ class PostController extends Controller
 
         //return failed with Api Resource
         return Redirect::back()->with(messageError('Gagal Menambahkan Data Post'));
+    }
+
+    public function destroy($id)
+    {
+        $id = Crypt::decrypt($id);
+        try {
+            Post::where('id', $id)->delete();
+            return Redirect::back()->with(messageSuccess('Data Berhasil Dihapus'));
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError($e->getMessage()));
+        }
     }
 }
