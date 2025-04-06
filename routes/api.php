@@ -23,8 +23,8 @@ Route::apiResource('/presensi', App\Http\Controllers\Api\PresensiController::cla
 Route::prefix('public')->group(function () {
 
     //index posts
-    Route::get('/posts/getposthomepage', [App\Http\Controllers\Api\Public\PostController::class, 'getposthomepage']);
-    Route::get('/posts/getlastposthomepage', [App\Http\Controllers\Api\Public\PostController::class, 'getlastposthomepage']);
+    Route::get('/posts/getposthomepage', [App\Http\Controllers\Api\PostController::class, 'getposthomepage']);
+    Route::get('/posts/getlastposthomepage', [App\Http\Controllers\Api\PostController::class, 'getlastposthomepage']);
     //show posts
-    Route::get('/posts/{slug}', [App\Http\Controllers\Api\Public\PostController::class, 'show']);
+    Route::get('/posts/{slug}', [App\Http\Controllers\Api\PostController::class, 'show']);
 });
