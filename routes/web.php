@@ -31,6 +31,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PembayaranpendidikanController;
 use App\Http\Controllers\PembiayaanController;
 use App\Http\Controllers\PendaftaranController;
+use App\Http\Controllers\PendaftaranonlineController;
 use App\Http\Controllers\PengajuanizinController;
 use App\Http\Controllers\Permission_groupController;
 use App\Http\Controllers\PermissionController;
@@ -616,7 +617,9 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-
+Route::controller(PendaftaranonlineController::class)->group(function () {
+    Route::get('/pendaftaranonline/register', 'register')->name('pendaftaranonline.register');
+});
 Route::get('/createrolepermission', function () {
 
     try {
