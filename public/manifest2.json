@@ -5,7 +5,7 @@
     "display": "standalone",
     "theme_color": "#126668",
     "background_color": "#126668",
-    "orientation": "portrait",
+    "orientation": "any",
     "status_bar": "black",
     "splash": {
         "640x1136": "/images/icons/splash-640x1136.png",
