@@ -458,7 +458,7 @@ class PresensiController extends Controller
     public function updatefrommachine(Request $request, $pin, $status_scan)
     {
         $karyawan       = Karyawan::where('pin', $pin)->first();
-
+        dd($pin);
         if ($karyawan == null) {
             return response()->json([
                 'status' => false,
