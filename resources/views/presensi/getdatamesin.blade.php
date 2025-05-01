@@ -23,7 +23,9 @@
                                 <form method="POST" name="updatemasuk" class="updatemasuk me-1"
                                     action="{{ route('presensi.updatefrommachine', [Crypt::encrypt($d->pin), 0]) }}">
                                     @csrf
-                                    <input type="hidden" name="scan_date" value="{{ date('Y-m-d H:i:s', strtotime($d->scan_date)) }}">
+                                    <input type="hidden" name="scan_date"
+                                        value="{{ date('Y-m-d H:i:s', strtotime($d->scan_date)) }}">
+
                                     <button href="#" class="btn btn-success btn-sm me-1">
                                         <i class="ti ti-login me-1"></i> Masuk
                                     </button>
@@ -31,7 +33,8 @@
                                 <form method="POST" name="updatepulang" class="updatepulang"
                                     action="{{ route('presensi.updatefrommachine', [Crypt::encrypt($d->pin), 1]) }}">
                                     @csrf
-                                    <input type="hidden" name="scan_date" value="{{ date('Y-m-d H:i:s', strtotime($d->scan_date)) }}">
+                                    <input type="hidden" name="scan_date"
+                                        value="{{ date('Y-m-d H:i:s', strtotime($d->scan_date)) }}">
                                     <button href="#" class="btn btn-danger btn-sm me-1">
                                         <i class="ti ti-logout me-1"></i> Pulang
                                     </button>
