@@ -557,9 +557,9 @@ class PresensiController extends Controller
                     }
 
 
-                    return response()->json(['status' => true, 'message' => 'Berhasil Absen Masuk', 'notifikasi' => 'notifikasi_absenmasuk'], 200);
+                    return Redirect::back()->with(messageSuccess('Berhasil Absen Masuk'));
                 } catch (\Exception $e) {
-                    return response()->json(['status' => false, 'message' => $e->getMessage()], 400);
+                    return Redirect::back()->with(messageError($e->getMessage()));
                 }
             }
         } else {
@@ -580,9 +580,9 @@ class PresensiController extends Controller
                         'status' => 'h'
                     ]);
                 }
-                return response()->json(['status' => true, 'message' => 'Berhasil Absen Pulang', 'notifikasi' => 'notifikasi_absenpulang'], 200);
+                return Redirect::back()->with(messageSuccess('Berhasil Absen Pulang'));
             } catch (\Exception $e) {
-                return response()->json(['status' => false, 'message' => $e->getMessage()], 400);
+                return Redirect::back()->with(messageError($e->getMessage()));
             }
         }
     }
