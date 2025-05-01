@@ -530,7 +530,7 @@ class PresensiController extends Controller
         $jam_masuk = $tanggal_presensi . " " . date('H:i', strtotime($jam_kerja->jam_masuk));
 
         $presensi_hariini = Presensi::where('npp', $karyawan->npp)
-            ->where('tanggal', $tanggal_presensi)
+            ->where('tanggald', $tanggal_presensi)
             ->first();
 
         if (in_array($status_scan, [0, 2, 4, 6, 8])) {
