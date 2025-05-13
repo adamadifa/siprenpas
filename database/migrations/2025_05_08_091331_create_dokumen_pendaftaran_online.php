@@ -11,18 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pendaftaran_online_bayar', function (Blueprint $table) {
-            $table->id('id');
+        Schema::create('pendaftaran_online_dokumen', function (Blueprint $table) {
             $table->char('no_register', 10);
-            $table->date('tanggal_pembayaran');
-            $table->decimal('jumlah_pembayaran', 12, 2);
-            $table->enum('metode_pembayaran', ['transfer', 'tunai']);
-            $table->string('bukti_pembayaran')->nullable();
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-            $table->text('keterangan')->nullable();
+            $table->char('kode_dokumen', 3);
+            $table->string('nama_file');
             $table->timestamps();
 
-            // Foreign key ke tabel pendaftaran
             $table->foreign('no_register')
                 ->references('no_register')
                 ->on('pendaftaran_online')
@@ -36,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pendaftaran_online_bayar');
+        Schema::dropIfExists('pendaftaran_online_dokumen');
     }
 };

@@ -137,7 +137,8 @@
                         </li>
                     @endcan
                     @can('jenispembiayaan.index')
-                        <li class="menu-item {{ request()->is(['jenispembiayaan', 'jenispembiayaan/*']) ? 'active' : '' }}">
+                        <li
+                            class="menu-item {{ request()->is(['jenispembiayaan', 'jenispembiayaan/*']) ? 'active' : '' }}">
                             <a href="{{ route('jenispembiayaan.index') }}" class="menu-link">
                                 <div>Jenis Pembiayaan</div>
                             </a>
@@ -202,7 +203,8 @@
                             </a>
                         </li>
                     @endif
-                    <li class="menu-item {{ request()->is(['laporankoperasi', 'laporankoperasi/*']) ? 'active' : '' }}">
+                    <li
+                        class="menu-item {{ request()->is(['laporankoperasi', 'laporankoperasi/*']) ? 'active' : '' }}">
                         <a href="{{ route('laporankoperasi.index') }}" class="menu-link">
                             <i class="menu-icon tf-icons ti ti-file-description"></i>
                             <div>Laporan</div>
@@ -269,7 +271,8 @@
             </li>
         @endif
         @if (auth()->user()->hasAnyPermission(['realkegiatan.index', 'agendakegiatan.index', 'programkerja.index', 'jobdesk.index']))
-            <li class="menu-item {{ request()->is(['realisasikegiatan', 'agendakegiatan', 'programkerja', 'jobdesk']) ? 'open' : '' }}">
+            <li
+                class="menu-item {{ request()->is(['realisasikegiatan', 'agendakegiatan', 'programkerja', 'jobdesk']) ? 'open' : '' }}">
 
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-activity"></i>
@@ -402,7 +405,8 @@
                             <div>Permission</div>
                         </a>
                     </li>
-                    <li class="menu-item  {{ request()->is(['permissiongroups', 'permissiongroups/*']) ? 'active' : '' }}">
+                    <li
+                        class="menu-item  {{ request()->is(['permissiongroups', 'permissiongroups/*']) ? 'active' : '' }}">
                         <a href="{{ route('permissiongroups.index') }}" class="menu-link">
                             <div>Group Permission</div>
                         </a>
