@@ -366,6 +366,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/pendaftaran/getsiswa', 'getsiswa')->name('pendaftaran.getsiswa');
     });
 
+
+    Route::controller(PendaftaranonlineController::class)->group(function () {
+        Route::get('/pendaftaranonline', 'index')->name('pendaftaranonline.index')->can('pendaftaranonline.index');
+        Route::get('/pendaftaranonline/{no_register}/show', 'show')->name('pendaftaranonline.show')->can('pendaftaranonline.show');
+        Route::get('/pendaftaranonline/{no_register}/edit', 'edit')->name('pendaftaranonline.edit')->can('pendaftaranonline.edit');
+        Route::post('/pendaftaranonline/update', 'update')->name('pendaftaranonline.update')->can('pendaftaranonline.edit');
+        Route::delete('/pendaftaranonline/{no_register}/delete', 'destroy')->name('pendaftaranonline.delete')->can('pendaftaranonline.delete');
+        Route::get('pendaftaranonline/cetak/{no_register}', 'cetak')->name('pendaftaranonline.cetak');
+    });
+
     Route::controller(PembayaranpendidikanController::class)->group(function () {
         Route::get('/pembayaranpendidikan', 'index')->name('pembayaranpendidikan.index')->can('pembayaranpdd.index');
         Route::get('/pembayaranpendidikan/{no_pendaftaran}/show', 'show')->name('pembayaranpendidikan.show')->can('pembayaranpdd.show');
@@ -617,9 +627,7 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-Route::controller(PendaftaranonlineController::class)->group(function () {
-    Route::get('/pendaftaranonline/register', 'register')->name('pendaftaranonline.register');
-});
+
 Route::get('/createrolepermission', function () {
 
     try {

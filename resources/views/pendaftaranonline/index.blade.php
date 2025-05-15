@@ -1,23 +1,18 @@
 @extends('layouts.app')
-@section('titlepage', 'Pendaftaran')
+@section('titlepage', 'Pendaftaran Online')
 
 @section('content')
 @section('navigasi')
-    <span>Pendaftaran</span>
+    <span>Pendaftaran Online</span>
 @endsection
 <div class="row">
     <div class="col-lg-12 col-sm-12 col-xs-12">
         <div class="card">
-            <div class="card-header">
-                @can('pendaftaran.create')
-                    <a href="#" class="btn btn-primary" id="btnCreate"><i class="fa fa-plus me-2"></i> Tambah
-                        Pendaftaran</a>
-                @endcan
-            </div>
+
             <div class="card-body">
                 <div class="row">
                     <div class="col-12">
-                        <form action="{{ route('pendaftaran.index') }}">
+                        <form action="{{ route('pendaftaranonline.index') }}">
                             <div class="row">
                                 <div class="col-lg-4 col-sm-12 col-md-12">
                                     <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}"
@@ -62,14 +57,14 @@
                                 <thead class="table-dark">
                                     <tr>
                                         <th>No.</th>
-                                        <th>No. Pendaftaran</th>
-                                        <th>ID Siswa</th>
-                                        <th>NISN</th>
-                                        <th>NIS</th>
+                                        <th>No. Register</th>
+                                        <th>Tanggal</th>
                                         <th>Nama Lengkap</th>
                                         <th>Tanggal Lahir</th>
                                         <th>Jenis Kelamin</th>
                                         <th>Unit</th>
+                                        <th>TA</th>
+                                        <th>Status</th>
                                         <th>#</th>
                                     </tr>
                                 </thead>
@@ -77,34 +72,44 @@
                                     @foreach ($pendaftaran as $d)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $d->no_pendaftaran }}</td>
-                                            <td>{{ $d->id_siswa }}</td>
-                                            <td>{{ $d->nisn }}</td>
-                                            <td>{{ $d->nis }}</td>
+                                            <td>{{ $d->no_register }}</td>
+                                            <td>{{ date('d-m-Y', strtotime($d->tanggal_register)) }}</td>
                                             <td>{{ $d->nama_lengkap }}</td>
                                             <td>{{ !empty($d->tanggal_lahir) ? DateToIndo($d->tanggal_lahir) : '' }}
                                             </td>
                                             <td>{{ !empty($d->jenis_kelamin) ? $jenis_kelamin[$d->jenis_kelamin] : '' }}
                                             </td>
                                             <td>{{ $d->nama_unit }}</td>
+                                            <td>{{ $d->tahun_ajaran }}</td>
+                                            <td>
+                                                @if (!empty($d->id_bayar))
+                                                    @if ($d->status_bayar == 1)
+                                                        <span class="badge bg-success">Sudah Bayar</span>
+                                                    @else
+                                                        <span class="badge bg-warning">Sudah Konfirmasi</span>
+                                                    @endif
+                                                @else
+                                                    <span class="badge bg-danger">Belum Bayar</span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 <div class="d-flex">
-                                                    @can('pendaftaran.edit')
+                                                    @can('pendaftaranonline.edit')
                                                         <a href="#"
-                                                            no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}"
+                                                            no_register="{{ Crypt::encrypt($d->no_register) }}"
                                                             class="btnEdit me-1">
                                                             <i class="ti ti-edit text-success"></i>
                                                         </a>
                                                     @endcan
-                                                    @can('pendaftaran.show')
+                                                    @can('pendaftaranonline.show')
                                                         <a href="#" class="me-2 btnShow"
-                                                            no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}">
+                                                            no_register="{{ Crypt::encrypt($d->no_register) }}">
                                                             <i class="ti ti-file-description text-info"></i>
                                                         </a>
                                                     @endcan
-                                                    @can('pendaftaran.delete')
+                                                    @can('pendaftaranonline.delete')
                                                         <form method="POST" name="deleteform" class="deleteform"
-                                                            action="/pendaftaran/{{ Crypt::encrypt($d->no_pendaftaran) }}/delete">
+                                                            action="/pendaftaranonline/{{ Crypt::encrypt($d->no_register) }}/delete">
                                                             @csrf
                                                             @method('DELETE')
                                                             <a href="#" class="delete-confirm me-1">
@@ -130,32 +135,7 @@
     </div>
 </div>
 <x-modal-form id="modal" size="modal-lg" show="loadmodal" title="" />
-<x-modal-form id="modalSekolah" size="" show="loadmodal" title="" />
-<div class="modal fade" id="modalSiswa" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
-    aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="myModalLabel18">Data Siswa</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <table class="table table-bordered" id="tabelsiswa">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>ID Siswa</th>
-                            <th>Nama Lengkap</th>
-                            <th>Jenis Kelamin</th>
-                            <th>Tahun Masuk</th>
-                            <th>#</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+
 @endsection
 @push('myscript')
 <script>
@@ -175,60 +155,24 @@
             <div class="sk-wave-rect"></div>
             </div>`;
 
-        $("#btnCreate").click(function(e) {
-            e.preventDefault();
-            const tahun_ajaran = "{{ $tahun_ajaran->tahun_ajaran }}";
-            $("#modal").modal("show");
-            $("#modal").find("#loadmodal").html(loading);
-            $("#modal").find(".modal-title").text("Pendaftaran Tahun Ajaran " + tahun_ajaran);
-            $("#loadmodal").load(`/pendaftaran/create`);
-        });
-
         $(".btnEdit").click(function(e) {
             e.preventDefault();
-            const no_pendaftaran = $(this).attr("no_pendaftaran");
+            const no_register = $(this).attr("no_register");
             $("#modal").modal("show");
             $("#modal").find("#loadmodal").html(loading);
             $("#modal").find(".modal-title").text("Edit Pendaftaran ");
-            $("#loadmodal").load(`/pendaftaran/${no_pendaftaran}/edit`);
+            $("#loadmodal").load(`/pendaftaranonline/${no_register}/edit`);
         });
 
 
 
         $(".btnShow").click(function(e) {
             e.preventDefault();
-            const no_pendaftaran = $(this).attr("no_pendaftaran");
+            const no_register = $(this).attr("no_register");
             $("#modal").modal("show");
             $("#modal").find("#loadmodal").html(loading);
             $("#modal").find(".modal-title").text("");
-            $("#loadmodal").load(`/pendaftaran/${no_pendaftaran}/show`);
-        });
-
-        $('#tabelsiswa').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: '{{ url()->current() }}', // memanggil route yang menampilkan data json
-            columns: [{ // mengambil & menampilkan kolom sesuai tabel database
-                    data: 'id_siswa',
-                    name: 'id_siswa'
-                },
-                {
-                    data: 'nama_lengkap',
-                    name: 'nama_lengkap'
-                },
-                {
-                    data: 'jenis_kelamin',
-                    name: 'jenis_kelamin'
-                },
-                {
-                    data: 'tahun_masuk',
-                    name: 'tahun_masuk'
-                },
-                {
-                    data: 'action',
-                    name: 'action'
-                }
-            ]
+            $("#loadmodal").load(`/pendaftaranonline/${no_register}/show`);
         });
     });
 </script>

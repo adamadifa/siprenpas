@@ -1,5 +1,5 @@
 <form action="{{ route('pendaftaran.store') }}" aria-autocomplete="false" id="formPendaftaran" method="POST">
-    <input type="text" id="id_siswa" name="id_siswa">
+    <input type="hidden" id="id_siswa" name="id_siswa">
     @csrf
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12">
@@ -9,9 +9,10 @@
                 </div>
             </div>
             <x-input-with-icon icon="ti ti-barcode" label="Auto" name="no_pendaftaran" />
-            <x-input-with-icon icon="ti ti-calendar" label="Tanggal Pendaftaran" name="tanggal_pendaftaran" datepicker="flatpickr-date" />
-            <x-select label="Jenjang / Tingkat" name="kode_unit" :data="$unit" key="kode_unit" textShow="nama_unit" select2="select2Kodeunit"
-                upperCase="true" />
+            <x-input-with-icon icon="ti ti-calendar" label="Tanggal Pendaftaran" name="tanggal_pendaftaran"
+                datepicker="flatpickr-date" />
+            <x-select label="Jenjang / Tingkat" name="kode_unit" :data="$unit" key="kode_unit" textShow="nama_unit"
+                select2="select2Kodeunit" upperCase="true" />
         </div>
     </div>
     <div class="row">
@@ -28,7 +29,8 @@
                 </div>
                 <div class="col-lg-2 col-sm-12 col-md-12">
                     <div class="form-group mb-3">
-                        <a href="#" class="btn btn-primary w-100 mt-4" id="btnCarisiswa"><i class="ti ti-search"></i></a>
+                        <a href="#" class="btn btn-primary w-100 mt-4" id="btnCarisiswa"><i
+                                class="ti ti-search"></i></a>
                     </div>
                 </div>
             </div>
@@ -42,7 +44,8 @@
                 </select>
             </div>
             <x-input-with-icon-label icon="ti ti-map-pin" label="Tempat Lahir" name="tempat_lahir" />
-            <x-input-with-icon-label icon="ti ti-calendar" label="Tanggal Lahir" name="tanggal_lahir" datepicker="flatpickr-date" />
+            <x-input-with-icon-label icon="ti ti-calendar" label="Tanggal Lahir" name="tanggal_lahir"
+                datepicker="flatpickr-date" />
             <div class="row">
                 <div class="col-lg-6 col-md-12 col-sm-12">
                     <x-input-with-icon-label icon="ti ti-user" label="Anak Ke" name="anak_ke" />
@@ -52,8 +55,8 @@
                 </div>
             </div>
             <x-textarea-label name="alamat" label="Alamat" />
-            <x-select-label label="Provinsi" name="id_province" :data="$provinsi" key="id" textShow="name" select2="select2Provinsi"
-                upperCase="true" />
+            <x-select-label label="Provinsi" name="id_province" :data="$provinsi" key="id" textShow="name"
+                select2="select2Provinsi" upperCase="true" />
             <div class="form-group mb-3">
                 <label style="font-weight: 600" class="form-label">Kabupaten / Kota</label>
                 <select name="id_regency" id="id_regency" class="select2Regency form-select">
@@ -88,14 +91,16 @@
             <div class="row">
                 <div class="col-lg-10 col-sm-12 col-md-12">
                     <div class="form-group mb-3">
-                        <select name="kode_asal_sekolah" class="form-select select2Kodeasalsekolah" id="kode_asal_sekolah">
+                        <select name="kode_asal_sekolah" class="form-select select2Kodeasalsekolah"
+                            id="kode_asal_sekolah">
                             <option value="">Asal Sekolah</option>
                         </select>
                     </div>
                 </div>
                 <div class="col-lg-2 col-sm-12 col-md-12">
                     <div class="form-group mb-3">
-                        <a href="#" class="btn btn-primary w-100" id="btnTambahsekolah"><i class="ti ti-plus"></i></a>
+                        <a href="#" class="btn btn-primary w-100" id="btnTambahsekolah"><i
+                                class="ti ti-plus"></i></a>
                     </div>
                 </div>
             </div>
@@ -128,8 +133,9 @@
             <x-input-with-icon-label icon="ti ti-building-skyscraper" label="Pekerjaan Ibu" name="pekerjaan_ibu" />
 
             <x-input-with-icon-label icon="ti ti-phone" label="No. HP Orangtua" name="no_hp_orang_tua" />
-            <x-select-label label="Penghasilan Orantua" name="kode_penghasilan_ortu" :data="$penghasilan_ortu" key="kode_penghasilan_ortu"
-                textShow="penghasilan" select2="select2Kodepenghasilanortu" upperCase="true" />
+            <x-select-label label="Penghasilan Orantua" name="kode_penghasilan_ortu" :data="$penghasilan_ortu"
+                key="kode_penghasilan_ortu" textShow="penghasilan" select2="select2Kodepenghasilanortu"
+                upperCase="true" />
             <div class="form-group">
                 <button class="btn btn-primary w-100" type="submit">
                     <ion-icon name="send-outline" class="me-1"></ion-icon>
@@ -301,9 +307,12 @@
                     form.find("#jumlah_saudara").val(response.jumlah_saudara);
                     form.find("#alamat").val(response.alamat);
                     form.find("#id_province").val(response.id_province).trigger('change');
-                    getRegency(id_province = response.id_province, id_regency = response.id_regency);
-                    getDistrict(id_regency = response.id_regency, id_district = response.id_district);
-                    getVillage(id_district = response.id_district, id_village = response.id_village);
+                    getRegency(id_province = response.id_province, id_regency = response
+                    .id_regency);
+                    getDistrict(id_regency = response.id_regency, id_district = response
+                        .id_district);
+                    getVillage(id_district = response.id_district, id_village = response
+                    .id_village);
                     form.find("#kode_pos").val(response.kode_pos);
                     form.find("#no_kk").val(response.no_kk);
                     form.find("#nik_ayah").val(response.nik_ayah);

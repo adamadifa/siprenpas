@@ -1,4 +1,54 @@
 <!-- Menu -->
+<style>
+    /* Menu utama (parent) */
+    .menu-inner>.menu-item>.menu-link:hover,
+    .menu-inner>.menu-item.active>.menu-link {
+        background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%) !important;
+        color: white !important;
+    }
+
+    .menu-inner>.menu-item>.menu-link:hover i,
+    .menu-inner>.menu-item.active>.menu-link i {
+        color: white !important;
+    }
+
+    /* Tambahan: Parent menu (seperti Data Master) jadi orange saat open/active */
+    .menu-item.open>.menu-link,
+    .menu-item.active>.menu-link.menu-toggle {
+        background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%) !important;
+        color: #fff !important;
+        font-weight: 600;
+        border-radius: 4px;
+        padding: 0.625rem 0.625rem !important;
+        margin: 0.5rem 0.5rem 0.5rem 0.5rem !important;
+        box-shadow: none !important;
+        font-size: 1rem !important;
+        line-height: 1.5 !important;
+        transition: background 0.2s, color 0.2s;
+    }
+
+    .menu-item.open>.menu-link i,
+    .menu-item.active>.menu-link.menu-toggle i {
+        color: #fff !important;
+    }
+
+    /* Submenu (child) */
+    .menu-sub .menu-item>.menu-link {
+        background: transparent !important;
+        color: inherit !important;
+    }
+
+    .menu-sub .menu-item>.menu-link:hover,
+    .menu-sub .menu-item.active>.menu-link {
+        background: rgba(255, 140, 0, 0.1) !important;
+        color: #ff8c00 !important;
+    }
+
+    .menu-sub .menu-item>.menu-link:hover i,
+    .menu-sub .menu-item.active>.menu-link i {
+        color: #ff8c00 !important;
+    }
+</style>
 
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
@@ -14,8 +64,32 @@
             <i class="ti ti-x d-block d-xl-none ti-sm align-middle"></i>
         </a>
     </div>
+    <!-- User Info Section -->
+    <div class="sidebar-user-info"
+        style="padding: 1.2rem 1rem 0.5rem 1rem; display: flex; align-items: center; gap: 0.8rem;">
+        @php
+            $user = auth()->user();
+            $avatar = $user->avatar ?? null;
+            $name = $user->name ?? ($user->username ?? 'User');
+            $initial = strtoupper(substr($name, 0, 1));
+        @endphp
+        @if ($avatar)
+            <img src="{{ asset('storage/avatars/' . $avatar) }}" alt="Avatar"
+                style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #ff8c00;">
+        @else
+            <div
+                style="width:44px;height:44px;border-radius:50%;background:#ff8c00;color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:600;border:2px solid #ff8c00;">
+                {{ $initial }}
+            </div>
+        @endif
+        <div style="flex:1;">
+            <div
+                style="font-weight:600;font-size:1.1rem;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                {{ $name }}</div>
+            <div style="font-size:0.85rem;color:#888;">{{ $user->email ?? '' }}</div>
+        </div>
+    </div>
 
-    <div class="menu-inner-shadow"></div>
     <ul class="menu-inner py-1">
         <li class="menu-item {{ request()->is(['dashboard', 'dashboard/*']) ? 'active' : '' }}">
             <a href="{{ route('dashboard.index') }}" class="menu-link">
@@ -162,11 +236,24 @@
             @endif
         </li>
         @if (auth()->user()->hasAnyPermission(['pendaftaran.index']))
-            <li class="menu-item {{ request()->is(['pendaftaran']) ? 'active' : '' }}">
-                <a href="{{ route('pendaftaran.index') }}" class="menu-link">
+            <li
+                class="menu-item {{ request()->is(['pendaftaran', 'pendaftaran/*', 'pendaftaranonline', 'pendaftaranonline/*']) ? 'open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-file-description"></i>
                     <div>Pendaftaran</div>
                 </a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ request()->is(['pendaftaran']) ? 'active' : '' }}">
+                        <a href="{{ route('pendaftaran.index') }}" class="menu-link">
+                            <div>Pendaftaran </div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ request()->is(['pendaftaranonline']) ? 'active' : '' }}">
+                        <a href="{{ route('pendaftaranonline.index') }}" class="menu-link">
+                            <div>Pendaftaran Online</div>
+                        </a>
+                    </li>
+                </ul>
             </li>
         @endif
 

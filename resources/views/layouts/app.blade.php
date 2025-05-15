@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 
-<html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed layout-wide" dir="ltr" data-theme="theme-default"
-    data-assets-path="{{ asset('/assets/') }}" data-template="vertical-menu-template-no-customizer">
+<html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed layout-wide" dir="ltr"
+    data-theme="theme-default" data-assets-path="{{ asset('/assets/') }}"
+    data-template="vertical-menu-template-no-customizer">
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
     <title>@yield('titlepage')</title>
 
@@ -16,11 +18,82 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('/assets/img/favicon/favicon.ico') }}" />
 
+    <!-- Google Fonts: Inter (Tailwind Default) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     @include('layouts.fonts')
 
     @include('layouts.icons')
 
     @include('layouts.styles')
+
+    <!-- Custom CSS untuk gradasi sidebar dan font Tailwind -->
+    <style>
+        html,
+        body {
+            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji' !important;
+        }
+
+        .layout-menu {
+            background: linear-gradient(135deg, #1B5E20 0%, #0A3D0A 100%) !important;
+            position: fixed !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+        }
+
+        /* Styling untuk scrollbar sidebar */
+        .layout-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .layout-menu::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .layout-menu::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .layout-menu::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .menu-inner {
+            background: transparent !important;
+        }
+
+        .menu-item .menu-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .menu-item.active .menu-link {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            border-radius: 4px !important;
+            margin: 0 8px !important;
+        }
+
+        .menu-item:hover .menu-link {
+            background: #FF9800 !important;
+            color: #ffffff !important;
+            border-radius: 4px !important;
+            margin: 0 8px !important;
+        }
+
+        .menu-sub {
+            background: rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .app-brand {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
+        .app-brand-text {
+            color: #ffffff !important;
+        }
+    </style>
 
     <!-- Helpers -->
     <script src="{{ asset('/assets/vendor/js/helpers.js') }}"></script>
@@ -56,7 +129,8 @@
                     <div class="content-wrapper">
                         <!-- Content -->
 
-                        <div class="container-fluid flex-grow-1 @if (!$agent->isMobile()) container-p-y @endif ">
+                        <div
+                            class="container-fluid flex-grow-1 @if (!$agent->isMobile()) container-p-y @endif ">
 
 
                             <h4 class="py-3 mb-4">@yield('navigasi')</h4>

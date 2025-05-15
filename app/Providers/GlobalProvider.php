@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Izinabsen;
 use App\Models\Izinsakit;
+use App\Models\Tahunajaran;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
@@ -37,12 +38,17 @@ class GlobalProvider extends ServiceProvider
             $data_izin = $data_izinabsen->unionAll($data_izinsakit)->get();
             $notifikasi_ajuan_absen = $notifikasi_izinabsen  + $notifikasi_izinsakit;
             $listbulan = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            $tahunajaran = Tahunajaran::where('status', 1)->first();
+            $kode_ta = $tahunajaran->kode_ta;
+            $ta_aktif = $tahunajaran->tahun_ajaran;
             $sharedData = [
                 'notifikasi_izinabsen' => $notifikasi_izinabsen,
                 'notifikasi_izinsakit' => $notifikasi_izinsakit,
                 'notifikasi_ajuan_absen' => $notifikasi_ajuan_absen,
                 'data_izin' => $data_izin,
                 'listbulan' => $listbulan,
+                'kode_ta' => $kode_ta,
+                'ta_aktif' => $ta_aktif
             ];
             View::share($sharedData);
         });
