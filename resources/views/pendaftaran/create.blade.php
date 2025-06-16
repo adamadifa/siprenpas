@@ -270,9 +270,23 @@
             });
         }
 
-        // getRegency();
-        // getDistrict();
-        // getVillage();
+        // AUTOLOAD DATA USER (EDIT FORM)
+        @if(isset($user))
+            // Inisialisasi Provinsi
+            form.find('#id_province').val('{{ $user->id_province }}').trigger('change');
+            // Setelah provinsi di-set, load kabupaten/kota
+            getRegency('{{ $user->id_province }}', '{{ $user->id_regency }}');
+            // Setelah kabupaten/kota di-set, load kecamatan
+            getDistrict('{{ $user->id_regency }}', '{{ $user->id_district }}');
+            // Setelah kecamatan di-set, load desa/kelurahan
+            getVillage('{{ $user->id_district }}', '{{ $user->id_village }}');
+            // Set value select2 (jika perlu)
+            setTimeout(function() {
+                form.find('#id_regency').val('{{ $user->id_regency }}').trigger('change');
+                form.find('#id_district').val('{{ $user->id_district }}').trigger('change');
+                form.find('#id_village').val('{{ $user->id_village }}').trigger('change');
+            }, 1000);
+        @endif
 
         $("#id_province").change(function() {
             getRegency(id_province = $(this).val(), id_regency = "");

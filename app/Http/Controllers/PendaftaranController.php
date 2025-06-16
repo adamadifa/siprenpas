@@ -23,6 +23,9 @@ use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Yajra\DataTables\Facades\DataTables;
 
+
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+
 class PendaftaranController extends Controller
 {
     public function index(Request $request)
@@ -39,17 +42,31 @@ class PendaftaranController extends Controller
                 ->rawColumns(['action'])
                 ->make();
         }
-        $data['tahun_ajaran'] = Tahunajaran::where('status', 1)->first();
+        $tahun_ajaran = Tahunajaran::where('status', 1)->first();
+        $kode_ta = $tahun_ajaran->kode_ta;
 
         $p = new Pendaftaran();
         $pendaftaran = $p->getPendaftaran(request: $request)->paginate(15);
         $pendaftaran->appends($request->all());
         $data['pendaftaran'] = $pendaftaran;
 
+
+        $rekap_unit = DB::table('unit')
+        ->leftJoin('pendaftaran', function($join) use ($kode_ta,$request) {
+            $ta_aktif = !empty($request->kode_ta) ? $request->kode_ta : $kode_ta;
+            $join->on('unit.kode_unit', '=', 'pendaftaran.kode_unit')
+                 ->where('pendaftaran.kode_ta', '=', $ta_aktif);
+        })
+        ->select('unit.nama_unit', 'unit.kode_unit', DB::raw('count(pendaftaran.no_pendaftaran) as jumlah'))
+        ->groupBy('unit.nama_unit', 'unit.kode_unit')
+        ->orderBy('unit.nama_unit')
+        ->get();
+
+        $data['tahun_ajaran'] = $tahun_ajaran;
         $data['unit'] = Unit::orderBy('kode_unit')->get();
         $data['jenis_kelamin'] = config('global.jenis_kelamin');
         $data['tahunajaran'] = Tahunajaran::orderBy('kode_ta')->get();
-
+        $data['rekap_unit'] = $rekap_unit;
         return view('pendaftaran.index', $data);
     }
 
@@ -335,6 +352,16 @@ class PendaftaranController extends Controller
         // Membuat QR Code dengan data teks sederhana
         $data['qrCode'] = QrCode::size(100)->generate($no_pendaftaran);
         return view('pendaftaran.cetak', $data);
+    }
+
+    public function cetakpdf($no_pendaftaran)
+    {
+        $no_pendaftaran = Crypt::decrypt($no_pendaftaran);
+        $mpendaftaran = new Pendaftaran();
+        $data['pendaftaran'] = $mpendaftaran->getPendaftaran($no_pendaftaran)->first();
+        $data['qrCode'] = QrCode::size(100)->generate($no_pendaftaran);
+        $pdf = FacadePdf::loadView('pendaftaran.cetak', $data)->setPaper('a4', 'portrait');
+        return $pdf->stream('pendaftaran_'.$no_pendaftaran.'.pdf');
     }
 
 

@@ -48,7 +48,12 @@ class RealisasikegiatanController extends Controller
         }
 
         // $query->orderBy('tanggal', 'DESC');
-        $query->orderBy('tanggal', 'desc');
+        if ($request->cetak) {
+            $query->orderBy('tanggal');
+        } else {
+            $query->orderBy('tanggal', 'desc');
+        }
+
         $realisasikegiatan = $query->paginate(30);
         $realisasikegiatan->appends($request->all());
 
@@ -56,14 +61,14 @@ class RealisasikegiatanController extends Controller
         $data['jabatan'] = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
         $data['departemen'] = Departemen::orderBy('kode_dept')->get();
         $data['user'] = $user;
+       
+       
         $agent = new Agent();
         if ($agent->isMobile()) {
             return view('realisasi_kegiatan.index_mobile', $data);
         }
 
         if ($request->cetak) {
-            $query->orderBy('tanggal');
-            $data['realisasikegiatan'] = $query->get();
             $kode_jabatan = $user->hasRole('super admin') ? $request->kode_jabatan : $user->kode_jabatan;
             $kode_dept = $user->hasRole('super admin') ? $request->kode_dept : $user->kode_dept;
             $data['jabatan'] = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', $kode_jabatan)->first();

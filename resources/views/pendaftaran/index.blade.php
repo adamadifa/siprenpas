@@ -7,6 +7,42 @@
 @endsection
 <div class="row">
     <div class="col-lg-12 col-sm-12 col-xs-12">
+        <style>
+            .rekap-card-green {
+                background: linear-gradient(135deg, #1B5E20 0%, #0A3D0A 100%) !important;
+                color: #fff !important;
+                border: none;
+            }
+            .rekap-card-green .card-body,
+            .rekap-card-green .fs-4,
+            .rekap-card-green .display-6,
+            .rekap-card-green .small {
+                color: #fff !important;
+            }
+        </style>
+        <div class="mb-3">
+            <div class="mb-2 fw-bold fs-5">Rekap Jumlah Siswa per Unit</div>
+            <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3">
+                @forelse ($rekap_unit as $r)
+                    <div class="col">
+                        <div class="card h-100 text-center @if($r->jumlah == 0) border-secondary bg-light text-muted @else rekap-card-green @endif">
+                            <div class="card-body">
+                                <div class="fs-4 fw-bold mb-1">{{ $r->nama_unit }}</div>
+                                <div class="display-6 fw-bold mb-1">{{ $r->jumlah }}</div>
+                                <div class="small">Siswa</div>
+                                @if($r->jumlah == 0)
+                                    <div class="badge bg-secondary mt-2">Belum ada siswa</div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col">
+                        <div class="alert alert-warning">Tidak ada data unit.</div>
+                    </div>
+                @endforelse
+            </div>
+        </div>
         <div class="card">
             <div class="card-header">
                 @can('pendaftaran.create')

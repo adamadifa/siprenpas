@@ -1,6 +1,6 @@
 <div style="text-align:center; margin-bottom: 10px;">
     <img src="{{ public_path('assets/img/logo/persisalamin.png') }}" alt="Logo"
-        style="height:70px; margin-bottom:8px;">
+        style="height:80px; margin-bottom:8px;">
     <div style="font-size:1.1rem; font-weight:bold;">PANITIA PENERIMAAN SANTRI BARU (PSB)</div>
     <div style="font-size:1.1rem; font-weight:bold;">PESANTREN PERSATUAN ISLAM 80 AL AMIN SINDANGKASIH</div>
     <div style="font-size:1.1rem; font-weight:bold;">TINGKAT {{ $pendaftaran->nama_unit }} TAHUN
@@ -74,6 +74,30 @@
                 <td style="width:30%">Kp/Jln.</td>
                 <td style="width: 1%">:</td>
                 <td style="width: 68%">{{ textCamelCase($pendaftaran->alamat) }}</td>
+            </tr>
+            <tr>
+                <td style="width: 1%">2.</td>
+                <td style="width:30%">Kelurahan</td>
+                <td style="width: 1%">:</td>
+                <td style="width: 68%">{{ textCamelCase($pendaftaran->desa) }}</td>
+            </tr>
+            <tr>
+                <td style="width: 1%">3.</td>
+                <td style="width:30%">Kecamatan</td>
+                <td style="width: 1%">:</td>
+                <td style="width: 68%">{{ textCamelCase($pendaftaran->kecamatan) }}</td>
+            </tr>
+            <tr>
+                <td style="width: 1%">4.</td>
+                <td style="width:30%">Kota</td>
+                <td style="width: 1%">:</td>
+                <td style="width: 68%">{{ textCamelCase($pendaftaran->kabupaten) }}</td>
+            </tr>
+            <tr>
+                <td style="width: 1%">5.</td>
+                <td style="width:30%">Provinsi</td>
+                <td style="width: 1%">:</td>
+                <td style="width: 68%">{{ textCamelCase($pendaftaran->provinsi) }}</td>
             </tr>
 
         </table>

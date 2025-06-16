@@ -1,5 +1,6 @@
 <div class="row">
     <div class="col-md-12 text-center">
+        <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="Logo" style="height:80px; margin-bottom:8px;">
         <h5 class="m-0">PANITIA PENERIMAAN SANTRI BARU (PSB)</h5>
         <h5 class="m-0">PESANTREN PERSATUAN ISLAM 80 AL AMIN SINDANGKASIH</h5>
         <h5 class="m-0">TINGKAT {{ $pendaftaran->nama_unit }} TAHUN {{ $pendaftaran->tahun_ajaran }}</h5>
@@ -15,6 +16,10 @@
 <div class="row">
     <div class="col-md-12 text-end">
         Nomor Pendaftaran : <span class="fw-bold">{{ $pendaftaran->no_register }}</span>
+        <a href="{{ route('pendaftaranonline.cetak', Crypt::encrypt($pendaftaran->no_register)) }}" target="_blank"
+            class="btn btn-primary btn-sm ms-2">
+            <i class="ti ti-printer me-1"></i>Cetak PDF
+        </a>
     </div>
 </div>
 <style>
@@ -93,7 +98,7 @@
                 <td style="width: 1%">4.</td>
                 <td style="width:30%">Kota</td>
                 <td>:</td>
-                <td>{{ textCamelCase($pendaftaran->kota) }}</td>
+                <td>{{ textCamelCase($pendaftaran->kabupaten) }}</td>
             </tr>
             <tr>
                 <td style="width: 1%">5.</td>
@@ -167,16 +172,6 @@
     </div>
 </div> --}}
 
-{{-- Tombol Cetak PDF di bagian bawah --}}
-<div class="row mt-4">
-    <div class="col text-end">
-        <a href="{{ route('pendaftaranonline.cetak', Crypt::encrypt($pendaftaran->no_register)) }}" target="_blank"
-            class="btn btn-primary">
-            <i class="ti ti-printer me-2"></i>Cetak PDF
-        </a>
-    </div>
-</div>
-
 {{-- DATA PEMBAYARAN --}}
 <div class="row mt-4">
     <div class="col">
@@ -199,12 +194,16 @@
                 <tr>
                     <th>Status</th>
                     <td>
-                        @if ($pembayaran->status == 'approved')
-                            <span class="badge bg-success">Disetujui</span>
-                        @elseif($pembayaran->status == 'pending')
-                            <span class="badge bg-warning ">Menunggu Konfirmasi</span>
+                        @if (!empty($pendaftaran->no_pendaftaran))
+                            <span class="badge bg-success">
+                                <i class="ti ti-checks me-1"></i>Sudah
+                                Verifikasi</span>
                         @else
-                            <span class="badge bg-danger">Ditolak</span>
+                            @if (!empty($pendaftaran->id_bayar))
+                                <span class="badge bg-warning">Sudah Konfirmasi</span>
+                            @else
+                                <span class="badge bg-danger">Belum Konfirmasi</span>
+                            @endif
                         @endif
                     </td>
                 </tr>
@@ -225,6 +224,52 @@
         @endif
     </div>
 </div>
+
+{{-- FORM KONFIRMASI PEMBAYARAN ADMIN --}}
+
+@if (!empty($pendaftaran->id_bayar))
+    @if (empty($pendaftaran->no_pendaftaran))
+        <div class="row mt-4">
+            <div class="col">
+                <form action="{{ route('pendaftaranonline.konfirmasi', Crypt::encrypt($pendaftaran->no_register)) }}"
+                    method="POST">
+                    @csrf
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <button type="submit" name="status" value="1" class="btn btn-success w-100">
+                                <i class="ti ti-check me-1"></i>Diterima
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button type="submit" name="status" value="2" class="btn btn-danger w-100">
+                                <i class="ti ti-x me-1"></i>Ditolak
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @else
+        <div class="row mt-4">
+            <div class="col">
+                <form action="{{ route('pendaftaranonline.cancel', Crypt::encrypt($pendaftaran->no_register)) }}"
+                    method="POST">
+                    @csrf
+                    <div class="row g-2">
+                        <div class="col">
+                            <button type="submit" name="status" value="1" class="btn btn-danger w-100">
+                                <i class="ti ti-square-rounded-x me-1"></i>Batalkan
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
+
+@endif
+
+
 
 <script>
     $(function() {

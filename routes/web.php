@@ -351,6 +351,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(PendaftaranController::class)->group(function () {
+        Route::get('/pendaftaran/{no_pendaftaran}/cetakpdf', 'cetakpdf')->name('pendaftaran.cetakpdf')->can('pendaftaran.show');
         Route::get('/pendaftaran', 'index')->name('pendaftaran.index')->can('pendaftaran.index');
         Route::get('/pendaftaran/create', 'create')->name('pendaftaran.create')->can('pendaftaran.create');
         Route::post('/pendaftaran', 'store')->name('pendaftaran.store')->can('pendaftaran.store');
@@ -374,6 +375,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/pendaftaranonline/update', 'update')->name('pendaftaranonline.update')->can('pendaftaranonline.edit');
         Route::delete('/pendaftaranonline/{no_register}/delete', 'destroy')->name('pendaftaranonline.delete')->can('pendaftaranonline.delete');
         Route::get('pendaftaranonline/cetak/{no_register}', 'cetak')->name('pendaftaranonline.cetak');
+        Route::post('pendaftaranonline/{no_register}/konfirmasi', 'konfirmasi')->name('pendaftaranonline.konfirmasi');
+        Route::post('pendaftaranonline/{no_register}/cancel', 'cancel')->name('pendaftaranonline.cancel');
     });
 
     Route::controller(PembayaranpendidikanController::class)->group(function () {

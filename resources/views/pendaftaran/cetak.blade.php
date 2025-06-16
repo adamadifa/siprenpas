@@ -66,25 +66,17 @@
         <!-- Each sheet element should have the class "sheet" -->
         <!-- "padding-**mm" is optional: you can set 10, 15, 20 or 25 -->
         <section class="sheet padding-10mm">
-            <table style="width:100%" class="datatable3">
-                <tr>
-                    <td>
-                        <img class="logo-unit" src="{{ asset('assets/img/logo/' . $pendaftaran->logo) }}" alt="">
-                    </td>
-                    <td align="center">
-                        <b style="font-size:18px">PANITIA PENERIMAAN SANTRI BARU (PSB)</b><br>
-                        <b style="font-size:18px">PESANTREN PERSATUAN ISLAM 80 AL AMIN SINDANGKASIH</b><br>
-                        <b style="font-size:18px">TINGKAT {{ $pendaftaran->nama_unit }} TAHUN {{ $pendaftaran->tahun_ajaran }}</b>
-                        <br>
-                        <div style="font-size:14px; font-family:Tahoma">
-                            <i>Jln. Raya Ancol No. 27 Ancol I Sindangkasih Telp.-Fax. (0265) 325285 Ciamis 46268 e-mail :
-                                peris.alamin80sinkas@gmail.com
-                                - web : persisalamin.com</i>
-                        </div>
-                        <br>
-                    </td>
-                </tr>
-            </table>
+            <div style="text-align:center; margin-bottom: 10px;">
+                <img src="{{ public_path('assets/img/logo/persisalamin.png') }}" alt="Logo" style="height:80px; margin-bottom:8px;">
+                <div style="font-size:1.1rem; font-weight:bold;">PANITIA PENERIMAAN SANTRI BARU (PSB)</div>
+                <div style="font-size:1.1rem; font-weight:bold;">PESANTREN PERSATUAN ISLAM 80 AL AMIN SINDANGKASIH</div>
+                <div style="font-size:1.1rem; font-weight:bold;">TINGKAT {{ $pendaftaran->nama_unit }} TAHUN {{ $pendaftaran->tahun_ajaran }}</div>
+                <div style="font-size:0.95rem; font-style:italic; margin-top:2px;">
+                    Jln. Raya Ancol No. 27 Ancol I Sindangkasih Telp.-Fax. (0265) 325285 Ciamis 46268<br>
+                    e-mail : peris.alamin80sinkas@gmail.com - web : persisalamin.com
+                </div>
+                <hr style="border:1.5px solid #000; margin:10px 0 15px 0;">
+            </div>
             <div class="nomor-pendaftaran">
                 <h4 class="m-0 nomorpendaftaran">Nomor Pendaftaran : <span class="fw-bold">{{ $pendaftaran->no_pendaftaran }}</span></h4>
             </div>

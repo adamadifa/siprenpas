@@ -17,6 +17,7 @@ class Pendaftaran extends Model
     public function getPendaftaran($no_pendaftaran = null, Request $request = null)
     {
 
+        $ta_aktif = Tahunajaran::where('status', 1)->first();
         $query = Pendaftaran::query();
         $query->select(
             'siswa.*',
@@ -31,7 +32,7 @@ class Pendaftaran extends Model
         );
         $query->join('siswa', 'pendaftaran.id_siswa', 'siswa.id_siswa');
         $query->join('unit', 'pendaftaran.kode_unit', 'unit.kode_unit');
-        $query->join('asal_sekolah', 'pendaftaran.kode_asal_sekolah', 'asal_sekolah.kode_asal_sekolah');
+        $query->leftjoin('asal_sekolah', 'pendaftaran.kode_asal_sekolah', 'asal_sekolah.kode_asal_sekolah');
         $query->join('konfigurasi_tahun_ajaran', 'pendaftaran.kode_ta', 'konfigurasi_tahun_ajaran.kode_ta');
         $query->leftJoin('villages', 'siswa.id_village', '=', 'villages.id');
         $query->leftJoin('districts', 'siswa.id_district', '=', 'districts.id');
@@ -52,6 +53,8 @@ class Pendaftaran extends Model
 
         if (!empty($request->kode_ta)) {
             $query->where('pendaftaran.kode_ta', $request->kode_ta);
+        } else {
+            $query->where('pendaftaran.kode_ta', $ta_aktif->kode_ta);
         }
         return $query;
     }

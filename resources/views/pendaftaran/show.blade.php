@@ -10,6 +10,9 @@
                 persisalamin.com
             </i>
         </p>
+        <a href="{{ route('pendaftaran.cetakpdf', Crypt::encrypt($pendaftaran->no_pendaftaran)) }}" target="_blank" class="btn btn-danger mt-2">
+            <i class="ti ti-printer"></i> Cetak PDF
+        </a>
     </div>
 </div>
 <div class="row">
