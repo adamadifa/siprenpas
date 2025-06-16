@@ -50,12 +50,14 @@ class RealisasikegiatanController extends Controller
         // $query->orderBy('tanggal', 'DESC');
         if ($request->cetak) {
             $query->orderBy('tanggal');
+            $realisasikegiatan = $query->get();
         } else {
             $query->orderBy('tanggal', 'desc');
+            $realisasikegiatan = $query->paginate(30);
+            $realisasikegiatan->appends($request->all());
         }
 
-        $realisasikegiatan = $query->paginate(30);
-        $realisasikegiatan->appends($request->all());
+       
 
         $data['realisasikegiatan'] = $realisasikegiatan;
         $data['jabatan'] = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
