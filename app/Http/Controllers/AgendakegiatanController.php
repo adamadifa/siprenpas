@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
 use Jenssegers\Agent\Agent;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AgendakegiatanController extends Controller
 {
@@ -47,7 +48,7 @@ class AgendakegiatanController extends Controller
             return view('agenda_kegiatan.index_mobile', $data);
         }
 
-        if ($request->cetak) {
+        if ($request->cetak || $request->cetak_pdf) {
             $query->orderBy('tanggal');
             $data['agenda_kegiatan'] = $query->get();
             $kode_jabatan = $user->hasRole('super admin') ? $request->kode_jabatan : $user->kode_jabatan;
@@ -56,6 +57,10 @@ class AgendakegiatanController extends Controller
             $data['departemen'] = Departemen::orderBy('kode_dept')->where('kode_dept', $kode_dept)->first();
             $data['dari'] = $request->dari;
             $data['sampai'] = $request->sampai;
+            if ($request->cetak_pdf) {
+                $pdf = Pdf::loadView('agenda_kegiatan.cetakpdf', $data)->setPaper('a4', 'landscape');
+                return $pdf->stream('agenda_kegiatan_' . $request->dari . '_' . $request->sampai . '_' . $kode_dept . '_' . $kode_jabatan . '.pdf');
+            }
             return view('agenda_kegiatan.cetak', $data);
         }
         $query->orderBy('tanggal', 'desc');

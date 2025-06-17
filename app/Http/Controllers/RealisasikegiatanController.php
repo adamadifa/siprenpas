@@ -8,6 +8,7 @@ use App\Models\Karyawan;
 use App\Models\Realisasikegiatan;
 use App\Models\User;
 use App\Models\Userkaryawan;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -57,26 +58,30 @@ class RealisasikegiatanController extends Controller
             $realisasikegiatan->appends($request->all());
         }
 
-       
+
 
         $data['realisasikegiatan'] = $realisasikegiatan;
         $data['jabatan'] = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
         $data['departemen'] = Departemen::orderBy('kode_dept')->get();
         $data['user'] = $user;
-       
-       
+
+
         $agent = new Agent();
         if ($agent->isMobile()) {
             return view('realisasi_kegiatan.index_mobile', $data);
         }
 
-        if ($request->cetak) {
+        if ($request->cetak || $request->cetak_pdf) {
             $kode_jabatan = $user->hasRole('super admin') ? $request->kode_jabatan : $user->kode_jabatan;
             $kode_dept = $user->hasRole('super admin') ? $request->kode_dept : $user->kode_dept;
             $data['jabatan'] = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', $kode_jabatan)->first();
             $data['departemen'] = Departemen::orderBy('kode_dept')->where('kode_dept', $kode_dept)->first();
             $data['dari'] = $request->dari;
             $data['sampai'] = $request->sampai;
+            if ($request->cetak_pdf) {
+                $pdf = Pdf::loadView('realisasi_kegiatan.cetakpdf', $data)->setPaper('a4', 'landscape');
+                return $pdf->stream('realisasi_kegiatan_' . $request->dari . '_' . $request->sampai . '_' . $kode_dept . '_' . $kode_jabatan . '.pdf');
+            }
             return view('realisasi_kegiatan.cetak', $data);
         }
 

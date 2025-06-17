@@ -10,7 +10,8 @@
         <div class="card">
             <div class="card-header">
                 @can('agendakegiatan.create')
-                    <a href="#" class="btn btn-primary" id="btncreateAgendaKegiatan"><i class="fa fa-plus me-2"></i> Tambah
+                    <a href="#" class="btn btn-primary" id="btncreateAgendaKegiatan"><i class="fa fa-plus me-2"></i>
+                        Tambah
                         Agenda Kegiatan</a>
                 @endcan
             </div>
@@ -18,21 +19,30 @@
                 <div class="row">
                     <div class="col-12">
                         <form action="{{ route('agendakegiatan.index') }}" id="myForm">
+                            <div class="row mb-2">
+                                <div class="col">
+                                    <div class="d-flex gap-2 justify-content-end">
+                                        <button class="btn btn-warning" type="submit" value="1" name="cetak" id="cetakButton"><i class="ti ti-printer me-1"></i> Cetak</button>
+                                        <button class="btn btn-danger" type="submit" value="1" name="cetak_pdf" id="cetakPdfButton"><i class="ti ti-file-text me-1"></i> Cetak PDF</button>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col-lg-6 col-sm-12 col-md-12">
-                                    <x-input-with-icon label="Dari" value="{{ Request('dari') }}" name="dari" icon="ti ti-calendar"
-                                        datepicker="flatpickr-date" />
+                                    <x-input-with-icon label="Dari" value="{{ Request('dari') }}" name="dari"
+                                        icon="ti ti-calendar" datepicker="flatpickr-date" />
                                 </div>
                                 <div class="col-lg-6 col-sm-12 col-md-12">
-                                    <x-input-with-icon label="Sampai" value="{{ Request('sampai') }}" name="sampai" icon="ti ti-calendar"
-                                        datepicker="flatpickr-date" />
+                                    <x-input-with-icon label="Sampai" value="{{ Request('sampai') }}" name="sampai"
+                                        icon="ti ti-calendar" datepicker="flatpickr-date" />
                                 </div>
                             </div>
                             @if ($user->hasRole('super admin'))
                                 <div class="row">
                                     <div class="col-lg-6 col-sm-12 col-md-12">
                                         <div class="form-group">
-                                            <select name="kode_jabatan" id="kode_jabatan" class="form-select select2Kodejabatansearch">
+                                            <select name="kode_jabatan" id="kode_jabatan"
+                                                class="form-select select2Kodejabatansearch">
                                                 <option value="">Jabatan</option>
                                                 @foreach ($jabatan as $d)
                                                     <option value="{{ $d->kode_jabatan }}"
@@ -44,10 +54,12 @@
                                     </div>
                                     <div class="col-lg-6 col-sm-12 col-md-12">
                                         <div class="form-group">
-                                            <select name="kode_dept" id="kode_dept" class="form-select select2Kodedeptsearc">
+                                            <select name="kode_dept" id="kode_dept"
+                                                class="form-select select2Kodedeptsearc">
                                                 <option value="">Departemen</option>
                                                 @foreach ($departemen as $d)
-                                                    <option value="{{ $d->kode_dept }}" {{ Request('kode_dept') == $d->kode_dept ? 'selected' : '' }}>
+                                                    <option value="{{ $d->kode_dept }}"
+                                                        {{ Request('kode_dept') == $d->kode_dept ? 'selected' : '' }}>
                                                         {{ strtoUpper($d->nama_dept) }}</option>
                                                 @endforeach
                                             </select>
@@ -57,14 +69,8 @@
                                 </div>
                             @endif
                             <div class="row">
-                                <div class="col-lg-11 col-sm-12 col-md-12">
+                                <div class="col-lg-12 col-sm-12 col-md-12">
                                     <button class="btn btn-primary w-100"><i class="ti ti-search me-2"></i>Cari</button>
-                                </div>
-                                <div class="col-lg-1 col-sm-12 col-md-12">
-                                    <button class="btn btn-warning" type="submit" value="1" name="cetak" id="cetakButton"><i
-                                            class="ti ti-printer me-1"></i>
-                                        Cetak
-                                    </button>
                                 </div>
                             </div>
                         </form>
@@ -100,7 +106,8 @@
                                                 <div class="d-flex">
                                                     @can('agendakegiatan.edit')
                                                         <div>
-                                                            <a href="#" class="me-2 btnEdit" id="{{ Crypt::encrypt($d->id) }}">
+                                                            <a href="#" class="me-2 btnEdit"
+                                                                id="{{ Crypt::encrypt($d->id) }}">
                                                                 <i class="ti ti-edit text-success"></i>
                                                             </a>
                                                         </div>

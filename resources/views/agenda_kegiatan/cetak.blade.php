@@ -57,51 +57,48 @@
 
         <!-- Each sheet element should have the class "sheet" -->
         <!-- "padding-**mm" is optional: you can set 10, 15, 20 or 25 -->
-        @php
-            $noUrut = 1;
-        @endphp
-        @foreach ($agenda_kegiatan->chunk(10) as $key => $chunk)
-            <section class="sheet padding-10mm">
-                @if ($key == 0)
-                    <table style="width: 100%">
-                        <tr>
-                            <td style="text-align: center">
-                                <h3 style="font-family:'Cambria'; line-height:0px">AGENDA KEGIATAN</h3>
-                                <h3 style="font-family:'Cambria'; line-height:0px">BIDANG {{ strtoupper($departemen->nama_dept) }}</h3>
-                                <h3 style="font-family:'Cambria'; line-height:0px">PESANTREN PERSATUAN ISLAM 80 AL AMIN </h3>
-                                <h3 style="font-family:'Cambria'; line-height:0px">SINDANGKASIH - CIAMIS</h3>
-                                <h4 style="font-family:'Cambria'; line-height:0px">PERIODE {{ DateToIndo($dari) }} - {{ DateToIndo($sampai) }}</h4>
-                            </td>
-                        </tr>
-                    </table>
-                    <hr>
-                @endif
-                <table class="datatable3" style="width: 100%">
-                    <thead>
-                        <tr>
-                            <th style="width: 1%">No.</th>
-                            <th style="width: 10%">Tanggal</th>
-                            <th style="width: 25">Nama Kegiatan</th>
-                            <th style="width: 55%">Uraian Kegiatan</th>
-                            <th>User</th>
+        <section class="sheet padding-10mm">
+            <table style="width: 100%">
+                <tr>
+                    <td style="text-align: center">
+                        <h3 style="font-family:'Cambria'; line-height:0px">AGENDA KEGIATAN</h3>
+                        <h3 style="font-family:'Cambria'; line-height:0px">BIDANG
+                            {{ strtoupper($departemen->nama_dept) }}</h3>
+                        <h3 style="font-family:'Cambria'; line-height:0px">PESANTREN PERSATUAN ISLAM 80 AL AMIN </h3>
+                        <h3 style="font-family:'Cambria'; line-height:0px">SINDANGKASIH - CIAMIS</h3>
+                        <h4 style="font-family:'Cambria'; line-height:0px">PERIODE {{ DateToIndo($dari) }} -
+                            {{ DateToIndo($sampai) }}</h4>
+                    </td>
+                </tr>
+            </table>
+            <hr>
+            <table class="datatable3" style="width: 100%">
+                <thead>
+                    <tr>
+                        <th style="width: 1%">No.</th>
+                        <th style="width: 10%">Tanggal</th>
+                        <th style="width: 25">Nama Kegiatan</th>
+                        <th style="width: 55%">Uraian Kegiatan</th>
+                        <th>User</th>
 
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $noUrut = 1;
+                    @endphp
+                    @foreach ($agenda_kegiatan as $d)
+                        <tr>
+                            <td>{{ $noUrut++ }}</td>
+                            <td>{{ date('d-m-Y', strtotime($d->tanggal)) }}</td>
+                            <td>{{ strip_tags($d->nama_kegiatan) }}</td>
+                            <td>{{ strip_tags($d->uraian_kegiatan) }}</td>
+                            <td>{{ formatNama1($d->name) }}</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($chunk as $d)
-                            <tr>
-                                <td>{{ $noUrut++ }}</td>
-                                <td>{{ date('d-m-Y', strtotime($d->tanggal)) }}</td>
-                                <td>{{ strip_tags($d->nama_kegiatan) }}</td>
-                                <td>{{ strip_tags($d->uraian_kegiatan) }}</td>
-                                <td>{{ formatNama1($d->name) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </section>
-        @endforeach
-
+                    @endforeach
+                </tbody>
+            </table>
+        </section>
     </body>
 
 </html>
