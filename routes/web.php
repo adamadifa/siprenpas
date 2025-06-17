@@ -393,6 +393,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/pembayaranpendidikan/delete', 'destroy')->name('pembayaranpendidikan.delete')->can('pembayaranpdd.delete');
         Route::post('/pembayaranpendidikan/getsisatagihan', 'getsisatagihan')->name('pembayaranpendidikan.getsisatagihan')->can('pembayaranpdd.create');
         Route::get('/pembayaranpendidikan/{no_bukti}/showdetailbayar', 'showdetailbayar')->name('pembayaranpendidikan.showdetailbayar')->can('pembayaranpdd.show');
+        Route::get('/pembayaranpendidikan/{no_bukti}/cetak', 'cetak')->name('pembayaranpendidikan.cetak')->can('pembayaranpdd.show');
     });
 
     Route::controller(RencanasppController::class)->group(function () {

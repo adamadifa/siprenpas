@@ -59,7 +59,8 @@ class PendaftaranController extends Controller
         })
         ->select('unit.nama_unit', 'unit.kode_unit', DB::raw('count(pendaftaran.no_pendaftaran) as jumlah'))
         ->groupBy('unit.nama_unit', 'unit.kode_unit')
-        ->orderBy('unit.nama_unit')
+        ->whereNotIn('unit.kode_unit',['U00','U06'])
+        ->orderBy('unit.kode_unit')
         ->get();
 
         $data['tahun_ajaran'] = $tahun_ajaran;

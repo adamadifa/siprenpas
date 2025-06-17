@@ -330,44 +330,45 @@
                 </div>
             </div>
         </div>
-    @endhasanyrole
-    <div class="row mt-2">
-        <div class="col-12 px-0">
-            <div
-                class="swiper-container cardswiper swiper-container-initialized swiper-container-horizontal swiper-container-ios swiper-container-pointer-events">
-                <div class="swiper-wrapper" id="swiper-wrapper-e7c52537e6cf4732" aria-live="polite"
-                    style="transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;">
-
-                    @foreach ($ledger as $l)
-                        <div class="swiper-slide {{ $loop->first ? 'swiper-slide-active' : '' }}" role="group"
-                            aria-label="{{ $loop->index }} / {{ count($ledger) }} }}">
-                            <div class="card dark-bg">
-                                <div class="atm-glossy"></div>
-                                <div class="atm-card-content">
-                                    <div>
-                                        <img src="{{ asset('images/chip-1.png') }}" alt="Chip" class="atm-chip">
-                                        <div class="atm-card-label">NO. REKENING</div>
-                                        <div class="atm-card-number">{{ $l->no_rekening }}</div>
-                                    </div>
-                                    <div class="atm-card-footer">
+        <div class="row mt-2">
+            <div class="col-12 px-0">
+                <div
+                    class="swiper-container cardswiper swiper-container-initialized swiper-container-horizontal swiper-container-ios swiper-container-pointer-events">
+                    <div class="swiper-wrapper" id="swiper-wrapper-e7c52537e6cf4732" aria-live="polite"
+                        style="transform: translate3d(0px, 0px, 0px); transition-duration: 0ms;">
+    
+                        @foreach ($ledger as $l)
+                            <div class="swiper-slide {{ $loop->first ? 'swiper-slide-active' : '' }}" role="group"
+                                aria-label="{{ $loop->index }} / {{ count($ledger) }} }}">
+                                <div class="card dark-bg">
+                                    <div class="atm-glossy"></div>
+                                    <div class="atm-card-content">
                                         <div>
-                                            <div class="atm-card-label">SALDO</div>
-                                            <div class="atm-card-balance">200.000 <span class="small text-muted">Rp</span>
-                                            </div>
+                                            <img src="{{ asset('images/chip-1.png') }}" alt="Chip" class="atm-chip">
+                                            <div class="atm-card-label">NO. REKENING</div>
+                                            <div class="atm-card-number">{{ $l->no_rekening }}</div>
                                         </div>
-                                        <img src="https://download.logo.wine/logo/Mastercard/Mastercard-Logo.wine.png"
-                                            alt="Mastercard Logo" class="atm-card-logo">
+                                        <div class="atm-card-footer">
+                                            <div>
+                                                <div class="atm-card-label">SALDO</div>
+                                                <div class="atm-card-balance">200.000 <span class="small text-muted">Rp</span>
+                                                </div>
+                                            </div>
+                                            <img src="https://download.logo.wine/logo/Mastercard/Mastercard-Logo.wine.png"
+                                                alt="Mastercard Logo" class="atm-card-logo">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
+                    <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+                    <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
                 </div>
-                <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
-                <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
             </div>
         </div>
-    </div>
+    @endhasanyrole
+    
     <div class="nav-align-top">
         <ul class="nav nav-pills nav-scrollable" role="tablist">
             <li class="nav-item" role="presentation">

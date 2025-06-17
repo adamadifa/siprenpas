@@ -74,8 +74,9 @@ class PendaftaranonlineController extends Controller
                      ->where('pendaftaran_online.kode_ta', '=', $ta_aktif);
             })
             ->select('unit.nama_unit', 'unit.kode_unit', DB::raw('count(pendaftaran_online.no_register) as jumlah'))
+            ->whereNotIn('unit.kode_unit',['U00','U06'])
             ->groupBy('unit.nama_unit', 'unit.kode_unit')
-            ->orderBy('unit.nama_unit')
+            ->orderBy('unit.kode_unit')
             ->get();
         $data['rekap_unit'] = $rekap_unit;
 

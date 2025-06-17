@@ -33,7 +33,7 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $d->jenis_biaya }} {{ in_array($d->kode_jenis_biaya, ['B07', 'B01']) ? $d->tahun_ajaran : '' }}</td>
-                        <td>{{ formatAngka($d->jumlah) }}</td>
+                        <td class="text-end">{{ formatAngka($d->jumlah) }}</td>
                         <td>{{ $d->keterangan }}</td>
                     </tr>
                 @endforeach

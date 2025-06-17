@@ -10,7 +10,7 @@
                 <a href="#" class="btnDetailbayar me-1" no_bukti="{{ Crypt::encrypt($d->no_bukti) }}">
                     <i class="ti ti-file-description text-info"></i>
                 </a>
-                <a href="#" class="btnPrint me-1" target="_blank"><i class="ti ti-printer text-success"></i></a>
+                <a href="{{ route('pembayaranpendidikan.cetak', Crypt::encrypt($d->no_bukti)) }}" class="btnPrint me-1" target="_blank"><i class="ti ti-printer text-success"></i></a>
                 @if ($loop->iteration == 1)
                     <a href="#" class="btnDeletebayar" key="{{ Crypt::encrypt($d->no_bukti) }}"><i class="ti ti-trash text-danger"></i></a>
                 @endif

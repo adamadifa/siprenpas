@@ -621,4 +621,20 @@ class PembayaranpendidikanController extends Controller
             ->get();
         return view('pembayaranpendidikan.showdetailbayar', $data);
     }
+
+
+    public function cetak($no_bukti)
+    {
+        $no_bukti = Crypt::decrypt($no_bukti);
+        $data['historibayar'] = Historibayarpendidikan::where('no_bukti', $no_bukti)
+            ->join('users', 'pendidikan_historibayar.id_user', '=', 'users.id')
+            ->first();
+        $data['detail'] = Detailhistoribayarpendidikan::where('no_bukti', $no_bukti)
+            ->join('jenis_biaya', 'pendidikan_historibayar_detail.kode_jenis_biaya', '=', 'jenis_biaya.kode_jenis_biaya')
+            ->join('konfigurasi_biaya', 'pendidikan_historibayar_detail.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
+            ->join('konfigurasi_tahun_ajaran', 'konfigurasi_biaya.kode_ta', '=', 'konfigurasi_tahun_ajaran.kode_ta')
+            ->orderBy('pendidikan_historibayar_detail.kode_jenis_biaya', 'asc')
+            ->get();
+        return view('pembayaranpendidikan.cetak', $data);
+    }
 }

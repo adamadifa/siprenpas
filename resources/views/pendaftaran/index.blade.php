@@ -77,7 +77,7 @@
                                             <option value="">Tahun Ajaran</option>
                                             @foreach ($tahunajaran as $d)
                                                 <option value="{{ $d->kode_ta }}"
-                                                    {{ Request('kode_ta') == $d->kode_ta ? 'selected' : '' }}>
+                                                    {{ Request('kode_ta') ?? $tahun_ajaran->kode_ta == $d->kode_ta ? 'selected' : '' }}>
                                                     {{ $d->tahun_ajaran }}</option>
                                             @endforeach
                                         </select>
