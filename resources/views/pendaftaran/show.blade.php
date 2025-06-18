@@ -1,18 +1,24 @@
 <div class="row">
-    <div class="col-md-12 text-center">
-        <h5 class="m-0">PANITIA PENERIMAAN SANTRI BARU (PSB)</h5>
-        <h5 class="m-0">PESANTREN PERSATUAN ISLAM 80 AL AMIN SINDANGKASIH</h5>
-        <h5 class="m-0">TINGKAT {{ $pendaftaran->nama_unit }} TAHUN {{ $pendaftaran->tahun_ajaran }}</h5>
-        <p>
-            <i>
-                Jln. Raya Ancol No. 27 Ancol I Sindangkasih Telp.-Fax. (0265) 325285 Ciamis 46268 e-mail :
-                peris.alamin80sinkas@gmail.com - web :
-                persisalamin.com
-            </i>
-        </p>
-        <a href="{{ route('pendaftaran.cetakpdf', Crypt::encrypt($pendaftaran->no_pendaftaran)) }}" target="_blank" class="btn btn-danger mt-2">
-            <i class="ti ti-printer"></i> Cetak PDF
-        </a>
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-start flex-wrap" style="gap:12px;">
+            <div class="flex-grow-1 text-center">
+                <h5 class="m-0">PANITIA PENERIMAAN SANTRI BARU (PSB)</h5>
+                <h5 class="m-0">PESANTREN PERSATUAN ISLAM 80 AL AMIN SINDANGKASIH</h5>
+                <h5 class="m-0">TINGKAT {{ $pendaftaran->nama_unit }} TAHUN {{ $pendaftaran->tahun_ajaran }}</h5>
+                <p style="margin-bottom:0.5rem;">
+                    <i>
+                        Jln. Raya Ancol No. 27 Ancol I Sindangkasih Telp.-Fax. (0265) 325285 Ciamis 46268 e-mail :
+                        peris.alamin80sinkas@gmail.com - web : persisalamin.com
+                    </i>
+                </p>
+            </div>
+            <div>
+                <a href="{{ route('pendaftaran.cetakpdf', Crypt::encrypt($pendaftaran->no_pendaftaran)) }}" target="_blank"
+                    class="btn btn-danger shadow-sm" style="min-width:120px;">
+                    <i class="ti ti-printer"></i> Cetak PDF
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 <div class="row">

@@ -42,7 +42,8 @@
                 <td>3.</td>
                 <td>Tempat / Tanggal Lahir</td>
                 <td>:</td>
-                <td>{{ textCamelCase($pendaftaran->tempat_lahir) }}, {{ DateToIndo($pendaftaran->tanggal_lahir) }}</td>
+                <td>{{ textCamelCase($pendaftaran->tempat_lahir) }},
+                    {{ $pendaftaran->tanggal_lahir ? DateToIndo($pendaftaran->tanggal_lahir) : '' }}</td>
             </tr>
             <tr>
                 <td>4.</td>

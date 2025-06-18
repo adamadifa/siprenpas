@@ -28,7 +28,8 @@ class Pendaftaran extends Model
             'districts.name as kecamatan',
             'provinces.name as provinsi',
             'regencies.name as kota',
-            'logo'
+            'logo',
+            'nama_unit'
         );
         $query->join('siswa', 'pendaftaran.id_siswa', 'siswa.id_siswa');
         $query->join('unit', 'pendaftaran.kode_unit', 'unit.kode_unit');
@@ -41,21 +42,23 @@ class Pendaftaran extends Model
         $query->orderBy('no_pendaftaran', 'desc');
         if (!empty($no_pendaftaran)) {
             $query->where('no_pendaftaran', $no_pendaftaran);
-        }
-
-        if (!empty($request->nama_lengkap)) {
-            $query->where('nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
-        }
-
-        if (!empty($request->kode_unit)) {
-            $query->where('pendaftaran.kode_unit', $request->kode_unit);
-        }
-
-        if (!empty($request->kode_ta)) {
-            $query->where('pendaftaran.kode_ta', $request->kode_ta);
         } else {
-            $query->where('pendaftaran.kode_ta', $ta_aktif->kode_ta);
+            if (!empty($request->nama_lengkap)) {
+                $query->where('nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
+            }
+
+            if (!empty($request->kode_unit)) {
+                $query->where('pendaftaran.kode_unit', $request->kode_unit);
+            }
+
+            if (!empty($request->kode_ta)) {
+                $query->where('pendaftaran.kode_ta', $request->kode_ta);
+            } else {
+                $query->where('pendaftaran.kode_ta', $ta_aktif->kode_ta);
+            }
         }
+
+
         return $query;
     }
 }

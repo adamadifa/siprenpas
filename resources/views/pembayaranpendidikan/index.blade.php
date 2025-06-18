@@ -11,18 +11,19 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-12">
-                        <form action="{{ route('pendaftaran.index') }}">
+                        <form action="{{ route('pembayaranpendidikan.index') }}">
                             <div class="row">
                                 <div class="col-lg-4 col-sm-12 col-md-12">
-                                    <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
-                                        icon="ti ti-search" />
+                                    <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}"
+                                        name="nama_lengkap" icon="ti ti-search" />
                                 </div>
                                 <div class="col-lg-4 col-sm-12 col-md-12">
                                     <div class="form-group mb-3">
                                         <select name="kode_unit" id="kode_unit_search" class="form-select">
                                             <option value="">Semua Unit</option>
                                             @foreach ($unit as $d)
-                                                <option value="{{ $d->kode_unit }}" {{ Request('kode_unit') == $d->kode_unit ? 'selected' : '' }}>
+                                                <option value="{{ $d->kode_unit }}"
+                                                    {{ Request('kode_unit') == $d->kode_unit ? 'selected' : '' }}>
                                                     {{ $d->nama_unit }}</option>
                                             @endforeach
                                         </select>
@@ -33,7 +34,8 @@
                                         <select name="kode_ta" id="kode_ta_search" class="form-select">
                                             <option value="">Tahun Ajaran</option>
                                             @foreach ($tahunajaran as $d)
-                                                <option value="{{ $d->kode_ta }}" {{ Request('kode_ta') == $d->kode_ta ? 'selected' : '' }}>
+                                                <option value="{{ $d->kode_ta }}"
+                                                    {{ Request('kode_ta') == $d->kode_ta ? 'selected' : '' }}>
                                                     {{ $d->tahun_ajaran }}</option>
                                             @endforeach
                                         </select>
@@ -43,7 +45,6 @@
                                     <button class="btn btn-primary">Cari</button>
                                 </div>
                             </div>
-
                         </form>
                     </div>
                 </div>
@@ -74,13 +75,16 @@
                                             <td>{{ $d->nisn }}</td>
                                             <td>{{ $d->nis }}</td>
                                             <td>{{ $d->nama_lengkap }}</td>
-                                            <td>{{ !empty($d->tanggal_lahir) ? DateToIndo($d->tanggal_lahir) : '' }}</td>
-                                            <td>{{ !empty($d->jenis_kelamin) ? $jenis_kelamin[$d->jenis_kelamin] : '' }}</td>
+                                            <td>{{ !empty($d->tanggal_lahir) ? DateToIndo($d->tanggal_lahir) : '' }}
+                                            </td>
+                                            <td>{{ !empty($d->jenis_kelamin) ? $jenis_kelamin[$d->jenis_kelamin] : '' }}
+                                            </td>
                                             <td>{{ $d->nama_unit }}</td>
                                             <td>
                                                 <div class="d-flex">
                                                     @can('pembayaranpdd.show')
-                                                        <a href="#" class="btnShow" no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}">
+                                                        <a href="#" class="btnShow"
+                                                            no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}">
                                                             <i class="ti ti-moneybag text-info"></i>
                                                         </a>
                                                     @endcan
@@ -182,7 +186,9 @@
             $("#modalpotongan").modal("show");
             $("#modalpotongan").find("#loadmodalpotongan").html(loading);
             $("#modalpotongan").find(".modal-title").text("Input Potongan Biaya " + jenis_biaya);
-            $("#loadmodalpotongan").load(`/pembayaranpendidikan/${no_pendaftaran}/${kode_jenis_biaya}/${kode_biaya}/inputpotongan`);
+            $("#loadmodalpotongan").load(
+                `/pembayaranpendidikan/${no_pendaftaran}/${kode_jenis_biaya}/${kode_biaya}/inputpotongan`
+            );
         });
 
 
@@ -215,7 +221,8 @@
             } else {
                 $(this).find('button[type="submit"]').prop('disabled', true);
                 $(this).find('button[type="submit"]').html(
-                    '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Loading...');
+                    '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Loading...'
+                );
 
                 $.ajax({
                     url: "{{ route('pembayaranpendidikan.storepotongan') }}",
@@ -238,9 +245,11 @@
                             icon: "error",
                             showConfirmButton: true,
                             didClose: (e) => {
-                                $(document).find('#formPotongan').find('button[type="submit"]').prop(
+                                $(document).find('#formPotongan').find(
+                                    'button[type="submit"]').prop(
                                     'disabled', false);
-                                $(document).find('#formPotongan').find('button[type="submit"]').html(
+                                $(document).find('#formPotongan').find(
+                                    'button[type="submit"]').html(
                                     '<i class="ti ti-send me-2"></i> Submit'
                                 );
                             }
@@ -263,7 +272,9 @@
             $("#modalmutasi").modal("show");
             $("#modalmutasi").find("#loadmodalmutasi").html(loading);
             $("#modalmutasi").find(".modal-title").text("Input Mutasi Biaya " + jenis_biaya);
-            $("#loadmodalmutasi").load(`/pembayaranpendidikan/${no_pendaftaran}/${kode_jenis_biaya}/${kode_biaya}/inputmutasi`);
+            $("#loadmodalmutasi").load(
+                `/pembayaranpendidikan/${no_pendaftaran}/${kode_jenis_biaya}/${kode_biaya}/inputmutasi`
+            );
         });
 
 
@@ -296,7 +307,8 @@
             } else {
                 $(this).find('button[type="submit"]').prop('disabled', true);
                 $(this).find('button[type="submit"]').html(
-                    '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Loading...');
+                    '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Loading...'
+                );
 
                 $.ajax({
                     url: "{{ route('pembayaranpendidikan.storemutasi') }}",
@@ -319,9 +331,11 @@
                             icon: "error",
                             showConfirmButton: true,
                             didClose: (e) => {
-                                $(document).find('#formMutasi').find('button[type="submit"]').prop(
+                                $(document).find('#formMutasi').find(
+                                    'button[type="submit"]').prop(
                                     'disabled', false);
-                                $(document).find('#formMutasi').find('button[type="submit"]').html(
+                                $(document).find('#formMutasi').find(
+                                    'button[type="submit"]').html(
                                     '<i class="ti ti-send me-2"></i> Submit'
                                 );
                             }
@@ -506,10 +520,13 @@
             let databiaya = biaya.split("|");
             let kode_biaya = databiaya[1];
             let kode_jenis_biaya = databiaya[0];
-            let jenis_biaya = $(document).find("#formDetailbayar").find("#kode_biaya option:selected").text();
-            let jumlah = $(document).find("#formDetailbayar").find("#jumlah").val().replace(/[^0-9]/g, '');
+            let jenis_biaya = $(document).find("#formDetailbayar").find("#kode_biaya option:selected")
+                .text();
+            let jumlah = $(document).find("#formDetailbayar").find("#jumlah").val().replace(/[^0-9]/g,
+                '');
             let keterangan = $(document).find("#formDetailbayar").find("#keterangan").val();
-            let sisa_tagihan = $(document).find("#formDetailbayar").find("#sisa_tagihan").val().replace(/[^0-9]/g, '');
+            let sisa_tagihan = $(document).find("#formDetailbayar").find("#sisa_tagihan").val().replace(
+                /[^0-9]/g, '');
 
             if (biaya == "") {
                 Swal.fire({
@@ -632,9 +649,11 @@
                                 title: 'Berhasil',
                                 text: 'Data Berhasil Dihapus',
                                 didClose: (e) => {
-                                    gethistoribayar(response.no_pendaftaran);
+                                    gethistoribayar(response
+                                        .no_pendaftaran);
                                     getbiaya(response.no_pendaftaran);
-                                    getrencanaspp(response.no_pendaftaran);
+                                    getrencanaspp(response
+                                        .no_pendaftaran);
                                 }
                             })
                         },
@@ -719,7 +738,8 @@
             } else {
                 $(this).find("#btnSimpan").prop('disabled', true);
                 $(this).find("#btnSimpan").html(
-                    '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Loading...');
+                    '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Loading...'
+                );
                 $.ajax({
                     type: "POST",
                     url: "{{ route('pembayaranpendidikan.store') }}",

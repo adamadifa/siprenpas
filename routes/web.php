@@ -511,7 +511,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/pembiayaan', 'index')->name('pembiayaan.index')->can('pembiayaan.index');
         Route::get('/pembiayaan/{no_anggota}/show', 'show')->name('pembiayaan.show')->can('pembiayaan.create');
         Route::get('/pembiayaan/create', 'create')->name('pembiayaan.create')->can('pembiayaan.create');
+
         Route::post('/pembiayaan/store', 'store')->name('pembiayaan.store')->can('pembiayaan.create');
+        Route::post('/pembiayaan/storeajuan', 'storeajuan')->name('pembiayaan.storeajuan');
+
+
         Route::delete('/pembiayaan/{no_akad}/delete', 'destroy')->name('pembiayaan.delete')->can('pembiayaan.delete');
 
         Route::get('/pembiayaan/{no_transaksi}/cetakkwitansi', 'cetakkwitansi')->name('pembiayaan.cetakkwitansi')->can('pembiayaan.create');
@@ -525,7 +529,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/pembiayaan/{npp}/showmobile', 'showmobile')->name('pembiayaan.showmobile');
         Route::get('/pembiayaan/{no_akad}/showdetail', 'showdetail')->name('pembiayaan.showdetail');
-        Route::get('/pembiayaan/createmobile','createmobile')->name('pembiayaan.createmobile');
+        Route::get('/pembiayaan/createmobile', 'createmobile')->name('pembiayaan.createmobile');
     });
 
     Route::controller(PresensiController::class)->group(function () {

@@ -64,17 +64,17 @@ class PendaftaranonlineController extends Controller
         $data['unit'] = Unit::orderBy('kode_unit')->get();
         $data['jenis_kelamin'] = config('global.jenis_kelamin');
         $data['tahunajaran'] = Tahunajaran::orderBy('kode_ta')->get();
-        $data['kode_ta'] = $kode_ta;    
+        $data['kode_ta'] = $kode_ta;
 
         // Rekap jumlah siswa per unit (termasuk unit yang kosong)
         $rekap_unit = DB::table('unit')
-            ->leftJoin('pendaftaran_online', function($join) use ($kode_ta,$request) {
+            ->leftJoin('pendaftaran_online', function ($join) use ($kode_ta, $request) {
                 $ta_aktif = !empty($request->kode_ta) ? $request->kode_ta : $kode_ta;
                 $join->on('unit.kode_unit', '=', 'pendaftaran_online.kode_unit')
-                     ->where('pendaftaran_online.kode_ta', '=', $ta_aktif);
+                    ->where('pendaftaran_online.kode_ta', '=', $ta_aktif);
             })
             ->select('unit.nama_unit', 'unit.kode_unit', DB::raw('count(pendaftaran_online.no_register) as jumlah'))
-            ->whereNotIn('unit.kode_unit',['U00','U06'])
+            ->whereNotIn('unit.kode_unit', ['U00', 'U06'])
             ->groupBy('unit.nama_unit', 'unit.kode_unit')
             ->orderBy('unit.kode_unit')
             ->get();
@@ -107,7 +107,7 @@ class PendaftaranonlineController extends Controller
                 'villages.name as desa'
             )
             ->first();
-
+        //dd($data['pendaftaran']);
         //dd($data['pendaftaran']);
         $data['pembayaran'] = Pembayaranpendaftaranonline::where('no_register', $no_register)->first();
         return view('pendaftaranonline.show', $data);

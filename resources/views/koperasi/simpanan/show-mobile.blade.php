@@ -102,7 +102,8 @@
     <div id="header">
         <div id="section-user">
             <div class="avatar">
-                <img src="{{ asset('assets/template/img/sample/avatar/avatar1.jpg') }}" alt="avatar" class="imaged w32 rounded">
+                <img src="{{ asset('assets/template/img/sample/avatar/avatar1.jpg') }}" alt="avatar"
+                    class="imaged w32 rounded">
             </div>
             <div id="user-info">
                 <h3 id="user-name">{{ $karyawan->nama_lengkap }}👋</h3>
@@ -162,12 +163,15 @@
                                                 <div class="card-body p-0">
                                                     <div class="row pl-2 pr-2 pt-2">
                                                         <div class="col-auto align-self-center">
-                                                            <img src="{{ asset('assets/template/img/masterocard.png') }}" alt="">
+                                                            <img src="{{ asset('assets/template/img/masterocard.png') }}"
+                                                                alt="">
                                                         </div>
                                                         <div class=" col align-self-center text-right">
                                                             <p class="small">
-                                                                <span class="text-uppercase text-white" style="font-size: 14px">Validity</span><br>
-                                                                <span class="text-white" style="font-size: 14px">Unlimited</span>
+                                                                <span class="text-uppercase text-white"
+                                                                    style="font-size: 14px">Validity</span><br>
+                                                                <span class="text-white"
+                                                                    style="font-size: 14px">Unlimited</span>
                                                             </p>
                                                         </div>
                                                     </div>
@@ -179,7 +183,8 @@
                                                             </h2>
                                                             <p class="mb-0 text-white" style="font-size: 14px">
                                                                 {{ $s->kode_simpanan }}</p>
-                                                            <p class="text-white" style="font-size: 16px;">{{ $s->jenis_simpanan }}</p>
+                                                            <p class="text-white" style="font-size: 16px;">
+                                                                {{ $s->jenis_simpanan }}</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -211,7 +216,8 @@
                     </div>
                 </div>
                 <div class="right">
-                    <div class="price {{ $d->jenis_transaksi == 'S' ? 'text-success' : 'text-dangger' }}"> {{ $d->jenis_transaksi == 'S' ? '+' : '-' }}
+                    <div class="price {{ $d->jenis_transaksi == 'S' ? 'text-success' : 'text-dangger' }}">
+                        {{ $d->jenis_transaksi == 'S' ? '+' : '-' }}
                         {{ formatAngka($d->jumlah) }}</div>
                 </div>
             </a>

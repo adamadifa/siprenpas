@@ -240,6 +240,9 @@
         <form id="formPembiayaan" action="{{ route('pembiayaan.store') }}" method="POST" autocomplete="off">
             @csrf
             <!-- STEP 1: Data Pribadi -->
+            <input type="hidden" name="no_anggota" id="no_anggota" value="{{ $anggota->no_anggota }}" />
+
+
             <div class="form-step step-1 active">
 
                 <div class="md-group">
@@ -394,9 +397,13 @@
                     </select>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <button type="button" class="md-btn" style="background:#b0bec5;color:#222;"
-                        id="prevStep2">Sebelumnya</button>
-                    <button type="button" class="md-btn" id="nextStep2">Selanjutnya</button>
+                    <button type="button" class="md-btn me-2" style="background:#b0bec5;color:#222; margin-right:10px;"
+                        id="prevStep2">
+                        <i class="fa fa-arrow-left" style="margin-right:6px;"></i> Sebelumnya
+                    </button>
+                    <button type="button" class="md-btn" id="nextStep2">
+                        Selanjutnya <i class="fa fa-arrow-right" style="margin-left:6px;"></i>
+                    </button>
                 </div>
             </div>
             <!-- STEP 3: Data Pembiayaan -->
@@ -446,8 +453,10 @@
                         placeholder="Jaminan">
                 </div>
                 <div class="d-flex justify-content-between">
-                    <button type="button" class="md-btn" style="background:#b0bec5;color:#222;"
-                        id="prevStep3">Sebelumnya</button>
+                    <button type="button" class="md-btn me-2" style="background:#b0bec5;color:#222; margin-right:10px;"
+                        id="prevStep3">
+                        <i class="fa fa-arrow-left" style="margin-right:6px;"></i> Sebelumnya
+                    </button>
                     <button class="md-btn" id="btnSimpan" type="submit">
                         <ion-icon name="send-outline" class="me-1"></ion-icon>
                         Submit
@@ -622,6 +631,12 @@
                 e.preventDefault();
                 return false;
             } else {
+                // Validasi sukses, disable tombol submit dan tampilkan spinner
+                var btn = document.getElementById('btnSimpan');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Loading...';
+                }
                 hideStepError();
             }
         });
@@ -653,6 +668,17 @@
 @push('myscript')
     <script>
         $(function() {
+            // Jangan disable tombol submit di sini, sudah di-handle di validasi JS utama
+
+            // Terapkan maskMoney pada input jumlah
+            if ($.fn.maskMoney) {
+                $('#jumlah').maskMoney({
+                    thousands: '.',
+                    decimal: ',',
+                    precision: 0,
+                    allowZero: true
+                });
+            }
 
             let id_province = "{{ $anggota->id_province }}";
             let id_regency = "{{ $anggota->id_regency }}";

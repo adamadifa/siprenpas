@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ajuanpembiayaan;
 use App\Models\Anggota;
 use App\Models\Historibayarpembiayaan;
 use App\Models\Jenispembiayaan;
@@ -35,13 +36,24 @@ class PembiayaanController extends Controller
                 ->make();
         }
 
+        $subqueryPembayaran = Historibayarpembiayaan::select('no_akad', DB::raw('SUM(jumlah) as total_bayar'))
+            ->groupBy('no_akad');
 
         $query = Pembiayaan::query();
+        $query->select(
+            'koperasi_pembiayaan.*',
+            'koperasi_anggota.nama_lengkap',
+            'pembayaran.total_bayar',
+            'koperasi_jenis_pembiayaan.jenis_pembiayaan'
+        );
         $query->join('koperasi_anggota', 'koperasi_pembiayaan.no_anggota', '=', 'koperasi_anggota.no_anggota');
         $query->join('koperasi_jenis_pembiayaan', 'koperasi_pembiayaan.kode_pembiayaan', '=', 'koperasi_jenis_pembiayaan.kode_pembiayaan');
         if (!empty($request->nama_anggota)) {
             $query->where('koperasi_anggota.nama_lengkap', 'like', "%" . $request->nama_anggota . "%");
         }
+        $query->leftJoinSub($subqueryPembayaran, 'pembayaran', function ($join) {
+            $join->on('koperasi_pembiayaan.no_akad', '=', 'pembayaran.no_akad');
+        });
         $query->orderBy('tanggal', 'desc');
         $pembiayaan = $query->paginate(15);
         $pembiayaan->appends($request->all());
@@ -99,7 +111,7 @@ class PembiayaanController extends Controller
     {
         $no_akad = Crypt::decrypt($no_akad);
         $request->validate([
-            
+
             'jumlah' => 'required',
             'berita' => 'required',
         ]);
@@ -462,23 +474,27 @@ class PembiayaanController extends Controller
     }
 
 
-    public function createmobile(){
+    public function createmobile()
+    {
         $user = User::where('id', auth()->user()->id)->first();
         $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
-        $karyawan_anggota= Karyawananggota::where('npp', $userkaryawan->npp)->first();
-        $anggota = Anggota::where('no_anggota',$karyawan_anggota->no_anggota)->first();
+        $karyawan_anggota = Karyawananggota::where('npp', $userkaryawan->npp)->first();
+        $anggota = Anggota::where('no_anggota', $karyawan_anggota->no_anggota)->first();
         $data['anggota'] = $anggota;
         $data['provinsi'] = Province::orderBy('name')->get();
         $data['pendidikan'] = config('global.list_pendidikan ');
         $data['jenis_pembiayaan'] = Jenispembiayaan::orderBy('kode_pembiayaan')->get();
-        return view('koperasi.pembiayaan.createmobile',$data);
+        return view('koperasi.pembiayaan.createmobile', $data);
     }
 
 
     public function store(Request $request)
     {
+        $user = User::where('id', auth()->user()->id)->first();
+        $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
+        $status = $user->hasRole('karyawan') ? '0' : '1';
         $request->validate([
-            
+
             'no_anggota' => 'required',
             'nik' => 'required',
             'nama_lengkap' => 'required',
@@ -536,7 +552,7 @@ class PembiayaanController extends Controller
                 'kode_pos' => $request->kode_pos,
             ];
 
-            $tanggal = $request->tanggal;
+            $tanggal = $request->tanggal ?? date('Y-m-d');
             $tgl = explode("-", $tanggal);
             $tahun = $tgl[0];
             $bulan = $tgl[1];
@@ -584,7 +600,7 @@ class PembiayaanController extends Controller
             Anggota::where('no_anggota', $request->no_anggota)->update($dataanggota);
             Pembiayaan::create([
                 'no_akad' => $no_akad,
-                'tanggal' => $request->tanggal,
+                'tanggal' => $request->tanggal ?? date('Y-m-d'),
                 'no_anggota' => $request->no_anggota,
                 'kode_pembiayaan' => $request->kode_pembiayaan,
                 'jumlah' => toNumber($request->jumlah),
@@ -597,6 +613,7 @@ class PembiayaanController extends Controller
                 'ktp_pasangan' => 1,
                 'kartu_keluarga' => 1,
                 'struk_gaji' => 1,
+                'status' => $status,
             ]);
             $bulan_cicilan = $bulan + 1;
             $tahun_cicilan = $tahun;
@@ -663,6 +680,9 @@ class PembiayaanController extends Controller
             // }
 
             DB::commit();
+            if ($user->hasRole('karyawan')) {
+                return redirect()->route('pembiayaan.showmobile', Crypt::encrypt($userkaryawan->npp))->with(messageSuccess('Berhasil Disimpan'));
+            }
             return Redirect::back()->with(messageSuccess('Berhasil Disimpan'));
         } catch (\Exception $e) {
             DB::rollBack();
@@ -670,6 +690,8 @@ class PembiayaanController extends Controller
             return Redirect::back()->with(messageError('Gagal Disimpan'));
         }
     }
+
+
 
     public function destroy($no_akad)
     {
@@ -735,6 +757,7 @@ class PembiayaanController extends Controller
             $no_anggota = $cekanggota->no_anggota;
         }
 
+
         $pembiayaan = Pembiayaan::where('no_anggota', $no_anggota)
             ->join('koperasi_jenis_pembiayaan', 'koperasi_pembiayaan.kode_pembiayaan', '=', 'koperasi_jenis_pembiayaan.kode_pembiayaan')
             ->orderBy('tanggal', 'desc')
@@ -743,7 +766,7 @@ class PembiayaanController extends Controller
         return view('koperasi.pembiayaan.showmobile', $data);
     }
 
-    
+
     public function showdetail($no_akad)
     {
         $no_akad = Crypt::decrypt($no_akad);

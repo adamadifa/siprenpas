@@ -52,16 +52,16 @@ class PendaftaranController extends Controller
 
 
         $rekap_unit = DB::table('unit')
-        ->leftJoin('pendaftaran', function($join) use ($kode_ta,$request) {
-            $ta_aktif = !empty($request->kode_ta) ? $request->kode_ta : $kode_ta;
-            $join->on('unit.kode_unit', '=', 'pendaftaran.kode_unit')
-                 ->where('pendaftaran.kode_ta', '=', $ta_aktif);
-        })
-        ->select('unit.nama_unit', 'unit.kode_unit', DB::raw('count(pendaftaran.no_pendaftaran) as jumlah'))
-        ->groupBy('unit.nama_unit', 'unit.kode_unit')
-        ->whereNotIn('unit.kode_unit',['U00','U06'])
-        ->orderBy('unit.kode_unit')
-        ->get();
+            ->leftJoin('pendaftaran', function ($join) use ($kode_ta, $request) {
+                $ta_aktif = !empty($request->kode_ta) ? $request->kode_ta : $kode_ta;
+                $join->on('unit.kode_unit', '=', 'pendaftaran.kode_unit')
+                    ->where('pendaftaran.kode_ta', '=', $ta_aktif);
+            })
+            ->select('unit.nama_unit', 'unit.kode_unit', DB::raw('count(pendaftaran.no_pendaftaran) as jumlah'))
+            ->groupBy('unit.nama_unit', 'unit.kode_unit')
+            ->whereNotIn('unit.kode_unit', ['U00', 'U06'])
+            ->orderBy('unit.kode_unit')
+            ->get();
 
         $data['tahun_ajaran'] = $tahun_ajaran;
         $data['unit'] = Unit::orderBy('kode_unit')->get();
@@ -341,6 +341,7 @@ class PendaftaranController extends Controller
         $no_pendaftaran = Crypt::decrypt($no_pendaftaran);
         $mpendaftaran = new Pendaftaran();
         $data['pendaftaran'] = $mpendaftaran->getPendaftaran($no_pendaftaran)->first();
+        //dd($data['pendaftaran']);
         $data['jenisdokumenpendaftaran'] = Jenisdokumenpendaftaran::all();
         return view('pendaftaran.show', $data);
     }
@@ -362,7 +363,7 @@ class PendaftaranController extends Controller
         $data['pendaftaran'] = $mpendaftaran->getPendaftaran($no_pendaftaran)->first();
         $data['qrCode'] = QrCode::size(100)->generate($no_pendaftaran);
         $pdf = FacadePdf::loadView('pendaftaran.cetak', $data)->setPaper('a4', 'portrait');
-        return $pdf->stream('pendaftaran_'.$no_pendaftaran.'.pdf');
+        return $pdf->stream('pendaftaran_' . $no_pendaftaran . '.pdf');
     }
 
 

@@ -10,7 +10,8 @@
         <div class="card">
             <div class="card-header">
                 @can('pembiayaan.create')
-                    <a href="#" class="btn btn-primary" id="btncreatePembiayaan"><i class="fa fa-plus me-2"></i> Input Pembiayaan</a>
+                    <a href="#" class="btn btn-primary" id="btncreatePembiayaan"><i class="fa fa-plus me-2"></i> Input
+                        Pembiayaan</a>
                 @endcan
             </div>
             <div class="card-body">
@@ -19,8 +20,8 @@
                         <form action="{{ URL::current() }}">
                             <div class="row">
                                 <div class="col-lg-10 col-sm-12 col-md-12">
-                                    <x-input-with-icon label="Cari Nama Anggota Koperasi" value="{{ Request('nama_anggota') }}" name="nama_anggota"
-                                        icon="ti ti-search" />
+                                    <x-input-with-icon label="Cari Nama Anggota Koperasi"
+                                        value="{{ Request('nama_anggota') }}" name="nama_anggota" icon="ti ti-search" />
                                 </div>
                                 <div class="col-lg-2 col-sm-12 col-md-12">
                                     <button class="btn btn-primary">Cari</button>
@@ -44,6 +45,8 @@
                                         <th>Jenis Pembiayaan</th>
                                         <th>Pokok</th>
                                         <th>Pembiayaan</th>
+                                        <th>L/BL</th>
+                                        <th>Status</th>
                                         <th>#</th>
 
                                     </tr>
@@ -56,7 +59,8 @@
                                     @endif
                                     @foreach ($pembiayaan as $d)
                                         <tr>
-                                            <td class="text-center">{{ $loop->iteration + $pembiayaan->firstItem() - 1 }}</td>
+                                            <td class="text-center">
+                                                {{ $loop->iteration + $pembiayaan->firstItem() - 1 }}</td>
                                             <td class="">{{ $d->no_akad }}</td>
                                             <td class="">{{ date('d-m-Y', strtotime($d->tanggal)) }}</td>
                                             <td class="">{{ $d->no_anggota }}</td>
@@ -65,14 +69,30 @@
                                             <td class="text-end">{{ formatAngka($d->jumlah) }}</td>
                                             <td class="text-end">
                                                 @php
-                                                    $jumlah_pembiayaan = $d->jumlah + $d->jumlah * ($d->persentase / 100);
+                                                    $jumlah_pembiayaan =
+                                                        $d->jumlah + $d->jumlah * ($d->persentase / 100);
                                                 @endphp
                                                 {{ formatAngka($jumlah_pembiayaan) }}
+                                            </td>
+                                            <td class="text-end">
+                                                @if ($d->total_bayar == $jumlah_pembiayaan)
+                                                    <span class="badge bg-success">L</span>
+                                                @else
+                                                    <span class="badge bg-danger">BL</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($d->status == 1)
+                                                    <span class="badge bg-success">Disetujui</span>
+                                                @else
+                                                    <span class="badge bg-warning">Belum Disetujui</span>
+                                                @endif
                                             </td>
                                             <td>
                                                 <div class="d-flex">
                                                     @can('tabungan.index')
-                                                        <a href="{{ route('pembiayaan.show', Crypt::encrypt($d->no_akad)) }}" class="me-1">
+                                                        <a href="{{ route('pembiayaan.show', Crypt::encrypt($d->no_akad)) }}"
+                                                            class="me-1">
                                                             <i class="ti ti-book"></i>
                                                         </a>
                                                     @endcan
@@ -105,7 +125,8 @@
     </div>
 </div>
 <x-modal-form id="mdlPembiayaan" size="modal-lg" show="loadmodalPembiayaan" title="" />
-<div class="modal fade" id="mdlAnggota" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+<div class="modal fade" id="mdlAnggota" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -186,27 +207,43 @@
                 type: "GET",
                 cache: false,
                 success: function(response) {
-                    $(document).find("#formPembiayaan").find("#no_anggota").val(response.no_anggota);
+                    $(document).find("#formPembiayaan").find("#no_anggota").val(response
+                        .no_anggota);
                     $(document).find("#formPembiayaan").find("#nik").val(response.nik);
-                    $(document).find("#formPembiayaan").find("#nama_lengkap").val(response.nama_lengkap);
+                    $(document).find("#formPembiayaan").find("#nama_lengkap").val(response
+                        .nama_lengkap);
                     $(document).find("#formPembiayaan").find("#no_hp").val(response.no_hp);
-                    $(document).find("#formPembiayaan").find("#tempat_lahir").val(response.tempat_lahir);
-                    $(document).find("#formPembiayaan").find("#tanggal_lahir").val(response.tanggal_lahir);
-                    $(document).find("#formPembiayaan").find("#jenis_kelamin").val(response.jenis_kelamin);
-                    $(document).find("#formPembiayaan").find("#pendidikan_terakhir").val(response.pendidikan_terakhir);
-                    $(document).find("#formPembiayaan").find("#status_pernikahan").val(response.status_pernikahan);
-                    $(document).find("#formPembiayaan").find("#jml_tanggungan").val(response.jml_tanggungan);
-                    $(document).find("#formPembiayaan").find("#nama_pasangan").val(response.nama_pasangan);
-                    $(document).find("#formPembiayaan").find("#pekerjaan_pasangan").val(response.pekerjaan_pasangan);
+                    $(document).find("#formPembiayaan").find("#tempat_lahir").val(response
+                        .tempat_lahir);
+                    $(document).find("#formPembiayaan").find("#tanggal_lahir").val(response
+                        .tanggal_lahir);
+                    $(document).find("#formPembiayaan").find("#jenis_kelamin").val(response
+                        .jenis_kelamin);
+                    $(document).find("#formPembiayaan").find("#pendidikan_terakhir").val(response
+                        .pendidikan_terakhir);
+                    $(document).find("#formPembiayaan").find("#status_pernikahan").val(response
+                        .status_pernikahan);
+                    $(document).find("#formPembiayaan").find("#jml_tanggungan").val(response
+                        .jml_tanggungan);
+                    $(document).find("#formPembiayaan").find("#nama_pasangan").val(response
+                        .nama_pasangan);
+                    $(document).find("#formPembiayaan").find("#pekerjaan_pasangan").val(response
+                        .pekerjaan_pasangan);
                     $(document).find("#formPembiayaan").find("#nama_ibu").val(response.nama_ibu);
-                    $(document).find("#formPembiayaan").find("#nama_saudara").val(response.nama_saudara);
+                    $(document).find("#formPembiayaan").find("#nama_saudara").val(response
+                        .nama_saudara);
                     $(document).find("#formPembiayaan").find("#alamat").val(response.alamat);
-                    $(document).find("#formPembiayaan").find("#id_province").val(response.id_province).trigger('change');
-                    getRegency(id_province = response.id_province, id_regency = response.id_regency);
-                    getDistrict(id_regency = response.id_regency, id_district = response.id_district);
-                    getVillage(id_district = response.id_district, id_village = response.id_village);
+                    $(document).find("#formPembiayaan").find("#id_province").val(response
+                        .id_province).trigger('change');
+                    getRegency(id_province = response.id_province, id_regency = response
+                        .id_regency);
+                    getDistrict(id_regency = response.id_regency, id_district = response
+                        .id_district);
+                    getVillage(id_district = response.id_district, id_village = response
+                        .id_village);
                     $(document).find("#formPembiayaan").find("#kode_pos").val(response.kode_pos);
-                    $(document).find("#formPembiayaan").find("#status_tinggal").val(response.status_tinggal);
+                    $(document).find("#formPembiayaan").find("#status_tinggal").val(response
+                        .status_tinggal);
                     enableFields();
                     $("#mdlAnggota").modal("hide");
                 }
@@ -265,16 +302,16 @@
         }
 
         $(document).on('change', '#id_province', function() {
-           // alert(id_province = $(this).val());
-           getRegency(id_province = $(this).val(), id_regency="");
+            // alert(id_province = $(this).val());
+            getRegency(id_province = $(this).val(), id_regency = "");
         })
 
         $(document).on('change', '#id_regency', function() {
-           getDistrict(id_regency = $(this).val(), id_district="");
+            getDistrict(id_regency = $(this).val(), id_district = "");
         })
 
         $(document).on('change', '#id_district', function() {
-           getVillage( id_district = $(this).val(), id_village="");
+            getVillage(id_district = $(this).val(), id_village = "");
         })
 
         // $("#id_province").change(function() {
@@ -299,13 +336,15 @@
             $(document).find("#formPembiayaan").find("#persentase").val(persentase);
             let jml = $(document).find("#formPembiayaan").find("#jumlah").val();
             let jumlah = jml.replace(/\./g, '');
-            var jumlah_pengembalian = parseInt(jumlah) + (parseInt(jumlah) * (parseInt(persentase) / 100));
+            var jumlah_pengembalian = parseInt(jumlah) + (parseInt(jumlah) * (parseInt(persentase) /
+                100));
             if (jumlah == "" || jumlah === 0) {
                 jumlah_pengembalian = 0;
             } else {
                 jumlah_pengembalian = jumlah_pengembalian;
             }
-            $(document).find("#formPembiayaan").find("#jumlah_pengembalian").val(convertToRupiah(jumlah_pengembalian));
+            $(document).find("#formPembiayaan").find("#jumlah_pengembalian").val(convertToRupiah(
+                jumlah_pengembalian));
 
         });
 
@@ -313,13 +352,15 @@
             let persentase = $(document).find("#formPembiayaan").find("#persentase").val();
             let jml = $(document).find("#formPembiayaan").find("#jumlah").val();
             let jumlah = jml.replace(/\./g, '');
-            var jumlah_pengembalian = parseInt(jumlah) + (parseInt(jumlah) * (parseInt(persentase) / 100));
+            var jumlah_pengembalian = parseInt(jumlah) + (parseInt(jumlah) * (parseInt(persentase) /
+                100));
             if (jumlah == "" || jumlah === 0) {
                 jumlah_pengembalian = 0;
             } else {
                 jumlah_pengembalian = jumlah_pengembalian;
             }
-            $(document).find("#formPembiayaan").find("#jumlah_pengembalian").val(convertToRupiah(jumlah_pengembalian));
+            $(document).find("#formPembiayaan").find("#jumlah_pengembalian").val(convertToRupiah(
+                jumlah_pengembalian));
         })
 
         function convertToRupiah(number) {
@@ -658,7 +699,8 @@
             $(document).find("#formPembiayaan").find('input[name="tempat_lahir"]').removeAttr('disabled');
             $(document).find("#formPembiayaan").find('input[name="tanggal_lahir"]').removeAttr('disabled');
             $(document).find("#formPembiayaan").find('select[name="jenis_kelamin"]').removeAttr('disabled');
-            $(document).find("#formPembiayaan").find('select[name="pendidikan_terakhir"]').removeAttr('disabled');
+            $(document).find("#formPembiayaan").find('select[name="pendidikan_terakhir"]').removeAttr(
+                'disabled');
             $(document).find("#formPembiayaan").find('select[name="status_pernikahan"]').removeAttr('disabled');
             $(document).find("#formPembiayaan").find('input[name="jml_tanggungan"]').removeAttr('disabled');
             $(document).find("#formPembiayaan").find('input[name="nama_pasangan"]').removeAttr('disabled');
