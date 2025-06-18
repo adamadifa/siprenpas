@@ -1,20 +1,19 @@
+<link rel="stylesheet" href="{{ asset('assets/css/timeline-agenda.css') }}">
+<ul class="timeline-agenda">
 @foreach ($agendakegiatan as $d)
-    <li class="timeline-item ps-4 border-left-dashed pb-1">
-        <span class="timeline-indicator-advanced timeline-indicator-success">
+    <li class="timeline-agenda-item">
+        <span class="timeline-agenda-dot">
             <i class="ti ti-calendar-event"></i>
         </span>
-        <div class="timeline-event px-0 pb-0">
-            <div class="timeline-header">
-                <small class="text-success text-uppercase fw-medium">{{ $d->nama_kegiatan }}</small>
+        <div class="timeline-agenda-card">
+            <div class="timeline-agenda-title">{{ $d->nama_kegiatan }}</div>
+            <div class="timeline-agenda-desc">{!! truncateString(strip_tags($d->uraian_kegiatan), 40) !!}</div>
+            <div class="timeline-agenda-date"><i class="ti ti-calendar"></i> {{ DateToIndo($d->tanggal) }}</div>
+            <div class="timeline-agenda-meta">
+                <span><i class="ti ti-user"></i> {{ $d->name }}</span>
+                <span><i class="ti ti-building"></i> {{ $d->nama_dept }}</span>
             </div>
-            <h6 class="m-0">{!! truncateString(strip_tags($d->uraian_kegiatan, 30)) !!}</h6>
-            <p class="text-muted mb-0">{{ DateToIndo($d->tanggal) }}</p>
-            <span class="text-info d-flex gap-2">
-
-                <span><i class="ti ti-user me-1 mb-1"></i> {{ $d->name }}</span>
-                <span><i class="ti ti-building me-1 mb-1"></i> {{ $d->nama_dept }}</span>
-            </span>
         </div>
-
     </li>
 @endforeach
+</ul>

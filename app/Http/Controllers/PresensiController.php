@@ -57,6 +57,7 @@ class PresensiController extends Controller
             'nama_unit',
             'presensi.id',
             'karyawan.pin',
+            'karyawan.status_karyawan'
         );
         $query->leftjoinSub($presensi, 'presensi', function ($join) {
             $join->on('karyawan.npp', '=', 'presensi.npp');

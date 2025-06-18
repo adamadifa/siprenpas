@@ -349,10 +349,10 @@ function hitungjamterlambat($jam_in, $jam_mulai)
                 // 'color_terlambat' => $color_terlambat
             ];
         } else {
-            return [];
+            return null;
         }
     } else {
-        return [];
+        return null;
     }
 }
 
@@ -376,4 +376,25 @@ function getSid($file)
 {
     $url = url('/storage/uploads/sid/' . $file);
     return $url;
+}
+
+
+function hitungdenda($menit_terlambat, $status_karyawan)
+{
+    if ($status_karyawan != 'T') {
+        if ($menit_terlambat >= 1 && $menit_terlambat <= 5) {
+            $denda = 5000;
+        } else if ($menit_terlambat >= 6 && $menit_terlambat <= 10) {
+            $denda = 10000;
+        } else {
+            $denda = $menit_terlambat * 1000;
+        }
+    } else {
+        if ($menit_terlambat >= 1 && $menit_terlambat <= 10) {
+            $denda = 10000;
+        } else {
+            $denda = $menit_terlambat * 1000;
+        }
+    }
+    return $denda;
 }

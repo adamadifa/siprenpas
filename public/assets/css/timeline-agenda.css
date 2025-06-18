@@ -1,0 +1,131 @@
+/* Timeline Agenda Custom Style */
+.timeline-agenda {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+}
+.timeline-agenda::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #4caf50 0%, #ff9800 100%);
+    border-radius: 2px;
+    opacity: 0.2;
+}
+.timeline-agenda-item {
+    position: relative;
+    margin-bottom: 2.2rem;
+    padding-left: 64px;
+    min-height: 72px;
+}
+.timeline-agenda-dot {
+    position: absolute;
+    left: 14px;
+    top: 16px;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #4caf50, #ff9800);
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(76,175,80,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: #fff;
+}
+.timeline-agenda-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 1rem 1.2rem 0.9rem 1.2rem;
+    min-height: 64px;
+    transition: box-shadow 0.2s;
+    border-left: 4px solid #4caf50;
+    position: relative;
+}
+.timeline-agenda-card:hover {
+    box-shadow: 0 4px 16px rgba(76,175,80,0.12);
+    border-left-color: #ff9800;
+}
+.timeline-agenda-title {
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: #388e3c;
+    margin-bottom: 0.3rem;
+}
+.timeline-agenda-desc {
+    font-size: 0.98rem;
+    color: #444;
+    margin-bottom: 0.2rem;
+}
+.timeline-agenda-date {
+    font-size: 0.93rem;
+    color: #ff9800;
+    font-weight: 500;
+    margin-bottom: 0.2rem;
+}
+.timeline-agenda-meta {
+    display: flex;
+    gap: 1.1rem;
+    font-size: 0.93rem;
+    color: #888;
+    margin-top: 0.1rem;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: right;
+}
+.timeline-agenda-meta i {
+    margin-right: 4px;
+    font-size: 1.08em;
+    vertical-align: middle;
+}
+@media (max-width: 600px) {
+    .timeline-agenda {
+        margin-left: 0;
+        padding-left: 0;
+    }
+    .timeline-agenda-item {
+        padding-left: 36px;
+        margin-bottom: 1.2rem;
+        min-height: 48px;
+    }
+    .timeline-agenda-dot {
+        left: 0px;
+        top: 10px;
+        width: 14px;
+        height: 14px;
+        font-size: 0.9rem;
+        border-width: 2px;
+    }
+    .timeline-agenda-card {
+        padding: 0.5rem 0.5rem 0.5rem 0.7rem;
+        min-height: 38px;
+        font-size: 0.97rem;
+        box-shadow: none;
+        border-radius: 6px;
+    }
+    .timeline-agenda-title {
+        font-size: 1rem;
+        margin-bottom: 0.18rem;
+    }
+    .timeline-agenda-desc {
+        font-size: 0.93rem;
+        margin-bottom: 0.15rem;
+    }
+    .timeline-agenda-date {
+        font-size: 0.92rem;
+        margin-bottom: 0.12rem;
+    }
+    .timeline-agenda-meta {
+        flex-direction: column;
+        gap: 0.2rem;
+        font-size: 0.91rem;
+        margin-top: 0.12rem;
+    }
+}
+

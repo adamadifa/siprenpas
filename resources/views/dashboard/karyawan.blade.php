@@ -152,7 +152,8 @@
 
             </div>
             <div class="avatar">
-                <img src="{{ asset('assets/template/img/sample/avatar/avatar1.jpg') }}" alt="avatar" class="imaged w64 rounded">
+                <img src="{{ asset('assets/template/img/sample/avatar/avatar1.jpg') }}" alt="avatar"
+                    class="imaged w64 rounded">
             </div>
         </div>
         <div id="section-jam " class="text-center mt-1">
@@ -227,7 +228,8 @@
             <div class="col-3">
                 <div class="card">
                     <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                        <img src="{{ asset('assets/template/img/3d/hadir.webp') }}" alt="" style="width: 50px" class="mb-1">
+                        <img src="{{ asset('assets/template/img/3d/hadir.webp') }}" alt="" style="width: 50px"
+                            class="mb-1">
                         <br>
                         <span style="font-size: 0.8rem; font-weight:500">
                             Hadir
@@ -241,7 +243,8 @@
             <div class="col-3">
                 <div class="card">
                     <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                        <img src="{{ asset('assets/template/img/3d/sakit.png') }}" alt="" style="width: 50px" class="mb-1">
+                        <img src="{{ asset('assets/template/img/3d/sakit.png') }}" alt="" style="width: 50px"
+                            class="mb-1">
                         <br>
                         <span style="font-size: 0.8rem; font-weight:500">Sakit</span>
                         <span class="badge bg-success" style="position: absolute; top: 5px; right: 5px">
@@ -253,7 +256,8 @@
             <div class="col-3">
                 <div class="card">
                     <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                        <img src="{{ asset('assets/template/img/3d/izin.webp') }}" alt="" style="width: 50px" class="mb-1">
+                        <img src="{{ asset('assets/template/img/3d/izin.webp') }}" alt="" style="width: 50px"
+                            class="mb-1">
                         <br>
                         <span style="font-size: 0.8rem; font-weight:500">Izin</span>
                         <span class="badge bg-success" style="position: absolute; top: 5px; right: 5px">
@@ -265,7 +269,8 @@
             <div class="col-3">
                 <div class="card">
                     <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                        <img src="{{ asset('assets/template/img/3d/cuti.png') }}" alt="" style="width: 50px" class="mb-1">
+                        <img src="{{ asset('assets/template/img/3d/cuti.png') }}" alt="" style="width: 50px"
+                            class="mb-1">
                         <br>
                         <span style="font-size: 0.8rem; font-weight:500">Cuti</span>
                         <span class="badge bg-success" style="position: absolute; top: 5px; right: 5px">
@@ -282,7 +287,8 @@
                 <a href="{{ route('checklistibadah.create') }}">
                     <div class="card">
                         <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                            <img src="{{ asset('assets/template/img/3d/prayingman64.png') }}" alt="" style="width: 50px" class="mb-1">
+                            <img src="{{ asset('assets/template/img/3d/prayingman64.png') }}" alt=""
+                                style="width: 50px" class="mb-1">
                             <br>
                             <span style="font-size: 0.8rem; font-weight:500">
                                 Ibadah
@@ -296,7 +302,8 @@
                     {{-- {{ $karyawan->nik }} --}}
                     <div class="card">
                         <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                            <img src="{{ asset('assets/template/img/3d/simpanan.png') }}" alt="" style="width: 50px" class="mb-1">
+                            <img src="{{ asset('assets/template/img/3d/simpanan.png') }}" alt=""
+                                style="width: 50px" class="mb-1">
                             <br>
                             <span style="font-size: 0.8rem; font-weight:500">Simpanan</span>
                         </div>
@@ -307,7 +314,8 @@
                 <a href="{{ route('pembiayaan.showmobile', Crypt::encrypt($karyawan->npp)) }}">
                     <div class="card">
                         <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                            <img src="{{ asset('assets/template/img/3d/pinjaman.png') }}" alt="" style="width: 50px" class="mb-1">
+                            <img src="{{ asset('assets/template/img/3d/pinjaman.png') }}" alt=""
+                                style="width: 50px" class="mb-1">
                             <br>
                             <span style="font-size: 0.8rem; font-weight:500">Pinjaman</span>
                         </div>
@@ -318,7 +326,8 @@
                 <a href="{{ route('tabungan.showmobile', Crypt::encrypt($karyawan->npp)) }}">
                     <div class="card">
                         <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                            <img src="{{ asset('assets/template/img/3d/slipgaji.png') }}" alt="" style="width: 50px" class="mb-1">
+                            <img src="{{ asset('assets/template/img/3d/slipgaji.png') }}" alt=""
+                                style="width: 50px" class="mb-1">
                             <br>
                             <span style="font-size: 0.8rem; font-weight:500">Tabungan</span>
                         </div>
@@ -387,6 +396,15 @@
                                                     @endphp
                                                     @if (!empty($terlambat))
                                                         <span style="color:red">Terlambat {{ $terlambat['show'] }} </span>
+                                                        <br>
+                                                        @php
+                                                            $menit_terlambat = $terlambat['menitterlambat'];
+                                                            $denda = hitungdenda(
+                                                                $menit_terlambat,
+                                                                $karyawan->status_karyawan,
+                                                            );
+                                                        @endphp
+                                                        <span style="color:red">Denda: {{ formatAngka($denda) }}</span>
                                                     @else
                                                         <span style="color:green">Tepat Waktu</span>
                                                     @endif
@@ -398,7 +416,8 @@
                                         <div class="historidetail2">
                                             <h4>REGULER</h4>
                                             <span class="timepresence">
-                                                {{ date('H:i', strtotime($d->jam_masuk)) }} - {{ date('H:i', strtotime($d->jam_pulang)) }}
+                                                {{ date('H:i', strtotime($d->jam_masuk)) }} -
+                                                {{ date('H:i', strtotime($d->jam_pulang)) }}
                                             </span>
                                         </div>
                                     </div>
@@ -408,7 +427,8 @@
                                     <div class="historicontent">
                                         <div class="historidetail1">
                                             <div class="iconpresence">
-                                                <ion-icon name="document-text-outline" style="font-size: 48px; color: #1f7ee4"></ion-icon>
+                                                <ion-icon name="document-text-outline"
+                                                    style="font-size: 48px; color: #1f7ee4"></ion-icon>
                                             </div>
                                             <div class="datepresence">
                                                 <h4>{{ DateToIndo($d->tanggal) }}</h4>
@@ -421,7 +441,8 @@
                                         <div class="historidetail2">
                                             <h4>REGULER</h4>
                                             <span class="timepresence">
-                                                {{ date('H:i', strtotime($d->jam_masuk)) }} - {{ date('H:i', strtotime($d->jam_pulang)) }}
+                                                {{ date('H:i', strtotime($d->jam_masuk)) }} -
+                                                {{ date('H:i', strtotime($d->jam_pulang)) }}
                                             </span>
                                         </div>
                                     </div>
@@ -431,7 +452,8 @@
                                     <div class="historicontent">
                                         <div class="historidetail1">
                                             <div class="iconpresence">
-                                                <ion-icon name="bag-add-outline" style="font-size: 48px; color: #d4095a"></ion-icon>
+                                                <ion-icon name="bag-add-outline"
+                                                    style="font-size: 48px; color: #d4095a"></ion-icon>
                                             </div>
                                             <div class="datepresence">
                                                 <h4>{{ DateToIndo($d->tanggal) }}</h4>
@@ -444,7 +466,8 @@
                                         <div class="historidetail2">
                                             <h4>REGULER</h4>
                                             <span class="timepresence">
-                                                {{ date('H:i', strtotime($d->jam_masuk)) }} - {{ date('H:i', strtotime($d->jam_pulang)) }}
+                                                {{ date('H:i', strtotime($d->jam_masuk)) }} -
+                                                {{ date('H:i', strtotime($d->jam_pulang)) }}
                                             </span>
                                         </div>
                                     </div>

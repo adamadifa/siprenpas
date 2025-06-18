@@ -14,23 +14,25 @@
                 <div class="row">
                     <div class="col-12">
                         <form action="{{ route('presensi.index') }}">
-                            <x-input-with-icon label="Tanggal" value="{{ Request('tanggal') }}" name="tanggal" icon="ti ti-calendar"
-                                datepicker="flatpickr-date" />
+                            <x-input-with-icon label="Tanggal" value="{{ Request('tanggal') }}" name="tanggal"
+                                icon="ti ti-calendar" datepicker="flatpickr-date" />
                             <div class="row">
                                 <div class="col-lg-12 col-sm-12 col-md-12">
-                                    <x-select label="Unit" name="kode_unit" :data="$unit" key="kode_unit" textShow="nama_unit"
-                                        selected="{{ Request('kode_unit') }}" upperCase="true" select2="select2Kodeunit" />
+                                    <x-select label="Unit" name="kode_unit" :data="$unit" key="kode_unit"
+                                        textShow="nama_unit" selected="{{ Request('kode_unit') }}" upperCase="true"
+                                        select2="select2Kodeunit" />
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-12 col-sm-12 col-md-12">
-                                    <x-input-with-icon label="Cari Nama Karyawan" value="{{ Request('nama_karyawan') }}" name="nama_karyawan"
-                                        icon="ti ti-search" />
+                                    <x-input-with-icon label="Cari Nama Karyawan" value="{{ Request('nama_karyawan') }}"
+                                        name="nama_karyawan" icon="ti ti-search" />
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <div class="col">
-                                    <button class="btn btn-primary w-100"><i class="ti ti-icons ti-search me-1"></i>Cari</button>
+                                    <button class="btn btn-primary w-100"><i
+                                            class="ti ti-icons ti-search me-1"></i>Cari</button>
                                 </div>
                             </div>
                         </form>
@@ -52,6 +54,7 @@
                                         <th class="text-center">Status</th>
                                         {{-- <th class="text-center">Keluar</th> --}}
                                         <th class="text-center">Terlambat</th>
+                                        <th>Denda</th>
                                         {{-- <th class="text-center">Total</th> --}}
                                         <th class="text-center">#</th>
                                     </tr>
@@ -59,7 +62,9 @@
                                 <tbody>
                                     @foreach ($karyawan as $d)
                                         @php
-                                            $tanggal_presensi = !empty(Request('tanggal')) ? Request('tanggal') : date('Y-m-d');
+                                            $tanggal_presensi = !empty(Request('tanggal'))
+                                                ? Request('tanggal')
+                                                : date('Y-m-d');
                                         @endphp
                                         <tr>
                                             <td>{{ $d->npp }}</td>
@@ -68,7 +73,8 @@
                                             <td>{{ $d->nama_unit }}</td>
                                             <td class="text-center">
                                                 @if ($d->kode_jam_kerja != null)
-                                                    {{ $d->nama_jam_kerja }} {{ date('H:i', strtotime($d->jam_masuk)) }} -
+                                                    {{ $d->nama_jam_kerja }} {{ date('H:i', strtotime($d->jam_masuk)) }}
+                                                    -
                                                     {{ date('H:i', strtotime($d->jam_pulang)) }}
                                                 @else
                                                     <i class="ti ti-hourglass-low text-warning"></i>
@@ -76,7 +82,8 @@
                                             </td>
                                             <td class="text-center">
                                                 @if ($d->jam_in != null)
-                                                    <a href="#" class="btnShowpresensi_in" id="{{ $d->id }}" status="in">
+                                                    <a href="#" class="btnShowpresensi_in"
+                                                        id="{{ $d->id }}" status="in">
                                                         {{ date('H:i', strtotime($d->jam_in)) }}
                                                     </a>
                                                 @else
@@ -86,7 +93,8 @@
                                             </td>
                                             <td class="text-center">
                                                 @if ($d->jam_out != null)
-                                                    <a href="#" class="btnShowpresensi_in" id="{{ $d->id }}" status="out">
+                                                    <a href="#" class="btnShowpresensi_in"
+                                                        id="{{ $d->id }}" status="out">
                                                         {{ date('H:i', strtotime($d->jam_out)) }}
                                                     </a>
                                                 @else
@@ -113,14 +121,24 @@
                                                 @endphp
                                                 {!! $terlambat != null ? $terlambat['show'] : '<i class="ti ti-hourglass-low text-warning"></i>' !!}
                                             </td>
+                                            <td class="text-end text-danger">
+                                                @php
+                                                    $menit_terlambat =
+                                                        $terlambat != null ? $terlambat['menitterlambat'] : 0;
+                                                    $denda = hitungdenda($menit_terlambat, $d->status_karyawan);
+                                                @endphp
+                                                {{ formatAngka($denda) }}
+                                            </td>
                                             <td>
                                                 <div class="d-flex">
-                                                    <a href="#" class="me-1 koreksiPresensi" npp="{{ Crypt::encrypt($d->npp) }}"
-                                                        tanggal="{{ $tanggal_presensi }}"><i class="ti ti-edit text-success"></i> </a>
+                                                    <a href="#" class="me-1 koreksiPresensi"
+                                                        npp="{{ Crypt::encrypt($d->npp) }}"
+                                                        tanggal="{{ $tanggal_presensi }}"><i
+                                                            class="ti ti-edit text-success"></i> </a>
 
                                                     <a href="#" class="btngetDatamesin" pin="{{ $d->pin }}"
-                                                        tanggal="{{ !empty(Request('tanggal')) ? Request('tanggal') : date('Y-m-d') }}"> <i
-                                                            class="ti ti-device-desktop text-primary"></i>
+                                                        tanggal="{{ !empty(Request('tanggal')) ? Request('tanggal') : date('Y-m-d') }}">
+                                                        <i class="ti ti-device-desktop text-primary"></i>
                                                     </a>
                                                 </div>
                                             </td>

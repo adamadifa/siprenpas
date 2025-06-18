@@ -25,6 +25,7 @@ use App\Http\Controllers\KategoripemasukanController;
 use App\Http\Controllers\KategoripengeluaranController;
 use App\Http\Controllers\KegiatanibadahController;
 use App\Http\Controllers\LaporankoperasiController;
+use App\Http\Controllers\LaporanmsdmController;
 use App\Http\Controllers\LedgerController;
 use App\Http\Controllers\LedgertransaksiController;
 use App\Http\Controllers\PageController;
@@ -633,6 +634,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/page/{id}/edit', 'edit')->name('pages.edit')->can('pages.edit');
         Route::put('/page/{id}/update', 'update')->name('pages.update')->can('pages.edit');
         Route::delete('/page/{id}/delete', 'destroy')->name('pages.delete')->can('pages.delete');
+    });
+
+    Route::controller(LaporanmsdmController::class)->group(function () {
+        Route::get('/laporanmsdm', 'index')->name('laporanmsdm.index')->can('presensi.index');
     });
 });
 

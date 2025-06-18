@@ -1,11 +1,87 @@
 <!-- Menu -->
 <style>
+    /* Responsive sidebar collapse fix: hilangkan bg active/hover di collapse */
+    .layout-menu.layout-menu-collapsed .menu-inner .menu-link,
+    .layout-menu.layout-menu-collapsed .menu-inner .menu-link:hover,
+    .layout-menu.layout-menu-collapsed .menu-inner .menu-item.active>.menu-link {
+        background: transparent !important;
+        color: #fff !important;
+        font-weight: normal !important;
+        box-shadow: none !important;
+        border-radius: 8px !important;
+        transition: none !important;
+    }
+
+    .layout-menu.layout-menu-collapsed .menu-inner .menu-link .menu-icon {
+        color: #fff !important;
+    }
+
+    .layout-menu.layout-menu-collapsed .menu-inner .menu-link:hover .menu-icon,
+    .layout-menu.layout-menu-collapsed .menu-inner .menu-item.active>.menu-link .menu-icon {
+        color: #ff8c00 !important;
+    }
+
+    /* Responsive sidebar collapse */
+    .layout-menu.layout-menu-collapsed .app-brand {
+        justify-content: center !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .layout-menu.layout-menu-collapsed .app-brand-logo img {
+        width: 36px !important;
+        margin: 0 auto;
+    }
+
+    .layout-menu.layout-menu-collapsed .sidebar-user-info {
+        padding: 0.8rem 0 !important;
+        flex-direction: column;
+        align-items: center !important;
+        gap: 0.3rem !important;
+    }
+
+    .layout-menu.layout-menu-collapsed .sidebar-user-info>div:not(:first-child) {
+        display: none !important;
+    }
+
+    .layout-menu.layout-menu-collapsed .sidebar-user-info>div:first-child,
+    .layout-menu.layout-menu-collapsed .sidebar-user-info img {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 1.1rem !important;
+        border-width: 1.5px !important;
+    }
+
+    .layout-menu.layout-menu-collapsed .menu-inner .menu-link {
+        justify-content: center !important;
+        padding-left: 0.3rem !important;
+        padding-right: 0.3rem !important;
+    }
+
+    .layout-menu.layout-menu-collapsed .menu-inner .menu-icon {
+        margin: 0 auto !important;
+        font-size: 1.3rem !important;
+        display: block;
+    }
+
     /* Menu utama (parent) */
+    /* .menu-inner>.menu-item>.menu-link,
+    .menu-inner>.menu-item.active>.menu-link,
+    .menu-inner>.menu-item>.menu-link:hover {
+        transition: none !important;
+        margin: 0 !important;
+        padding: 0.625rem 0.625rem !important;
+        border-radius: 4px;
+        font-size: 1rem !important;
+        line-height: 1.5 !important;
+        box-shadow: none !important;
+    }
     .menu-inner>.menu-item>.menu-link:hover,
     .menu-inner>.menu-item.active>.menu-link {
         background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%) !important;
         color: white !important;
-    }
+        font-weight: 600;
+    } */
 
     .menu-inner>.menu-item>.menu-link:hover i,
     .menu-inner>.menu-item.active>.menu-link i {
@@ -65,30 +141,7 @@
         </a>
     </div>
     <!-- User Info Section -->
-    <div class="sidebar-user-info"
-        style="padding: 1.2rem 1rem 0.5rem 1rem; display: flex; align-items: center; gap: 0.8rem;">
-        @php
-            $user = auth()->user();
-            $avatar = $user->avatar ?? null;
-            $name = $user->name ?? ($user->username ?? 'User');
-            $initial = strtoupper(substr($name, 0, 1));
-        @endphp
-        @if ($avatar)
-            <img src="{{ asset('storage/avatars/' . $avatar) }}" alt="Avatar"
-                style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #ff8c00;">
-        @else
-            <div
-                style="width:44px;height:44px;border-radius:50%;background:#ff8c00;color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:600;border:2px solid #ff8c00;">
-                {{ $initial }}
-            </div>
-        @endif
-        <div style="flex:1;">
-            <div
-                style="font-weight:600;font-size:1.1rem;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                {{ $name }}</div>
-            <div style="font-size:0.85rem;color:#888;">{{ $user->email ?? '' }}</div>
-        </div>
-    </div>
+
 
     <ul class="menu-inner py-1">
         <li class="menu-item {{ request()->is(['dashboard', 'dashboard/*']) ? 'active' : '' }}">
@@ -353,7 +406,14 @@
                             </a>
                         </li>
                     @endif
-
+                    @if (auth()->user()->hasAnyPermission(['presensi.index']))
+                        <li class="menu-item {{ request()->is(['laporanmsdm']) ? 'active' : '' }}">
+                            <a href="{{ route('laporanmsdm.index') }}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-file-description"></i>
+                                <div>Laporan MSDM </div>
+                            </a>
+                        </li>
+                    @endif
                 </ul>
             </li>
         @endif
