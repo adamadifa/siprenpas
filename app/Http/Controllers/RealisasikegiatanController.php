@@ -49,7 +49,7 @@ class RealisasikegiatanController extends Controller
         }
 
         // $query->orderBy('tanggal', 'DESC');
-        if ($request->cetak) {
+        if ($request->cetak || $request->cetak_pdf) {
             $query->orderBy('tanggal');
             $realisasikegiatan = $query->get();
         } else {
