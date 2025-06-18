@@ -60,7 +60,7 @@
     <div id="content-section">
         <div class="row mb-2" style="margin-top: 70px">
             <div class="col">
-                <a href="#" class="btn btn-primary w-100">
+                <a href="{{route('pembiayaan.createmobile')}}" class="btn btn-primary w-100">
                     <ion-icon name="document-outline"></ion-icon>
                     Ajukan Pembiayaan</a>
             </div>

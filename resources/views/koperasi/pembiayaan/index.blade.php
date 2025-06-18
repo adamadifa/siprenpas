@@ -263,6 +263,31 @@
                 }
             });
         }
+
+        $(document).on('change', '#id_province', function() {
+           // alert(id_province = $(this).val());
+           getRegency(id_province = $(this).val(), id_regency="");
+        })
+
+        $(document).on('change', '#id_regency', function() {
+           getDistrict(id_regency = $(this).val(), id_district="");
+        })
+
+        $(document).on('change', '#id_district', function() {
+           getVillage( id_district = $(this).val(), id_village="");
+        })
+
+        // $("#id_province").change(function() {
+        //     getRegency();
+        // });
+
+        // $("#id_regency").change(function() {
+        //     getDistrict();
+        // });
+
+        // $("#id_district").change(function() {
+        //     getVillage();
+        // });
         $('#tabelanggota tbody').on('click', '.pilihAnggota', function(e) {
             e.preventDefault();
             let no_anggota = $(this).attr('no_anggota');

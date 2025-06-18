@@ -525,6 +525,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/pembiayaan/{npp}/showmobile', 'showmobile')->name('pembiayaan.showmobile');
         Route::get('/pembiayaan/{no_akad}/showdetail', 'showdetail')->name('pembiayaan.showdetail');
+        Route::get('/pembiayaan/createmobile','createmobile')->name('pembiayaan.createmobile');
     });
 
     Route::controller(PresensiController::class)->group(function () {

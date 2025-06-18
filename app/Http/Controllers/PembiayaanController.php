@@ -9,6 +9,8 @@ use App\Models\Karyawananggota;
 use App\Models\Pembiayaan;
 use App\Models\Province;
 use App\Models\Rencanapembiayaan;
+use App\Models\User;
+use App\Models\Userkaryawan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -97,7 +99,7 @@ class PembiayaanController extends Controller
     {
         $no_akad = Crypt::decrypt($no_akad);
         $request->validate([
-            'tanggal' => 'required',
+            
             'jumlah' => 'required',
             'berita' => 'required',
         ]);
@@ -460,10 +462,23 @@ class PembiayaanController extends Controller
     }
 
 
+    public function createmobile(){
+        $user = User::where('id', auth()->user()->id)->first();
+        $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
+        $karyawan_anggota= Karyawananggota::where('npp', $userkaryawan->npp)->first();
+        $anggota = Anggota::where('no_anggota',$karyawan_anggota->no_anggota)->first();
+        $data['anggota'] = $anggota;
+        $data['provinsi'] = Province::orderBy('name')->get();
+        $data['pendidikan'] = config('global.list_pendidikan ');
+        $data['jenis_pembiayaan'] = Jenispembiayaan::orderBy('kode_pembiayaan')->get();
+        return view('koperasi.pembiayaan.createmobile',$data);
+    }
+
+
     public function store(Request $request)
     {
         $request->validate([
-            'tanggal' => 'required',
+            
             'no_anggota' => 'required',
             'nik' => 'required',
             'nama_lengkap' => 'required',
@@ -728,6 +743,7 @@ class PembiayaanController extends Controller
         return view('koperasi.pembiayaan.showmobile', $data);
     }
 
+    
     public function showdetail($no_akad)
     {
         $no_akad = Crypt::decrypt($no_akad);
