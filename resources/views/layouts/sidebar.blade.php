@@ -384,7 +384,7 @@
             </li>
         @endif
         @if (auth()->user()->hasAnyPermission(['izinabsen.index', 'izinsakit.index', 'presensi.index']))
-            <li class="menu-item {{ request()->is(['izinabsen', 'izinsakit', 'presensi']) ? 'open' : '' }}">
+            <li class="menu-item {{ request()->is(['izinabsen', 'izinsakit', 'presensi','laporanmsdm']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-moneybag"></i>
                     <div>MSDM</div>
@@ -410,7 +410,7 @@
                         <li class="menu-item {{ request()->is(['laporanmsdm']) ? 'active' : '' }}">
                             <a href="{{ route('laporanmsdm.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-file-description"></i>
-                                <div>Laporan MSDM </div>
+                                <div>Laporan</div>
                             </a>
                         </li>
                     @endif
