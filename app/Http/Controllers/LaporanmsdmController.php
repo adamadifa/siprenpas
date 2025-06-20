@@ -9,8 +9,9 @@ use Illuminate\Http\Request;
 
 class LaporanmsdmController extends Controller
 {
-    public function index(){
-        $data['unit'] = Unit::where('kode_unit','!=','U00')->get();
+    public function index()
+    {
+        $data['unit'] = Unit::where('kode_unit', '!=', 'U00')->get();
         $data['list_bulan'] = config('global.list_bulan');
         $data['start_year'] = config('global.start_year');
         return view('msdm.laporan.index', $data);
@@ -20,10 +21,6 @@ class LaporanmsdmController extends Controller
 
     public function cetakpresensi(Request $request)
     {
-
-
-        
-
 
         $bulan = $request->bulan;
         $tahun = $request->tahun;
@@ -37,7 +34,7 @@ class LaporanmsdmController extends Controller
             ->leftJoin('presensi_izinabsen', 'presensi_izinabsen_approve.kode_izin', '=', 'presensi_izinabsen.kode_izin')
             ->leftJoin('presensi_izinsakit_approve', 'presensi.id', '=', 'presensi_izinsakit_approve.id_presensi')
             ->leftJoin('presensi_izinsakit', 'presensi_izinsakit_approve.kode_izin_sakit', '=', 'presensi_izinsakit.kode_izin_sakit')
-            
+
             ->select(
                 'presensi.*',
                 'nama_jam_kerja',
@@ -51,7 +48,7 @@ class LaporanmsdmController extends Controller
             ->whereBetween('presensi.tanggal', [$periode_dari, $periode_sampai]);
 
 
-    
+
         $q_presensi = Karyawan::query();
         $q_presensi->select(
             'karyawan.npp',
@@ -70,16 +67,17 @@ class LaporanmsdmController extends Controller
             'presensi.lintas_hari',
             'presensi.keterangan_izin_absen',
             'presensi.keterangan_izin_sakit',
-            'presensi.total_jam'
+            'presensi.total_jam',
+            'karyawan.status_karyawan'
         );
         $q_presensi->leftJoin('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan');
         $q_presensi->leftJoin('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit');
         $q_presensi->leftJoinSub($presensi_detail, 'presensi', function ($join) {
             $join->on('karyawan.npp', '=', 'presensi.npp');
         });
-        
 
-       
+
+
         if (!empty($request->kode_unit)) {
             $q_presensi->where('karyawan.kode_unit', $request->kode_unit);
         }
@@ -95,7 +93,7 @@ class LaporanmsdmController extends Controller
         $data['periode_dari'] = $periode_dari;
         $data['periode_sampai'] = $periode_sampai;
         $data['jmlhari'] = hitungJumlahHari($periode_dari, $periode_sampai) + 1;
-        
+
 
         if (isset($_POST['exportButton'])) {
             header("Content-type: application/vnd-ms-excel");
@@ -118,7 +116,7 @@ class LaporanmsdmController extends Controller
                     'nama_jabatan' => $rows->first()->nama_jabatan,
                     'kode_unit' => $rows->first()->kode_unit,
                     'nama_unit' => $rows->first()->nama_unit,
-                    'kode_cabang' => $rows->first()->kode_cabang,
+                    'status_karyawan' => $rows->first()->status_karyawan,
                 ];
 
                 foreach ($rows as $row) {
@@ -144,8 +142,8 @@ class LaporanmsdmController extends Controller
             });
             $data['laporan_presensi'] = $laporan_presensi;
 
-            dd($data['laporan_presensi']);
-            return view('laporan.presensi_cetak', $data);
+            // dd($data['laporan_presensi']);
+            return view('msdm.laporan.presensi_cetak', $data);
         }
     }
 }

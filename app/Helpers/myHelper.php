@@ -340,17 +340,25 @@ function hitungjamterlambat($jam_in, $jam_mulai)
             //     $desimal_terlambat = $desimal_terlambat;
             // }
 
-
+            $show = $desimal_terlambat < 1 ? $menitterlambat . " Menit" : formatAngkaDesimal($desimal_terlambat) . " Jam";
             return [
                 'keterangan_terlambat' => $keterangan_terlambat,
                 'jamterlambat' => $jamterlambat,
                 'menitterlambat' => $menitterlambat,
                 'desimal_terlambat' => $desimal_terlambat,
-                'show' =>  $desimal_terlambat < 1 ? $menitterlambat . " Menit" : formatAngkaDesimal($desimal_terlambat) . " Jam",
+                'show' => '<span style="color:red">' . $show . '</span>',
+                'show_laporan' => 'Telat :' . $show,
+                'color' => 'red'
                 // 'color_terlambat' => $color_terlambat
             ];
         } else {
-            return null;
+            return [
+                'menitterlambat' => 0,
+                'desimal_terlambat' => 0,
+                'color' => 'green',
+                'show' => '<span style="color:green">Tepat Waktu</span>',
+                'show_laporan' => 'Tepat Waktu'
+            ];
         }
     } else {
         return null;
@@ -409,4 +417,20 @@ function hitungJumlahHari($tanggal_awal, $tanggal_akhir)
     $jumlah_hari = $start_date->diffInDays($end_date);
 
     return $jumlah_hari;
+}
+
+
+function getHari($date)
+{
+    $days = array(
+        'Sunday' => 'Minggu',
+        'Monday' => 'Senin',
+        'Tuesday' => 'Selasa',
+        'Wednesday' => 'Rabu',
+        'Thursday' => 'Kamis',
+        'Friday' => 'Jumat',
+        'Saturday' => 'Sabtu'
+    );
+    $dayName = date('l', strtotime($date));
+    return $days[$dayName];
 }

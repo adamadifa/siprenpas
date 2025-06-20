@@ -196,7 +196,7 @@
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <span class="fw-medium d-block">{{ Auth::user()->name }}</span>
+                                    <span class="fw-medium d-block">@if(Auth::check()){{ Auth::user()->name }}@endif</span>
                                     <small class="text-muted">Admin</small>
                                 </div>
                             </div>

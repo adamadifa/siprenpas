@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AgendakegiatanController;
 use App\Http\Controllers\AnggotaController;
+use App\Http\Controllers\AdminQuestionnaireController;
+use App\Http\Controllers\AdminQuestionController;
 use App\Http\Controllers\AsalsekolahController;
 use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\ChecklistibadahController;
@@ -38,6 +40,7 @@ use App\Http\Controllers\Permission_groupController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PresensiController;
+use App\Http\Controllers\PublicQuestionnaireController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProgramkerjaController;
 use App\Http\Controllers\RealisasikegiatanController;
@@ -642,6 +645,18 @@ Route::middleware('auth')->group(function () {
     });
 });
 
+
+// PUBLIC QUESTIONNAIRE ROUTES
+Route::get('/questionnaires', [PublicQuestionnaireController::class, 'list'])->name('questionnaires.list');
+Route::get('/questionnaire/{id}', [PublicQuestionnaireController::class, 'index'])->name('questionnaire.form');
+Route::post('/questionnaire/{id}', [PublicQuestionnaireController::class, 'store'])->name('questionnaire.submit');
+
+// ADMIN QUESTIONNAIRE ROUTES
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('questionnaires', AdminQuestionnaireController::class);
+    Route::resource('questionnaires.questions', AdminQuestionController::class);
+    Route::get('questionnaires/{questionnaire}/report', [AdminQuestionnaireController::class, 'report'])->name('questionnaires.report');
+});
 
 Route::get('/createrolepermission', function () {
 
