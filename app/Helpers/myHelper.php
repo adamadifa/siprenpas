@@ -2,6 +2,7 @@
 
 use App\Models\Produk;
 use App\Models\Tutuplaporan;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redirect;
 
 function buatkode($nomor_terakhir, $kunci, $jumlah_karakter = 0)
@@ -397,4 +398,15 @@ function hitungdenda($menit_terlambat, $status_karyawan)
         }
     }
     return $denda;
+}
+
+
+function hitungJumlahHari($tanggal_awal, $tanggal_akhir)
+{
+    $start_date = Carbon::parse($tanggal_awal);
+    $end_date = Carbon::parse($tanggal_akhir);
+
+    $jumlah_hari = $start_date->diffInDays($end_date);
+
+    return $jumlah_hari;
 }

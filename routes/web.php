@@ -638,6 +638,7 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(LaporanmsdmController::class)->group(function () {
         Route::get('/laporanmsdm', 'index')->name('laporanmsdm.index')->can('presensi.index');
+        Route::post('/laporanmsdm/cetakpresensi', 'cetakpresensi')->name('laporanmsdm.cetakpresensi')->can('presensi.index');
     });
 });
 

@@ -1,4 +1,4 @@
-<form action="#" method="POST" target="_blank" id="formPresensi">
+<form action="{{ route('laporanmsdm.cetakpresensi') }}" method="POST" target="_blank" id="formPresensi">
     @csrf
     <div class="form-group mb-3">
         <select name="kode_unit" id="kode_unit" class="form-select select2Kodeunitpresensi">
