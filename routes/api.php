@@ -20,6 +20,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('/presensi', App\Http\Controllers\Api\PresensiController::class);
 
+// AUTH API
+Route::prefix('auth')->group(function () {
+    Route::post('/login', [App\Http\Controllers\Api\AuthController::class, 'login']);
+});
+
 Route::prefix('public')->group(function () {
 
     //index posts

@@ -80,6 +80,11 @@ use Spatie\Permission\Models\Role;
 //     return view('welcome');
 // });
 
+// API Documentation
+Route::get('/api-docs', function () {
+    return view('api-docs');
+});
+
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
