@@ -151,8 +151,8 @@ class LaporanmsdmController extends Controller
 
     public function cetakchecklistibadah(Request $request)
     {
-        $bulan = 3;  // Juni
-        $tahun = 2025;
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
 
         $checklistData = DB::table('karyawan as k')
             ->leftJoin('checklist_ibadah as ci', function ($join) use ($bulan, $tahun) {
@@ -168,6 +168,11 @@ class LaporanmsdmController extends Controller
                 'ki.id as kegiatan_id',
                 DB::raw('COUNT(cid.id_kegiatan_ibadah) as total')
             )
+            ->when(!empty($request->kode_unit), function ($query) use ($request) {
+                return $query->where('k.kode_unit', $request->kode_unit);
+            })
+            
+           
             ->groupBy('k.npp', 'k.nama_lengkap', 'ki.id')
             ->get();
 
