@@ -4,6 +4,9 @@ use App\Http\Controllers\AgendakegiatanController;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\AdminQuestionnaireController;
 use App\Http\Controllers\AdminQuestionController;
+
+// Route untuk edit pertanyaan kuisioner
+Route::get('/admin/questionnaires/{questionnaire}/questions/{question}/edit', [AdminQuestionController::class, 'edit'])->name('admin.questionnaires.questions.edit');
 use App\Http\Controllers\AsalsekolahController;
 use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\ChecklistibadahController;

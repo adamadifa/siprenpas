@@ -8,7 +8,7 @@
         <div class="col-lg-12 col-sm-12 col-xs-12">
             <div class="card">
                 <div class="card-header">
-                    <a href="{{ route('admin.questionnaires.create') }}" class="btn btn-primary" id="btncreateKuisioner">
+                    <a href="#" class="btn btn-primary" id="btncreateKuisioner">
                         <i class="fa fa-plus me-2"></i> Tambah Kuisioner
                     </a>
                 </div>
@@ -49,8 +49,7 @@
                                                         class="btn btn-warning btn-sm">Edit</a>
                                                     <a href="{{ route('admin.questionnaires.questions.index', $q->id) }}"
                                                         class="btn btn-secondary btn-sm">Kelola Pertanyaan</a>
-                                                    <a href="{{ route('admin.questionnaires.show', $q->id) }}"
-                                                        class="btn btn-info btn-sm">Detail</a>
+                                                   
                                                     <a href="{{ route('admin.questionnaires.report', $q->id) }}"
                                                         class="btn btn-success btn-sm">Report</a>
                                                     <form action="{{ route('admin.questionnaires.destroy', $q->id) }}"
@@ -77,4 +76,15 @@
             </div>
         </div>
     </div>
+    <x-modal-form id="mdlcreateKuisioner" size="modal-lg" show="loadcreateKuisioner" title="Tambah Kuisioner" />
 @endsection
+@push('myscript')
+    <script>
+        $(document).ready(function() {
+            $('#btncreateKuisioner').click(function() {
+                $('#mdlcreateKuisioner').modal('show');
+                $('#loadcreateKuisioner').load('/admin/questionnaires/create');
+            });
+        });
+    </script>
+@endpush

@@ -53,17 +53,36 @@ class AdminQuestionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($questionnaireId, $id)
     {
-        //
+        $questionnaire = \App\Models\Questionnaire::findOrFail($questionnaireId);
+        $question = \App\Models\Question::with('options')->findOrFail($id);
+        return view('questionnaires.questions.edit', compact('questionnaire', 'question'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $questionnaireId, $id)
     {
-        //
+        $request->validate([
+            'question' => 'required|string',
+            'options' => 'required|array|min:2',
+            'options.*' => 'required|string',
+        ]);
+        $question = \App\Models\Question::findOrFail($id);
+        $question->question = $request->question;
+        $question->save();
+        // Hapus opsi lama, lalu tambah opsi baru
+        $question->options()->delete();
+        foreach ($request->options as $opt) {
+            \App\Models\QuestionOption::create([
+                'question_id' => $question->id,
+                'option_text' => $opt,
+            ]);
+        }
+        return redirect()->route('admin.questionnaires.questions.index', $questionnaireId)
+            ->with('success','Pertanyaan berhasil diupdate!');
     }
 
     public function destroy($questionnaireId, $id)
