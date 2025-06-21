@@ -395,7 +395,8 @@
 
                                                     @endphp
                                                     @if (!empty($terlambat))
-                                                        <span style="color:red">Terlambat {{ $terlambat['show'] }} </span>
+                                                        @if ($terlambat['menitterlambat'] > 0)
+                                                        <span style="color:red">Terlambat {!! $terlambat['show'] !!} </span>
                                                         <br>
                                                         @php
                                                             $menit_terlambat = $terlambat['menitterlambat'];
@@ -405,8 +406,9 @@
                                                             );
                                                         @endphp
                                                         <span style="color:red">Denda: {{ formatAngka($denda) }}</span>
-                                                    @else
+                                                        @else
                                                         <span style="color:green">Tepat Waktu</span>
+                                                        @endif
                                                     @endif
                                                 @endif
 

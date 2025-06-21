@@ -344,7 +344,7 @@ function hitungjamterlambat($jam_in, $jam_mulai)
             return [
                 'keterangan_terlambat' => $keterangan_terlambat,
                 'jamterlambat' => $jamterlambat,
-                'menitterlambat' => $menitterlambat,
+                'menitterlambat' => $menitterlambat  + ($jamterlambat * 60),
                 'desimal_terlambat' => $desimal_terlambat,
                 'show' => '<span style="color:red">' . $show . '</span>',
                 'show_laporan' => 'Telat :' . $show,

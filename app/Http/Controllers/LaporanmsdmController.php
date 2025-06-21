@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Karyawan;
+use App\Models\Kegiatanibadah;
 use App\Models\Presensi;
 use App\Models\Unit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LaporanmsdmController extends Controller
 {
@@ -145,5 +147,39 @@ class LaporanmsdmController extends Controller
             // dd($data['laporan_presensi']);
             return view('msdm.laporan.presensi_cetak', $data);
         }
+    }
+
+    public function cetakchecklistibadah(Request $request)
+    {
+        $bulan = 3;  // Juni
+        $tahun = 2025;
+
+        $checklistData = DB::table('karyawan as k')
+            ->leftJoin('checklist_ibadah as ci', function ($join) use ($bulan, $tahun) {
+                $join->on('k.npp', '=', 'ci.npp')
+                    ->whereMonth('ci.tanggal', $bulan)
+                    ->whereYear('ci.tanggal', $tahun);
+            })
+            ->leftJoin('checklist_ibadah_detail as cid', 'ci.kode_checklist_ibadah', '=', 'cid.kode_checklist_ibadah')
+            ->leftJoin('kegiatan_ibadah as ki', 'cid.id_kegiatan_ibadah', '=', 'ki.id')
+            ->select(
+                'k.npp',
+                'k.nama_lengkap',
+                'ki.id as kegiatan_id',
+                DB::raw('COUNT(cid.id_kegiatan_ibadah) as total')
+            )
+            ->groupBy('k.npp', 'k.nama_lengkap', 'ki.id')
+            ->get();
+
+        $rekap = [];
+
+        foreach ($checklistData as $row) {
+            $rekap[$row->npp]['npp'] = $row->npp;
+            $rekap[$row->npp]['nama_lengkap'] = $row->nama_lengkap;
+            $rekap[$row->npp]['data'][$row->kegiatan_id] = $row->total;
+        }
+
+        $kegiatan = Kegiatanibadah::join('kategori_ibadah', 'kegiatan_ibadah.id_kategori_ibadah', '=', 'kategori_ibadah.id')->get();
+        return view('msdm.laporan.checklistibadah_cetak', compact('rekap', 'kegiatan'));
     }
 }

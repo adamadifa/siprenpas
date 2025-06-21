@@ -1,58 +1,88 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h2>Report Hasil Kuisioner: {{ $questionnaire->title }}</h2>
-    <p>{{ $questionnaire->description }}</p>
-    <hr>
-    @foreach($reportData as $i => $q)
-        <div class="mb-4">
-            <h5>Pertanyaan {{ $i+1 }}: {{ $q['question'] }}</h5>
-            <table class="table table-bordered mb-2" style="max-width:400px">
-                <thead>
-                    <tr>
-                        <th>Opsi Jawaban</th>
-                        <th>Jumlah Orang</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($q['options'] as $opt)
-                        <tr>
-                            <td>{{ $opt['option'] }}</td>
-                            <td>{{ $opt['count'] }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            <canvas id="chart-{{ $i }}" height="100"></canvas>
-        </div>
-    @endforeach
+<div class="container py-4">
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">{{ $questionnaire->title }}</h2>
+        <div class="text-muted mb-2">{{ $questionnaire->description }}</div>
+        @if(isset($totalRespondents))
+        <span class="badge bg-primary mb-2">Total Responden: {{ $totalRespondents }}</span>
+        @endif
+        <hr>
+    </div>
+    <div class="row g-4">
+        @foreach($reportData as $i => $q)
+            <div class="col-lg-6 col-md-12">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">Pertanyaan {{ $i+1 }}: <span class="fw-normal">{{ $q['question'] }}</span></h5>
+                        <table class="table table-sm table-bordered align-middle mb-3">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Opsi Jawaban</th>
+                                    <th class="text-center">Jumlah</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($q['options'] as $opt)
+                                <tr>
+                                    <td>{{ $opt['option'] }}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-success fs-6">{{ $opt['count'] }}</span>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                        <div class="bg-light rounded p-2 mb-2">
+                            <div id="chart-{{ $i }}" style="height:120px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
 </div>
 @endsection
 
-@section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+@push('myscript')
+<!-- ApexCharts CDN -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
-    @foreach($reportData as $i => $q)
-    const ctx{{ $i }} = document.getElementById('chart-{{ $i }}').getContext('2d');
-    new Chart(ctx{{ $i }}, {
-        type: 'bar',
-        data: {
-            labels: {!! json_encode(collect($q['options'])->pluck('option')) !!},
-            datasets: [{
-                label: 'Jumlah Jawaban',
-                data: {!! json_encode(collect($q['options'])->pluck('count')) !!},
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: { beginAtZero: true, precision: 0 }
-            }
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        @foreach($reportData as $i => $q)
+        var options{{ $i }} = {
+            chart: {
+                type: 'bar',
+                height: 120,
+                toolbar: { show: false },
+                sparkline: { enabled: true }
+            },
+            series: [{
+                name: 'Jumlah',
+                data: {!! json_encode(collect($q['options'])->pluck('count')) !!}
+            }],
+            xaxis: {
+                categories: {!! json_encode(collect($q['options'])->pluck('option')) !!},
+                labels: { style: { fontSize: '13px' } }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '60%',
+                    borderRadius: 4
+                }
+            },
+            dataLabels: { enabled: true },
+            colors: ['#36a2eb', '#ff6384', '#ffcd56', '#4bc0c0', '#9966ff', '#ff9f40', '#28a745'],
+            plotOptions: { bar: { distributed: true, horizontal: false, columnWidth: '60%', borderRadius: 4 } },
+            grid: { show: false },
+            legend: { show: false },
+            tooltip: { enabled: true }
+        };
+        var chart{{ $i }} = new ApexCharts(document.querySelector("#chart-{{ $i }}"), options{{ $i }});
+        chart{{ $i }}.render();
+        @endforeach
     });
-    @endforeach
 </script>
-@endsection
+@endpush
