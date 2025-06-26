@@ -16,12 +16,13 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => 'required',
             'password' => 'required',
         ]);
 
         $user = User::where('email', $request->email)->first();
 
+        
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
@@ -35,6 +36,56 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Login berhasil',
+            'data' => [
+                'user' => $user,
+                'token' => $token,
+            ],
+        ]);
+    }
+
+    /**
+     * Register API untuk Orang Tua
+     */
+    public function registerOrangtua(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6|confirmed',
+            'nik' => 'required|digits:16',
+        ]);
+
+        // Cek NIK pada tabel siswa (nik_ayah atau nik_ibu)
+        $nik = $request->nik;
+        $siswa = \App\Models\Siswa::where('nik_ayah', $nik)
+            ->orWhere('nik_ibu', $nik)
+            ->first();
+
+        if (!$siswa) {
+            return response()->json([
+                'success' => false,
+                'message' => 'NIK tidak ditemukan pada data siswa. Pastikan NIK ayah atau ibu sudah terdaftar di sekolah.',
+            ], 404);
+        }
+
+        // Buat user baru
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'username' => $request->nik,
+            'kode_unit' => 'U00',
+            'password' => Hash::make($request->password),
+        ]);
+
+        // Assign role orang tua
+        $user->assignRole('orang tua');
+
+        // Generate token
+        $token = $user->createToken('mobile-app')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Registrasi berhasil',
             'data' => [
                 'user' => $user,
                 'token' => $token,

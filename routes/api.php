@@ -23,6 +23,7 @@ Route::apiResource('/presensi', App\Http\Controllers\Api\PresensiController::cla
 // AUTH API
 Route::prefix('auth')->group(function () {
     Route::post('/login', [App\Http\Controllers\Api\AuthController::class, 'login']);
+    Route::post('/register-orangtua', [App\Http\Controllers\Api\AuthController::class, 'registerOrangtua']);
 });
 
 Route::prefix('public')->group(function () {

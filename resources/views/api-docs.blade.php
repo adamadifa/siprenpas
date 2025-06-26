@@ -62,6 +62,54 @@
         </div>
     </div>
 
+    <div class="endpoint">
+        <h2>Registrasi Orang Tua</h2>
+        <span class="method">POST</span>
+        <span class="url">/api/auth/register-orangtua</span>
+        <h4 class="section-title">Request Body (JSON)</h4>
+        <table class="param-table">
+            <tr><th>Field</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td>name</td><td>string</td><td>Ya</td><td>Nama lengkap orang tua</td></tr>
+            <tr><td>email</td><td>string</td><td>Ya</td><td>Email aktif orang tua</td></tr>
+            <tr><td>password</td><td>string</td><td>Ya</td><td>Password minimal 6 karakter</td></tr>
+            <tr><td>password_confirmation</td><td>string</td><td>Ya</td><td>Konfirmasi password (harus sama dengan password)</td></tr>
+            <tr><td>nik</td><td>string (16 digit)</td><td>Ya</td><td>NIK ayah atau ibu sesuai data siswa</td></tr>
+        </table>
+        <h4 class="section-title">Contoh Request</h4>
+        <pre>{
+  "name": "Orang Tua Siswa",
+  "email": "ortu@email.com",
+  "password": "passwordku",
+  "password_confirmation": "passwordku",
+  "nik": "3275012345678901"
+}</pre>
+        <h4 class="section-title">Contoh Response Sukses</h4>
+        <div class="response">
+<pre>{
+  "success": true,
+  "message": "Registrasi berhasil",
+  "data": {
+    "user": {
+      "id": 2,
+      "name": "Orang Tua Siswa",
+      "email": "ortu@email.com",
+      ...
+    },
+    "token": "TOKEN_SANCTUM"
+  }
+}
+</pre>
+        </div>
+        <h4 class="section-title">Contoh Response Gagal</h4>
+        <div class="response">
+<pre>{
+  "success": false,
+  "message": "NIK tidak ditemukan pada data siswa. Pastikan NIK ayah atau ibu sudah terdaftar di sekolah."
+}
+</pre>
+        </div>
+    </div>
+
     <p>Untuk endpoint lain, silakan hubungi pengembang atau cek update dokumentasi ini.</p>
 </body>
 </html>
