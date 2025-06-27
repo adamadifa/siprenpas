@@ -12,4 +12,12 @@ class Unit extends Model
     protected $primaryKey = "kode_unit";
     protected $guarded = [];
     public $incrementing = false;
+
+    public function getUnit()
+    {
+        $unit = Unit::whereNotIn('kode_unit', ['U00', 'U06'])
+            ->orderBy('kode_unit')
+            ->get();
+        return $unit;
+    }
 }

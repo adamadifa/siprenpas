@@ -64,7 +64,8 @@ class PendaftaranController extends Controller
             ->get();
 
         $data['tahun_ajaran'] = $tahun_ajaran;
-        $data['unit'] = Unit::orderBy('kode_unit')->get();
+        $u = new Unit();
+        $data['unit'] = $u->getUnit();
         $data['jenis_kelamin'] = config('global.jenis_kelamin');
         $data['tahunajaran'] = Tahunajaran::orderBy('kode_ta')->get();
         $data['rekap_unit'] = $rekap_unit;
@@ -77,7 +78,8 @@ class PendaftaranController extends Controller
 
         $data['provinsi'] = Province::orderBy('name')->get();
         $data['pendidikan'] = config('global.list_pendidikan ');
-        $data['unit'] = Unit::orderBy('kode_unit')->get();
+        $u = new Unit();
+        $data['unit'] = $u->getUnit();
         $data['penghasilan_ortu'] = Penghasilanortu::orderBy('kode_penghasilan_ortu')->get();
         return view('pendaftaran.create', $data);
     }

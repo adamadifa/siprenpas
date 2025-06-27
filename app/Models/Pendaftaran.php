@@ -29,7 +29,8 @@ class Pendaftaran extends Model
             'provinces.name as provinsi',
             'regencies.name as kota',
             'logo',
-            'nama_unit'
+            'nama_unit',
+            'pendaftaran.nis'
         );
         $query->join('siswa', 'pendaftaran.id_siswa', 'siswa.id_siswa');
         $query->join('unit', 'pendaftaran.kode_unit', 'unit.kode_unit');

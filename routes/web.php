@@ -26,6 +26,7 @@ use App\Http\Controllers\KategoriledgerController;
 use App\Http\Controllers\KategoripemasukanController;
 use App\Http\Controllers\KategoripengeluaranController;
 use App\Http\Controllers\KegiatanibadahController;
+use App\Http\Controllers\KelasController;
 use App\Http\Controllers\LaporankoperasiController;
 use App\Http\Controllers\LaporanmsdmController;
 use App\Http\Controllers\LedgerController;
@@ -307,6 +308,19 @@ Route::middleware('auth')->group(function () {
         Route::get('/jenisbiaya/{kode_jenis_biaya}/edit', 'edit')->name('jenisbiaya.edit')->can('jenisbiaya.edit');
         Route::put('/jenisbiaya/{kode_jenis_biaya}/update', 'update')->name('jenisbiaya.update')->can('jenisbiaya.update');
         Route::delete('/jenisbiaya/{kode_jenis_biaya}/delete', 'destroy')->name('jenisbiaya.delete')->can('jenisbiaya.delete');
+    });
+
+
+    Route::controller(KelasController::class)->group(function () {
+        Route::get('/kelas', 'index')->name('kelas.index')->can('kelas.index');
+        Route::get('/kelas/create', 'create')->name('kelas.create')->can('kelas.create');
+        Route::post('/kelas', 'store')->name('kelas.store')->can('kelas.create');
+        Route::get('/kelas/{kode_jenis_biaya}/edit', 'edit')->name('kelas.edit')->can('kelas.edit');
+        Route::get('/kelas/{kode_jenis_biaya}/setkelas', 'setkelas')->name('kelas.setkelas')->can('kelas.edit');
+        Route::get('/kelas/{kode_jenis_biaya}/tambahsiswa', 'tambahsiswa')->name('kelas.tambahsiswa')->can('kelas.edit');
+        Route::put('/kelas/{kode_jenis_biaya}/update', 'update')->name('kelas.update')->can('kelas.edit');
+        Route::post('/kelas/getsiswa', 'getsiswa')->name('kelas.getsiswa');
+        Route::delete('/kelas/{kode_jenis_biaya}/delete', 'destroy')->name('kelas.delete')->can('kelas.delete');
     });
 
 

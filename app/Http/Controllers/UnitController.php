@@ -109,9 +109,10 @@ class UnitController extends Controller
     {
         $tingkat = config('global.tingkat');
         $jml_tingkat = $tingkat[$request->kode_unit];
+        $selected = $request->selected;
         echo "<option value=''>Pilih Tingkat</option>";
         for ($i = 1; $i <= $jml_tingkat; $i++) {
-            echo "<option value='$i'>$i</option>";
+            echo "<option value='$i'" . ($selected == $i ? 'selected' : '') . ">$i</option>";
         }
     }
 }
