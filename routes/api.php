@@ -29,11 +29,13 @@ Route::prefix('auth')->group(function () {
     Route::post('/register-orangtua', [App\Http\Controllers\Api\AuthController::class, 'registerOrangtua']);
 });
 
-// Endpoint untuk mendapatkan data unit (wajib login)
-Route::middleware('auth:sanctum')->get('/unit', [App\Http\Controllers\Api\UnitController::class, 'index']);
-
-// Endpoint untuk mendapatkan unit berdasarkan id_siswa pada pendaftaran (wajib login)
-Route::middleware('auth:sanctum')->post('/unit-by-siswa', [App\Http\Controllers\Api\PendaftaranController::class, 'unitByIdSiswa']);
+// Group endpoint yang memerlukan autentikasi
+Route::middleware('auth:sanctum')->group(function () {
+    // Endpoint untuk mendapatkan data unit
+    Route::get('/unit', [App\Http\Controllers\Api\UnitController::class, 'index']);
+    // Endpoint untuk mendapatkan unit berdasarkan id_siswa pada pendaftaran
+    Route::post('/unit-by-siswa', [App\Http\Controllers\Api\PendaftaranController::class, 'unitByIdSiswa']);
+});
 
 Route::prefix('public')->group(function () {
     //index posts
