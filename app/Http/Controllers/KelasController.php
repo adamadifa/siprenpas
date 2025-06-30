@@ -108,9 +108,9 @@ class KelasController extends Controller
     {
         $kode_kelas = Crypt::decrypt($kode_kelas);
         $data['kelas'] = Kelas::where('kode_kelas', $kode_kelas)
-        ->join('unit', 'kelas.kode_unit', '=', 'unit.kode_unit')
-        ->select('kelas.*', 'unit.nama_unit')
-        ->first();
+            ->join('unit', 'kelas.kode_unit', '=', 'unit.kode_unit')
+            ->select('kelas.*', 'unit.nama_unit')
+            ->first();
         return view('datamaster.kelas.setkelas', $data);
     }
 
@@ -133,7 +133,7 @@ class KelasController extends Controller
             ->leftJoinSub($kelas_siswa, 'kelas_siswa', function ($join) {
                 $join->on('siswa.id_siswa', '=', 'kelas_siswa.id_siswa');
             })
-            ->select('siswa.*','pendaftaran.nis', 'kelas_siswa.id_siswa as ceksiswa')
+            ->select('siswa.*', 'pendaftaran.nis', 'kelas_siswa.id_siswa as ceksiswa')
             ->where('konfigurasi_biaya.kode_ta', $kelas->kode_ta)
             ->where('konfigurasi_biaya.tingkat', $kelas->tingkat)
             ->where('pendaftaran.kode_unit', $kelas->kode_unit)
@@ -151,15 +151,20 @@ class KelasController extends Controller
         $kode_kelas = $request->kode_kelas;
         $kelas = Kelas::where('kode_kelas', $kode_kelas)->first();
 
-        $pendaftaran = Pendaftaran::where('kode_ta', $kelas->kode_ta)->select('id_siswa', 'nis');
+        $biaya_siswa = Biayasiswa::where('konfigurasi_biaya.kode_ta', $kelas->kode_ta)
+            ->join('pendaftaran', 'siswa_biaya.no_pendaftaran', '=', 'pendaftaran.no_pendaftaran')
+            ->join('konfigurasi_biaya', 'siswa_biaya.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
+            ->select('id_siswa', 'nis');
+
+
         $kelas_siswa = Kelassiswa::where('kode_kelas', $kode_kelas)
-        ->join('siswa', 'kelas_siswa.id_siswa', '=', 'siswa.id_siswa')
-        ->leftJoinSub($pendaftaran, 'pendaftaran', function ($join) {
-            $join->on('siswa.id_siswa', '=', 'pendaftaran.id_siswa');
-        })
-        ->select('siswa.*','pendaftaran.nis')
-        ->get();
-        
+            ->join('siswa', 'kelas_siswa.id_siswa', '=', 'siswa.id_siswa')
+            ->leftJoinSub($biaya_siswa, 'biaya_siswa', function ($join) {
+                $join->on('siswa.id_siswa', '=', 'biaya_siswa.id_siswa');
+            })
+            ->select('siswa.*', 'biaya_siswa.nis')
+            ->get();
+
 
         return response()->json($kelas_siswa);
     }

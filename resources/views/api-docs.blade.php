@@ -143,8 +143,18 @@ Authorization: Bearer TOKEN_SANCTUM</pre>
 
     <div class="endpoint">
         <h2>Ambil Data Siswa Berdasarkan ID Siswa (Detail Lengkap)</h2>
-        <span class="method">POST</span>
+        <span class="method">GET</span>
         <span class="url">/api/siswa-by-idsiswa</span>
+        <h4 class="section-title">Deskripsi</h4>
+        <p>Mengambil data detail siswa berdasarkan <code>id_siswa</code> yang dikirim oleh front-end melalui query string. Data yang diambil merupakan hasil join dengan tabel pendaftaran, kelas, unit, dan tahun ajaran aktif. Hanya dapat diakses oleh user yang sudah login (token Sanctum).</p>
+        <h4 class="section-title">Autentikasi</h4>
+        <p>Wajib login menggunakan token Sanctum.<br>
+        Tambahkan header: <code>Authorization: Bearer &#123;token&#125;</code></p>
+        <h4 class="section-title">Parameter Query</h4>
+        <table class="param-table">
+            <tr><th>Field</th><th>Tipe</th><th>Wajib</th><th>Keterangan</th></tr>
+            <tr><td>id_siswa</td><td>string</td><td>Ya</td><td>ID siswa yang ingin diambil detailnya</td></tr>
+        </table>
         <h4 class="section-title">Deskripsi</h4>
         <p>Menampilkan detail lengkap data siswa beserta informasi pendaftaran, kelas, unit, biaya, dan tahun ajaran aktif berdasarkan <code>id_siswa</code> yang dikirimkan oleh front-end. Data diambil dari beberapa tabel yang di-join. Hanya dapat diakses oleh user yang sudah login (token Sanctum).</p>
         <h4 class="section-title">Autentikasi</h4>
@@ -156,13 +166,8 @@ Authorization: Bearer TOKEN_SANCTUM</pre>
             <tr><td>id_siswa</td><td>string</td><td>Ya</td><td>ID siswa yang ingin diambil detailnya</td></tr>
         </table>
         <h4 class="section-title">Contoh Request</h4>
-        <pre>POST /api/siswa-by-idsiswa
+        <pre>GET /api/siswa-by-idsiswa?id_siswa=2025001
 Authorization: Bearer TOKEN_SANCTUM
-Content-Type: application/json
-
-{
-  "id_siswa": "2025001"
-}
 </pre>
         <h4 class="section-title">Contoh Response Sukses</h4>
         <div class="response">

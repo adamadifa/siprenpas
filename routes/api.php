@@ -34,7 +34,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Endpoint untuk mendapatkan data unit
     Route::get('/unit', [App\Http\Controllers\Api\UnitController::class, 'index']);
     // Endpoint untuk mendapatkan unit berdasarkan id_siswa pada pendaftaran
-    Route::post('/unit-by-siswa', [App\Http\Controllers\Api\PendaftaranController::class, 'unitByIdSiswa']);
+    Route::get('/unit-by-siswa', [App\Http\Controllers\Api\PendaftaranController::class, 'unitByIdSiswa']);
+    Route::get('/siswa-by-idsiswa', [App\Http\Controllers\Api\PendaftaranController::class, 'siswaByIdSiswa']);
+    Route::get('/getbiayasiswa-by-nopendaftaran', [App\Http\Controllers\Api\PendaftaranController::class, 'getbiayasiswaByNoPendaftaran']);
 });
 
 Route::prefix('public')->group(function () {
