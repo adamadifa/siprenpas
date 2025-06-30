@@ -1,0 +1,77 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\Biayasiswa;
+use App\Models\Kelassiswa;
+use Illuminate\Http\Request;
+use App\Models\Pendaftaran;
+use App\Models\Siswa;
+use App\Models\Tahunajaran;
+use App\Models\Unit;
+
+class PendaftaranController extends Controller
+{
+    // Mendapatkan data unit berdasarkan id_siswa dari tabel pendaftaran
+    public function unitByIdSiswa(Request $request)
+    {
+        $request->validate([
+            'id_siswa' => 'required|string',
+        ]);
+        $pendaftaran = Pendaftaran::where('id_siswa', $request->id_siswa)
+        ->join('unit', 'pendaftaran.kode_unit', 'unit.kode_unit')
+        ->select('unit.*')
+        ->get();
+        return response()->json($pendaftaran);
+    }
+
+
+
+    public function siswaByIdSiswa(Request $request)
+    {
+        $ta_aktif = Tahunajaran::where('status', 1)->first();
+        $kelas_siswa = Kelassiswa::join('kelas', 'kelas_siswa.kode_kelas', 'kelas.kode_kelas')
+            ->select('kelas_siswa.id_siswa', 'nama_kelas')
+            ->where('kelas.kode_ta', $ta_aktif->kode_ta);
+        $query = Biayasiswa::query();
+        $query->select(
+            'pendaftaran.id_siswa',
+            'pendaftaran.no_pendaftaran',
+            'tahun_ajaran',
+            'pendaftaran.nis',
+            'kelas_siswa.nama_kelas',
+            'konfigurasi_biaya.tingkat',
+            'nama_unit',
+            'logo'
+        );
+        $query->join('pendaftaran', 'siswa_biaya.no_pendaftaran', 'pendaftaran.no_pendaftaran');
+        $query->join('unit', 'pendaftaran.kode_unit', 'unit.kode_unit');
+        $query->join('konfigurasi_biaya', 'siswa_biaya.kode_biaya', 'konfigurasi_biaya.kode_biaya');
+        $query->leftjoin('asal_sekolah', 'pendaftaran.kode_asal_sekolah', 'asal_sekolah.kode_asal_sekolah');
+        $query->join('konfigurasi_tahun_ajaran', 'konfigurasi_biaya.kode_ta', 'konfigurasi_tahun_ajaran.kode_ta');
+        $query->leftJoinSub($kelas_siswa, 'kelas_siswa', function ($join) {
+            $join->on('kelas_siswa.id_siswa', '=', 'pendaftaran.id_siswa');
+        });
+        $query->where('konfigurasi_biaya.kode_ta', $ta_aktif->kode_ta);
+       
+
+
+        $siswa = Siswa::leftJoinSub($query, 'siswa_biaya', function ($join) {
+            $join->on('siswa.id_siswa', '=', 'siswa_biaya.id_siswa');
+        })
+            ->select(
+                'siswa.*',
+                'siswa_biaya.no_pendaftaran',
+                'siswa_biaya.tahun_ajaran',
+                'siswa_biaya.nis',
+                'siswa_biaya.nama_kelas',
+                'siswa_biaya.tingkat',
+                'siswa_biaya.nama_unit',
+                'siswa_biaya.logo'
+            )
+            ->where('siswa.id_siswa', $request->id_siswa)
+            ->get();
+        return response()->json($siswa);
+    }
+}

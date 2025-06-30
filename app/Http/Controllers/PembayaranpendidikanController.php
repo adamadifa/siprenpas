@@ -41,8 +41,8 @@ class PembayaranpendidikanController extends Controller
         $pendaftaran = $p->getPendaftaran(request: $request)->paginate(15);
         $pendaftaran->appends($request->all());
         $data['pendaftaran'] = $pendaftaran;
-
-        $data['unit'] = Unit::orderBy('kode_unit')->get();
+        $u = new Unit();
+        $data['unit'] = $u->getUnit();
         $data['jenis_kelamin'] = config('global.jenis_kelamin');
         $data['tahunajaran'] = Tahunajaran::orderBy('kode_ta')->get();
 

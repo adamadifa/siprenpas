@@ -17,7 +17,7 @@
                                     <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}"
                                         name="nama_lengkap" icon="ti ti-search" />
                                 </div>
-                                <div class="col-lg-4 col-sm-12 col-md-12">
+                                <div class="col-lg-2 col-sm-12 col-md-12">
                                     <div class="form-group mb-3">
                                         <select name="kode_unit" id="kode_unit_search" class="form-select">
                                             <option value="">Semua Unit</option>
@@ -26,6 +26,13 @@
                                                     {{ Request('kode_unit') == $d->kode_unit ? 'selected' : '' }}>
                                                     {{ $d->nama_unit }}</option>
                                             @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2 col-sm-12 col-md-12">
+                                    <div class="form-group mb-3">
+                                        <select name="tingkat" id="tingkat" class="form-select">
+                                            <option value="">Pilih Tingkat</option>
                                         </select>
                                     </div>
                                 </div>
@@ -57,12 +64,14 @@
                                         <th>No.</th>
                                         <th>No. Pendaftaran</th>
                                         <th>ID Siswa</th>
-                                        <th>NISN</th>
+                                        {{-- <th>NISN</th> --}}
                                         <th>NIS</th>
                                         <th>Nama Lengkap</th>
                                         <th>Tanggal Lahir</th>
                                         <th>Jenis Kelamin</th>
                                         <th>Unit</th>
+                                        <th>Tingkat</th>
+                                        <th>Kelas</th>
                                         <th>#</th>
                                     </tr>
                                 </thead>
@@ -72,7 +81,7 @@
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $d->no_pendaftaran }}</td>
                                             <td>{{ $d->id_siswa }}</td>
-                                            <td>{{ $d->nisn }}</td>
+                                            {{-- <td>{{ $d->nisn }}</td> --}}
                                             <td>{{ $d->nis }}</td>
                                             <td>{{ $d->nama_lengkap }}</td>
                                             <td>{{ !empty($d->tanggal_lahir) ? DateToIndo($d->tanggal_lahir) : '' }}
@@ -80,6 +89,8 @@
                                             <td>{{ !empty($d->jenis_kelamin) ? $jenis_kelamin[$d->jenis_kelamin] : '' }}
                                             </td>
                                             <td>{{ $d->nama_unit }}</td>
+                                            <td>{{ $d->tingkat }}</td>
+                                            <td>{{ $d->nama_kelas }}</td>
                                             <td>
                                                 <div class="d-flex">
                                                     @can('pembayaranpdd.show')
@@ -782,6 +793,30 @@
                 }
             });
         }
+
+        function getTingkatByUnit(kode_unit, selected = '') {
+            selected = "{{ Request('tingkat') }}"
+            $.ajax({
+                type: "POST",
+                url: "{{ route('unit.gettingkatbyunit') }}",
+                cache: false,
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    kode_unit: kode_unit,
+                    selected: selected
+                },
+                success: function(respond) {
+                    $(document).find("#tingkat").html(respond);
+                }
+            });
+
+        }
+        $(document).on('change', '#kode_unit_search', function() {
+            const kode_unit = $(this).val();
+            getTingkatByUnit(kode_unit);
+        });
+
+        getTingkatByUnit("{{ Request('kode_unit') }}");
     });
 </script>
 @endpush

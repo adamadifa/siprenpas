@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Biayasiswa;
 use App\Models\Kelas;
+use App\Models\Kelassiswa;
+use App\Models\Pendaftaran;
 use App\Models\Tahunajaran;
 use App\Models\Unit;
 use Illuminate\Http\Request;
@@ -105,7 +107,10 @@ class KelasController extends Controller
     public function setkelas($kode_kelas)
     {
         $kode_kelas = Crypt::decrypt($kode_kelas);
-        $data['kelas'] = Kelas::where('kode_kelas', $kode_kelas)->first();
+        $data['kelas'] = Kelas::where('kode_kelas', $kode_kelas)
+        ->join('unit', 'kelas.kode_unit', '=', 'unit.kode_unit')
+        ->select('kelas.*', 'unit.nama_unit')
+        ->first();
         return view('datamaster.kelas.setkelas', $data);
     }
 
@@ -121,17 +126,104 @@ class KelasController extends Controller
         $nama_siswa = $request->nama_siswa;
         $kelas = Kelas::where('kode_kelas', $kode_kelas)->first();
 
+        $kelas_siswa = Kelassiswa::where('kode_kelas', $kelas->kode_kelas);
         $siswa_pendaftar = Biayasiswa::join('pendaftaran', 'siswa_biaya.no_pendaftaran', '=', 'pendaftaran.no_pendaftaran')
             ->join('konfigurasi_biaya', 'siswa_biaya.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
             ->join('siswa', 'pendaftaran.id_siswa', '=', 'siswa.id_siswa')
+            ->leftJoinSub($kelas_siswa, 'kelas_siswa', function ($join) {
+                $join->on('siswa.id_siswa', '=', 'kelas_siswa.id_siswa');
+            })
+            ->select('siswa.*','pendaftaran.nis', 'kelas_siswa.id_siswa as ceksiswa')
             ->where('konfigurasi_biaya.kode_ta', $kelas->kode_ta)
             ->where('konfigurasi_biaya.tingkat', $kelas->tingkat)
+            ->where('pendaftaran.kode_unit', $kelas->kode_unit)
             ->when(!empty($nama_siswa), function ($query) use ($nama_siswa) {
-                return $query->where('siswa.nama_siswa', 'like', '%' . $nama_siswa . '%');
+                return $query->where('siswa.nama_lengkap', 'like', '%' . $nama_siswa . '%');
             })
             ->get();
 
 
         return response()->json($siswa_pendaftar);
+    }
+
+    public function getkelassiswa(Request $request)
+    {
+        $kode_kelas = $request->kode_kelas;
+        $kelas = Kelas::where('kode_kelas', $kode_kelas)->first();
+
+        $pendaftaran = Pendaftaran::where('kode_ta', $kelas->kode_ta)->select('id_siswa', 'nis');
+        $kelas_siswa = Kelassiswa::where('kode_kelas', $kode_kelas)
+        ->join('siswa', 'kelas_siswa.id_siswa', '=', 'siswa.id_siswa')
+        ->leftJoinSub($pendaftaran, 'pendaftaran', function ($join) {
+            $join->on('siswa.id_siswa', '=', 'pendaftaran.id_siswa');
+        })
+        ->select('siswa.*','pendaftaran.nis')
+        ->get();
+        
+
+        return response()->json($kelas_siswa);
+    }
+
+    public function storetambahsiswa(Request $request)
+    {
+        $request->validate([
+            'id_siswa' => 'required',
+            'kode_kelas' => 'required',
+        ]);
+        try {
+            Kelassiswa::create([
+                'id_siswa' => $request->id_siswa,
+                'kode_kelas' => $request->kode_kelas,
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Data Berhasil Disimpan'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function deletesiswa(Request $request)
+    {
+        $request->validate([
+            'id_siswa' => 'required',
+            'kode_kelas' => 'required',
+        ]);
+        try {
+            Kelassiswa::where('id_siswa', $request->id_siswa)->where('kode_kelas', $request->kode_kelas)->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data Berhasil Dihapus'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function deletekelassiswa(Request $request)
+    {
+        $request->validate([
+            'id_siswa' => 'required',
+            'kode_kelas' => 'required',
+        ]);
+        try {
+            Kelassiswa::where('id_siswa', $request->id_siswa)->where('kode_kelas', $request->kode_kelas)->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Data Berhasil Dihapus'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }

@@ -14,6 +14,24 @@
                 @endcan
             </div>
             <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Kelas</th>
+                                <td>{{ $kelas->nama_kelas }}</td>
+                            </tr>
+                            <tr>
+                                <th>Tingkat</th>
+                                <td>{{ $kelas->tingkat }}</td>
+                            </tr>
+                            <tr>
+                                <th>Unit</th>
+                                <td>{{ $kelas->nama_unit }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-12">
                         <div class="table-responsive mb-2">
@@ -26,7 +44,7 @@
                                         <th>#</th>
                                     </tr>
                                 </thead>
-                                <tbody id="">
+                                <tbody id="loadkelassiswa">
 
                                 </tbody>
                             </table>
@@ -49,7 +67,7 @@
             <div class="modal-body">
 
                 <form action="#" id="frmTambahSiswa">
-                    <div class="row mb-3">
+                    {{-- <div class="row mb-3">
                         <div class="col">
                             <div class="d-flex justify-content-between">
                                 <button class="btn btn-primary" id="tambahkansemua"><i class="ti ti-plus me-1"></i>
@@ -60,7 +78,7 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="row mb-3">
                         <div class="col-lg-12 col-md-12 col-sm-12">
                             <x-input-with-icon label="Nama Siswa" name="nama_siswa" icon="ti ti-user" />
@@ -129,7 +147,7 @@
                                 <td>${element.nis}</td>
                                 <td>${element.nama_lengkap}</td>
                                 <td>
-                                ${element.ceksiswa == null ? `<a href="#"><i class="ti ti-circle-plus text-success"></i></a>` : `<a href="#"><i class="ti ti-circle-minus text-danger"></i></a>`}
+                                ${element.ceksiswa == null ? `<a href="#" class="tambahsiswa" id_siswa="${element.id_siswa}"><i class="ti ti-circle-plus text-success"></i></a>` : `<a href="#" class="hapussiswa" id_siswa="${element.id_siswa}"><i class="ti ti-circle-minus text-danger"></i></a>`}
                                 </td>
                             </tr>
                         `);
@@ -138,9 +156,116 @@
             })
         }
 
+        function getkelassiswa() {
+            const kode_kelas = "{{ $kelas->kode_kelas }}";
+            $.ajax({
+                type: 'POST',
+                url: `/kelas/getkelassiswa`,
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    kode_kelas: kode_kelas
+                },
+                cache: false,
+                success: function(respond) {
+                    let no = 1;
+                    $(document).find("#loadkelassiswa").html("");
+                    respond.forEach(element => {
+                        $(document).find("#loadkelassiswa").append(`
+                            <tr>
+                                <td>${no++}</td>
+                                <td>${element.nis}</td>
+                                <td>${element.nama_lengkap}</td>
+                                <td>
+                                    <a href="#" class="hapuskelassiswa" id_siswa="${element.id_siswa}"><i class="ti ti-trash text-danger"></i></a>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                }
+            })
+        }
 
+        getkelassiswa();    
+        $(document).on("click", ".tambahsiswa", function(e) {
+            e.preventDefault();
+            const id_siswa = $(this).attr("id_siswa");
+            const kode_kelas = "{{ $kelas->kode_kelas }}";
+            $.ajax({
+                type: 'POST',
+                url: `/kelas/storetambahsiswa`,
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id_siswa: id_siswa,
+                    kode_kelas: kode_kelas
+                },
+                cache: false,
+                success: function(respond) {
+                    if (respond.success) {
+                        alert(respond.message);
+                        getSiswa();
+                        getkelassiswa();
+                    }
+                }
+            })
+        });
 
+        $(document).on("click", ".hapussiswa", function(e) {
+            e.preventDefault();
+            const id_siswa = $(this).attr("id_siswa");
+            const kode_kelas = "{{ $kelas->kode_kelas }}";
+            $.ajax({
+                type: 'POST',
+                url: `/kelas/deletesiswa`,
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id_siswa: id_siswa,
+                    kode_kelas: kode_kelas
+                },
+                cache: false,
+                success: function(respond) {
+                    if (respond.success) {
+                        alert(respond.message);
+                        getSiswa();
+                        getkelassiswa();
+                    }
+                }
+            })
+        });
 
+        $(document).on("click", ".hapuskelassiswa", function(e) {
+            e.preventDefault();
+            const id_siswa = $(this).attr("id_siswa");
+            const kode_kelas = "{{ $kelas->kode_kelas }}";
+            $.ajax({
+                type: 'POST',
+                url: `/kelas/deletekelassiswa`,
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id_siswa: id_siswa,
+                    kode_kelas: kode_kelas
+                },
+                cache: false,
+                success: function(respond) {
+                    if (respond.success) {
+                        alert(respond.message);
+                        getkelassiswa();
+                    }
+                }
+            })
+        });
+
+        let typingTimer;
+        const doneTypingInterval = 300; // Time in ms, adjust as needed
+        const $input = $(document).find("#nama_siswa");
+
+        $input.on("keyup", function() {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(getSiswa, doneTypingInterval);
+        });
+
+        $input.on("keydown", function() {
+            clearTimeout(typingTimer);
+        });
     });
 </script>
 @endpush
