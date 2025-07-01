@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Biayasiswa;
 use App\Models\Detailhistoribayarpendidikan;
+use App\Models\Detailrencanaspp;
 use App\Models\Kelassiswa;
 use Illuminate\Http\Request;
 use App\Models\Pendaftaran;
@@ -161,5 +162,21 @@ class PendaftaranController extends Controller
             ->orderBy('konfigurasi_biaya_detail.kode_jenis_biaya', 'asc')
             ->get();
         return response()->json($biaya);
+    }
+
+
+
+    public function getRencanasppbyKodeBiaya(Request $request)
+    {
+        $kode_biaya = $request->kode_biaya;
+        $detailrencanaspp = Detailrencanaspp::join('spp_rencana', 'spp_rencana_detail.kode_rencana_spp', '=', 'spp_rencana.kode_rencana_spp')
+            ->join('konfigurasi_biaya', 'spp_rencana.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
+            ->join('konfigurasi_tahun_ajaran', 'konfigurasi_biaya.kode_ta', '=', 'konfigurasi_tahun_ajaran.kode_ta')
+            ->where('spp_rencana.kode_biaya', $kode_biaya)
+            ->orderBy('konfigurasi_biaya.kode_ta')
+            ->orderBy('spp_rencana_detail.tahun')
+            ->orderBy('spp_rencana_detail.bulan')
+            ->get();
+        return response()->json($detailrencanaspp);
     }
 }
