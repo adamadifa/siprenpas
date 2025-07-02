@@ -68,6 +68,22 @@ class AuthController extends Controller
             ], 404);
         }
 
+        // Cek email sudah terdaftar
+        if (User::where('email', $request->email)->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email sudah terdaftar',
+            ], 409);
+        }
+
+        // Cek NIK sudah terdaftar sebagai username
+        if (User::where('username', $request->nik)->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'NIK sudah terdaftar',
+            ], 409);
+        }
+
         // Buat user baru
         $user = User::create([
             'name' => $request->name,

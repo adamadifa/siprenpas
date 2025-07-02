@@ -38,6 +38,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/siswa-by-idsiswa', [App\Http\Controllers\Api\PendaftaranController::class, 'siswaByIdSiswa']);
     Route::get('/getbiayasiswa-by-nopendaftaran', [App\Http\Controllers\Api\PendaftaranController::class, 'getbiayasiswaByNoPendaftaran']);
     Route::get('/getrencanaspp-by-kodebiaya', [App\Http\Controllers\Api\PendaftaranController::class, 'getRencanasppbyKodeBiaya']);
+    Route::get('/gethistoribayar-by-idsiswa', [App\Http\Controllers\Api\PendaftaranController::class, 'getHistoribayarbyIdsiswa']);
+    Route::get('/getdetailhistoribayar', [App\Http\Controllers\Api\PendaftaranController::class, 'getDetailHistoribayar']);
 });
 
 Route::prefix('public')->group(function () {

@@ -179,4 +179,46 @@ class PendaftaranController extends Controller
             ->get();
         return response()->json($detailrencanaspp);
     }
+
+
+    public function getHistoribayarbyIdsiswa(Request $request)
+    {
+        $id_siswa = $request->id_siswa;
+        $historibayar = Detailhistoribayarpendidikan::where('pendaftaran.id_siswa', $id_siswa)
+            ->select('pendidikan_historibayar_detail.no_bukti', 'tanggal', 'name', DB::raw('SUM(jumlah) as jumlah'), 'keterangan')
+            ->join('pendidikan_historibayar', 'pendidikan_historibayar_detail.no_bukti', '=', 'pendidikan_historibayar.no_bukti')
+            ->join('pendaftaran', 'pendidikan_historibayar.no_pendaftaran', '=', 'pendaftaran.no_pendaftaran')
+            ->join('users', 'pendidikan_historibayar.id_user', '=', 'users.id')
+            ->groupBy('no_bukti', 'tanggal', 'name', 'keterangan')
+            ->orderBy('no_bukti', 'desc')
+            ->get();
+        return response()->json($historibayar);
+    }
+
+
+    public function getDetailHistoribayar(Request $request)
+    {
+        $no_bukti = $request->no_bukti;
+        $historibayar = Detailhistoribayarpendidikan::where('pendidikan_historibayar_detail.no_bukti', $no_bukti)
+            ->select(
+                'pendidikan_historibayar_detail.no_bukti',
+                'tanggal',
+                'name',
+                'pendidikan_historibayar_detail.kode_jenis_biaya',
+                'jenis_biaya',
+                'konfigurasi_biaya.tingkat',
+                'tahun_ajaran',
+                'jumlah',
+                'keterangan'
+            )
+            ->join('pendidikan_historibayar', 'pendidikan_historibayar_detail.no_bukti', '=', 'pendidikan_historibayar.no_bukti')
+            ->join('pendaftaran', 'pendidikan_historibayar.no_pendaftaran', '=', 'pendaftaran.no_pendaftaran')
+            ->join('users', 'pendidikan_historibayar.id_user', '=', 'users.id')
+            ->join('konfigurasi_biaya', 'konfigurasi_biaya.kode_biaya', '=', 'pendidikan_historibayar_detail.kode_biaya')
+            ->join('konfigurasi_tahun_ajaran', 'konfigurasi_tahun_ajaran.kode_ta', '=', 'konfigurasi_biaya.kode_ta')
+            ->join('jenis_biaya', 'jenis_biaya.kode_jenis_biaya', '=', 'pendidikan_historibayar_detail.kode_jenis_biaya')
+            ->where('pendidikan_historibayar_detail.no_bukti', $no_bukti)
+            ->get();
+        return response()->json($historibayar);
+    }
 }
