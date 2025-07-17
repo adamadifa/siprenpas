@@ -518,7 +518,8 @@
             </li>
         @endif
         <!-- KONFIGURASI-->
-        <li class="menu-item {{ request()->is(['jamkerja', 'jamkerja/*', 'tahunajaran', 'biaya']) ? 'open' : '' }}">
+        <li class="menu-item {{ request()->is(['jamkerja', 'jamkerja/*', 'tahunajaran', 'biaya', 
+        'tahunajaranppdb', 'tahunajaranppdb/*']) ? 'open' : '' }}">
             @if (auth()->check() &&
                     auth()->user()->hasAnyPermission(['jamkerja.index']))
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -537,6 +538,13 @@
                         <li class="menu-item {{ request()->is(['tahunajaran', 'tahunajaran/*']) ? 'active' : '' }}">
                             <a href="{{ route('tahunajaran.index') }}" class="menu-link">
                                 <div>Tahun Ajaran</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('tahunajaranppdb.index')
+                        <li class="menu-item {{ request()->is(['tahunajaranppdb', 'tahunajaranppdb/*']) ? 'active' : '' }}">
+                            <a href="{{ route('tahunajaranppdb.index') }}" class="menu-link">
+                                <div>Tahun Ajaran PPDB</div>
                             </a>
                         </li>
                     @endcan

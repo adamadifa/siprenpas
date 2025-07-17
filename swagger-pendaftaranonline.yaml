@@ -1,0 +1,185 @@
+openapi: 3.0.1
+info:
+  title: API Pendaftaran Online
+  version: 1.0.0
+  description: |
+    Dokumentasi API untuk pendaftaran online.
+    
+    **Autentikasi:**
+    Semua endpoint yang dilindungi menggunakan token Bearer yang didapatkan melalui Laravel Sanctum. Pastikan login dan gunakan token pada header Authorization: `Bearer <token>`.
+
+servers:
+  - url: http://localhost:8000/api
+paths:
+  /pendaftaranonline/{no_register}/update:
+    post:
+      summary: Update data pendaftaran online
+      description: Memperbarui data pendaftar berdasarkan nomor registrasi.
+      tags:
+        - Pendaftaran Online
+      security:
+        - bearerAuth: []
+      x-authentication:
+        description: Token Bearer menggunakan Laravel Sanctum.
+      parameters:
+        - name: no_register
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Nomor registrasi pendaftar yang akan diperbarui.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nama_lengkap
+                - jenis_kelamin
+                - tempat_lahir
+                - tanggal_lahir
+                - anak_ke
+                - jumlah_saudara
+                - alamat
+                - kode_pos
+                - no_kk
+                - nik_ayah
+                - nama_ayah
+                - pendidikan_ayah
+                - pekerjaan_ayah
+                - nik_ibu
+                - nama_ibu
+                - pendidikan_ibu
+                - pekerjaan_ibu
+                - no_hp
+                - asal_sekolah
+                - provinsi_id
+                - kabupaten_id
+                - kecamatan_id
+                - desa_id
+              properties:
+                nama_lengkap:
+                  type: string
+                  minLength: 3
+                  example: Budi Santoso
+                jenis_kelamin:
+                  type: string
+                  enum: [L, P]
+                  example: L
+                tempat_lahir:
+                  type: string
+                  minLength: 3
+                  example: Jakarta
+                tanggal_lahir:
+                  type: string
+                  format: date
+                  example: 2010-01-01
+                anak_ke:
+                  type: integer
+                  minimum: 1
+                  maximum: 20
+                  example: 1
+                jumlah_saudara:
+                  type: integer
+                  minimum: 0
+                  maximum: 20
+                  example: 2
+                alamat:
+                  type: string
+                  minLength: 10
+                  example: Jl. Merdeka No. 1
+                kode_pos:
+                  type: string
+                  pattern: "^\\d{5}$"
+                  example: "12345"
+                no_kk:
+                  type: string
+                  pattern: "^\\d{16}$"
+                  example: "1234567890123456"
+                nik_ayah:
+                  type: string
+                  pattern: "^\\d{16}$"
+                  example: "1234567890123456"
+                nama_ayah:
+                  type: string
+                  minLength: 3
+                  example: Agus Santoso
+                pendidikan_ayah:
+                  type: string
+                  enum: [SD, SMP, SMA, D3, S1, S2, S3]
+                  example: S1
+                pekerjaan_ayah:
+                  type: string
+                  minLength: 3
+                  example: Karyawan Swasta
+                nik_ibu:
+                  type: string
+                  pattern: "^\\d{16}$"
+                  example: "1234567890123456"
+                nama_ibu:
+                  type: string
+                  minLength: 3
+                  example: Siti Aminah
+                pendidikan_ibu:
+                  type: string
+                  enum: [SD, SMP, SMA, D3, S1, S2, S3]
+                  example: S1
+                pekerjaan_ibu:
+                  type: string
+                  minLength: 3
+                  example: Ibu Rumah Tangga
+                no_hp:
+                  type: string
+                  pattern: "^(\\+62|62|0)8[1-9][0-9]{6,9}$"
+                  example: "081234567890"
+                asal_sekolah:
+                  type: string
+                  minLength: 3
+                  example: SDN 1 Jakarta
+                provinsi_id:
+                  type: string
+                  example: "31"
+                kabupaten_id:
+                  type: string
+                  example: "3174"
+                kecamatan_id:
+                  type: string
+                  example: "317405"
+                desa_id:
+                  type: string
+                  example: "3174051001"
+      responses:
+        '200':
+          description: Data pendaftar berhasil diperbarui.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: Data pendaftar berhasil diperbarui.
+        '500':
+          description: Terjadi kesalahan saat memperbarui data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  message:
+                    type: string
+                    example: Terjadi kesalahan saat memperbarui data: [error message]
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token Bearer yang digunakan adalah token yang di-generate oleh Laravel Sanctum. Lakukan login dan gunakan token pada header Authorization.

@@ -12,6 +12,7 @@ use App\Models\Penghasilanortu;
 use App\Models\Province;
 use App\Models\Siswa;
 use App\Models\Tahunajaran;
+use App\Models\Tahunajaranppdb;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -42,7 +43,7 @@ class PendaftaranController extends Controller
                 ->rawColumns(['action'])
                 ->make();
         }
-        $tahun_ajaran = Tahunajaran::where('status', 1)->first();
+        $tahun_ajaran = Tahunajaranppdb::where('status', 1)->first();
         $kode_ta = $tahun_ajaran->kode_ta;
 
         $p = new Pendaftaran();
@@ -67,7 +68,7 @@ class PendaftaranController extends Controller
         $u = new Unit();
         $data['unit'] = $u->getUnit();
         $data['jenis_kelamin'] = config('global.jenis_kelamin');
-        $data['tahunajaran'] = Tahunajaran::orderBy('kode_ta')->get();
+        $data['tahunajaran'] = Tahunajaranppdb::orderBy('kode_ta')->get();
         $data['rekap_unit'] = $rekap_unit;
         return view('pendaftaran.index', $data);
     }
@@ -131,7 +132,7 @@ class PendaftaranController extends Controller
             'kode_asal_sekolah' => 'required'
         ]);
 
-        $tahun_ajaran = Tahunajaran::where('status', 1)->first();
+        $tahun_ajaran = Tahunajaranppdb::where('status', 1)->first();
         $ta_nis = substr($tahun_ajaran->tahun_ajaran, 2, 2) . substr($tahun_ajaran->tahun_ajaran, 7, 2);
         $ta_pendaftaran = substr($tahun_ajaran->tahun_ajaran, 2, 2);
         $lastpendaftaran = Pendaftaran::select('no_pendaftaran', 'nis')

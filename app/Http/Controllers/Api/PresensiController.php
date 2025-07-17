@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 class PresensiController extends Controller
 {
 
+
     public function store()
     {
         $original_data  = file_get_contents('php://input');

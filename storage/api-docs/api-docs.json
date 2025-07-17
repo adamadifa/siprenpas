@@ -1,0 +1,1262 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "SiprenPAS API",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login user",
+                "operationId": "222b2625838e3c57e017987f73598fda",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "user@email.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "type": "object"
+                                                },
+                                                "token": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Email atau password salah"
+                    }
+                }
+            }
+        },
+        "/api/register-orangtua": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register user orang tua",
+                "operationId": "65f264bd13dd992ed0859993aea150a5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "nik"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Nama Orang Tua"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "ortu@email.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "password"
+                                    },
+                                    "nik": {
+                                        "type": "string",
+                                        "example": "1234567890123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Registrasi berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "type": "object"
+                                                },
+                                                "token": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "NIK tidak ditemukan pada data siswa"
+                    },
+                    "409": {
+                        "description": "Email atau NIK sudah terdaftar"
+                    }
+                }
+            }
+        },
+        "/api/auth/register-siswa": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register akun siswa baru",
+                "operationId": "e5793b5601f8c9e0f3ff84849cbc4c7f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation",
+                                    "jenis_kelamin",
+                                    "no_hp",
+                                    "kode_unit"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Ahmad Fauzi"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "siswa@email.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "jenis_kelamin": {
+                                        "type": "string",
+                                        "enum": [
+                                            "L",
+                                            "P"
+                                        ],
+                                        "example": "L"
+                                    },
+                                    "no_hp": {
+                                        "type": "string",
+                                        "example": "08123456789"
+                                    },
+                                    "kode_unit": {
+                                        "type": "string",
+                                        "example": "U01"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Registrasi berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Registrasi berhasil"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "properties": {
+                                                        "no_register": {
+                                                            "type": "string",
+                                                            "example": "OLU0125X"
+                                                        },
+                                                        "nama_lengkap": {
+                                                            "type": "string",
+                                                            "example": "Ahmad Fauzi"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "example": "siswa@email.com"
+                                                        },
+                                                        "jenis_kelamin": {
+                                                            "type": "string",
+                                                            "example": "L"
+                                                        },
+                                                        "no_hp": {
+                                                            "type": "string",
+                                                            "example": "08123456789"
+                                                        },
+                                                        "kode_unit": {
+                                                            "type": "string",
+                                                            "example": "U01"
+                                                        },
+                                                        "kode_ta": {
+                                                            "type": "string",
+                                                            "example": "2025"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "token_autentikasi"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/unit-by-id-siswa": {
+            "post": {
+                "tags": [
+                    "Pendaftaran"
+                ],
+                "summary": "Dapatkan data unit berdasarkan id_siswa",
+                "operationId": "6a17193da56cd7ac5e1038af93cd07f3",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id_siswa"
+                                ],
+                                "properties": {
+                                    "id_siswa": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Berhasil ambil data unit",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "no_pendaftaran": {
+                                                "type": "string"
+                                            },
+                                            "nama_unit": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/siswa-by-id-siswa": {
+            "get": {
+                "tags": [
+                    "Pendaftaran"
+                ],
+                "summary": "Ambil data siswa berdasarkan id_siswa",
+                "operationId": "1710b7a5d6fa6a19430b0d867508fcd3",
+                "parameters": [
+                    {
+                        "name": "id_siswa",
+                        "in": "query",
+                        "description": "ID Siswa",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil ambil data siswa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Parameter id_siswa wajib diisi"
+                    }
+                }
+            }
+        },
+        "/getrencanaspp-by-kodebiaya": {
+            "get": {
+                "tags": [
+                    "Pendaftaran"
+                ],
+                "summary": "Ambil rencana spp berdasarkan kode_biaya",
+                "operationId": "9a31f74725ba1a3e906eed2699ec7a43",
+                "parameters": [
+                    {
+                        "name": "kode_biaya",
+                        "in": "query",
+                        "description": "Kode biaya",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil ambil rencana spp",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/gethistoribayar-by-idsiswa": {
+            "get": {
+                "tags": [
+                    "Pendaftaran"
+                ],
+                "summary": "Ambil histori pembayaran berdasarkan id_siswa",
+                "operationId": "6ea685d72e3c80419c6ebaaafa78941a",
+                "parameters": [
+                    {
+                        "name": "id_siswa",
+                        "in": "query",
+                        "description": "ID Siswa",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil ambil histori pembayaran",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/getdetailhistoribayar": {
+            "get": {
+                "tags": [
+                    "Pendaftaran"
+                ],
+                "summary": "Ambil detail histori pembayaran berdasarkan no_bukti",
+                "operationId": "c04f771d3b0d1875d6b697b8ab73c92d",
+                "parameters": [
+                    {
+                        "name": "no_bukti",
+                        "in": "query",
+                        "description": "Nomor bukti pembayaran",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil ambil detail histori pembayaran",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pendaftaranonline/{no_register}/update-foto": {
+            "post": {
+                "tags": [
+                    "Pendaftaran Online"
+                ],
+                "summary": "Update foto pendaftaran online",
+                "description": "Update foto pendaftaran online berdasarkan nomor registrasi.",
+                "operationId": "df89b9abe7ee302b72ac631936a991cf",
+                "parameters": [
+                    {
+                        "name": "no_register",
+                        "in": "path",
+                        "description": "Nomor registrasi pendaftar yang akan diperbarui.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "foto"
+                                ],
+                                "properties": {
+                                    "foto": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Foto berhasil diperbarui.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Foto berhasil diperbarui."
+                                        },
+                                        "foto_url": {
+                                            "type": "string",
+                                            "example": "/storage/foto/pendaftaran/namafile.jpg"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validasi gagal."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Terjadi kesalahan saat memperbarui foto.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Terjadi kesalahan saat memperbarui foto."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/pendaftaranonline/{id_user}": {
+            "get": {
+                "tags": [
+                    "Pendaftaran Online"
+                ],
+                "summary": "Ambil data pendaftaran online berdasarkan ID user (autentikasi diperlukan)",
+                "description": "Mendapatkan data pendaftaran online berdasarkan ID user.",
+                "operationId": "0815404223c23c4416b5792e53e70709",
+                "parameters": [
+                    {
+                        "name": "id_user",
+                        "in": "path",
+                        "description": "ID user",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Data pendaftaran online",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/pendaftaranonline/{no_register}/update": {
+            "post": {
+                "tags": [
+                    "Pendaftaran Online"
+                ],
+                "summary": "Update data pendaftaran online",
+                "description": "Update data pendaftaran online berdasarkan nomor registrasi.",
+                "operationId": "0f3eb5496dde4185ecd4e453064b8a46",
+                "parameters": [
+                    {
+                        "name": "no_register",
+                        "in": "path",
+                        "description": "Nomor registrasi pendaftar yang akan diperbarui.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama_lengkap",
+                                    "jenis_kelamin",
+                                    "tempat_lahir",
+                                    "tanggal_lahir",
+                                    "anak_ke",
+                                    "jumlah_saudara",
+                                    "alamat",
+                                    "kode_pos",
+                                    "no_kk",
+                                    "nik_ayah",
+                                    "nama_ayah",
+                                    "pendidikan_ayah",
+                                    "pekerjaan_ayah",
+                                    "nik_ibu",
+                                    "nama_ibu",
+                                    "pendidikan_ibu",
+                                    "pekerjaan_ibu",
+                                    "no_hp",
+                                    "asal_sekolah",
+                                    "provinsi_id",
+                                    "kabupaten_id",
+                                    "kecamatan_id",
+                                    "desa_id"
+                                ],
+                                "properties": {
+                                    "nama_lengkap": {
+                                        "type": "string",
+                                        "example": "Budi Santoso"
+                                    },
+                                    "jenis_kelamin": {
+                                        "type": "string",
+                                        "enum": [
+                                            "L",
+                                            "P"
+                                        ],
+                                        "example": "L"
+                                    },
+                                    "tempat_lahir": {
+                                        "type": "string",
+                                        "example": "Jakarta"
+                                    },
+                                    "tanggal_lahir": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-01-01"
+                                    },
+                                    "anak_ke": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "jumlah_saudara": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "alamat": {
+                                        "type": "string",
+                                        "example": "Jl. Merdeka No. 1"
+                                    },
+                                    "kode_pos": {
+                                        "type": "string",
+                                        "example": "12345"
+                                    },
+                                    "no_kk": {
+                                        "type": "string",
+                                        "example": "1234567890123456"
+                                    },
+                                    "nik_ayah": {
+                                        "type": "string",
+                                        "example": "1234567890123456"
+                                    },
+                                    "nama_ayah": {
+                                        "type": "string",
+                                        "example": "Agus Santoso"
+                                    },
+                                    "pendidikan_ayah": {
+                                        "type": "string",
+                                        "enum": [
+                                            "SD",
+                                            "SMP",
+                                            "SMA",
+                                            "D3",
+                                            "S1",
+                                            "S2",
+                                            "S3"
+                                        ],
+                                        "example": "S1"
+                                    },
+                                    "pekerjaan_ayah": {
+                                        "type": "string",
+                                        "example": "Karyawan Swasta"
+                                    },
+                                    "nik_ibu": {
+                                        "type": "string",
+                                        "example": "1234567890123456"
+                                    },
+                                    "nama_ibu": {
+                                        "type": "string",
+                                        "example": "Siti Aminah"
+                                    },
+                                    "pendidikan_ibu": {
+                                        "type": "string",
+                                        "enum": [
+                                            "SD",
+                                            "SMP",
+                                            "SMA",
+                                            "D3",
+                                            "S1",
+                                            "S2",
+                                            "S3"
+                                        ],
+                                        "example": "S1"
+                                    },
+                                    "pekerjaan_ibu": {
+                                        "type": "string",
+                                        "example": "Ibu Rumah Tangga"
+                                    },
+                                    "no_hp": {
+                                        "type": "string",
+                                        "example": "081234567890"
+                                    },
+                                    "asal_sekolah": {
+                                        "type": "string",
+                                        "example": "SDN 1 Jakarta"
+                                    },
+                                    "provinsi_id": {
+                                        "type": "string",
+                                        "example": "31"
+                                    },
+                                    "kabupaten_id": {
+                                        "type": "string",
+                                        "example": "3174"
+                                    },
+                                    "kecamatan_id": {
+                                        "type": "string",
+                                        "example": "317405"
+                                    },
+                                    "desa_id": {
+                                        "type": "string",
+                                        "example": "3174051001"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Data pendaftar berhasil diperbarui.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data pendaftar berhasil diperbarui."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Terjadi kesalahan saat memperbarui data.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Terjadi kesalahan saat memperbarui data: [error message]"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/pendaftaranonline/konfirmasi-pembayaran": {
+            "post": {
+                "tags": [
+                    "Pendaftaran Online"
+                ],
+                "summary": "Konfirmasi pembayaran pendaftaran online",
+                "description": "Simpan konfirmasi pembayaran pendaftaran online.",
+                "operationId": "c6f550849aa52d9b2e8cf3ce1a751505",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "jumlah_pembayaran",
+                                    "metode_pembayaran",
+                                    "bukti_pembayaran"
+                                ],
+                                "properties": {
+                                    "jumlah_pembayaran": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "metode_pembayaran": {
+                                        "type": "string",
+                                        "enum": [
+                                            "transfer",
+                                            "tunai"
+                                        ]
+                                    },
+                                    "bukti_pembayaran": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "keterangan": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Konfirmasi pembayaran berhasil disimpan.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Konfirmasi pembayaran berhasil disimpan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validasi gagal."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/pendaftaranonline/getkonfirmasipembayaran": {
+            "get": {
+                "tags": [
+                    "Pendaftaran Online"
+                ],
+                "summary": "Ambil data konfirmasi pembayaran pendaftaran online milik user yang login",
+                "description": "Ambil data konfirmasi pembayaran pendaftaran online milik user yang sedang login.",
+                "operationId": "cbed2d7a3074c23faf00fe0c6ecbb75e",
+                "responses": {
+                    "200": {
+                        "description": "Data konfirmasi pembayaran ditemukan.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "no_register": {
+                                            "type": "string",
+                                            "example": "REGU01001"
+                                        },
+                                        "tanggal_pembayaran": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "example": "2024-07-10"
+                                        },
+                                        "jumlah_pembayaran": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 500000
+                                        },
+                                        "metode_pembayaran": {
+                                            "type": "string",
+                                            "example": "transfer"
+                                        },
+                                        "bukti_pembayaran": {
+                                            "type": "string",
+                                            "example": "bukti_pembayaran/abc123.jpg"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "pending"
+                                        },
+                                        "keterangan": {
+                                            "type": "string",
+                                            "example": "Pembayaran awal"
+                                        },
+                                        "created_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2024-07-10T10:00:00Z"
+                                        },
+                                        "updated_at": {
+                                            "type": "string",
+                                            "format": "date-time",
+                                            "example": "2024-07-10T10:00:00Z"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data pembayaran tidak ditemukan.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data pembayaran tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/pendaftaranonline/delete-pembayaran": {
+            "delete": {
+                "tags": [
+                    "Pendaftaran Online"
+                ],
+                "summary": "Hapus konfirmasi pembayaran pendaftaran online",
+                "operationId": "0cdde768d4647f3b3f7cafa310a64855",
+                "responses": {
+                    "200": {
+                        "description": "Konfirmasi pembayaran berhasil dihapus.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Konfirmasi pembayaran berhasil dihapus."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data pembayaran tidak ditemukan.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data pembayaran tidak ditemukan."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/public/posts/getposthomepage": {
+            "get": {
+                "tags": [
+                    "Post"
+                ],
+                "summary": "List data post homepage",
+                "operationId": "cc4b6a7a97d32ef177532f81721fc055",
+                "responses": {
+                    "200": {
+                        "description": "List data post homepage",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/public/posts/getlastposthomepage": {
+            "get": {
+                "tags": [
+                    "Post"
+                ],
+                "summary": "Post terakhir homepage",
+                "operationId": "5057b9fda0952fb6edf02a6860872deb",
+                "responses": {
+                    "200": {
+                        "description": "Post terakhir homepage",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/public/posts/{slug}": {
+            "get": {
+                "tags": [
+                    "Post"
+                ],
+                "summary": "Detail post by slug",
+                "operationId": "b955fc8ff877fbe8904c8967899ce4a5",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Slug post",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail data post",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Detail Data Post Tidak Ditemukan!"
+                    }
+                }
+            }
+        },
+        "/unit": {
+            "get": {
+                "tags": [
+                    "Unit"
+                ],
+                "summary": "Ambil daftar unit",
+                "operationId": "cd6377b71cb65a7dd1969ca0a527743a",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil ambil daftar unit",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Unit"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Unit": {
+                "title": "Unit",
+                "required": [
+                    "kode_unit"
+                ],
+                "properties": {
+                    "kode_unit": {
+                        "description": "Kode unit",
+                        "type": "string"
+                    },
+                    "nama_unit": {
+                        "description": "Nama unit",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Unit",
+            "description": "Manajemen Unit"
+        },
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Pendaftaran",
+            "description": "Pendaftaran"
+        },
+        {
+            "name": "Pendaftaran Online",
+            "description": "Pendaftaran Online"
+        },
+        {
+            "name": "Post",
+            "description": "Post"
+        }
+    ]
+}

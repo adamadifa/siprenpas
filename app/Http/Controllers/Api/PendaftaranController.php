@@ -17,7 +17,28 @@ use Illuminate\Support\Facades\DB;
 
 class PendaftaranController extends Controller
 {
-    // Mendapatkan data unit berdasarkan id_siswa dari tabel pendaftaran
+    /**
+     * @OA\Post(
+     *     path="/api/unit-by-id-siswa",
+     *     tags={"Pendaftaran"},
+     *     summary="Dapatkan data unit berdasarkan id_siswa",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"id_siswa"},
+     *             @OA\Property(property="id_siswa", type="string", example="123456")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Berhasil ambil data unit",
+     *         @OA\JsonContent(type="array", @OA\Items(type="object",
+     *             @OA\Property(property="no_pendaftaran", type="string"),
+     *             @OA\Property(property="nama_unit", type="string")
+     *         ))
+     *     )
+     * )
+     */
     public function unitByIdSiswa(Request $request)
     {
         $request->validate([
@@ -32,7 +53,26 @@ class PendaftaranController extends Controller
 
 
 
-    // Ambil data siswa berdasarkan id_siswa (GET, parameter query string)
+    /**
+     * @OA\Get(
+     *     path="/api/siswa-by-id-siswa",
+     *     tags={"Pendaftaran"},
+     *     summary="Ambil data siswa berdasarkan id_siswa",
+     *     @OA\Parameter(
+     *         name="id_siswa",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         description="ID Siswa"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Berhasil ambil data siswa",
+     *         @OA\JsonContent(type="object")
+     *     ),
+     *     @OA\Response(response=422, description="Parameter id_siswa wajib diisi")
+     * )
+     */
     public function siswaByIdSiswa(Request $request)
     {
         $id_siswa = $request->query('id_siswa');
@@ -166,6 +206,25 @@ class PendaftaranController extends Controller
 
 
 
+    /**
+     * @OA\Get(
+     *     path="/getrencanaspp-by-kodebiaya",
+     *     tags={"Pendaftaran"},
+     *     summary="Ambil rencana spp berdasarkan kode_biaya",
+     *     @OA\Parameter(
+     *         name="kode_biaya",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         description="Kode biaya"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Berhasil ambil rencana spp",
+     *         @OA\JsonContent(type="array", @OA\Items(type="object"))
+     *     )
+     * )
+     */
     public function getRencanasppbyKodeBiaya(Request $request)
     {
         $kode_biaya = $request->kode_biaya;
@@ -181,6 +240,25 @@ class PendaftaranController extends Controller
     }
 
 
+    /**
+     * @OA\Get(
+     *     path="/gethistoribayar-by-idsiswa",
+     *     tags={"Pendaftaran"},
+     *     summary="Ambil histori pembayaran berdasarkan id_siswa",
+     *     @OA\Parameter(
+     *         name="id_siswa",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         description="ID Siswa"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Berhasil ambil histori pembayaran",
+     *         @OA\JsonContent(type="array", @OA\Items(type="object"))
+     *     )
+     * )
+     */
     public function getHistoribayarbyIdsiswa(Request $request)
     {
         $id_siswa = $request->id_siswa;
@@ -196,6 +274,25 @@ class PendaftaranController extends Controller
     }
 
 
+    /**
+     * @OA\Get(
+     *     path="/getdetailhistoribayar",
+     *     tags={"Pendaftaran"},
+     *     summary="Ambil detail histori pembayaran berdasarkan no_bukti",
+     *     @OA\Parameter(
+     *         name="no_bukti",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         description="Nomor bukti pembayaran"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Berhasil ambil detail histori pembayaran",
+     *         @OA\JsonContent(type="array", @OA\Items(type="object"))
+     *     )
+     * )
+     */
     public function getDetailHistoribayar(Request $request)
     {
         $no_bukti = $request->no_bukti;

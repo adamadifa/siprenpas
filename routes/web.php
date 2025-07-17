@@ -54,6 +54,7 @@ use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\SumberdanaController;
 use App\Http\Controllers\TabunganController;
 use App\Http\Controllers\TahunajaranController;
+use App\Http\Controllers\TahunajaranppdbController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VillageController;
@@ -375,6 +376,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/tahunajaran/{kode_ta}/show', 'show')->name('tahunajaran.show')->can('tahunajaran.show');
         Route::put('/tahunajaran/{kode_ta}/update', 'update')->name('tahunajaran.update')->can('tahunajaran.update');
         Route::delete('/tahunajaran/{kode_ta}/delete', 'destroy')->name('tahunajaran.delete')->can('tahunajaran.delete');
+    });
+
+    Route::controller(TahunajaranppdbController::class)->group(function () {
+        Route::get('/tahunajaranppdb', 'index')->name('tahunajaranppdb.index')->can('tahunajaranppdb.index');
+        Route::get('/tahunajaranppdb/create', 'create')->name('tahunajaranppdb.create')->can('tahunajaranppdb.create');
+        Route::post('/tahunajaranppdb', 'store')->name('tahunajaranppdb.store')->can('tahunajaranppdb.create');
+        Route::get('/tahunajaranppdb/{kode_ta_ppdb}/edit', 'edit')->name('tahunajaranppdb.edit')->can('tahunajaranppdb.edit');
+        Route::get('/tahunajaranppdb/{kode_ta_ppdb}/show', 'show')->name('tahunajaranppdb.show')->can('tahunajaranppdb.show');
+        Route::put('/tahunajaranppdb/{kode_ta_ppdb}/update', 'update')->name('tahunajaranppdb.update')->can('tahunajaranppdb.edit');
+        Route::delete('/tahunajaranppdb/{kode_ta_ppdb}/delete', 'destroy')->name('tahunajaranppdb.delete')->can('tahunajaranppdb.delete');
     });
 
     Route::controller(PendaftaranController::class)->group(function () {

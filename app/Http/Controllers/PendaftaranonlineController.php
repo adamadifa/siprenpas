@@ -10,6 +10,7 @@ use App\Models\Pendaftaranonline;
 use App\Models\Pendaftaranonlineregister;
 use App\Models\Siswa;
 use App\Models\Tahunajaran;
+use App\Models\Tahunajaranppdb;
 use App\Models\Unit;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Illuminate\Http\Request;
@@ -21,13 +22,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Symfony\Component\Mailer\Event\MessageEvent;
 
+
 class PendaftaranonlineController extends Controller
 {
     public function index(Request $request)
     {
 
 
-        $tahunajaran = Tahunajaran::where('status', 1)->first();
+        $tahunajaran = Tahunajaranppdb::where('status', 1)->first();
         $kode_ta = $tahunajaran->kode_ta;
 
         $qpendaftaran = Pendaftaranonline::query();
@@ -36,11 +38,11 @@ class PendaftaranonlineController extends Controller
             'pendaftaran_online_bayar.id as id_bayar',
             'pendaftaran_online_bayar.status as status_bayar',
             'unit.nama_unit as nama_unit',
-            'konfigurasi_tahun_ajaran.tahun_ajaran as tahun_ajaran',
+            'konfigurasi_tahunajaran_ppdb.tahun_ajaran as tahun_ajaran',
             'pendaftaran_online_register.no_pendaftaran'
         );
         $qpendaftaran->join('unit', 'unit.kode_unit', 'pendaftaran_online.kode_unit');
-        $qpendaftaran->join('konfigurasi_tahun_ajaran', 'konfigurasi_tahun_ajaran.kode_ta', 'pendaftaran_online.kode_ta');
+        $qpendaftaran->join('konfigurasi_tahunajaran_ppdb', 'konfigurasi_tahunajaran_ppdb.kode_ta', 'pendaftaran_online.kode_ta');
         $qpendaftaran->leftJoin('pendaftaran_online_bayar', 'pendaftaran_online_bayar.no_register', 'pendaftaran_online.no_register');
         $qpendaftaran->leftJoin('pendaftaran_online_register', 'pendaftaran_online.no_register', '=', 'pendaftaran_online_register.no_register');
         $qpendaftaran->orderBy('no_register', 'desc');
@@ -63,7 +65,7 @@ class PendaftaranonlineController extends Controller
         $data['pendaftaran'] = $pendaftaran;
         $data['unit'] = Unit::orderBy('kode_unit')->get();
         $data['jenis_kelamin'] = config('global.jenis_kelamin');
-        $data['tahunajaran'] = Tahunajaran::orderBy('kode_ta')->get();
+        $data['tahunajaran'] = Tahunajaranppdb::orderBy('kode_ta')->get();
         $data['kode_ta'] = $kode_ta;
 
         // Rekap jumlah siswa per unit (termasuk unit yang kosong)
@@ -92,7 +94,7 @@ class PendaftaranonlineController extends Controller
             ->leftJoin('regencies', 'regencies.id', 'pendaftaran_online.id_regency')
             ->leftJoin('districts', 'districts.id', 'pendaftaran_online.id_district')
             ->leftJoin('villages', 'villages.id', 'pendaftaran_online.id_village')
-            ->join('konfigurasi_tahun_ajaran', 'konfigurasi_tahun_ajaran.kode_ta', 'pendaftaran_online.kode_ta')
+            ->join('konfigurasi_tahunajaran_pddb', 'konfigurasi_tahunajaran_pddb.kode_ta', 'pendaftaran_online.kode_ta')
             ->leftJoin('pendaftaran_online_bayar', 'pendaftaran_online_bayar.no_register', 'pendaftaran_online.no_register')
             ->leftJoin('pendaftaran_online_register', 'pendaftaran_online.no_register', '=', 'pendaftaran_online_register.no_register')
             ->select(
@@ -131,19 +133,19 @@ class PendaftaranonlineController extends Controller
             ->leftJoin('regencies', 'regencies.id', 'pendaftaran_online.id_regency')
             ->leftJoin('districts', 'districts.id', 'pendaftaran_online.id_district')
             ->leftJoin('villages', 'villages.id', 'pendaftaran_online.id_village')
-            ->join('konfigurasi_tahun_ajaran', 'konfigurasi_tahun_ajaran.kode_ta', 'pendaftaran_online.kode_ta')
+            ->join('konfigurasi_tahunajaran_pddb', 'konfigurasi_tahunajaran_pddb.kode_ta', 'pendaftaran_online.kode_ta')
             ->first();
         $pdf = FacadePdf::loadView('pendaftaranonline.cetak', compact('pendaftaran'));
         return $pdf->stream('formulir-pendaftaran-online.pdf');
     }
 
 
-    public function konfirmasi(Request $request, $no_register)
+    public function konfirmasiPembayaran(Request $request, $no_register)
     {
         $no_register = Crypt::decrypt($no_register);
         $pendaftaran = Pendaftaranonline::where('no_register', $no_register)->first();
 
-        $tahun_ajaran = Tahunajaran::where('status', 1)->first();
+        $tahun_ajaran = Tahunajaranppdb::where('status', 1)->first();
         $ta_nis = substr($tahun_ajaran->tahun_ajaran, 2, 2) . substr($tahun_ajaran->tahun_ajaran, 7, 2);
         $ta_pendaftaran = substr($tahun_ajaran->tahun_ajaran, 2, 2);
         $lastpendaftaran = Pendaftaran::select('no_pendaftaran', 'nis')

@@ -13,6 +13,19 @@ use App\Models\Tahunajaran;
 class SiswaController extends Controller
 {
     /**
+     * @OA\Get(
+     *     path="/siswa-anak",
+     *     tags={"Siswa"},
+     *     summary="Ambil data siswa berdasarkan nik ayah/ibu user login",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Berhasil ambil data siswa",
+     *         @OA\JsonContent(type="array", @OA\Items(type="object"))
+     *     )
+     * )
+     */
+    /**
      * API: Get siswa by nik_ayah or nik_ibu matching logged in user's username
      * @return \Illuminate\Http\JsonResponse
      */

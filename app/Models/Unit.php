@@ -5,6 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @OA\Schema(
+ *   schema="Unit",
+ *   type="object",
+ *   title="Unit",
+ *   required={"kode_unit"},
+ *   @OA\Property(property="kode_unit", type="string", description="Kode unit"),
+ *   @OA\Property(property="nama_unit", type="string", description="Nama unit")
+ * )
+ */
 class Unit extends Model
 {
     use HasFactory;
