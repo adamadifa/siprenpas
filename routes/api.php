@@ -74,7 +74,5 @@ Route::prefix('public')->group(function () {
     Route::get('/posts/{slug}', [App\Http\Controllers\Api\PostController::class, 'show']);
 
     // Endpoint untuk mendapatkan data unit
-
+    Route::get('/unit', [App\Http\Controllers\Api\UnitController::class, 'index']);
 });
-
-Route::get('/unit', [App\Http\Controllers\Api\UnitController::class, 'index']);
