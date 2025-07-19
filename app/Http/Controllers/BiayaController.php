@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Biaya;
 use App\Models\Detailbiaya;
 use App\Models\Jenisbiaya;
-use App\Models\Tahunajaran;
+use App\Models\Tahunajaranppdb;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -16,7 +16,7 @@ class BiayaController extends Controller
 {
     public function index(Request $request)
     {
-        $tahunajaran = Tahunajaran::where('status', '1')->first();
+        $tahunajaran = Tahunajaranppdb::where('status', '1')->first();
         $query = Biaya::query();
         $query->join('unit', 'konfigurasi_biaya.kode_unit', '=', 'unit.kode_unit');
         $query->join('konfigurasi_tahun_ajaran', 'konfigurasi_biaya.kode_ta', '=', 'konfigurasi_tahun_ajaran.kode_ta');
@@ -30,16 +30,18 @@ class BiayaController extends Controller
             $query->where('konfigurasi_biaya.kode_unit', $request->kode_unit);
         }
         $data['biaya'] = $query->get();
-        $data['tahunajaran'] = Tahunajaran::orderBy('kode_ta')->get();
-        $data['unit'] = Unit::orderBy('kode_unit')->get();
+        $data['tahunajaran'] = Tahunajaranppdb::orderBy('kode_ta')->get();
+        $u = new Unit();
+        $data['unit'] = $u->getUnit();
         return view('konfigurasi.biaya.index', $data);
     }
 
     public function create()
     {
-        $data['unit'] = Unit::orderBy('kode_unit')->get();
+        $u = new Unit();
+        $data['unit'] = $u->getUnit();
         $data['jenisbiaya'] = Jenisbiaya::orderBy('kode_jenis_biaya')->get();
-        $data['tahunajaran'] = Tahunajaran::orderBy('kode_ta')->get();
+        $data['tahunajaran'] = Tahunajaranppdb::orderBy('kode_ta')->get();
         return view('konfigurasi.biaya.create', $data);
     }
 
