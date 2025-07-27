@@ -38,7 +38,7 @@ class PembayaranpendidikanController extends Controller
         $data['tahun_ajaran'] = Tahunajaran::where('status', 1)->first();
 
         $p = new Pendaftaran();
-        $pendaftaran = $p->getPembayaranpendidikan(request: $request)->paginate(15);
+        $pendaftaran = $p->getPembayaranpendidikan(request: $request)->paginate(30);
         $pendaftaran->appends($request->all());
         $data['pendaftaran'] = $pendaftaran;
         $u = new Unit();
