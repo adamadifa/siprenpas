@@ -42,7 +42,7 @@
                                             <option value="">Tahun Ajaran</option>
                                             @foreach ($tahunajaran as $d)
                                                 <option value="{{ $d->kode_ta }}"
-                                                    @if(Request('kode_ta') == $d->kode_ta) selected @elseif ($tahun_ajaran->kode_ta == $d->kode_ta) selected @endif>
+                                                    @if (Request('kode_ta') == $d->kode_ta) selected @elseif ($tahun_ajaran->kode_ta == $d->kode_ta) selected @endif>
                                                     {{ $d->tahun_ajaran }}</option>
                                             @endforeach
                                         </select>
@@ -78,7 +78,8 @@
                                 <tbody>
                                     @foreach ($pendaftaran as $d)
                                         <tr>
-                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $loop->iteration + ($pendaftaran->currentPage() - 1) * $pendaftaran->perPage() }}
+                                            </td>
                                             <td>{{ $d->no_pendaftaran }}</td>
                                             <td>{{ $d->id_siswa }}</td>
                                             {{-- <td>{{ $d->nisn }}</td> --}}
