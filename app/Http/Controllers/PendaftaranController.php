@@ -133,6 +133,7 @@ class PendaftaranController extends Controller
         ]);
 
         $tahun_ajaran = Tahunajaranppdb::where('status', 1)->first();
+        $ta_ppdb = explode("/", $tahun_ajaran->tahun_ajaran);
         $ta_nis = substr($tahun_ajaran->tahun_ajaran, 2, 2) . substr($tahun_ajaran->tahun_ajaran, 7, 2);
         $ta_pendaftaran = substr($tahun_ajaran->tahun_ajaran, 2, 2);
         $lastpendaftaran = Pendaftaran::select('no_pendaftaran', 'nis')
@@ -159,7 +160,7 @@ class PendaftaranController extends Controller
         try {
             //Simpan Data Siswa
             if (empty($request->id_siswa)) {
-                $tahun_masuk = config('global.tahun_ppdb');
+                $tahun_masuk = $ta_ppdb[0];
                 $last_siswa = Siswa::orderby('id_siswa', 'desc')->where('tahun_masuk', $tahun_masuk)->first();
                 $last_id_siswa = $last_siswa != NULL ? $last_siswa->id_siswa : "";
                 $id_siswa = buatkode($last_id_siswa, $tahun_masuk, 3);
