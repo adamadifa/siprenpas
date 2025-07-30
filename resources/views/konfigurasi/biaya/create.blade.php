@@ -7,6 +7,13 @@
         </select>
     </div>
     <div class="form-group mb-3">
+        <select name="asrama" id="asrama" class="form-select">
+            <option value="">Asrama / Non Asrama</option>
+            <option value="1">Asrama</option>
+            <option value="0">Non Asrama</option>
+        </select>
+    </div>
+    <div class="form-group mb-3">
         <select name="kode_ta" id="kode_ta" class="form-select">
             <option value="">Tahun Ajaran</option>
             @foreach ($tahunajaran as $d)
@@ -40,6 +47,13 @@
             </tr>
         </thead>
         <tbody id="loaddetail"></tbody>
+        <tfoot class="table-dark">
+            <tr>
+                <td colspan="2" class="text-start fw-bold">Total Biaya</td>
+                <td class="text-end fw-bold" id="totalbiaya"></td>
+                <td></td>
+            </tr>
+        </tfoot>
     </table>
     <div class="row mt-2">
         <div class="col-12">
@@ -105,6 +119,18 @@
 
             form.find("#kode_jenis_biaya").val("");
             form.find("#jumlah").val("");
+            getTotalBiaya();
+        }
+
+        function getTotalBiaya() {
+            let totalbiaya = 0;
+            $("#loaddetail tr").each(function() {
+                let jumlah = $(this).find("input[name='jml[]']").val();
+                // Hilangkan simbol titik pada jumlah
+                jumlah = jumlah.replace(/\./g, '');
+                totalbiaya += parseInt(jumlah) || 0;
+            });
+            $("#totalbiaya").text(totalbiaya.toLocaleString('id-ID'));
         }
 
         $("#tambahbiaya").click(function(e) {
@@ -167,6 +193,7 @@
                 /* Read more about isConfirmed, isDenied below */
                 if (result.isConfirmed) {
                     $(`#index_${kode_jenis_biaya}`).remove();
+                    getTotalBiaya();
                 }
             });
         });
@@ -186,6 +213,7 @@
         form.submit(function() {
             const kode_unit = form.find("#kode_unit").val();
             const tingkat = form.find("#tingkat").val();
+            const asrama = form.find("#asrama").val();
             const detail = form.find('#loaddetail tr').length;
             if (kode_unit == "") {
                 Swal.fire({
@@ -210,6 +238,17 @@
                     },
                 });
 
+                return false;
+            } else if (asrama == "") {
+                Swal.fire({
+                    title: "Oops!",
+                    text: "Asrama / Non Asrama Harus Diisi !",
+                    icon: "warning",
+                    showConfirmButton: true,
+                    didClose: (e) => {
+                        form.find("#asrama").focus();
+                    },
+                });
                 return false;
             } else if (detail == "0") {
                 Swal.fire({

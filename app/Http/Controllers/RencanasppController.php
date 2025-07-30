@@ -130,7 +130,9 @@ class RencanasppController extends Controller
                     'kode_rencana_spp' => $kode_rencana_spp,
                     'bulan' => $bulancicilan,
                     'tahun' => $tahun,
-                    'jumlah' => $cicilan
+                    'jumlah' => $cicilan,
+                    'realisasi' => 0,
+                    'cicilan_ke' => $i
                 ];
                 $mulai_pembayaran++;
             }

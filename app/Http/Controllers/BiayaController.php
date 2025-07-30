@@ -50,11 +50,13 @@ class BiayaController extends Controller
         $request->validate([
             'kode_unit' => 'required',
             'tingkat' => 'required',
+            'asrama' => 'required',
             'kode_ta' => 'required'
         ]);
 
         $tahun_ajaran = str_replace("TA", "", $request->kode_ta);
-        $kode_biaya = $request->kode_unit . $request->tingkat . $tahun_ajaran;
+        $kode_asrama = $request->asrama == 1 ? 'AS' : '';
+        $kode_biaya = $request->kode_unit . $request->tingkat . $tahun_ajaran . $kode_asrama;
         $kode_jenis_biaya = $request->kode_jenis_biaya;
         $jumlah = $request->jml;
 
@@ -67,7 +69,8 @@ class BiayaController extends Controller
                 'kode_biaya' => $kode_biaya,
                 'kode_unit' => $request->kode_unit,
                 'tingkat' => $request->tingkat,
-                'kode_ta' => $request->kode_ta
+                'kode_ta' => $request->kode_ta,
+                'asrama' => $request->asrama
             ]);
 
             for ($i = 0; $i < count($kode_jenis_biaya); $i++) {
