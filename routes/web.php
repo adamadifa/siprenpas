@@ -27,6 +27,7 @@ use App\Http\Controllers\KategoripemasukanController;
 use App\Http\Controllers\KategoripengeluaranController;
 use App\Http\Controllers\KegiatanibadahController;
 use App\Http\Controllers\KelasController;
+use App\Http\Controllers\LaporankeuanganController;
 use App\Http\Controllers\LaporankoperasiController;
 use App\Http\Controllers\LaporanmsdmController;
 use App\Http\Controllers\LedgerController;
@@ -677,6 +678,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporanmsdm', 'index')->name('laporanmsdm.index')->can('presensi.index');
         Route::post('/laporanmsdm/cetakpresensi', 'cetakpresensi')->name('laporanmsdm.cetakpresensi')->can('presensi.index');
         Route::post('/laporanmsdm/cetakchecklistibadah', 'cetakchecklistibadah')->name('laporanmsdm.cetakchecklistibadah')->can('presensi.index');
+    });
+
+
+    Route::controller(LaporankeuanganController::class)->group(function () {
+        Route::get('/laporankeuangan', 'index')->name('lk.index')->can('pembayaranpdd.index');
+        Route::post('/laporankeuangan/cetakrekaptagihan', 'cetakrekaptagihan')->name('lk.cetakrekaptagihan')->can('pembayaranpdd.index');
     });
 });
 

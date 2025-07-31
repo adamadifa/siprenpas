@@ -8,6 +8,7 @@ use App\Models\Kelassiswa;
 use App\Models\Pendaftaran;
 use App\Models\Tahunajaran;
 use App\Models\Unit;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
@@ -16,10 +17,14 @@ class KelasController extends Controller
 {
     public function index()
     {
+        $user = User::where('id', auth()->user()->id)->first();
         $data['kelas'] = Kelas::orderBy('kode_kelas')
             ->join('unit', 'kelas.kode_unit', '=', 'unit.kode_unit')
             ->join('konfigurasi_tahun_ajaran', 'kelas.kode_ta', '=', 'konfigurasi_tahun_ajaran.kode_ta')
             ->select('kelas.*', 'unit.nama_unit', 'konfigurasi_tahun_ajaran.tahun_ajaran')
+            ->when($user->kode_unit != 'U06', function ($query) use ($user) {
+                $query->where('kelas.kode_unit', $user->kode_unit);
+            })
             ->get();
         return view('datamaster.kelas.index', $data);
     }
@@ -27,14 +32,17 @@ class KelasController extends Controller
 
     public function create()
     {
+        $user = User::where('id', auth()->user()->id)->first();
         $u = new Unit();
         $data['unit'] = $u->getUnit();
+        $data['user'] = $user;
         return view('datamaster.kelas.create', $data);
     }
 
 
     public function store(Request $request)
     {
+        $user = User::where('id', auth()->user()->id)->first();
         $request->validate([
             'kode_kelas' => 'unique:kelas,kode_kelas',
             'nama_kelas' => 'required',
@@ -48,11 +56,12 @@ class KelasController extends Controller
         $last_kelas = Kelas::where('kode_unit', $kode_unit)->where('kode_ta', $ta_aktif->kode_ta)->orderBy('kode_kelas', 'desc')->first();
         $last_kode_kelas = $last_kelas ? $last_kelas->kode_kelas : '';
         $kode_kelas = buatkode($last_kode_kelas, $tahun_ajaran . $kode_unit, 2);
+        $kode_unit = $user->kode_unit ==  'U06' ? $request->kode_unit : $user->kode_unit;
         try {
             Kelas::create([
                 'kode_kelas' => $kode_kelas,
                 'nama_kelas' => $request->nama_kelas,
-                'kode_unit' => $request->kode_unit,
+                'kode_unit' => $kode_unit,
                 'kode_ta' => $ta_aktif->kode_ta,
                 'tingkat' => $request->tingkat,
             ]);

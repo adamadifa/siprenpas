@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Biaya;
 use App\Models\Biayasiswa;
 use App\Models\Detailbiaya;
+use App\Models\Detailhistoribayarpendidikan;
 use App\Models\Detailrencanaspp;
+use App\Models\Historibayarpendidikan;
 use App\Models\Pendaftaran;
 use App\Models\Rencanaspp;
 use App\Models\Tahunajaran;
@@ -96,6 +98,14 @@ class RencanasppController extends Controller
         //dd($jumlah_spp_perbulan);
         DB::beginTransaction();
         try {
+            $cektransaksi = Detailhistoribayarpendidikan::join('pendidikan_historibayar', 'pendidikan_historibayar_detail.no_bukti', '=', 'pendidikan_historibayar.no_bukti')
+                ->where('no_pendaftaran', $request->no_pendaftaran)
+                ->where('kode_biaya', $kode_biaya)
+                ->count();
+
+            if ($cektransaksi) {
+                return response()->json(['status' => false, 'message' => 'Data Sudah Tidak Dapat Di Generate'], 500);
+            }
             $cek = Rencanaspp::where('no_pendaftaran', $request->no_pendaftaran)
                 ->where('kode_biaya', $kode_biaya)
                 ->first();
@@ -153,10 +163,22 @@ class RencanasppController extends Controller
     public function getrencanaspp($no_pendaftaran)
     {
         $no_pendaftaran = Crypt::decrypt($no_pendaftaran);
+
+        $transaksi = Detailhistoribayarpendidikan::select('kode_biaya', DB::raw('COUNT(kode_biaya) as jumlah_transaksi'))
+            ->join('pendidikan_historibayar', 'pendidikan_historibayar_detail.no_bukti', '=', 'pendidikan_historibayar.no_bukti')
+            ->where('no_pendaftaran', $no_pendaftaran)
+            ->groupBy('kode_biaya');
+
+
+
         $detailrencanaspp = Detailrencanaspp::join('spp_rencana', 'spp_rencana_detail.kode_rencana_spp', '=', 'spp_rencana.kode_rencana_spp')
             ->join('konfigurasi_biaya', 'spp_rencana.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
             ->join('konfigurasi_tahun_ajaran', 'konfigurasi_biaya.kode_ta', '=', 'konfigurasi_tahun_ajaran.kode_ta')
+            ->leftJoinSub($transaksi, 'transaksi', function ($join) {
+                $join->on('spp_rencana.kode_biaya', '=', 'transaksi.kode_biaya');
+            })
             ->where('no_pendaftaran', $no_pendaftaran)
+
             ->orderBy('konfigurasi_biaya.kode_ta')
             ->orderBy('spp_rencana_detail.tahun')
             ->orderBy('spp_rencana_detail.bulan')

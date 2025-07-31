@@ -25,9 +25,16 @@ class Unit extends Model
 
     public function getUnit()
     {
-        $unit = Unit::whereNotIn('kode_unit', ['U00', 'U06'])
-            ->orderBy('kode_unit')
-            ->get();
+        $user = User::where('id', auth()->user()->id)->first();
+        if ($user->kode_unit == 'U06') {
+            $unit = Unit::whereNotIn('kode_unit', ['U00', 'U06'])
+                ->orderBy('kode_unit')
+                ->get();
+        } else {
+            $unit = Unit::where('kode_unit',$user->kode_unit)
+                ->orderBy('kode_unit')
+                ->get();
+        }
         return $unit;
     }
 }

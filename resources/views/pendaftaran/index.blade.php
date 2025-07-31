@@ -21,6 +21,7 @@
             }
         </style>
         <div class="mb-3">
+            @if(auth()->user()->kode_unit == 'U06')
             <div class="mb-2 fw-bold fs-5">Rekap Jumlah Siswa per Unit</div>
             <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3">
                 @forelse ($rekap_unit as $r)
@@ -43,6 +44,7 @@
                 @endforelse
             </div>
         </div>
+        @endif
         <div class="card">
             <div class="card-header">
                 @can('pendaftaran.create')
@@ -55,10 +57,18 @@
                     <div class="col-12">
                         <form action="{{ route('pendaftaran.index') }}">
                             <div class="row">
+                                @if(auth()->user()->kode_unit == 'U06')
                                 <div class="col-lg-4 col-sm-12 col-md-12">
                                     <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}"
                                         name="nama_lengkap" icon="ti ti-search" />
                                 </div>
+                                @else
+                                <div class="col-lg-8 col-sm-12 col-md-12">
+                                    <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}"
+                                        name="nama_lengkap" icon="ti ti-search" />
+                                </div>
+                                @endif
+                                @if(auth()->user()->kode_unit == 'U06')
                                 <div class="col-lg-4 col-sm-12 col-md-12">
                                     <div class="form-group mb-3">
                                         <select name="kode_unit" id="kode_unit_search" class="form-select">
@@ -71,6 +81,7 @@
                                         </select>
                                     </div>
                                 </div>
+                                @endif
                                 <div class="col-lg-2 col-sm-12 col-md-12">
                                     <div class="form-group mb-3">
                                         <select name="kode_ta" id="kode_ta_search" class="form-select">

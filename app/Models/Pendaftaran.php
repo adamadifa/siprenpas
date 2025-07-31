@@ -17,6 +17,7 @@ class Pendaftaran extends Model
     public function getPendaftaran($no_pendaftaran = null, Request $request = null)
     {
 
+        $user = User::where('id', auth()->user()->id)->first();
         $ta_aktif = Tahunajaranppdb::where('status', 1)->first();
 
         $kelas_siswa = Kelassiswa::join('kelas', 'kelas_siswa.kode_kelas', 'kelas.kode_kelas')
@@ -72,6 +73,10 @@ class Pendaftaran extends Model
             if (!empty($request->tingkat)) {
                 $query->where('konfigurasi_biaya.tingkat', $request->tingkat);
             }
+        }
+
+        if($user->kode_unit != 'U06') {
+            $query->where('pendaftaran.kode_unit', $user->kode_unit);
         }
 
 
@@ -140,6 +145,9 @@ class Pendaftaran extends Model
             }
         }
 
+        if(auth()->user()->kode_unit != 'U06') {
+            $query->where('pendaftaran.kode_unit', auth()->user()->kode_unit);
+        }
 
         return $query;
     }

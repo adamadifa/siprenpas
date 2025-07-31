@@ -16,8 +16,12 @@
         <tr class="table-dark">
             <td colspan="4">SPP TAHUN AJARAN {{ $d->tahun_ajaran }}</td>
             <td>
-                <a href="#" class="btn btn-warning btn-sm editrencanaspp" kode_rencana_spp="{{ Crypt::encrypt($d->kode_rencana_spp) }}"><i
-                        class="ti ti-edit me-1"></i>Edit Renana SPP</a>
+                @if (empty($d->jumlah_transaksi))
+                    <a href="#" class="btn btn-warning btn-sm editrencanaspp"
+                        kode_rencana_spp="{{ Crypt::encrypt($d->kode_rencana_spp) }}"><i class="ti ti-edit me-1"></i>Edit
+                        Renana SPP</a>
+                @endif
+
             </td>
         </tr>
     @endif

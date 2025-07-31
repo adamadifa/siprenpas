@@ -387,10 +387,21 @@
                         <li class="menu-item {{ request()->is(['ledgertransaksi']) ? 'active' : '' }}">
                             <a href="{{ route('ledgertransaksi.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-file-description"></i>
-                                <div>Mutasi Ledger </div>
+                                <div>Mutasi Kas dan Bank </div>
                             </a>
                         </li>
                     @endif
+
+                    @if (auth()->check() &&
+                            auth()->user()->hasAnyPermission(['pembayaranpdd.index']))
+                        <li class="menu-item {{ request()->is(['laporankeuangan']) ? 'active' : '' }}">
+                            <a href="{{ route('lk.index') }}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-file-description"></i>
+                                <div>Laporan </div>
+                            </a>
+                        </li>
+                    @endif
+
                 </ul>
 
             </li>
@@ -518,8 +529,10 @@
             </li>
         @endif
         <!-- KONFIGURASI-->
-        <li class="menu-item {{ request()->is(['jamkerja', 'jamkerja/*', 'tahunajaran', 'biaya', 
-        'tahunajaranppdb', 'tahunajaranppdb/*']) ? 'open' : '' }}">
+        <li
+            class="menu-item {{ request()->is(['jamkerja', 'jamkerja/*', 'tahunajaran', 'biaya', 'tahunajaranppdb', 'tahunajaranppdb/*'])
+                ? 'open'
+                : '' }}">
             @if (auth()->check() &&
                     auth()->user()->hasAnyPermission(['jamkerja.index']))
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -542,7 +555,8 @@
                         </li>
                     @endcan
                     @can('tahunajaranppdb.index')
-                        <li class="menu-item {{ request()->is(['tahunajaranppdb', 'tahunajaranppdb/*']) ? 'active' : '' }}">
+                        <li
+                            class="menu-item {{ request()->is(['tahunajaranppdb', 'tahunajaranppdb/*']) ? 'active' : '' }}">
                             <a href="{{ route('tahunajaranppdb.index') }}" class="menu-link">
                                 <div>Tahun Ajaran PPDB</div>
                             </a>

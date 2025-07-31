@@ -61,6 +61,10 @@ class PendaftaranonlineController extends Controller
             $qpendaftaran->where('pendaftaran_online.nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
         }
 
+        if(auth()->user()->kode_unit != 'U06') {
+            $qpendaftaran->where('pendaftaran_online.kode_unit', auth()->user()->kode_unit);
+        }
+
         $pendaftaran = $qpendaftaran->get();
         $data['pendaftaran'] = $pendaftaran;
         $data['unit'] = Unit::orderBy('kode_unit')->get();
