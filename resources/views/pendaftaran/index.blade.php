@@ -168,7 +168,7 @@
                             </table>
                         </div>
                         <div style="float: right;">
-                            {{-- {{ $siswa->links() }} --}}
+                            {{ $pendaftaran->links() }}
                         </div>
                     </div>
                 </div>

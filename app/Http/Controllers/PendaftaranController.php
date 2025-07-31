@@ -47,7 +47,7 @@ class PendaftaranController extends Controller
         $kode_ta = $tahun_ajaran->kode_ta;
 
         $p = new Pendaftaran();
-        $pendaftaran = $p->getPendaftaran(request: $request)->paginate(15);
+        $pendaftaran = $p->getPendaftaran(request: $request)->paginate(25);
         $pendaftaran->appends($request->all());
         $data['pendaftaran'] = $pendaftaran;
 
