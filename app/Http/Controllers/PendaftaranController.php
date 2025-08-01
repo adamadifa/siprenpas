@@ -263,7 +263,8 @@ class PendaftaranController extends Controller
             'pendidikan_ibu' => 'required',
             'pekerjaan_ibu' => 'required',
             'no_hp_orang_tua' => 'required',
-            'kode_asal_sekolah' => 'required'
+            'kode_asal_sekolah' => 'required',
+            'nis' => 'required',
         ]);
 
 
@@ -273,6 +274,7 @@ class PendaftaranController extends Controller
             //Simpan Data Siswa
             Siswa::where('id_siswa', $pendaftaran->id_siswa)->update([
                 'nisn' => $request->nisn,
+                'nis' => $request->nis,
                 'nama_lengkap' => $request->nama_lengkap,
                 'jenis_kelamin' => $request->jenis_kelamin,
                 'tempat_lahir' => $request->tempat_lahir,

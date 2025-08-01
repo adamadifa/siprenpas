@@ -1,5 +1,5 @@
-<form action="{{ route('pendaftaran.update', Crypt::encrypt($pendaftaran->no_pendaftaran)) }}" aria-autocomplete="false" id="formPendaftaran"
-    method="POST">
+<form action="{{ route('pendaftaran.update', Crypt::encrypt($pendaftaran->no_pendaftaran)) }}" aria-autocomplete="false"
+    id="formPendaftaran" method="POST">
     {{-- <input type="text" id="id_siswa" name="id_siswa"> --}}
     @csrf
     @method('PUT')
@@ -10,11 +10,12 @@
                     <i class="ti ti-user"></i> Data Pendaftaran
                 </div>
             </div>
-            <x-input-with-icon icon="ti ti-barcode" label="Auto" name="no_pendaftaran" value="{{ $pendaftaran->no_pendaftaran }}" disabled="true" />
-            <x-input-with-icon icon="ti ti-calendar" label="Tanggal Pendaftaran" name="tanggal_pendaftaran" datepicker="flatpickr-date"
-                value="{{ $pendaftaran->tanggal_pendaftaran }}" />
-            <x-select label="Jenjang / Tingkat" name="kode_unit" :data="$unit" key="kode_unit" textShow="nama_unit" select2="select2Kodeunit"
-                upperCase="true" selected="{{ $pendaftaran->kode_unit }}" />
+            <x-input-with-icon icon="ti ti-barcode" label="Auto" name="no_pendaftaran"
+                value="{{ $pendaftaran->no_pendaftaran }}" disabled="true" />
+            <x-input-with-icon icon="ti ti-calendar" label="Tanggal Pendaftaran" name="tanggal_pendaftaran"
+                datepicker="flatpickr-date" value="{{ $pendaftaran->tanggal_pendaftaran }}" />
+            <x-select label="Jenjang / Tingkat" name="kode_unit" :data="$unit" key="kode_unit" textShow="nama_unit"
+                select2="select2Kodeunit" upperCase="true" selected="{{ $pendaftaran->kode_unit }}" />
         </div>
     </div>
     <div class="row">
@@ -24,10 +25,14 @@
                     <i class="ti ti-user"></i> Data Siswa
                 </div>
             </div>
-            <x-input-with-icon-label icon="ti ti-barcode" label="NISN" name="nisn" value="{{ $pendaftaran->nisn }}" />
+            <x-input-with-icon-label icon="ti ti-barcode" label="NISN" name="nisn"
+                value="{{ $pendaftaran->nisn }}" />
+            <x-input-with-icon-label icon="ti ti-barcode" label="NIS" name="nis"
+                value="{{ $pendaftaran->nis }}" />
             <div class="row">
                 <div class="col-lg-12 col-sm-12 col-md-12">
-                    <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap" name="nama_lengkap" value="{{ $pendaftaran->nama_lengkap }}" />
+                    <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap" name="nama_lengkap"
+                        value="{{ $pendaftaran->nama_lengkap }}" />
                 </div>
                 {{-- <div class="col-lg-2 col-sm-12 col-md-12">
                     <div class="form-group mb-3">
@@ -44,12 +49,14 @@
                     <option value="P" @if ($pendaftaran->jenis_kelamin == 'P') selected @endif>Perempuan</option>
                 </select>
             </div>
-            <x-input-with-icon-label icon="ti ti-map-pin" label="Tempat Lahir" name="tempat_lahir" value="{{ $pendaftaran->tempat_lahir }}" />
-            <x-input-with-icon-label icon="ti ti-calendar" label="Tanggal Lahir" name="tanggal_lahir" datepicker="flatpickr-date"
-                value="{{ $pendaftaran->tanggal_lahir }}" />
+            <x-input-with-icon-label icon="ti ti-map-pin" label="Tempat Lahir" name="tempat_lahir"
+                value="{{ $pendaftaran->tempat_lahir }}" />
+            <x-input-with-icon-label icon="ti ti-calendar" label="Tanggal Lahir" name="tanggal_lahir"
+                datepicker="flatpickr-date" value="{{ $pendaftaran->tanggal_lahir }}" />
             <div class="row">
                 <div class="col-lg-6 col-md-12 col-sm-12">
-                    <x-input-with-icon-label icon="ti ti-user" label="Anak Ke" name="anak_ke" value="{{ $pendaftaran->anak_ke }}" />
+                    <x-input-with-icon-label icon="ti ti-user" label="Anak Ke" name="anak_ke"
+                        value="{{ $pendaftaran->anak_ke }}" />
                 </div>
                 <div class="col-lg-6 col-md-12 col-sm-12">
                     <x-input-with-icon-label icon="ti ti-users" label="Jumlah Saudara" name="jumlah_saudara"
@@ -57,8 +64,8 @@
                 </div>
             </div>
             <x-textarea-label name="alamat" label="Alamat" value="{{ $pendaftaran->alamat }}" />
-            <x-select-label label="Provinsi" name="id_province" :data="$provinsi" key="id" textShow="name" select2="select2Provinsi"
-                upperCase="true" selected="{{ $pendaftaran->id_province }}" />
+            <x-select-label label="Provinsi" name="id_province" :data="$provinsi" key="id" textShow="name"
+                select2="select2Provinsi" upperCase="true" selected="{{ $pendaftaran->id_province }}" />
             <div class="form-group mb-3">
                 <label style="font-weight: 600" class="form-label">Kabupaten / Kota</label>
                 <select name="id_regency" id="id_regency" class="select2Regency form-select">
@@ -74,7 +81,8 @@
                 <select name="id_village" id="id_village" class="select2Village form-select">
                 </select>
             </div>
-            <x-input-with-icon-label icon="ti ti-barcode" label="Kode Pos" name="kode_pos" value="{{ $pendaftaran->kode_pos }}" />
+            <x-input-with-icon-label icon="ti ti-barcode" label="Kode Pos" name="kode_pos"
+                value="{{ $pendaftaran->kode_pos }}" />
         </div>
         <div class="col-lg-1">
             <div class="divider divider-vertical">
@@ -93,26 +101,32 @@
             <div class="row">
                 <div class="col-lg-10 col-sm-12 col-md-12">
                     <div class="form-group mb-3">
-                        <select name="kode_asal_sekolah" class="form-select select2Kodeasalsekolah" id="kode_asal_sekolah">
+                        <select name="kode_asal_sekolah" class="form-select select2Kodeasalsekolah"
+                            id="kode_asal_sekolah">
                             <option value="">Asal Sekolah</option>
                         </select>
                     </div>
                 </div>
                 <div class="col-lg-2 col-sm-12 col-md-12">
                     <div class="form-group mb-3">
-                        <a href="#" class="btn btn-primary w-100" id="btnTambahsekolah"><i class="ti ti-plus"></i></a>
+                        <a href="#" class="btn btn-primary w-100" id="btnTambahsekolah"><i
+                                class="ti ti-plus"></i></a>
                     </div>
                 </div>
             </div>
-            <x-input-with-icon-label icon="ti ti-barcode" label="No. KK" name="no_kk" value="{{ $pendaftaran->no_kk }}" />
-            <x-input-with-icon-label icon="ti ti-credit-card" label="NIK. Ayah" name="nik_ayah" value="{{ $pendaftaran->nik_ayah }}" />
-            <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap Ayah" name="nama_ayah" value="{{ $pendaftaran->nama_ayah }}" />
+            <x-input-with-icon-label icon="ti ti-barcode" label="No. KK" name="no_kk"
+                value="{{ $pendaftaran->no_kk }}" />
+            <x-input-with-icon-label icon="ti ti-credit-card" label="NIK. Ayah" name="nik_ayah"
+                value="{{ $pendaftaran->nik_ayah }}" />
+            <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap Ayah" name="nama_ayah"
+                value="{{ $pendaftaran->nama_ayah }}" />
             <div class="form-group mb-3">
                 <label style="font-weight: 600" class="form-label">Pendidikan Ayah</label>
                 <select name="pendidikan_ayah" id="pendidikan_ayah" class="form-select">
                     <option value="">Pendidikan Ayah</option>
                     @foreach ($pendidikan as $p)
-                        <option value="{{ $p }}" @if ($pendaftaran->pendidikan_ayah == $p) selected @endif>{{ $p }}</option>
+                        <option value="{{ $p }}" @if ($pendaftaran->pendidikan_ayah == $p) selected @endif>
+                            {{ $p }}</option>
                     @endforeach
                 </select>
             </div>
@@ -120,14 +134,17 @@
                 value="{{ $pendaftaran->pekerjaan_ayah }}" />
 
 
-            <x-input-with-icon-label icon="ti ti-credit-card" label="NIK. Ibu" name="nik_ibu" value="{{ $pendaftaran->nik_ibu }}" />
-            <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap Ibu" name="nama_ibu" value="{{ $pendaftaran->nama_ibu }}" />
+            <x-input-with-icon-label icon="ti ti-credit-card" label="NIK. Ibu" name="nik_ibu"
+                value="{{ $pendaftaran->nik_ibu }}" />
+            <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap Ibu" name="nama_ibu"
+                value="{{ $pendaftaran->nama_ibu }}" />
             <div class="form-group mb-3">
                 <label style="font-weight: 600" class="form-label">Pendidikan Ibu</label>
                 <select name="pendidikan_ibu" id="pendidikan_ibu" class="form-select">
                     <option value="">Pendidikan Ibu</option>
                     @foreach ($pendidikan as $p)
-                        <option value="{{ $p }}" @if ($pendaftaran->pendidikan_ibu == $p) selected @endif>{{ $p }}</option>
+                        <option value="{{ $p }}" @if ($pendaftaran->pendidikan_ibu == $p) selected @endif>
+                            {{ $p }}</option>
                     @endforeach
                 </select>
             </div>
@@ -136,9 +153,9 @@
 
             <x-input-with-icon-label icon="ti ti-phone" label="No. HP Orangtua" name="no_hp_orang_tua"
                 value="{{ $pendaftaran->no_hp_orang_tua }}" />
-            <x-select-label label="Penghasilan Orantua" name="kode_penghasilan_ortu" :data="$penghasilan_ortu" key="kode_penghasilan_ortu"
-                textShow="penghasilan" select2="select2Kodepenghasilanortu" upperCase="true"
-                selected="{{ $pendaftaran->kode_penghasilan_ortu }}" />
+            <x-select-label label="Penghasilan Orantua" name="kode_penghasilan_ortu" :data="$penghasilan_ortu"
+                key="kode_penghasilan_ortu" textShow="penghasilan" select2="select2Kodepenghasilanortu"
+                upperCase="true" selected="{{ $pendaftaran->kode_penghasilan_ortu }}" />
             <div class="form-group">
                 <button class="btn btn-primary w-100" type="submit">
                     <ion-icon name="send-outline" class="me-1"></ion-icon>
@@ -293,9 +310,12 @@
             $("#modalSiswa").modal("show");
         });
 
-        getRegency(id_province = "{{ $pendaftaran->id_province }}", id_regency = "{{ $pendaftaran->id_regency }}");
-        getDistrict(id_regency = "{{ $pendaftaran->id_regency }}", id_district = "{{ $pendaftaran->id_district }}");
-        getVillage(id_district = "{{ $pendaftaran->id_district }}", id_village = "{{ $pendaftaran->id_village }}");
+        getRegency(id_province = "{{ $pendaftaran->id_province }}", id_regency =
+            "{{ $pendaftaran->id_regency }}");
+        getDistrict(id_regency = "{{ $pendaftaran->id_regency }}", id_district =
+            "{{ $pendaftaran->id_district }}");
+        getVillage(id_district = "{{ $pendaftaran->id_district }}", id_village =
+            "{{ $pendaftaran->id_village }}");
 
         function getSiswa(id_siswa) {
             $.ajax({
@@ -314,9 +334,12 @@
                     form.find("#jumlah_saudara").val(response.jumlah_saudara);
                     form.find("#alamat").val(response.alamat);
                     form.find("#id_province").val(response.id_province).trigger('change');
-                    getRegency(id_province = response.id_province, id_regency = response.id_regency);
-                    getDistrict(id_regency = response.id_regency, id_district = response.id_district);
-                    getVillage(id_district = response.id_district, id_village = response.id_village);
+                    getRegency(id_province = response.id_province, id_regency = response
+                        .id_regency);
+                    getDistrict(id_regency = response.id_regency, id_district = response
+                        .id_district);
+                    getVillage(id_district = response.id_district, id_village = response
+                        .id_village);
                     form.find("#kode_pos").val(response.kode_pos);
                     form.find("#no_kk").val(response.no_kk);
                     form.find("#nik_ayah").val(response.nik_ayah);
