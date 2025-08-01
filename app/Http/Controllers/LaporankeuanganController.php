@@ -69,6 +69,7 @@ class LaporankeuanganController extends Controller
             ...$select_mutasi,
             ...$select_bayar
         );
+        $qrekaptagihan->orderBy('nama_lengkap');
         $qrekaptagihan->join('konfigurasi_biaya_detail', 'siswa_biaya.kode_biaya', '=', 'konfigurasi_biaya_detail.kode_biaya');
         $qrekaptagihan->join('pendaftaran', 'siswa_biaya.no_pendaftaran', '=', 'pendaftaran.no_pendaftaran');
         $qrekaptagihan->join('siswa', 'pendaftaran.id_siswa', '=', 'siswa.id_siswa');
