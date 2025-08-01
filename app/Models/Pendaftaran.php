@@ -52,7 +52,7 @@ class Pendaftaran extends Model
         $query->leftJoinSub($kelas_siswa, 'kelas_siswa', function ($join) {
             $join->on('kelas_siswa.id_siswa', '=', 'siswa.id_siswa');
         });
-        $query->orderBy('siswa_biaya.no_pendaftaran', 'desc');
+        $query->orderBy('siswa_biaya.nama_lengkap');
         if (!empty($no_pendaftaran)) {
             $query->where('siswa_biaya.no_pendaftaran', $no_pendaftaran);
         } else {
