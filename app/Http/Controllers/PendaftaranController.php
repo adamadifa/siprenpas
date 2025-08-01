@@ -274,7 +274,7 @@ class PendaftaranController extends Controller
             //Simpan Data Siswa
             Siswa::where('id_siswa', $pendaftaran->id_siswa)->update([
                 'nisn' => $request->nisn,
-                'nis' => $request->nis,
+                // 'nis' => $request->nis,
                 'nama_lengkap' => $request->nama_lengkap,
                 'jenis_kelamin' => $request->jenis_kelamin,
                 'tempat_lahir' => $request->tempat_lahir,
@@ -305,6 +305,7 @@ class PendaftaranController extends Controller
                 'kode_asal_sekolah' => $request->kode_asal_sekolah,
                 'kode_penghasilan_ortu' => $request->kode_penghasilan_ortu,
                 'kode_unit' => $request->kode_unit,
+                'nis' => $request->nis,
             ]);
             DB::commit();
             return Redirect::back()->with(messageSuccess('Data Berhasil Di Simpan'));
