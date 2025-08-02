@@ -40,13 +40,19 @@ class IzinabsenController extends Controller
         if (!empty($request->status) || $request->status === '0') {
             $qizin->where('presensi_izinabsen.status', $request->status);
         }
+
+        if (auth()->user()->kode_unit != 'U06') {
+            $qizin->where('karyawan.kode_unit', auth()->user()->kode_unit);
+        }
+
         $qizin->orderBy('presensi_izinabsen.status');
         $qizin->orderBy('presensi_izinabsen.tanggal', 'desc');
         $izinabsen = $qizin->paginate(15);
         $izinabsen->appends($request->all());
 
         $data['izinabsen'] = $izinabsen;
-        $data['unit'] = Unit::orderBy('kode_unit')->get();
+        $u = new Unit();
+        $data['unit'] = $u->getUnit();
         return view('msdm.izinabsen.index', $data);
     }
 
@@ -101,11 +107,15 @@ class IzinabsenController extends Controller
 
             $cek_izin_absen = Izinabsen::where('npp', $npp)
                 ->whereBetween('dari', [$request->dari, $request->sampai])
-                ->orWhereBetween('sampai', [$request->dari, $request->sampai])->first();
+                ->orWhereBetween('sampai', [$request->dari, $request->sampai])
+                ->where('npp', $npp)
+                ->first();
 
             $cek_izin_sakit = Izinsakit::where('npp', $npp)
                 ->whereBetween('dari', [$request->dari, $request->sampai])
-                ->orWhereBetween('sampai', [$request->dari, $request->sampai])->first();
+                ->orWhereBetween('sampai', [$request->dari, $request->sampai])
+                ->where('npp', $npp)
+                ->first();
             // $cek_izin_sakit = Izinsakit::where('nik', $nik)
             //     ->whereBetween('dari', [$request->dari, $request->sampai])
             //     ->orWhereBetween('sampai', [$request->dari, $request->sampai])->first();

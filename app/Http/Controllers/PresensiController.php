@@ -71,13 +71,19 @@ class PresensiController extends Controller
         if (!empty($request->nama_karyawan)) {
             $query->where('karyawan.nama_lengkap', 'like', '%' . $request->nama_karyawan . '%');
         }
+
+        if (auth()->user()->kode_unit != 'U06') {
+            $query->where('karyawan.kode_unit', auth()->user()->kode_unit);
+        }
+
         $query->where('karyawan.status', 1);
         $query->orderBy('nama_lengkap', 'asc');
         $karyawan = $query->paginate(30);
         $karyawan->appends(request()->all());
         $unit = Unit::orderBy('kode_unit')->get();
         $data['karyawan'] = $karyawan;
-        $data['unit'] = $unit;
+        $u = new Unit();
+        $data['unit'] = $u->getUnit();
         return view('presensi.index', $data);
     }
     public function create($kode_jam_kerja = null)

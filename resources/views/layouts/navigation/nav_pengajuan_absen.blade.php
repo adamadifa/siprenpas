@@ -5,18 +5,23 @@
             <li class="nav-item" role="presentation">
                 <a href="{{ route('izinabsen.index') }}" class="nav-link {{ request()->is(['izinabsen']) ? 'active' : '' }}">
                     <i class="tf-icons ti ti-file-description ti-md me-1"></i> Izin Absen
-                    @if (!empty($notifikasi_izinabsen))
-                        <span class="badge bg-danger rounded-pill ms-2">{{ $notifikasi_izinabsen }}</span>
+                    @if (auth()->user()->kode_unit == 'U06')
+                        @if (!empty($notifikasi_izinabsen))
+                            <span class="badge bg-danger rounded-pill ms-2">{{ $notifikasi_izinabsen }}</span>
+                        @endif
                     @endif
                 </a>
             </li>
         @endcan
         @can('izinsakit.index')
             <li class="nav-item" role="presentation">
-                <a href="{{ route('izinsakit.index') }}" class="nav-link {{ request()->is(['izinsakit']) ? 'active' : '' }}">
+                <a href="{{ route('izinsakit.index') }}"
+                    class="nav-link {{ request()->is(['izinsakit']) ? 'active' : '' }}">
                     <i class="tf-icons ti ti-file-description ti-md me-1"></i> Izin Sakit
-                    @if (!empty($notifikasi_izinsakit))
-                        <span class="badge bg-danger rounded-pill ms-2">{{ $notifikasi_izinsakit }}</span>
+                    @if (auth()->user()->kode_unit == 'U06')
+                        @if (!empty($notifikasi_izinsakit))
+                            <span class="badge bg-danger rounded-pill ms-2">{{ $notifikasi_izinsakit }}</span>
+                        @endif
                     @endif
                 </a>
             </li>
