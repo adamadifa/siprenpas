@@ -14,6 +14,38 @@
                 @endcan
             </div>
             <div class="card-body">
+                <form action="{{ route('kelas.index') }}" method="get">
+                    <div class="row">
+                        <div class="col-lg-5 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <select name="kode_unit" id="kode_unit" class="form-select">
+                                    <option value="">Pilih Unit</option>
+                                    @foreach ($unit as $d)
+                                        <option value="{{ $d->kode_unit }}">{{ $d->nama_unit }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <select name="kode_ta" id="kode_ta" class="form-select">
+                                    <option value="">Pilih Tahun Ajaran</option>
+                                    @foreach ($tahunajaran as $d)
+                                        <option value="{{ $d->kode_ta }}"
+                                            {{ (Request::get('kode_ta') == $d->kode_ta ? 'selected' : $kode_ta == $d->kode_ta) ? 'selected' : '' }}>
+                                            {{ $d->tahun_ajaran }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-sm-12 col-xs-12">
+                            <div class="form-group">
+                                <button class="btn btn-primary" id="btnFilter"><i class="ti ti-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
                 <div class="row">
                     <div class="col-12">
                         <div class="table-responsive mb-2">

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Redirect;
 
 class KelasController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = User::where('id', auth()->user()->id)->first();
         $data['kelas'] = Kelas::orderBy('kode_kelas')
@@ -25,7 +25,17 @@ class KelasController extends Controller
             ->when($user->kode_unit != 'U06', function ($query) use ($user) {
                 $query->where('kelas.kode_unit', $user->kode_unit);
             })
+            ->when($request->kode_ta, function ($query) use ($request) {
+                $query->where('kelas.kode_ta', $request->kode_ta);
+            })
+            ->when($request->kode_unit, function ($query) use ($request) {
+                $query->where('kelas.kode_unit', $request->kode_unit);
+            })
             ->get();
+
+        $u = new Unit();
+        $data['unit'] = $u->getUnit();
+        $data['tahunajaran'] = Tahunajaran::orderBy('kode_ta')->get();
         return view('datamaster.kelas.index', $data);
     }
 

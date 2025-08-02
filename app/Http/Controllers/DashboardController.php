@@ -64,6 +64,8 @@ class DashboardController extends Controller
             return view('dashboard.karyawan', $data);
         } else if ($user->hasRole('ketua koperasi')) {
             return view('dashboard.koperasi');
+        } else if ($user->hasRole(['admin unit', 'admin tu'])) {
+            return view('dashboard.admin_unit');
         } else {
             $data['departemen'] = Departemen::orderBy('kode_dept')->get();
             $data['ledger'] = Ledger::orderBy('kode_ledger')->get();
