@@ -28,9 +28,10 @@ class KelasController extends Controller
             ->when($request->kode_ta, function ($query) use ($request) {
                 $query->where('kelas.kode_ta', $request->kode_ta);
             })
-            ->when($request->kode_unit, function ($query) use ($request) {
-                $query->where('kelas.kode_unit', $request->kode_unit);
+            ->when($request->kode_unit_search, function ($query) use ($request) {
+                $query->where('kelas.kode_unit', $request->kode_unit_search);
             })
+
             ->get();
 
         $u = new Unit();

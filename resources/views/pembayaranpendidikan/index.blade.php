@@ -20,7 +20,7 @@
                                 <div class="col-lg-2 col-sm-12 col-md-12">
                                     <div class="form-group mb-3">
                                         <select name="kode_unit" id="kode_unit_search" class="form-select">
-                                            <option value="">Semua Unit</option>
+                                            <option value="">Unit</option>
                                             @foreach ($unit as $d)
                                                 <option value="{{ $d->kode_unit }}"
                                                     {{ Request('kode_unit') == $d->kode_unit ? 'selected' : '' }}>
@@ -32,7 +32,7 @@
                                 <div class="col-lg-2 col-sm-12 col-md-12">
                                     <div class="form-group mb-3">
                                         <select name="tingkat" id="tingkat" class="form-select">
-                                            <option value="">Pilih Tingkat</option>
+                                            <option value="">Tingkat</option>
                                         </select>
                                     </div>
                                 </div>

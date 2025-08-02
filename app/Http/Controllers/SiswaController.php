@@ -16,6 +16,11 @@ class SiswaController extends Controller
         if (!empty($request->nama_lengkap)) {
             $query->where('nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
         }
+
+        if (auth()->user()->kode_unit != 'U06') {
+            $query->where('siswa.kode_unit', auth()->user()->kode_unit);
+        }
+
         $query->orderBy('siswa.created_at', 'desc');
         $siswa = $query->paginate(15);
         $siswa->appends(request()->all());

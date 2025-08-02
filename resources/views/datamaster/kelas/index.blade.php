@@ -18,7 +18,7 @@
                     <div class="row">
                         <div class="col-lg-5 col-sm-12 col-xs-12">
                             <div class="form-group">
-                                <select name="kode_unit" id="kode_unit" class="form-select">
+                                <select name="kode_unit_search" id="kode_unit_search" class="form-select">
                                     <option value="">Pilih Unit</option>
                                     @foreach ($unit as $d)
                                         <option value="{{ $d->kode_unit }}">{{ $d->nama_unit }}</option>
@@ -74,7 +74,7 @@
                                                         <div>
                                                             <a href="#" class="me-2 btnEdit"
                                                                 kode_kelas="{{ Crypt::encrypt($d->kode_kelas) }}"
-                                                                kode_unit="{{ Crypt::encrypt($d->kode_unit) }}"
+                                                                kode_unit="{{ $d->kode_unit }}"
                                                                 tingkat="{{ $d->tingkat }}">
                                                                 <i class="ti ti-edit text-success"></i>
                                                             </a>
@@ -217,7 +217,7 @@
         $("#btnCreate").click(function(e) {
             e.preventDefault();
             $('#modal').modal("show");
-            $(".modal-title").text("Tambah Data Kelas");
+            $(".modal-title").text("Tambah Data Kelas " + "{{ $ta_aktif }}");
             $("#loadmodal").load("{{ route('kelas.create') }}", function() {
                 // Panggil validasi setelah form selesai dimuat
                 initKelasFormValidation();
@@ -228,6 +228,8 @@
         $(document).on('click', '.btnEdit', function(e) {
             e.preventDefault();
             const kode_kelas = $(this).attr('kode_kelas');
+            const kode_unit = $(this).attr('kode_unit');
+            //alert(kode_unit);
             const tingkat = $(this).attr('tingkat');
 
             $('#modal').modal("show");
@@ -235,7 +237,7 @@
             $("#loadmodal").load(`/kelas/${kode_kelas}/edit`, function() {
                 // Panggil validasi setelah form selesai dimuat
                 initKelasFormValidation();
-                getTingkatByUnit($("#kode_unit").val(), tingkat);
+                getTingkatByUnit(kode_unit, tingkat);
             });
         });
     });
