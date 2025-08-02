@@ -6,7 +6,7 @@
     <span>Kelas</span>
 @endsection
 <div class="row">
-    <div class="col-lg-10 col-sm-12 col-xs-12">
+    <div class="col-lg-8 col-sm-12 col-xs-12">
         <div class="card">
             <div class="card-header">
                 @can('kelas.create')
@@ -64,8 +64,8 @@
                                     @foreach ($kelas as $d)
                                         <tr>
                                             <td>{{ $d->kode_kelas }}</td>
-                                            <td class="text-center">{{ $d->nama_kelas }}</td>
-                                            <td class="text-center">{{ $d->tingkat }}</td>
+                                            <td>{{ $d->nama_kelas }}</td>
+                                            <td>{{ $d->tingkat }}</td>
                                             <td>{{ $d->nama_unit }}</td>
                                             <td>{{ $d->tahun_ajaran }}</td>
                                             <td>
