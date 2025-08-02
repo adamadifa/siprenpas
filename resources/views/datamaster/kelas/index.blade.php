@@ -64,8 +64,8 @@
                                     @foreach ($kelas as $d)
                                         <tr>
                                             <td>{{ $d->kode_kelas }}</td>
-                                            <td>{{ $d->nama_kelas }}</td>
-                                            <td>{{ $d->tingkat }}</td>
+                                            <td class="text-center">{{ $d->nama_kelas }}</td>
+                                            <td class="text-center">{{ $d->tingkat }}</td>
                                             <td>{{ $d->nama_unit }}</td>
                                             <td>{{ $d->tahun_ajaran }}</td>
                                             <td>
