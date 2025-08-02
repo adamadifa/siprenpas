@@ -1,13 +1,19 @@
 <form action="{{ route('laporanmsdm.cetakchecklistibadah') }}" method="POST" target="_blank" id="formPresensi">
     @csrf
-    <div class="form-group mb-3">
-        <select name="kode_unit" id="kode_unit" class="form-select select2Kodeunitpresensi">
-            <option value="">Semua Unit</option>
-            @foreach ($unit as $d)
-                <option value="{{ $d->kode_unit }}">{{ textUpperCase($d->nama_unit) }}</option>
-            @endforeach
-        </select>
-    </div>
+    @if (auth()->user()->kode_unit != 'U06')
+        <input type="hidden" name="kode_unit" value="{{ auth()->user()->kode_unit }}">
+    @else
+        <div class="form-group mb-3">
+            <select name="kode_unit" id="kode_unit" class="form-select select2Kodeunitpresensi">
+                <option value="">Semua Unit</option>
+                @foreach ($unit as $d)
+                    <option value="{{ $d->kode_unit }}">{{ textUpperCase($d->nama_unit) }}</option>
+                @endforeach
+            </select>
+        </div>
+    @endif
+
+
     <div class="form-group mb-3">
         <select name="nik" id="nik_presensi" class="form-select select2Nikpresensi">
             <option value="">Semua Karyawan</option>
@@ -33,7 +39,8 @@
                 <select name="tahun" id="tahun" class="form-select">
                     <option value="">Tahun</option>
                     @for ($t = $start_year; $t <= date('Y'); $t++)
-                        <option {{ date('Y') == $t ? 'selected' : '' }} value="{{ $t }}">{{ $t }}</option>
+                        <option {{ date('Y') == $t ? 'selected' : '' }} value="{{ $t }}">{{ $t }}
+                        </option>
                     @endfor
                 </select>
             </div>

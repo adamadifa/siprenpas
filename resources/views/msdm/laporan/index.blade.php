@@ -20,7 +20,8 @@
                 @can('presensi.index')
                     <li class="nav-item" role="presentation">
                         <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
-                            data-bs-target="#checklistibadah" aria-controls="checklistibadah" aria-selected="false" tabindex="-1">
+                            data-bs-target="#checklistibadah" aria-controls="checklistibadah" aria-selected="false"
+                            tabindex="-1">
                             Checklist ibadah
                         </button>
                     </li>
