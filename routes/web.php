@@ -683,6 +683,7 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(LaporankeuanganController::class)->group(function () {
         Route::get('/laporankeuangan', 'index')->name('lk.index')->can('pembayaranpdd.index');
+        Route::post('/laporankeuangan/cetakpembayaran', 'cetakpembayaran')->name('lk.cetakpembayaran')->can('pembayaranpdd.index');
         Route::post('/laporankeuangan/cetakrekaptagihan', 'cetakrekaptagihan')->name('lk.cetakrekaptagihan')->can('pembayaranpdd.index');
     });
 });

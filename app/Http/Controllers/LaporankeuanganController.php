@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Biayasiswa;
 use App\Models\Detailhistoribayarpendidikan;
+use App\Models\Historibayarpendidikan;
 use App\Models\Pendaftaran;
 use App\Models\Tahunajaran;
 use App\Models\Unit;
@@ -99,5 +100,35 @@ class LaporankeuanganController extends Controller
         $data['biaya'] = $biaya;
 
         return view('keuangan.laporan.rekaptagihan_cetak', $data);
+    }
+
+
+    public function cetakpembayaran(Request $request)
+    {
+        
+        $query = Detailhistoribayarpendidikan::query();
+        $query->join('pendidikan_historibayar','pendidikan_historibayar_detail.no_bukti','=','pendidikan_historibayar.no_bukti');
+        $query->join('konfigurasi_biaya','pendidikan_historibayar_detail.kode_biaya','=','konfigurasi_biaya.kode_biaya');
+        $query->join('konfigurasi_tahun_ajaran','konfigurasi_biaya.kode_ta','=','konfigurasi_tahun_ajaran.kode_ta');
+        $query->join('jenis_biaya','pendidikan_historibayar_detail.kode_jenis_biaya','=','jenis_biaya.kode_jenis_biaya');
+        $query->join('pendaftaran','pendidikan_historibayar.no_pendaftaran','=','pendaftaran.no_pendaftaran');
+        $query->join('siswa','pendaftaran.id_siswa','=','siswa.id_siswa');
+        $query->select('pendidikan_historibayar_detail.no_bukti','tanggal','nis',
+        'nama_lengkap','jumlah','keterangan','konfigurasi_tahun_ajaran.tahun_ajaran','jenis_biaya.jenis_biaya');
+        if($request->kode_unit  ){
+            $query->where('pendaftaran.kode_unit',$request->kode_unit);
+        }
+        if($request->tingkat){
+            $query->where('konfigurasi_biaya.tingkat',$request->tingkat);
+        }
+        $query->whereBetween('pendidikan_historibayar.tanggal',[$request->dari,$request->sampai]);
+        $query->orderBy('pendidikan_historibayar.tanggal');
+        $query->orderBy('pendidikan_historibayar_detail.no_bukti');
+        $query->orderBy('pendidikan_historibayar_detail.kode_jenis_biaya');
+        $data['pembayaran'] = $query->get();
+    
+        $data['dari'] = $request->dari;
+        $data['sampai'] = $request->sampai;
+        return view('keuangan.laporan.pembayaran_cetak', $data);
     }
 }

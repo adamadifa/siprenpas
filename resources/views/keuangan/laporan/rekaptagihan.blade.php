@@ -1,8 +1,8 @@
-<form action="{{ route('lk.cetakrekaptagihan') }}" method="POST" target="_blank" id="formPresensi">
+<form action="{{ route('lk.cetakrekaptagihan') }}" method="POST" target="_blank" id="formRekapTagihan">
     @csrf
     <div class="form-group mb-3">
         <select name="kode_unit" id="kode_unit" class="form-select select2Kodeunitpresensi">
-            <option value="">Pilih Unit</option>
+            <option value="">Unit</option>
             @foreach ($unit as $d)
                 <option value="{{ $d->kode_unit }}">{{ textUpperCase($d->nama_unit) }}</option>
             @endforeach
@@ -11,7 +11,7 @@
 
     <div class="form-group mb-3">
         <select name="tingkat" id="tingkat" class="form-select">
-            <option value="">Pilih Tingkat</option>
+            <option value="">Tingkat</option>
         </select>
     </div>
     <div class="form-group mb-3">

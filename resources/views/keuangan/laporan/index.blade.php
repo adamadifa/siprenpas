@@ -12,7 +12,8 @@
                 @can('lk.rekaptagihan')
                     <li class="nav-item" role="presentation">
                         <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab"
-                            data-bs-target="#presensi" aria-controls="presensi" aria-selected="false" tabindex="-1">
+                            data-bs-target="#rekaptagihan" aria-controls="rekaptagihan" aria-selected="false"
+                            tabindex="-1">
                             Rekap Tagihan
                         </button>
                     </li>
@@ -20,8 +21,7 @@
                 @can('lk.pembayaran')
                     <li class="nav-item" role="presentation">
                         <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
-                            data-bs-target="#checklistibadah" aria-controls="checklistibadah" aria-selected="false"
-                            tabindex="-1">
+                            data-bs-target="#pembayaran" aria-controls="pembayaran" aria-selected="false" tabindex="-1">
                             Pembayaran
                         </button>
                     </li>
@@ -50,15 +50,63 @@
 @push('myscript')
 <script>
     $(function() {
-        $('#kode_unit').on('change', function() {
-            const kode_unit = $(this).val();
-            getTingkatByUnit(kode_unit);
+
+        const formRekapTagihan = $('#formRekapTagihan');
+        const formPembayaran = $('#formPembayaran');
+
+
+        $("#formRekapTagihan").find("#kode_unit").on('change', function() {
+            getTingkatByUnit($(this).val(), '', '#formRekapTagihan');
+        });
+
+        $("#formPembayaran").find("#kode_unit").on('change', function() {
+            getTingkatByUnit($(this).val(), '', '#formPembayaran');
         });
 
 
+        $("#formRekapTagihan").submit(function(e) {
+            let unit = $(this).find("#kode_unit").val();
+            let tingkat = $(this).find("#tingkat").val();
+            let kode_ta = $(this).find("#kode_ta_search").val();
 
-        function getTingkatByUnit(kode_unit, selected = '') {
-            selected = "{{ Request('tingkat') }}"
+            if (unit == "") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Unit tidak boleh kosong!',
+                    didClose: (e) => {
+                        formRekapTagihan.find("#kode_unit").focus();
+                    }
+                });
+                return false;
+            }else if(tingkat == ""){
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Tingkat tidak boleh kosong!',
+                    didClose: (e) => {
+                        formRekapTagihan.find("#tingkat").focus();
+                    }
+                });
+                return false;
+            }else if(kode_ta == ""){
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Tahun Ajaran tidak boleh kosong!',
+                    didClose: (e) => {
+                        formRekapTagihan.find("#kode_ta_search").focus();
+                    }
+                });
+                return false;
+            }
+
+
+        });
+
+
+        function getTingkatByUnit(kode_unit, selected = '', formName = '') {
+
             $.ajax({
                 type: "POST",
                 url: "{{ route('unit.gettingkatbyunit') }}",
@@ -69,7 +117,7 @@
                     selected: selected
                 },
                 success: function(respond) {
-                    $(document).find("#tingkat").html(respond);
+                    $(formName).find("#tingkat").html(respond);
                 }
             });
 
