@@ -278,6 +278,8 @@
         <div>
             <div class="welcome">Selamat Datang, {{ auth()->user()->name }}</div>
             <div class="desc">Semoga harimu menyenangkan dan produktif!</div>
+            <div class="role">Role: {{ auth()->user()->getRoleNames()->first() }}</div>
+
         </div>
     </div>
 
