@@ -55,24 +55,24 @@
                     <th rowspan="2">No</th>
                     <th rowspan="2">NPP</th>
                     <th rowspan="2">Nama Karyawan</th>
-                    @foreach ($kegiatan->groupBy('kategori.kategori_ibadah') as $kategori => $daftarKegiatan)
-                        <th colspan="{{ $daftarKegiatan->count() }}">{{ $kategori }}</th>
-                    @endforeach
+                    <th colspan="{{ count($kegiatan_ibadah) }}">KEGIATAN IBADAH</th>
                 </tr>
                 <tr>
-                    @foreach ($kegiatan as $k)
+                    @foreach ($kegiatan_ibadah as $k)
                         <th>{{ $k->nama_kegiatan }}</th>
                     @endforeach
                 </tr>
             </thead>
             <tbody>
-                @foreach ($rekap as $data)
+                @foreach ($rekapkegiatanibadah as $d)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $data['npp'] }}</td>
-                        <td>{{ $data['nama_lengkap'] }}</td>
-                        @foreach ($kegiatan as $k)
-                            <td style="text-align: center">{{ $data['data'][$k->id] ?? '' }}</td>
+                        <td>{{ $d->npp }}</td>
+                        <td>{{ $d->nama_lengkap }}</td>
+                        @foreach ($kegiatan_ibadah as $k)
+                            <td
+                                style="text-align: center; background-color:{{ !empty($d['jml_kegiatan_' . $k->id]) ? '' : 'red' }}">
+                                {{ !empty($d['jml_kegiatan_' . $k->id]) ? $d['jml_kegiatan_' . $k->id] : '' }}</td>
                         @endforeach
                     </tr>
                 @endforeach

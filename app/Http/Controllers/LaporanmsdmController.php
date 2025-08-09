@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Checklistibadah;
+use App\Models\Detailchecklistibadah;
 use App\Models\Karyawan;
 use App\Models\Kegiatanibadah;
 use App\Models\Presensi;
@@ -155,37 +157,41 @@ class LaporanmsdmController extends Controller
         $bulan = $request->bulan;
         $tahun = $request->tahun;
 
-        $checklistData = DB::table('karyawan as k')
-            ->leftJoin('checklist_ibadah as ci', function ($join) use ($bulan, $tahun) {
-                $join->on('k.npp', '=', 'ci.npp')
-                    ->whereMonth('ci.tanggal', $bulan)
-                    ->whereYear('ci.tanggal', $tahun);
-            })
-            ->leftJoin('checklist_ibadah_detail as cid', 'ci.kode_checklist_ibadah', '=', 'cid.kode_checklist_ibadah')
-            ->leftJoin('kegiatan_ibadah as ki', 'cid.id_kegiatan_ibadah', '=', 'ki.id')
-            ->select(
-                'k.npp',
-                'k.nama_lengkap',
-                'ki.id as kegiatan_id',
-                DB::raw('COUNT(cid.id_kegiatan_ibadah) as total')
-            )
-            ->when(!empty($request->kode_unit), function ($query) use ($request) {
-                return $query->where('k.kode_unit', $request->kode_unit);
-            })
 
 
-            ->groupBy('k.npp', 'k.nama_lengkap', 'ki.id')
-            ->get();
+        $kegiatan_ibadah =  Kegiatanibadah::orderBy('id')->get();
 
-        $rekap = [];
 
-        foreach ($checklistData as $row) {
-            $rekap[$row->npp]['npp'] = $row->npp;
-            $rekap[$row->npp]['nama_lengkap'] = $row->nama_lengkap;
-            $rekap[$row->npp]['data'][$row->kegiatan_id] = $row->total;
+        $selectKegiatanibadah = [];
+        $selectFieldKegiatanibadah   = [];
+        foreach ($kegiatan_ibadah as $k) {
+            $selectKegiatanibadah[] = DB::raw('SUM(IF(id_kegiatan_ibadah = ' . $k->id . ', 1, 0)) as jml_kegiatan_' . $k->id);
+            $selectFieldKegiatanibadah[] = 'jml_kegiatan_' . $k->id;
         }
 
-        $kegiatan = Kegiatanibadah::join('kategori_ibadah', 'kegiatan_ibadah.id_kategori_ibadah', '=', 'kategori_ibadah.id')->get();
-        return view('msdm.laporan.checklistibadah_cetak', compact('rekap', 'kegiatan'));
+
+
+        $checklistData = Detailchecklistibadah::join('checklist_ibadah', 'checklist_ibadah_detail.kode_checklist_ibadah', '=', 'checklist_ibadah.kode_checklist_ibadah')
+            ->select(
+                'npp',
+                ...$selectKegiatanibadah
+            )
+            ->whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun)
+            ->groupBy('npp');
+
+
+        $rekap = Karyawan::query();
+        $rekap->select('karyawan.npp', 'karyawan.nama_lengkap', ...$selectFieldKegiatanibadah);
+        $rekap->leftJoinSub($checklistData, 'checklist_ibadah_detail', function ($join) {
+            $join->on('karyawan.npp', '=', 'checklist_ibadah_detail.npp');
+        });
+        $rekap->orderBy('karyawan.nama_lengkap');
+        $rekapkegiatanibadah = $rekap->get();
+
+
+        $data['kegiatan_ibadah'] = $kegiatan_ibadah;
+        $data['rekapkegiatanibadah'] = $rekapkegiatanibadah;
+        return view('msdm.laporan.checklistibadah_cetak', $data);
     }
 }
