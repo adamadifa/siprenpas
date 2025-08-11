@@ -590,6 +590,8 @@ class PembayaranpendidikanController extends Controller
         $no_bukti = Crypt::decrypt($no_bukti);
         $data['historibayar'] = Historibayarpendidikan::where('no_bukti', $no_bukti)
             ->join('users', 'pendidikan_historibayar.id_user', '=', 'users.id')
+            ->join('pendaftaran', 'pendaftaran.no_pendaftaran', '=', 'pendidikan_historibayar.no_pendaftaran')
+            ->join('siswa', 'pendaftaran.id_siswa', '=', 'siswa.id_siswa')
             ->first();
         $data['detail'] = Detailhistoribayarpendidikan::where('no_bukti', $no_bukti)
             ->join('jenis_biaya', 'pendidikan_historibayar_detail.kode_jenis_biaya', '=', 'jenis_biaya.kode_jenis_biaya')
