@@ -57,7 +57,7 @@
 
         <div class="row mb-2">
             <div class="col-6">
-                <p><strong>Nama:</strong> {{ $historibayar->name }}</p>
+                <p><strong>Nama:</strong> {{ $historibayar->nama_lengkap }}</p>
                 <p><strong>NIS:</strong> {{ $historibayar->nis }}</p>
                 <p><strong>Kelas:</strong> {{ $historibayar->kelas }}</p>
             </div>
