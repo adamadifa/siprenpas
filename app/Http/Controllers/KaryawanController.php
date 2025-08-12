@@ -105,6 +105,7 @@ class KaryawanController extends Controller
     public function update(Request $request, $npp)
     {
         $npp = Crypt::decrypt($npp);
+        $userKaryawan = Userkaryawan::where('npp', $npp)->first();
         $request->validate([
             'npp' => 'required|unique:karyawan,npp,' . $npp . ',npp',
             'no_ktp' => 'required',
@@ -123,6 +124,7 @@ class KaryawanController extends Controller
             'status' => 'required',
         ]);
 
+        DB::beginTransaction();
 
         try {
             Karyawan::where('npp', $npp)->update([
@@ -145,8 +147,15 @@ class KaryawanController extends Controller
                 'status' => $request->status
             ]);
 
+            User::where('id', $userKaryawan->id_user)->update([
+                'name' => $request->nama_lengkap,
+                'email' => strtolower(removeTitik($request->npp)) . '@persisalamin.com',
+                'username' => $request->npp,
+            ]);
+            DB::commit();
             return Redirect::back()->with(messageSuccess('Data Berhasil Disimpan'));
         } catch (\Exception $e) {
+            DB::rollBack();
             return Redirect::back()->with(messageError($e->getMessage()));
         }
     }
