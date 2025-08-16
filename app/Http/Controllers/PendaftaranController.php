@@ -231,6 +231,7 @@ class PendaftaranController extends Controller
         $data['penghasilan_ortu'] = Penghasilanortu::orderBy('kode_penghasilan_ortu')->get();
         $data['pendaftaran'] = Pendaftaran::where('no_pendaftaran', $no_pendaftaran)
             ->join('siswa', 'pendaftaran.id_siswa', 'siswa.id_siswa')
+            ->select('pendaftaran.no_pendaftaran', 'pendaftaran.tanggal_pendaftaran', 'pendaftaran.nis', 'pendaftaran.kode_asal_sekolah', 'pendaftaran.kode_penghasilan_ortu', 'pendaftaran.kode_unit', 'pendaftaran.foto as foto_pendaftaran', 'siswa.nisn', 'siswa.nama_lengkap', 'siswa.jenis_kelamin', 'siswa.tempat_lahir', 'siswa.tanggal_lahir', 'siswa.anak_ke', 'siswa.jumlah_saudara', 'siswa.alamat', 'siswa.id_province', 'siswa.id_regency', 'siswa.id_district', 'siswa.id_village', 'siswa.kode_pos', 'siswa.no_kk', 'siswa.nik_ayah', 'siswa.nama_ayah', 'siswa.pendidikan_ayah', 'siswa.pekerjaan_ayah', 'siswa.nik_ibu', 'siswa.nama_ibu', 'siswa.pendidikan_ibu', 'siswa.pekerjaan_ibu', 'siswa.no_hp_orang_tua')
             ->first();
         return view('pendaftaran.edit', $data);
     }
@@ -265,12 +266,47 @@ class PendaftaranController extends Controller
             'no_hp_orang_tua' => 'required',
             'kode_asal_sekolah' => 'required',
             'nis' => 'required',
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
         ]);
 
 
         DB::beginTransaction();
         try {
             $pendaftaran = Pendaftaran::where('no_pendaftaran', $no_pendaftaran)->first();
+
+            // Handle photo upload/deletion
+            $fotoName = $pendaftaran->foto; // Keep existing photo by default
+
+            // Check if user wants to delete photo
+            if ($request->has('delete_photo') && $request->delete_photo == '1') {
+                // Delete old photo file if exists
+                if ($pendaftaran->foto && file_exists(public_path('storage/photos/pendaftaran/' . $pendaftaran->foto))) {
+                    unlink(public_path('storage/photos/pendaftaran/' . $pendaftaran->foto));
+                }
+                $fotoName = null;
+            }
+            // Check if new photo uploaded
+            elseif ($request->hasFile('foto')) {
+                // Delete old photo file if exists
+                if ($pendaftaran->foto && file_exists(public_path('storage/photos/pendaftaran/' . $pendaftaran->foto))) {
+                    unlink(public_path('storage/photos/pendaftaran/' . $pendaftaran->foto));
+                }
+
+                // Upload new photo
+                $file = $request->file('foto');
+                $fileName = time() . '_' . $pendaftaran->no_pendaftaran . '.' . $file->getClientOriginalExtension();
+
+                // Create directory if not exists
+                $uploadPath = public_path('storage/photos/pendaftaran');
+                if (!file_exists($uploadPath)) {
+                    mkdir($uploadPath, 0755, true);
+                }
+
+                // Move uploaded file
+                $file->move($uploadPath, $fileName);
+                $fotoName = $fileName;
+            }
+
             //Simpan Data Siswa
             Siswa::where('id_siswa', $pendaftaran->id_siswa)->update([
                 'nisn' => $request->nisn,
@@ -306,6 +342,7 @@ class PendaftaranController extends Controller
                 'kode_penghasilan_ortu' => $request->kode_penghasilan_ortu,
                 'kode_unit' => $request->kode_unit,
                 'nis' => $request->nis,
+                'foto' => $fotoName,
             ]);
             DB::commit();
             return Redirect::back()->with(messageSuccess('Data Berhasil Di Simpan'));
@@ -368,6 +405,17 @@ class PendaftaranController extends Controller
         $no_pendaftaran = Crypt::decrypt($no_pendaftaran);
         $mpendaftaran = new Pendaftaran();
         $data['pendaftaran'] = $mpendaftaran->getPendaftaran($no_pendaftaran)->first();
+
+        // Convert foto to base64 for PDF
+        if ($data['pendaftaran']->foto_pendaftaran && file_exists(public_path('storage/photos/pendaftaran/' . $data['pendaftaran']->foto_pendaftaran))) {
+            $fotoPath = public_path('storage/photos/pendaftaran/' . $data['pendaftaran']->foto_pendaftaran);
+            $fotoType = pathinfo($fotoPath, PATHINFO_EXTENSION);
+            $fotoData = file_get_contents($fotoPath);
+            $data['foto_base64'] = 'data:image/' . $fotoType . ';base64,' . base64_encode($fotoData);
+        } else {
+            $data['foto_base64'] = null;
+        }
+
         $data['qrCode'] = QrCode::size(100)->generate($no_pendaftaran);
         $pdf = FacadePdf::loadView('pendaftaran.cetak', $data)->setPaper('a4', 'portrait');
         return $pdf->stream('pendaftaran_' . $no_pendaftaran . '.pdf');

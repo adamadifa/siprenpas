@@ -1,5 +1,5 @@
 <form action="{{ route('pendaftaran.update', Crypt::encrypt($pendaftaran->no_pendaftaran)) }}" aria-autocomplete="false"
-    id="formPendaftaran" method="POST">
+    id="formPendaftaran" method="POST" enctype="multipart/form-data">
     {{-- <input type="text" id="id_siswa" name="id_siswa"> --}}
     @csrf
     @method('PUT')
@@ -25,6 +25,101 @@
                     <i class="ti ti-user"></i> Data Siswa
                 </div>
             </div>
+
+            <!-- Upload Foto dengan Style Modern -->
+            <div class="form-group mb-4">
+                <label style="font-weight: 600" class="form-label">
+                    <i class="ti ti-camera me-2"></i>Foto Siswa
+                </label>
+                <style>
+                    .upload-area:hover {
+                        border-color: #6366f1 !important;
+                        background-color: #f0f9ff !important;
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+                    }
+
+                    .photo-preview-container:hover .btn-danger {
+                        opacity: 1;
+                    }
+
+                    .photo-preview-container .btn-danger {
+                        opacity: 0;
+                        transition: opacity 0.3s ease;
+                    }
+
+                    .photo-preview-container:hover {
+                        transform: scale(1.02);
+                        transition: transform 0.3s ease;
+                    }
+                </style>
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 col-sm-12">
+                        <!-- Preview Foto -->
+                        <div class="card border-0 shadow-sm mb-3">
+                            <div class="card-body text-center p-3">
+                                <div class="photo-preview-container"
+                                    style="position: relative; width: 150px; height: 200px; margin: 0 auto; border: 2px dashed #d4d4d8; border-radius: 12px; overflow: hidden; background: #f8fafc;">
+
+
+                                    @if ($pendaftaran->foto_pendaftaran)
+                                        <img id="photoPreview"
+                                            src="{{ asset('storage/photos/pendaftaran/' . $pendaftaran->foto_pendaftaran) }}"
+                                            style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;"
+                                            alt="Foto Siswa"
+                                            onerror="this.style.display='none'; document.getElementById('photoPlaceholder').style.display='flex';">
+                                        <div id="photoPlaceholder" style="display: none;">
+                                            <i class="ti ti-camera" style="font-size: 2.5rem; margin-bottom: 8px;"></i>
+                                            <span style="font-size: 0.875rem; text-align: center; padding: 0 10px;">Foto
+                                                tidak ditemukan</span>
+                                        </div>
+                                    @else
+                                        <div id="photoPlaceholder"
+                                            style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; color: #94a3b8;">
+                                            <i class="ti ti-camera" style="font-size: 2.5rem; margin-bottom: 8px;"></i>
+                                            <span
+                                                style="font-size: 0.875rem; text-align: center; padding: 0 10px;">Belum
+                                                ada foto</span>
+                                        </div>
+                                        <img id="photoPreview"
+                                            style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: none;"
+                                            alt="Preview Foto">
+                                    @endif
+                                    <!-- Remove Photo Button -->
+                                    <button type="button" id="removePhoto" class="btn btn-danger btn-sm"
+                                        style="position: absolute; top: 5px; right: 5px; width: 30px; height: 30px; border-radius: 50%; padding: 0; display: {{ $pendaftaran->foto_pendaftaran ? 'flex' : 'none' }}; align-items: center; justify-content: center;">
+                                        <i class="ti ti-x" style="font-size: 0.875rem;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-6 col-sm-12">
+                        <!-- Upload Input -->
+                        <div class="upload-area"
+                            style="border: 2px dashed #e2e8f0; border-radius: 12px; padding: 2rem; text-align: center; background: #f8fafc; transition: all 0.3s ease; cursor: pointer;"
+                            onclick="document.getElementById('photoInput').click()">
+                            <i class="ti ti-cloud-upload"
+                                style="font-size: 3rem; color: #6366f1; margin-bottom: 1rem;"></i>
+                            <h6 style="color: #374151; margin-bottom: 0.5rem;">Klik untuk upload foto</h6>
+                            <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1rem;">atau drag & drop file
+                                di sini</p>
+                            <p style="color: #9ca3af; font-size: 0.75rem;">Format: JPG, JPEG, PNG (Max: 2MB)</p>
+                        </div>
+                        <input type="file" id="photoInput" name="foto" accept="image/jpeg,image/jpg,image/png"
+                            style="display: none;">
+
+                        <!-- Info Text -->
+                        <div class="mt-2">
+                            <small class="text-muted">
+                                <i class="ti ti-info-circle me-1"></i>
+                                Foto akan digunakan untuk identitas siswa. Pastikan foto jelas dan formal.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <x-input-with-icon-label icon="ti ti-barcode" label="NISN" name="nisn"
                 value="{{ $pendaftaran->nisn }}" />
             <x-input-with-icon-label icon="ti ti-barcode" label="NIS" name="nis"
@@ -42,7 +137,8 @@
             </div>
 
             <div class="form-group mb-3">
-                <label for="exampleFormControlInput1" style="font-weight: 600" class="form-label">Jenis Kelamin</label>
+                <label for="exampleFormControlInput1" style="font-weight: 600" class="form-label">Jenis
+                    Kelamin</label>
                 <select name="jenis_kelamin" id="jenis_kelamin" class="form-select">
                     <option value="">Jenis Kelamin</option>
                     <option value="L" @if ($pendaftaran->jenis_kelamin == 'L') selected @endif>Laki - Laki</option>
@@ -398,6 +494,173 @@
             loadasalsekolah();
         });
 
+        // Photo Upload Functionality
+        const photoInput = document.getElementById('photoInput');
+        const photoPreview = document.getElementById('photoPreview');
+        const photoPlaceholder = document.getElementById('photoPlaceholder');
+        const removePhotoBtn = document.getElementById('removePhoto');
+        const uploadArea = document.querySelector('.upload-area');
+
+        // Add loading state to upload area
+        function setUploadLoading(isLoading) {
+            if (isLoading) {
+                uploadArea.innerHTML = `
+                    <div class="d-flex justify-content-center align-items-center" style="height: 100px;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <span class="ms-2">Memproses foto...</span>
+                    </div>
+                `;
+            } else {
+                uploadArea.innerHTML = `
+                    <i class="ti ti-cloud-upload" style="font-size: 3rem; color: #6366f1; margin-bottom: 1rem;"></i>
+                    <h6 style="color: #374151; margin-bottom: 0.5rem;">Klik untuk upload foto</h6>
+                    <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1rem;">atau drag & drop file di sini</p>
+                    <p style="color: #9ca3af; font-size: 0.75rem;">Format: JPG, JPEG, PNG (Max: 2MB)</p>
+                `;
+            }
+        }
+
+        // Handle file input change
+        photoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Show loading state
+                setUploadLoading(true);
+
+                // Validate file type
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!allowedTypes.includes(file.type)) {
+                    setUploadLoading(false);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Format File Tidak Valid',
+                        text: 'Hanya file JPG, JPEG, dan PNG yang diizinkan!'
+                    });
+                    photoInput.value = '';
+                    return;
+                }
+
+                // Validate file size (2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    setUploadLoading(false);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ukuran File Terlalu Besar',
+                        text: 'Ukuran file maksimal 2MB!'
+                    });
+                    photoInput.value = '';
+                    return;
+                }
+
+                // Preview image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    setTimeout(() => {
+                        photoPreview.src = e.target.result;
+                        photoPreview.style.display = 'block';
+                        if (photoPlaceholder) {
+                            photoPlaceholder.style.display = 'none';
+                        }
+                        removePhotoBtn.style.display = 'flex';
+                        setUploadLoading(false);
+
+                        // Remove delete photo input if exists
+                        const deleteInput = document.getElementById('deletePhoto');
+                        if (deleteInput) {
+                            deleteInput.remove();
+                        }
+                    }, 500); // Small delay for better UX
+                };
+                reader.readAsDataURL(file);
+            } else {
+                setUploadLoading(false);
+            }
+        });
+
+        // Handle remove photo
+        removePhotoBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            Swal.fire({
+                title: 'Hapus Foto?',
+                text: "Apakah Anda yakin ingin menghapus foto ini?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    photoInput.value = '';
+                    photoPreview.style.display = 'none';
+                    if (photoPlaceholder) {
+                        photoPlaceholder.style.display = 'flex';
+                    }
+                    removePhotoBtn.style.display = 'none';
+
+                    // Add hidden input to mark photo for deletion
+                    if (!document.getElementById('deletePhoto')) {
+                        const deleteInput = document.createElement('input');
+                        deleteInput.type = 'hidden';
+                        deleteInput.name = 'delete_photo';
+                        deleteInput.id = 'deletePhoto';
+                        deleteInput.value = '1';
+                        form[0].appendChild(deleteInput);
+                    }
+                }
+            });
+        });
+
+        // Handle drag and drop
+        uploadArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#6366f1';
+            uploadArea.style.backgroundColor = '#f0f9ff';
+        });
+
+        uploadArea.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#e2e8f0';
+            uploadArea.style.backgroundColor = '#f8fafc';
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#e2e8f0';
+            uploadArea.style.backgroundColor = '#f8fafc';
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                photoInput.files = files;
+                photoInput.dispatchEvent(new Event('change'));
+            }
+        });
+
+        // Handle form submission with photo notification
+        form.on('submit', function(e) {
+            const hasPhoto = photoInput.files.length > 0 || (photoPreview.style.display === 'block' && !
+                document.getElementById('deletePhoto'));
+
+            if (hasPhoto) {
+                // Show loading for photo processing
+                const submitBtn = form.find('button[type="submit"]');
+                const originalText = submitBtn.html();
+                submitBtn.html(
+                    '<i class="spinner-border spinner-border-sm me-2"></i>Menyimpan data dan foto...'
+                );
+                submitBtn.prop('disabled', true);
+
+                // Re-enable after 3 seconds in case of issues
+                setTimeout(() => {
+                    submitBtn.html(originalText);
+                    submitBtn.prop('disabled', false);
+                }, 10000);
+            }
+        });
 
     });
 </script>

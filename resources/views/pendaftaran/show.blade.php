@@ -13,8 +13,8 @@
                 </p>
             </div>
             <div>
-                <a href="{{ route('pendaftaran.cetakpdf', Crypt::encrypt($pendaftaran->no_pendaftaran)) }}" target="_blank"
-                    class="btn btn-danger shadow-sm" style="min-width:120px;">
+                <a href="{{ route('pendaftaran.cetakpdf', Crypt::encrypt($pendaftaran->no_pendaftaran)) }}"
+                    target="_blank" class="btn btn-danger shadow-sm" style="min-width:120px;">
                     <i class="ti ti-printer"></i> Cetak PDF
                 </a>
             </div>
@@ -34,6 +34,19 @@
 </style>
 <div class="row">
     <h5 class="m-0">A. DATA PESERTA DIDK</h5>
+
+    <!-- Foto Peserta Didik -->
+    @if ($pendaftaran->foto_pendaftaran)
+        <div class="col-12 mb-3 text-center">
+            <div class="d-inline-block"
+                style="border: 2px solid #dee2e6; border-radius: 8px; padding: 8px; background: #f8f9fa;">
+                <img src="{{ asset('storage/photos/pendaftaran/' . $pendaftaran->foto_pendaftaran) }}"
+                    alt="Foto {{ $pendaftaran->nama_lengkap }}"
+                    style="width: 150px; height: 200px; object-fit: cover; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            </div>
+        </div>
+    @endif
+
     <div class="col">
         <table class="table table-report" style="width: auto !important; ">
             <tr>

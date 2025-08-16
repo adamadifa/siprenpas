@@ -27,6 +27,7 @@ class Pendaftaran extends Model
         $query->select(
             'siswa.*',
             'pendaftaran.no_pendaftaran',
+            'pendaftaran.foto as foto_pendaftaran',
             'tahun_ajaran',
             'villages.name as desa',
             'nama_unit',

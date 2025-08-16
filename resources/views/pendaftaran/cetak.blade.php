@@ -77,6 +77,17 @@
 
     <!-- DATA PESERTA DIDIK -->
     <h5 class="m-0" style="margin-top:16px;">A. DATA PESERTA DIDIK</h5>
+
+    <!-- Foto Peserta Didik -->
+    @if (isset($foto_base64) && $foto_base64)
+        <div style="margin: 15px 0; page-break-inside: avoid;">
+            <div style="display: inline-block; border: 2px solid #000; padding: 5px; background: #fff; margin-left: 0;">
+                <img src="{{ $foto_base64 }}" alt="Foto {{ $pendaftaran->nama_lengkap }}"
+                    style="width: 120px; height: 160px; object-fit: cover; border: 1px solid #ccc;">
+            </div>
+        </div>
+    @endif
+
     <table style="width:100%; font-size:1rem; margin-bottom:10px;">
         <tr>
             <td style="width:3%;">1.</td>
