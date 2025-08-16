@@ -64,6 +64,9 @@
             <div class="col-6 text-end">
                 <p><strong>Tanggal:</strong> {{ DateToIndo($historibayar->tanggal) }}</p>
                 <p><strong>No. Bukti:</strong> {{ $historibayar->no_bukti }}</p>
+                <p><strong>Metode Pembayaran</strong>
+                    {{ $historibayar->metode_pembayaran == 'TF' ? 'Transfer' : 'Tunai' }}
+                </p>
             </div>
         </div>
 
@@ -96,7 +99,8 @@
         <div class="row mt-4">
             <div class="col-7">
                 <p><strong>Keterangan:</strong></p>
-                <p>Pembayaran dilakukan secara tunai kepada bendahara sekolah.</p>
+                <p>Pembayaran dilakukan secara {{ $historibayar->metode_pembayaran == 'TF' ? 'Transfer' : 'Tunai' }}
+                    kepada bendahara sekolah.</p>
             </div>
             <div class="col-5 text-end">
                 <p>Sindangkasih, {{ DateToIndo($historibayar->tanggal) }}</p>

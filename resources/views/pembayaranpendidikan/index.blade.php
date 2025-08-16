@@ -726,7 +726,7 @@
             e.preventDefault();
             let tanggal = $(this).find("#tanggal").val();
             let cekdetail = $(this).find('#tableDetailbayar').find('#detailbayar tr').length;
-
+            let metode_pembayaran = $(this).find("#metode_pembayaran").val();
             if (tanggal == "") {
                 Swal.fire({
                     icon: 'warning',
@@ -744,6 +744,16 @@
                     text: 'Detail Bayar tidak boleh kosong!',
                     didClose: (e) => {
                         $(this).find("#kode_biaya").focus();
+                    }
+                });
+                return false;
+            } else if (metode_pembayaran == "") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Metode pembayaran tidak boleh kosong!',
+                    didClose: (e) => {
+                        $(this).find("#metode_pembayaran").focus();
                     }
                 });
                 return false;

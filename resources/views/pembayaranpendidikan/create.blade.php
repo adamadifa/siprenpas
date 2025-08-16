@@ -19,10 +19,12 @@
             </div>
         </div>
         <div class="col">
-            <x-input-with-icon label="Sisa Tagihan" icon="ti ti-moneybag" name="sisa_tagihan" disabled="true" money="true" textalign="right" />
+            <x-input-with-icon label="Sisa Tagihan" icon="ti ti-moneybag" name="sisa_tagihan" disabled="true"
+                money="true" textalign="right" />
         </div>
         <div class="col">
-            <x-input-with-icon label="Jumlah Bayar" icon="ti ti-moneybag" name="jumlah" money="true" textalign="right" />
+            <x-input-with-icon label="Jumlah Bayar" icon="ti ti-moneybag" name="jumlah" money="true"
+                textalign="right" />
         </div>
     </div>
     <div class="row">
@@ -32,7 +34,8 @@
     </div>
     <div class="row">
         <div class="col">
-            <a href="#" id="btnTambahdetailbayar" class="btn btn-warning w-100"><i class="ti ti-plus me-1"></i>Tambah</a>
+            <a href="#" id="btnTambahdetailbayar" class="btn btn-warning w-100"><i
+                    class="ti ti-plus me-1"></i>Tambah</a>
         </div>
     </div>
 
@@ -60,8 +63,20 @@
         </div>
     </div>
     <div class="row mt-3">
+        <div class="col-12">
+            <div class="form-group mb-3">
+                <select name="metode_pembayaran" id="metode_pembayaran" class="form-select">
+                    <option value="">Pilih Metode Pembayaran</option>
+                    <option value="TF">TRANSFER</option>
+                    <option value="TN">TUNAI</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
         <div class="col">
-            <button class="btn btn-primary w-100" type="submit" id="btnSimpan"><i class="ti ti-send me-1"></i>Simpan</button>
+            <button class="btn btn-primary w-100" type="submit" id="btnSimpan"><i
+                    class="ti ti-send me-1"></i>Simpan</button>
         </div>
     </div>
 </form>
@@ -130,7 +145,8 @@
                     kode_biaya: kode_biaya
                 },
                 success: function(data) {
-                    $("#formDetailbayar").find("#sisa_tagihan").val(convertToRupiah(data.sisatagihan));
+                    $("#formDetailbayar").find("#sisa_tagihan").val(convertToRupiah(data
+                        .sisatagihan));
                     sisatagihan = data.sisatagihan;
                 }
             });

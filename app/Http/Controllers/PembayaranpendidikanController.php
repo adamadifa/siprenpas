@@ -346,6 +346,7 @@ class PembayaranpendidikanController extends Controller
                 'tanggal' => $request->tanggal,
                 'no_pendaftaran' => $no_pendaftaran,
                 'id_user' => Auth::user()->id,
+                'metode_pembayaran' => $request->metode_pembayaran,
             ]);
             for ($i = 0; $i < count($kode_biaya); $i++) {
                 if ($kode_jenis_biaya[$i] == 'B07') {
