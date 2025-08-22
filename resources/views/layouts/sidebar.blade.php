@@ -528,6 +528,28 @@
 
             </li>
         @endif
+
+        <!-- Menu Pengumuman -->
+        @if (auth()->check())
+            <li class="menu-item {{ request()->is(['pengumuman*', 'kategori-pengumuman*']) ? 'open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons ti ti-speakerphone"></i>
+                    <div>Pengumuman</div>
+                </a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ request()->is(['pengumuman*']) ? 'active' : '' }}">
+                        <a href="{{ route('pengumuman.index') }}" class="menu-link">
+                            <div>Daftar Pengumuman</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ request()->is(['kategori-pengumuman*']) ? 'active' : '' }}">
+                        <a href="{{ route('kategori-pengumuman.index') }}" class="menu-link">
+                            <div>Kategori Pengumuman</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @endif
         <!-- KONFIGURASI-->
         <li
             class="menu-item {{ request()->is(['jamkerja', 'jamkerja/*', 'tahunajaran', 'biaya', 'tahunajaranppdb', 'tahunajaranppdb/*'])

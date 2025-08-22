@@ -59,6 +59,8 @@ use App\Http\Controllers\TahunajaranppdbController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VillageController;
+use App\Http\Controllers\PengumumanController;
+use App\Http\Controllers\KategoriPengumumanController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Role;
 
@@ -686,6 +688,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/laporankeuangan/cetakpembayaran', 'cetakpembayaran')->name('lk.cetakpembayaran')->can('pembayaranpdd.index');
         Route::post('/laporankeuangan/cetakrekaptagihan', 'cetakrekaptagihan')->name('lk.cetakrekaptagihan')->can('pembayaranpdd.index');
     });
+
+    // Routes untuk Pengumuman
+    Route::resource('pengumuman', PengumumanController::class);
+
+    // Routes untuk Kategori Pengumuman
+    Route::resource('kategori-pengumuman', KategoriPengumumanController::class);
 });
 
 

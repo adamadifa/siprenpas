@@ -6,11 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 /**
- * @OA\Info(
- *     title="SiprenPAS API",
- *     version="1.0.0"
- * )
- *
  * @OA\Tag(
  *     name="Unit",
  *     description="Manajemen Unit"

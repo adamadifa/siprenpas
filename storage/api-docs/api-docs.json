@@ -1,9 +1,24 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "SiprenPAS API",
+        "title": "Pengumuman API",
+        "description": "API untuk mengelola pengumuman",
+        "contact": {
+            "name": "API Support",
+            "email": "admin@example.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
         "version": "1.0.0"
     },
+    "servers": [
+        {
+            "url": "http://my-default-host.com",
+            "description": "API Server"
+        }
+    ],
     "paths": {
         "/api/login": {
             "post": {
@@ -500,7 +515,7 @@
                 ],
                 "summary": "Update foto pendaftaran online",
                 "description": "Update foto pendaftaran online berdasarkan nomor registrasi.",
-                "operationId": "df89b9abe7ee302b72ac631936a991cf",
+                "operationId": "f2bbc3ea7c456f3989d9740b0dc339ca",
                 "parameters": [
                     {
                         "name": "no_register",
@@ -611,7 +626,7 @@
                 ],
                 "summary": "Ambil data pendaftaran online berdasarkan ID user (autentikasi diperlukan)",
                 "description": "Mendapatkan data pendaftaran online berdasarkan ID user.",
-                "operationId": "0815404223c23c4416b5792e53e70709",
+                "operationId": "3f96930c6ab909a0197e9a51f28102fd",
                 "parameters": [
                     {
                         "name": "id_user",
@@ -649,7 +664,7 @@
                 ],
                 "summary": "Update data pendaftaran online",
                 "description": "Update data pendaftaran online berdasarkan nomor registrasi.",
-                "operationId": "0f3eb5496dde4185ecd4e453064b8a46",
+                "operationId": "e2ee4810d222f18995265054824ab26c",
                 "parameters": [
                     {
                         "name": "no_register",
@@ -869,7 +884,7 @@
                 ],
                 "summary": "Konfirmasi pembayaran pendaftaran online",
                 "description": "Simpan konfirmasi pembayaran pendaftaran online.",
-                "operationId": "c6f550849aa52d9b2e8cf3ce1a751505",
+                "operationId": "579b10a86df2c8d04daf3a6e02b9c1d3",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -964,7 +979,7 @@
                 ],
                 "summary": "Ambil data konfirmasi pembayaran pendaftaran online milik user yang login",
                 "description": "Ambil data konfirmasi pembayaran pendaftaran online milik user yang sedang login.",
-                "operationId": "cbed2d7a3074c23faf00fe0c6ecbb75e",
+                "operationId": "19e9e2f4f12210a2bc2bb2e1263c35e4",
                 "responses": {
                     "200": {
                         "description": "Data konfirmasi pembayaran ditemukan.",
@@ -1056,7 +1071,7 @@
                     "Pendaftaran Online"
                 ],
                 "summary": "Hapus konfirmasi pembayaran pendaftaran online",
-                "operationId": "0cdde768d4647f3b3f7cafa310a64855",
+                "operationId": "6423dbc4d817be966a8f592420e1506a",
                 "responses": {
                     "200": {
                         "description": "Konfirmasi pembayaran berhasil dihapus.",
@@ -1104,6 +1119,295 @@
                         "bearerAuth": []
                     }
                 ]
+            }
+        },
+        "/api/pengumuman/terbaru": {
+            "get": {
+                "tags": [
+                    "Pengumuman"
+                ],
+                "summary": "Mengambil 5 pengumuman terbaru",
+                "operationId": "be9dbd23160bf0fd2bdbecb8dd3bf505",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data pengumuman terbaru",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data pengumuman terbaru berhasil diambil"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "judul": {
+                                                        "type": "string",
+                                                        "example": "Pembayaran UKT"
+                                                    },
+                                                    "isi": {
+                                                        "type": "string",
+                                                        "example": "Segera lakukan pembayaran UKT semester ganjil."
+                                                    },
+                                                    "tanggal": {
+                                                        "type": "string",
+                                                        "example": "26 Jun 2025"
+                                                    },
+                                                    "kategori": {
+                                                        "type": "string",
+                                                        "example": "keuangan"
+                                                    },
+                                                    "lokasi": {
+                                                        "type": "string",
+                                                        "example": "Bank Syariah Mandiri, Kampus Pusat"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Terjadi kesalahan server",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Terjadi kesalahan pada server"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/pengumuman": {
+            "get": {
+                "tags": [
+                    "Pengumuman"
+                ],
+                "summary": "Mengambil semua pengumuman dengan pagination",
+                "operationId": "20fe71a69229b75e4863b5c952a1f439",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Nomor halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Jumlah data per halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "kategori_id",
+                        "in": "query",
+                        "description": "Filter berdasarkan ID kategori",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data pengumuman",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data pengumuman berhasil diambil"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "judul": {
+                                                        "type": "string",
+                                                        "example": "Pembayaran UKT"
+                                                    },
+                                                    "isi": {
+                                                        "type": "string",
+                                                        "example": "Segera lakukan pembayaran UKT semester ganjil."
+                                                    },
+                                                    "tanggal": {
+                                                        "type": "string",
+                                                        "example": "26 Jun 2025"
+                                                    },
+                                                    "kategori": {
+                                                        "type": "string",
+                                                        "example": "keuangan"
+                                                    },
+                                                    "lokasi": {
+                                                        "type": "string",
+                                                        "example": "Bank Syariah Mandiri, Kampus Pusat"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 25
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/pengumuman/{id}": {
+            "get": {
+                "tags": [
+                    "Pengumuman"
+                ],
+                "summary": "Mengambil detail pengumuman berdasarkan ID",
+                "operationId": "240cd78f695233c0ed2d7c068f02295d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID pengumuman",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil detail pengumuman",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail pengumuman berhasil diambil"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "judul": {
+                                                    "type": "string",
+                                                    "example": "Pembayaran UKT"
+                                                },
+                                                "isi": {
+                                                    "type": "string",
+                                                    "example": "Segera lakukan pembayaran UKT semester ganjil."
+                                                },
+                                                "tanggal": {
+                                                    "type": "string",
+                                                    "example": "26 Jun 2025"
+                                                },
+                                                "kategori": {
+                                                    "type": "string",
+                                                    "example": "keuangan"
+                                                },
+                                                "lokasi": {
+                                                    "type": "string",
+                                                    "example": "Bank Syariah Mandiri, Kampus Pusat"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Pengumuman tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pengumuman tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/public/posts/getposthomepage": {
@@ -1186,13 +1490,56 @@
                 }
             }
         },
+        "/public/posts": {
+            "get": {
+                "tags": [
+                    "Post"
+                ],
+                "summary": "List semua post dengan pagination",
+                "operationId": "00b465177e609708821c02688ea846a3",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Nomor halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Jumlah data per halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List data post dengan pagination",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/unit": {
             "get": {
                 "tags": [
                     "Unit"
                 ],
                 "summary": "Ambil daftar unit",
-                "operationId": "cd6377b71cb65a7dd1969ca0a527743a",
+                "operationId": "5eb12aaa1af885142020ea724cbc6562",
                 "responses": {
                     "200": {
                         "description": "Berhasil ambil daftar unit",
@@ -1253,6 +1600,10 @@
         {
             "name": "Pendaftaran Online",
             "description": "Pendaftaran Online"
+        },
+        {
+            "name": "Pengumuman",
+            "description": "Pengumuman"
         },
         {
             "name": "Post",

@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\PengumumanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,3 +77,10 @@ Route::prefix('public')->group(function () {
     // Endpoint untuk mendapatkan data unit
 });
 Route::get('/unit', [App\Http\Controllers\Api\UnitController::class, 'index']);
+
+// Pengumuman API Routes
+Route::prefix('pengumuman')->group(function () {
+    Route::get('/terbaru', [PengumumanController::class, 'getPengumumanTerbaru']);
+    Route::get('/', [PengumumanController::class, 'index']);
+    Route::get('/{id}', [PengumumanController::class, 'show']);
+});
