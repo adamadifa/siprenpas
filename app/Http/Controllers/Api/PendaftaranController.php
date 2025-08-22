@@ -228,9 +228,11 @@ class PendaftaranController extends Controller
     public function getRencanasppbyKodeBiaya(Request $request)
     {
         $kode_biaya = $request->kode_biaya;
+        $no_pendaftaran = $request->no_pendaftaran;
         $detailrencanaspp = Detailrencanaspp::join('spp_rencana', 'spp_rencana_detail.kode_rencana_spp', '=', 'spp_rencana.kode_rencana_spp')
             ->join('konfigurasi_biaya', 'spp_rencana.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
             ->join('konfigurasi_tahun_ajaran', 'konfigurasi_biaya.kode_ta', '=', 'konfigurasi_tahun_ajaran.kode_ta')
+            ->where('no_pendaftaran', $no_pendaftaran)
             ->where('spp_rencana.kode_biaya', $kode_biaya)
             ->orderBy('konfigurasi_biaya.kode_ta')
             ->orderBy('spp_rencana_detail.tahun')
