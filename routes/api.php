@@ -42,6 +42,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [App\Http\Controllers\Api\AuthController::class, 'login']);
     Route::post('/register-orangtua', [App\Http\Controllers\Api\AuthController::class, 'registerOrangtua']);
     Route::post('/register-siswa', [App\Http\Controllers\Api\AuthController::class, 'registerSiswa']);
+    Route::post('/change-password', [App\Http\Controllers\Api\AuthController::class, 'changePassword'])->middleware('auth:sanctum');
 });
 
 // Group endpoint yang memerlukan autentikasi

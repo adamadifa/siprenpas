@@ -13,6 +13,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 
+/**
+ * @OA\SecurityScheme(
+ *     securityScheme="sanctum",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT",
+ *     description="Token Bearer yang digunakan adalah token yang di-generate oleh Laravel Sanctum. Lakukan login dan gunakan token pada header Authorization."
+ * )
+ */
 class AuthController extends Controller
 {
     /**
@@ -221,7 +230,7 @@ class AuthController extends Controller
     public function registerSiswa(Request $request)
     {
 
-       
+
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -285,7 +294,6 @@ class AuthController extends Controller
                     'token' => $token,
                 ],
             ]);
-           
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -294,5 +302,117 @@ class AuthController extends Controller
                 'data' => null,
             ], 500);
         }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/auth/change-password",
+     *     tags={"Auth"},
+     *     summary="Ubah password user",
+     *     description="Endpoint untuk mengubah password user yang sedang login. Memerlukan autentikasi Bearer token.",
+     *     security={{"sanctum":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"current_password", "new_password", "new_password_confirmation"},
+     *             @OA\Property(
+     *                 property="current_password",
+     *                 type="string",
+     *                 example="password_lama",
+     *                 description="Password saat ini user"
+     *             ),
+     *             @OA\Property(
+     *                 property="new_password",
+     *                 type="string",
+     *                 minLength=6,
+     *                 example="password_baru",
+     *                 description="Password baru (minimal 6 karakter)"
+     *             ),
+     *             @OA\Property(
+     *                 property="new_password_confirmation",
+     *                 type="string",
+     *                 example="password_baru",
+     *                 description="Konfirmasi password baru"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Password berhasil diubah",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Password berhasil diubah")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Password saat ini salah atau token tidak valid",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Password saat ini salah")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validasi gagal",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="current_password",
+     *                     type="array",
+     *                     @OA\Items(type="string", example="Password saat ini wajib diisi")
+     *                 ),
+     *                 @OA\Property(
+     *                     property="new_password",
+     *                     type="array",
+     *                     @OA\Items(type="string", example="Password baru wajib diisi")
+     *                 ),
+     *                 @OA\Property(
+     *                     property="new_password_confirmation",
+     *                     type="array",
+     *                     @OA\Items(type="string", example="Konfirmasi password baru tidak cocok")
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:6|confirmed',
+        ], [
+            'current_password.required' => 'Password saat ini wajib diisi',
+            'new_password.required' => 'Password baru wajib diisi',
+            'new_password.min' => 'Password baru minimal 6 karakter',
+            'new_password.confirmed' => 'Konfirmasi password baru tidak cocok',
+        ]);
+
+        $user = Auth::user();
+
+        // Cek password saat ini
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Password saat ini salah',
+            ], 401);
+        }
+
+        // Update password
+        User::where('id', $user->id)->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password berhasil diubah',
+        ]);
     }
 }

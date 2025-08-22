@@ -317,6 +317,138 @@
                 }
             }
         },
+        "/api/auth/change-password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Ubah password user",
+                "description": "Endpoint untuk mengubah password user yang sedang login. Memerlukan autentikasi Bearer token.",
+                "operationId": "58e67cdbde52513b62902b05abf9abcb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "current_password",
+                                    "new_password",
+                                    "new_password_confirmation"
+                                ],
+                                "properties": {
+                                    "current_password": {
+                                        "description": "Password saat ini user",
+                                        "type": "string",
+                                        "example": "password_lama"
+                                    },
+                                    "new_password": {
+                                        "description": "Password baru (minimal 6 karakter)",
+                                        "type": "string",
+                                        "minLength": 6,
+                                        "example": "password_baru"
+                                    },
+                                    "new_password_confirmation": {
+                                        "description": "Konfirmasi password baru",
+                                        "type": "string",
+                                        "example": "password_baru"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password berhasil diubah",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password berhasil diubah"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Password saat ini salah atau token tidak valid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password saat ini salah"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "current_password": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Password saat ini wajib diisi"
+                                                    }
+                                                },
+                                                "new_password": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Password baru wajib diisi"
+                                                    }
+                                                },
+                                                "new_password_confirmation": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Konfirmasi password baru tidak cocok"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/unit-by-id-siswa": {
             "post": {
                 "tags": [
@@ -1581,6 +1713,14 @@
                     }
                 },
                 "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "description": "Token Bearer yang digunakan adalah token yang di-generate oleh Laravel Sanctum. Lakukan login dan gunakan token pada header Authorization.",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     },
