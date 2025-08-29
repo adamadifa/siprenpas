@@ -97,10 +97,29 @@ class Webpermissionseeder extends Seeder
             'id_permission_group' => $permissiongroup->id
         ]);
 
+        $permissiongroup = Permission_group::create([
+            'name' => 'Testimoni'
+        ]);
 
+        Permission::create([
+            'name' => 'testimonials.index',
+            'id_permission_group' => $permissiongroup->id
+        ]);
 
+        Permission::create([
+            'name' => 'testimonials.create',
+            'id_permission_group' => $permissiongroup->id
+        ]);
 
+        Permission::create([
+            'name' => 'testimonials.edit',
+            'id_permission_group' => $permissiongroup->id
+        ]);
 
+        Permission::create([
+            'name' => 'testimonials.delete',
+            'id_permission_group' => $permissiongroup->id
+        ]);
 
         $permissions = Permission::where('id_permission_group', $permissiongroup->id)->get();
         $roleID = 1;

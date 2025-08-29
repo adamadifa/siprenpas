@@ -16,8 +16,7 @@
                 <a href="https://demos.pixinvent.com/vuexy-html-admin-template/documentation/" target="_blank"
                     class="footer-link me-4">Documentation</a>
 
-                <a href="https://pixinvent.ticksy.com/" target="_blank"
-                    class="footer-link d-none d-sm-inline-block">Support</a>
+                <a href="https://pixinvent.ticksy.com/" target="_blank" class="footer-link d-none d-sm-inline-block">Support</a>
             </div>
         </div>
     </div>

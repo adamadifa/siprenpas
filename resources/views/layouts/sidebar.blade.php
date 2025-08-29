@@ -490,8 +490,8 @@
         @endif
 
         @if (auth()->check() &&
-                auth()->user()->hasAnyPermission(['kategori.index', 'post.index' . 'pages.index']))
-            <li class="menu-item {{ request()->is(['kategori', 'post', 'pages']) ? 'open' : '' }}">
+                auth()->user()->hasAnyPermission(['kategori.index', 'post.index', 'pages.index', 'testimonials.index', 'prestasi-siswa.index']))
+            <li class="menu-item {{ request()->is(['kategori', 'post', 'pages', 'testimonials', 'prestasi-siswa']) ? 'open' : '' }}">
 
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-globe"></i>
@@ -516,6 +516,20 @@
                         <li class="menu-item {{ request()->is(['pages', 'pages/*']) ? 'active' : '' }}">
                             <a href="{{ route('pages.index') }}" class="menu-link">
                                 <div>Pages</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('testimonials.index')
+                        <li class="menu-item {{ request()->is(['testimonials', 'testimonials/*']) ? 'active' : '' }}">
+                            <a href="{{ route('testimonials.index') }}" class="menu-link">
+                                <div>Testimoni</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('prestasi-siswa.index')
+                        <li class="menu-item {{ request()->is(['prestasi-siswa', 'prestasi-siswa/*']) ? 'active' : '' }}">
+                            <a href="{{ route('prestasi-siswa.index') }}" class="menu-link">
+                                <div>Prestasi Siswa</div>
                             </a>
                         </li>
                     @endcan

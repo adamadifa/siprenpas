@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PengumumanController;
+use App\Http\Controllers\Api\PrestasiSiswaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +76,18 @@ Route::prefix('public')->group(function () {
     //show posts
     Route::get('/posts/{slug}', [App\Http\Controllers\Api\PostController::class, 'show']);
 
+    Route::prefix('testimonials')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\TestimonialController::class, 'index']);
+        Route::get('/random/{limit?}', [App\Http\Controllers\Api\TestimonialController::class, 'random']);
+        Route::get('/{id}', [App\Http\Controllers\Api\TestimonialController::class, 'show']);
+    });
+
+    Route::prefix('prestasi-siswa')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\PrestasiSiswaController::class, 'index']);
+        Route::get('/random/{limit?}', [App\Http\Controllers\Api\PrestasiSiswaController::class, 'random']);
+        Route::get('/{id}', [App\Http\Controllers\Api\PrestasiSiswaController::class, 'show']);
+    });
+
     // Endpoint untuk mendapatkan data unit
 });
 Route::get('/unit', [App\Http\Controllers\Api\UnitController::class, 'index']);
@@ -85,3 +98,5 @@ Route::prefix('pengumuman')->group(function () {
     Route::get('/', [PengumumanController::class, 'index']);
     Route::get('/{id}', [PengumumanController::class, 'show']);
 });
+
+// Testimonials API Routes

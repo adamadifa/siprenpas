@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 
-<html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed layout-wide" dir="ltr"
-    data-theme="theme-default" data-assets-path="{{ asset('/assets/') }}"
-    data-template="vertical-menu-template-no-customizer">
+<html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed layout-wide" dir="ltr" data-theme="theme-default"
+    data-assets-path="{{ asset('/assets/') }}" data-template="vertical-menu-template-no-customizer">
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('titlepage')</title>
 
@@ -129,8 +128,7 @@
                     <div class="content-wrapper">
                         <!-- Content -->
 
-                        <div
-                            class="container-fluid flex-grow-1 @if (!$agent->isMobile()) container-p-y @endif ">
+                        <div class="container-fluid flex-grow-1 @if (!$agent->isMobile()) container-p-y @endif ">
 
 
                             <h4 class="py-3 mb-4">@yield('navigasi')</h4>

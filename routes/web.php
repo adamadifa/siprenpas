@@ -61,6 +61,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VillageController;
 use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\KategoriPengumumanController;
+use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\PrestasiSiswaController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Role;
 
@@ -656,6 +658,27 @@ Route::middleware('auth')->group(function () {
         Route::get('/kategori/{id}/edit', 'edit')->name('kategori.edit')->can('kategori.edit');
         Route::put('/kategori/{id}/update', 'update')->name('kategori.update')->can('kategori.edit');
         Route::delete('/kategori/{id}/delete', 'destroy')->name('kategori.delete')->can('kategori.delete');
+    });
+
+    Route::controller(TestimonialController::class)->group(function () {
+        Route::get('/testimonials', 'index')->name('testimonials.index')->can('testimonials.index');
+        Route::get('/testimonials/create', 'create')->name('testimonials.create')->can('testimonials.create');
+        Route::post('/testimonials', 'store')->name('testimonials.store')->can('testimonials.create');
+        Route::get('/testimonials/{testimonial}', 'show')->name('testimonials.show')->can('testimonials.index');
+        Route::get('/testimonials/{testimonial}/edit', 'edit')->name('testimonials.edit')->can('testimonials.edit');
+        Route::put('/testimonials/{testimonial}', 'update')->name('testimonials.update')->can('testimonials.edit');
+        Route::delete('/testimonials/{testimonial}', 'destroy')->name('testimonials.destroy')->can('testimonials.delete');
+    });
+
+    Route::controller(PrestasiSiswaController::class)->group(function () {
+        Route::get('/prestasi-siswa', 'index')->name('prestasi-siswa.index')->can('prestasi-siswa.index');
+        Route::get('/prestasi-siswa/create', 'create')->name('prestasi-siswa.create')->can('prestasi-siswa.create');
+        Route::post('/prestasi-siswa', 'store')->name('prestasi-siswa.store')->can('prestasi-siswa.create');
+        Route::get('/prestasi-siswa/search-siswa', 'searchSiswa')->name('prestasi-siswa.search-siswa')->can('prestasi-siswa.create');
+        Route::get('/prestasi-siswa/{prestasiSiswa}', 'show')->name('prestasi-siswa.show')->can('prestasi-siswa.index');
+        Route::get('/prestasi-siswa/{prestasiSiswa}/edit', 'edit')->name('prestasi-siswa.edit')->can('prestasi-siswa.edit');
+        Route::put('/prestasi-siswa/{prestasiSiswa}', 'update')->name('prestasi-siswa.update')->can('prestasi-siswa.edit');
+        Route::delete('/prestasi-siswa/{prestasiSiswa}', 'destroy')->name('prestasi-siswa.destroy')->can('prestasi-siswa.delete');
     });
 
     Route::controller(PostController::class)->group(function () {

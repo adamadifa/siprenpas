@@ -1665,6 +1665,751 @@
                 }
             }
         },
+        "/api/public/prestasi-siswa": {
+            "get": {
+                "tags": [
+                    "Prestasi Siswa"
+                ],
+                "summary": "Mendapatkan daftar prestasi siswa",
+                "description": "Mengambil semua data prestasi siswa yang aktif",
+                "operationId": "a3ad64ebd9a1e22cda7a8bc8f97e3aed",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Jumlah data yang akan ditampilkan (default: 10)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "tingkat",
+                        "in": "query",
+                        "description": "Filter berdasarkan tingkat prestasi (kecamatan, kabupaten, nasional)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "kecamatan",
+                                "kabupaten",
+                                "nasional"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "unit",
+                        "in": "query",
+                        "description": "Filter berdasarkan kode unit",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data prestasi siswa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data prestasi siswa berhasil diambil"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nama_siswa": {
+                                                        "type": "string",
+                                                        "example": "Ahmad Fadli"
+                                                    },
+                                                    "prestasi": {
+                                                        "type": "string",
+                                                        "example": "Juara 1 Lomba Matematika"
+                                                    },
+                                                    "tingkat": {
+                                                        "type": "string",
+                                                        "example": "kecamatan"
+                                                    },
+                                                    "foto": {
+                                                        "type": "string",
+                                                        "example": "prestasi_1.jpg"
+                                                    },
+                                                    "foto_url": {
+                                                        "type": "string",
+                                                        "example": "http://localhost:8000/storage/prestasi-siswa/prestasi_1.jpg"
+                                                    },
+                                                    "unit": {
+                                                        "properties": {
+                                                            "kode_unit": {
+                                                                "type": "string",
+                                                                "example": "001"
+                                                            },
+                                                            "nama_unit": {
+                                                                "type": "string",
+                                                                "example": "SD Al Amin 1"
+                                                            }
+                                                        },
+                                                        "type": "object",
+                                                        "nullable": true
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Terjadi kesalahan server"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/prestasi-siswa/{id}": {
+            "get": {
+                "tags": [
+                    "Prestasi Siswa"
+                ],
+                "summary": "Mendapatkan detail prestasi siswa",
+                "description": "Mengambil detail prestasi siswa berdasarkan ID",
+                "operationId": "75725c503d4a20a175eef2632b10180a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID prestasi siswa",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil detail prestasi siswa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail prestasi siswa berhasil diambil"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nama_siswa": {
+                                                    "type": "string",
+                                                    "example": "Ahmad Fadli"
+                                                },
+                                                "prestasi": {
+                                                    "type": "string",
+                                                    "example": "Juara 1 Lomba Matematika"
+                                                },
+                                                "tingkat": {
+                                                    "type": "string",
+                                                    "example": "kecamatan"
+                                                },
+                                                "foto": {
+                                                    "type": "string",
+                                                    "example": "prestasi_1.jpg"
+                                                },
+                                                "foto_url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8000/storage/prestasi-siswa/prestasi_1.jpg"
+                                                },
+                                                "unit": {
+                                                    "properties": {
+                                                        "kode_unit": {
+                                                            "type": "string",
+                                                            "example": "001"
+                                                        },
+                                                        "nama_unit": {
+                                                            "type": "string",
+                                                            "example": "SD Al Amin 1"
+                                                        }
+                                                    },
+                                                    "type": "object",
+                                                    "nullable": true
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Prestasi siswa tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Prestasi siswa tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Terjadi kesalahan server"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/prestasi-siswa/random/{limit}": {
+            "get": {
+                "tags": [
+                    "Prestasi Siswa"
+                ],
+                "summary": "Mendapatkan prestasi siswa secara acak",
+                "description": "Mengambil data prestasi siswa secara acak dengan limit tertentu",
+                "operationId": "4e915104b029460d7131eb496ba3cc1e",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "path",
+                        "description": "Jumlah data yang akan ditampilkan (default: 3)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 3
+                        }
+                    },
+                    {
+                        "name": "tingkat",
+                        "in": "query",
+                        "description": "Filter berdasarkan tingkat prestasi (kecamatan, kabupaten, nasional)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "kecamatan",
+                                "kabupaten",
+                                "nasional"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data prestasi siswa secara acak",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data prestasi siswa acak berhasil diambil"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nama_siswa": {
+                                                        "type": "string",
+                                                        "example": "Ahmad Fadli"
+                                                    },
+                                                    "prestasi": {
+                                                        "type": "string",
+                                                        "example": "Juara 1 Lomba Matematika"
+                                                    },
+                                                    "tingkat": {
+                                                        "type": "string",
+                                                        "example": "kecamatan"
+                                                    },
+                                                    "foto": {
+                                                        "type": "string",
+                                                        "example": "prestasi_1.jpg"
+                                                    },
+                                                    "foto_url": {
+                                                        "type": "string",
+                                                        "example": "http://localhost:8000/storage/prestasi-siswa/prestasi_1.jpg"
+                                                    },
+                                                    "unit": {
+                                                        "properties": {
+                                                            "kode_unit": {
+                                                                "type": "string",
+                                                                "example": "001"
+                                                            },
+                                                            "nama_unit": {
+                                                                "type": "string",
+                                                                "example": "SD Al Amin 1"
+                                                            }
+                                                        },
+                                                        "type": "object",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Terjadi kesalahan server"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/testimonials": {
+            "get": {
+                "tags": [
+                    "Testimonials"
+                ],
+                "summary": "Mendapatkan daftar testimoni aktif",
+                "description": "Mengambil semua testimoni yang berstatus aktif untuk ditampilkan di website",
+                "operationId": "5baa78b60adf845bb61c93db341dbb86",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan data testimoni",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data testimoni berhasil diambil"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nama": {
+                                                        "type": "string",
+                                                        "example": "Ahmad Rizki"
+                                                    },
+                                                    "testimoni": {
+                                                        "type": "string",
+                                                        "example": "Sekolah Al-Amin telah memberikan pendidikan yang berkualitas tinggi..."
+                                                    },
+                                                    "foto": {
+                                                        "type": "string",
+                                                        "example": "1234567890_foto.jpg",
+                                                        "nullable": true
+                                                    },
+                                                    "foto_url": {
+                                                        "type": "string",
+                                                        "example": "http://localhost:8000/storage/testimonials/1234567890_foto.jpg",
+                                                        "nullable": true
+                                                    },
+                                                    "status": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-08-29T08:45:43.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-08-29T08:45:43.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error server",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Terjadi kesalahan pada server"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/testimonials/{id}": {
+            "get": {
+                "tags": [
+                    "Testimonials"
+                ],
+                "summary": "Mendapatkan detail testimoni berdasarkan ID",
+                "description": "Mengambil detail testimoni tertentu berdasarkan ID yang diberikan",
+                "operationId": "dd841bcac292eb247e2e654fd3a88408",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID testimoni",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan detail testimoni",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail testimoni berhasil diambil"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nama": {
+                                                    "type": "string",
+                                                    "example": "Ahmad Rizki"
+                                                },
+                                                "testimoni": {
+                                                    "type": "string",
+                                                    "example": "Sekolah Al-Amin telah memberikan pendidikan yang berkualitas tinggi..."
+                                                },
+                                                "foto": {
+                                                    "type": "string",
+                                                    "example": "1234567890_foto.jpg",
+                                                    "nullable": true
+                                                },
+                                                "foto_url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8000/storage/testimonials/1234567890_foto.jpg",
+                                                    "nullable": true
+                                                },
+                                                "status": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-08-29T08:45:43.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-08-29T08:45:43.000000Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Testimoni tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Testimoni tidak ditemukan"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error server",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Terjadi kesalahan pada server"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/testimonials/random/{limit}": {
+            "get": {
+                "tags": [
+                    "Testimonials"
+                ],
+                "summary": "Mendapatkan testimoni acak",
+                "description": "Mengambil testimoni acak dengan jumlah yang ditentukan",
+                "operationId": "dc951a4142e74459500fecab167b899d",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "path",
+                        "description": "Jumlah testimoni yang diambil (default: 3)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 3,
+                            "example": 3
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mendapatkan testimoni acak",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data testimoni acak berhasil diambil"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nama": {
+                                                        "type": "string",
+                                                        "example": "Ahmad Rizki"
+                                                    },
+                                                    "testimoni": {
+                                                        "type": "string",
+                                                        "example": "Sekolah Al-Amin telah memberikan pendidikan yang berkualitas tinggi..."
+                                                    },
+                                                    "foto": {
+                                                        "type": "string",
+                                                        "example": "1234567890_foto.jpg",
+                                                        "nullable": true
+                                                    },
+                                                    "foto_url": {
+                                                        "type": "string",
+                                                        "example": "http://localhost:8000/storage/testimonials/1234567890_foto.jpg",
+                                                        "nullable": true
+                                                    },
+                                                    "status": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-08-29T08:45:43.000000Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-08-29T08:45:43.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error server",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Terjadi kesalahan pada server"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/unit": {
             "get": {
                 "tags": [
@@ -1725,6 +2470,14 @@
         }
     },
     "tags": [
+        {
+            "name": "Prestasi Siswa",
+            "description": "API Endpoints untuk data prestasi siswa"
+        },
+        {
+            "name": "Testimonials",
+            "description": "API Endpoints untuk Testimoni"
+        },
         {
             "name": "Unit",
             "description": "Manajemen Unit"
