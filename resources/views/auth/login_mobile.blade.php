@@ -22,7 +22,11 @@
             <form id="formAuthentication" class="mb-3" action="{{ route('login') }}" method="POST">
                 @csrf
                 <div class="text-center padding-top-100px">
-                    <img class="mx-auto d-block margin-bottom-25px" width="200px" src="{{ asset('assets/css/sipren.png') }}">
+                    @if ($pengaturan && $pengaturan->logo)
+                        <img class="mx-auto d-block margin-bottom-25px" width="200px" src="{{ asset('storage/' . $pengaturan->logo) }}">
+                    @else
+                        <img class="mx-auto d-block margin-bottom-25px" width="200px" src="{{ asset('assets/css/sipren.png') }}">
+                    @endif
                 </div>
 
                 <!-- <h1 class="text-center light-green-color margin-bottom-25px">NEAT</h1> -->

@@ -38,6 +38,7 @@ use App\Http\Controllers\PembiayaanController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\PendaftaranonlineController;
 use App\Http\Controllers\PengajuanizinController;
+use App\Http\Controllers\PengaturanUmumController;
 use App\Http\Controllers\Permission_groupController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PostController;
@@ -154,6 +155,17 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/users/{id}/editpassword', 'editpassword')->name('users.editpassword');
         Route::put('/users/{id}/updatepassword', 'updatepassword')->name('users.updatepassword');
+    });
+
+    // Pengaturan Umum
+    Route::controller(PengaturanUmumController::class)->group(function () {
+        Route::get('/pengaturan-umum', 'index')->name('pengaturan-umum.index');
+        Route::get('/pengaturan-umum/create', 'create')->name('pengaturan-umum.create');
+        Route::post('/pengaturan-umum', 'store')->name('pengaturan-umum.store');
+        Route::get('/pengaturan-umum/{id}', 'show')->name('pengaturan-umum.show');
+        Route::get('/pengaturan-umum/{id}/edit', 'edit')->name('pengaturan-umum.edit');
+        Route::put('/pengaturan-umum/{id}', 'update')->name('pengaturan-umum.update');
+        Route::delete('/pengaturan-umum/{id}', 'destroy')->name('pengaturan-umum.destroy');
     });
 
     Route::controller(KaryawanController::class)->group(function () {

@@ -30,6 +30,8 @@
 
     .layout-menu.layout-menu-collapsed .app-brand-logo img {
         width: 36px !important;
+        height: 36px !important;
+        object-fit: contain;
         margin: 0 auto;
     }
 
@@ -130,7 +132,11 @@
     <div class="app-brand demo">
         <a href="{{ route('dashboard.index') }}" class="app-brand-link">
             <span class="app-brand-logo demo">
-                <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="" width="52">
+                @if ($pengaturan && $pengaturan->logo)
+                    <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="" width="52">
+                @else
+                    <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="" width="52">
+                @endif
             </span>
             <span class="app-brand-text demo menu-text fw-bold"><i><b></b></i>SIP 80</span>
         </a>
@@ -603,7 +609,7 @@
         <!-- Setting -->
         @hasrole('super admin')
             <li
-                class="menu-item {{ request()->is(['roles', 'roles/*', 'permissiongroups', 'permissiongroups/*', 'permissions', 'permissions/*', 'users', 'users/*']) ? 'open' : '' }} ">
+                class="menu-item {{ request()->is(['roles', 'roles/*', 'permissiongroups', 'permissiongroups/*', 'permissions', 'permissions/*', 'users', 'users/*', 'pengaturan-umum', 'pengaturan-umum/*']) ? 'open' : '' }} ">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-settings"></i>
                     <div>Settings</div>
@@ -628,6 +634,11 @@
                     <li class="menu-item  {{ request()->is(['permissiongroups', 'permissiongroups/*']) ? 'active' : '' }}">
                         <a href="{{ route('permissiongroups.index') }}" class="menu-link">
                             <div>Group Permission</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ request()->is(['pengaturan-umum', 'pengaturan-umum/*']) ? 'active' : '' }}">
+                        <a href="{{ route('pengaturan-umum.index') }}" class="menu-link">
+                            <div>Pengaturan Umum</div>
                         </a>
                     </li>
                 </ul>

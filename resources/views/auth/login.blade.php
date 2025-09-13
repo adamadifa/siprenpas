@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 
-<html lang="en" class="light-style layout-wide customizer-hide" dir="ltr" data-theme="theme-default"
-    data-assets-path="{{ asset('/assets/') }}" data-template="vertical-menu-template-no-customizer">
+<html lang="en" class="light-style layout-wide customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="{{ asset('/assets/') }}"
+    data-template="vertical-menu-template-no-customizer">
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <meta name="theme-color" content="#4CAF50">
     <title>Login Basic </title>
@@ -304,11 +303,20 @@
         <!-- Left Side -->
         <div class="login-left">
             <div class="login-left-content">
-                <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="Logo" class="login-logo">
+                @if ($pengaturan && $pengaturan->logo)
+                    <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="Logo" class="login-logo">
+                @else
+                    <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="Logo" class="login-logo">
+                @endif
                 <div class="brand-text">SIPREN</div>
                 <div class="brand-description">
-                    <Pesantren>Sistem Informasi Pesantren Persatuan Islam 80 Al Amin</p>
+                    @if ($pengaturan)
+                        <p>{{ $pengaturan->nama_sekolah }}</p>
+                        <p>{{ $pengaturan->alamat_sekolah }}</p>
+                    @else
+                        <p>Sistem Informasi Pesantren Persatuan Islam 80 Al Amin</p>
                         <p>Sindangkasih - Ciamis</p>
+                    @endif
                 </div>
             </div>
         </div>
@@ -318,7 +326,11 @@
             <div class="login-form-container">
                 <!-- Logo -->
                 <div class="app-brand justify-content-center mb-4 mt-2">
-                    <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="" width="120">
+                    @if ($pengaturan && $pengaturan->logo)
+                        <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="" width="120">
+                    @else
+                        <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="" width="120">
+                    @endif
                 </div>
                 <!-- /Logo -->
                 <div class="welcome-text">
@@ -332,8 +344,8 @@
                     @csrf
                     <div class="mb-3">
                         <label for="id_user" class="form-label">Email atau Username</label>
-                        <input type="text" class="form-control" id="id_user" name="id_user"
-                            placeholder="Masukkan email atau username" autofocus />
+                        <input type="text" class="form-control" id="id_user" name="id_user" placeholder="Masukkan email atau username"
+                            autofocus />
                     </div>
                     <div class="mb-3 form-password-toggle">
                         <div class="d-flex justify-content-between">
@@ -344,8 +356,8 @@
                         </div>
                         <div class="input-group input-group-merge">
                             <input type="password" id="password" class="form-control" name="password"
-                                placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                aria-describedby="password" autocomplete="current-password" />
+                                placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password"
+                                autocomplete="current-password" />
                             <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
                         </div>
                     </div>

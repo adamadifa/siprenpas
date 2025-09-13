@@ -6,7 +6,11 @@
                 <script>
                     document.write(new Date().getFullYear());
                 </script>
-                , made with ❤️ by <a href="https://pixinvent.com" target="_blank" class="fw-medium">Pixinvent</a>
+                @if ($pengaturan)
+                    , {{ $pengaturan->nama_sekolah }} - {{ $pengaturan->alamat_sekolah }}
+                @else
+                    , made with ❤️ by <a href="https://pixinvent.com" target="_blank" class="fw-medium">Pixinvent</a>
+                @endif
             </div>
             <div class="d-none d-lg-inline-block">
                 <a href="https://themeforest.net/licenses/standard" class="footer-link me-4" target="_blank">License</a>

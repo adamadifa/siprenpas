@@ -273,13 +273,17 @@
     </style>
 
     <div class="dashboard-header">
-        <img src="{{ asset(auth()->user()->avatar ? 'storage/avatars/' . auth()->user()->avatar : 'assets/img/avatars/1.png') }}"
-            class="avatar" alt="Avatar">
+        <img src="{{ asset(auth()->user()->avatar ? 'storage/avatars/' . auth()->user()->avatar : 'assets/img/avatars/1.png') }}" class="avatar"
+            alt="Avatar">
         <div>
             <div class="welcome">Selamat Datang, {{ auth()->user()->name }}</div>
             <div class="desc">Semoga harimu menyenangkan dan produktif!</div>
             <div class="role">Role: {{ auth()->user()->getRoleNames()->first() }}</div>
-
+            @if ($pengaturan)
+                <div class="desc" style="font-size: 0.9rem; margin-top: 0.5rem;">
+                    <i class="ti ti-building me-1"></i>{{ $pengaturan->nama_sekolah }}
+                </div>
+            @endif
         </div>
     </div>
 
@@ -292,8 +296,8 @@
                     Kegiatan</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button type="button" class="nav-link  waves-effect waves-light" role="tab" data-bs-toggle="tab"
-                    data-bs-target="#jadwal-kerja" aria-controls="jadwal-kerja" aria-selected="true">Jadwal Kerja
+                <button type="button" class="nav-link  waves-effect waves-light" role="tab" data-bs-toggle="tab" data-bs-target="#jadwal-kerja"
+                    aria-controls="jadwal-kerja" aria-selected="true">Jadwal Kerja
                     SDM</button>
             </li>
         </ul>
@@ -312,12 +316,12 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            <x-input-with-icon icon="ti ti-calendar" label="Tanggal" name="dari"
-                                datepicker="flatpickr-date" value="{{ date('Y-m-d') }}" />
+                            <x-input-with-icon icon="ti ti-calendar" label="Tanggal" name="dari" datepicker="flatpickr-date"
+                                value="{{ date('Y-m-d') }}" />
                         </div>
                         <div class="col">
-                            <x-input-with-icon icon="ti ti-calendar" label="Tanggal" name="sampai"
-                                datepicker="flatpickr-date" value="{{ date('Y-m-d') }}" />
+                            <x-input-with-icon icon="ti ti-calendar" label="Tanggal" name="sampai" datepicker="flatpickr-date"
+                                value="{{ date('Y-m-d') }}" />
                         </div>
                     </div>
                 </div>
@@ -325,15 +329,13 @@
                 <div class="nav-align-top">
                     <ul class="nav nav-tabs nav-fill" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab"
-                                data-bs-target="#navs-justified-new" aria-controls="navs-justified-new"
-                                aria-selected="true">Agenda
+                            <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-justified-new"
+                                aria-controls="navs-justified-new" aria-selected="true">Agenda
                                 Kegiatan</button>
 
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
-                                data-bs-target="#navs-justified-link-preparing"
+                            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-justified-link-preparing"
                                 aria-controls="navs-justified-link-preparing" aria-selected="false" tabindex="-1">Realisasi
                                 Kegiatan</button>
                         </li>

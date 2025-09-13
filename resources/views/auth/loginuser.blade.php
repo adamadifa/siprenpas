@@ -17,7 +17,11 @@
                     <form id="formAuthentication" class="mb-3" action="{{ route('login') }}" method="POST">
                         @csrf
                         <div class="logo">
-                            <img src="{{ asset('assets/login/images/logoweb-1.png') }}" alt="easyclass" />
+                            @if ($pengaturan && $pengaturan->logo)
+                                <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="Logo Sekolah" />
+                            @else
+                                <img src="{{ asset('assets/login/images/logoweb-1.png') }}" alt="easyclass" />
+                            @endif
                             <h4>SIP80MOBILE</h4>
                         </div>
 

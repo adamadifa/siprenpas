@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed layout-wide" dir="ltr" data-theme="theme-default"
     data-assets-path="{{ asset('/assets/') }}" data-template="vertical-menu-template-no-customizer">
 
@@ -8,9 +7,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('titlepage')</title>
+    <title>@yield('titlepage')@if ($pengaturan)
+            - {{ $pengaturan->nama_sekolah }}
+        @endif
+    </title>
 
-    <meta name="description" content="" />
+    <meta name="description"
+        content="@if ($pengaturan) {{ $pengaturan->nama_sekolah }} - {{ $pengaturan->alamat_sekolah }}@else{{ config('app.name') }} @endif" />
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <meta name="theme-color" content="#4CAF50">
 
