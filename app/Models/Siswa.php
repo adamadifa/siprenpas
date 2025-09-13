@@ -20,4 +20,20 @@ class Siswa extends Model
         }
         return $query;
     }
+
+    /**
+     * Relasi many-to-many ke anggota koperasi melalui tabel pivot siswa_anggota
+     */
+    public function anggotaKoperasi()
+    {
+        return $this->belongsToMany(Anggota::class, 'siswa_anggota', 'id_siswa', 'no_anggota');
+    }
+
+    /**
+     * Relasi ke tabel pivot siswa_anggota
+     */
+    public function siswaAnggota()
+    {
+        return $this->hasMany(SiswaAnggota::class, 'id_siswa', 'id_siswa');
+    }
 }

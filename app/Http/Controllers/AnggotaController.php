@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Anggota;
 use App\Models\Province;
+use App\Models\Siswa;
+use App\Models\SiswaAnggota;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
@@ -12,7 +14,7 @@ class AnggotaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Anggota::query();
+        $query = Anggota::with('siswa');
         $query->select('*');
         if (!empty($request->nama_lengkap)) {
             $query->where('nama_lengkap', 'like', "%" . $request->nama_lengkap . "%");
@@ -176,5 +178,98 @@ class AnggotaController extends Controller
         $no_anggota = Crypt::decrypt($no_anggota);
         $anggota = Anggota::where('no_anggota', $no_anggota)->first();
         return response()->json($anggota);
+    }
+
+    /**
+     * Get daftar siswa untuk dropdown
+     */
+    public function getSiswaOptions()
+    {
+        $siswa = Siswa::select('id_siswa', 'nama_lengkap')
+            ->orderBy('nama_lengkap')
+            ->get();
+        return response()->json($siswa);
+    }
+
+    /**
+     * Get siswa yang sudah terhubung dengan anggota
+     */
+    public function getSiswaTerhubung($no_anggota)
+    {
+        $no_anggota = Crypt::decrypt($no_anggota);
+        $siswa = Anggota::with('siswa')->find($no_anggota);
+        return response()->json($siswa->siswa);
+    }
+
+    /**
+     * Hubungkan siswa dengan anggota
+     */
+    public function hubungkanSiswa(Request $request)
+    {
+        $request->validate([
+            'no_anggota' => 'required',
+            'id_siswa' => 'required'
+        ]);
+
+        try {
+            $no_anggota = Crypt::decrypt($request->no_anggota);
+
+            // Cek apakah relasi sudah ada
+            $existing = SiswaAnggota::where('id_siswa', $request->id_siswa)
+                ->where('no_anggota', $no_anggota)
+                ->first();
+
+            if ($existing) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Siswa sudah terhubung dengan anggota ini'
+                ]);
+            }
+
+            // Buat relasi baru
+            SiswaAnggota::create([
+                'id_siswa' => $request->id_siswa,
+                'no_anggota' => $no_anggota
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Siswa berhasil dihubungkan'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Hapus hubungan siswa dengan anggota
+     */
+    public function hapusHubunganSiswa(Request $request)
+    {
+        $request->validate([
+            'no_anggota' => 'required',
+            'id_siswa' => 'required'
+        ]);
+
+        try {
+            $no_anggota = Crypt::decrypt($request->no_anggota);
+
+            SiswaAnggota::where('id_siswa', $request->id_siswa)
+                ->where('no_anggota', $no_anggota)
+                ->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Hubungan berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
     }
 }

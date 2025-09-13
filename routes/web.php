@@ -498,6 +498,12 @@ Route::middleware('auth')->group(function () {
         Route::delete('/anggota/{id}/delete', 'destroy')->name('anggota.delete')->can('anggota.delete');
 
         Route::get('/anggota/{no_anggota}/getanggota', 'getanggota')->name('anggota.getanggota');
+
+        // Routes untuk fitur hubungkan siswa
+        Route::get('/anggota/get-siswa-options', 'getSiswaOptions')->name('anggota.get-siswa-options');
+        Route::get('/anggota/get-siswa-terhubung/{no_anggota}', 'getSiswaTerhubung')->name('anggota.get-siswa-terhubung');
+        Route::post('/anggota/hubungkan-siswa', 'hubungkanSiswa')->name('anggota.hubungkan-siswa');
+        Route::post('/anggota/hapus-hubungan-siswa', 'hapusHubunganSiswa')->name('anggota.hapus-hubungan-siswa');
     });
 
     Route::controller(JenissimpananController::class)->group(function () {
