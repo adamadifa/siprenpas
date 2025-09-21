@@ -57,6 +57,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/gethistoribayar-by-idsiswa', [App\Http\Controllers\Api\PendaftaranController::class, 'getHistoribayarbyIdsiswa']);
     Route::get('/getdetailhistoribayar', [App\Http\Controllers\Api\PendaftaranController::class, 'getDetailHistoribayar']);
 
+    // Tabungan Santri API Routes
+    Route::prefix('tabungan-santri')->group(function () {
+        Route::get('/{id_siswa}', [App\Http\Controllers\Api\TabunganSantriController::class, 'getTabunganByIdSiswa']);
+        Route::get('/{id_siswa}/rekening/{no_rekening}', [App\Http\Controllers\Api\TabunganSantriController::class, 'getDetailTabungan']);
+    });
 
     //Pendaftaranonline
     Route::get('/pendaftaranonline/getkonfirmasipembayaran', [App\Http\Controllers\Api\PendaftaranonlineController::class, 'getKonfirmasiPembayaran']);
@@ -90,6 +95,13 @@ Route::prefix('public')->group(function () {
 
     // Endpoint untuk mendapatkan data unit
 });
+
+// Public API Routes dengan token authentication
+Route::prefix('public')->middleware('api.token')->group(function () {
+    // Rekening API Routes
+    Route::get('/rekening/{rfid}', [App\Http\Controllers\Api\RekeningController::class, 'getRekeningByRfid']);
+});
+
 Route::get('/unit', [App\Http\Controllers\Api\UnitController::class, 'index']);
 
 // Pengumuman API Routes

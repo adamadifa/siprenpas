@@ -568,6 +568,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/tabungan/{no_rekening}/mutasi', 'mutasi')->name('tabungan.mutasi');
     });
 
+    // Tabungan Santri Mobile Routes
+    Route::controller(App\Http\Controllers\Api\TabunganSantriController::class)->group(function () {
+        Route::get('/tabungan-santri/{id_siswa}/mobile', 'showMobile')->name('tabungan-santri.mobile');
+    });
+
     Route::controller(PembiayaanController::class)->group(function () {
         Route::get('/pembiayaan', 'index')->name('pembiayaan.index')->can('pembiayaan.index');
         Route::get('/pembiayaan/{no_anggota}/show', 'show')->name('pembiayaan.show')->can('pembiayaan.create');

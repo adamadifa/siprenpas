@@ -188,4 +188,16 @@ return [
         'Pdf' => Barryvdh\DomPDF\Facades\Pdf::class,
     ])->toArray(),
 
+    /*
+    |--------------------------------------------------------------------------
+    | API Token Configuration
+    |--------------------------------------------------------------------------
+    |
+    | This value is used for API token authentication for public endpoints
+    | that don't require user login but still need authentication.
+    |
+    */
+
+    'api_token' => env('API_TOKEN', 'sipren-api-token-2024'),
+
 ];

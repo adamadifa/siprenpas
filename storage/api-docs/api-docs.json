@@ -2064,6 +2064,391 @@
                 }
             }
         },
+        "/api/tabungan-santri/{id_siswa}": {
+            "get": {
+                "tags": [
+                    "Tabungan Santri"
+                ],
+                "summary": "Mendapatkan data tabungan santri berdasarkan ID Siswa",
+                "operationId": "91ffb6e7b7c2819e5ead68967634b754",
+                "parameters": [
+                    {
+                        "name": "id_siswa",
+                        "in": "path",
+                        "description": "ID Siswa",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "2024001"
+                        }
+                    },
+                    {
+                        "name": "include_transactions",
+                        "in": "query",
+                        "description": "Apakah ingin menyertakan transaksi tabungan",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": false
+                        }
+                    },
+                    {
+                        "name": "limit_transactions",
+                        "in": "query",
+                        "description": "Jumlah transaksi yang ditampilkan",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Data tabungan santri berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data tabungan santri berhasil diambil"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "siswa": {
+                                                    "properties": {
+                                                        "id_siswa": {
+                                                            "type": "string",
+                                                            "example": "2024001"
+                                                        },
+                                                        "nama_lengkap": {
+                                                            "type": "string",
+                                                            "example": "Ahmad Rizki"
+                                                        },
+                                                        "nis": {
+                                                            "type": "string",
+                                                            "example": "20240001"
+                                                        },
+                                                        "kelas": {
+                                                            "type": "string",
+                                                            "example": "X-A"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "total_saldo": {
+                                                    "type": "integer",
+                                                    "example": 500000
+                                                },
+                                                "jumlah_rekening": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "tabungan": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "no_rekening": {
+                                                                "type": "string",
+                                                                "example": "001-2024001001"
+                                                            },
+                                                            "saldo": {
+                                                                "type": "integer",
+                                                                "example": 250000
+                                                            },
+                                                            "kode_tabungan": {
+                                                                "type": "string",
+                                                                "example": "001"
+                                                            },
+                                                            "jenis_tabungan": {
+                                                                "properties": {
+                                                                    "jenis_tabungan": {
+                                                                        "type": "string",
+                                                                        "example": "Tabungan Umum"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "anggota": {
+                                                                "properties": {
+                                                                    "nama_lengkap": {
+                                                                        "type": "string",
+                                                                        "example": "Ahmad Rizki"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Siswa tidak ditemukan atau tidak memiliki tabungan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Siswa tidak ditemukan atau tidak memiliki tabungan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Terjadi kesalahan server",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Terjadi kesalahan server"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/tabungan-santri/{id_siswa}/rekening/{no_rekening}": {
+            "get": {
+                "tags": [
+                    "Tabungan Santri"
+                ],
+                "summary": "Mendapatkan detail tabungan santri berdasarkan nomor rekening",
+                "operationId": "dc39d72ace483aa0b4035f3fabb5eed8",
+                "parameters": [
+                    {
+                        "name": "id_siswa",
+                        "in": "path",
+                        "description": "ID Siswa",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "2024001"
+                        }
+                    },
+                    {
+                        "name": "no_rekening",
+                        "in": "path",
+                        "description": "Nomor Rekening Tabungan",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "001-2024001001"
+                        }
+                    },
+                    {
+                        "name": "limit_transactions",
+                        "in": "query",
+                        "description": "Jumlah transaksi yang ditampilkan",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail tabungan santri berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail tabungan santri berhasil diambil"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "no_rekening": {
+                                                    "type": "string",
+                                                    "example": "001-2024001001"
+                                                },
+                                                "saldo": {
+                                                    "type": "integer",
+                                                    "example": 250000
+                                                },
+                                                "jenis_tabungan": {
+                                                    "type": "string",
+                                                    "example": "Tabungan Umum"
+                                                },
+                                                "nama_anggota": {
+                                                    "type": "string",
+                                                    "example": "Ahmad Rizki"
+                                                },
+                                                "total_transaksi": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "transaksi": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "no_transaksi": {
+                                                                "type": "string",
+                                                                "example": "001241201001"
+                                                            },
+                                                            "tanggal": {
+                                                                "type": "string",
+                                                                "example": "2024-12-01"
+                                                            },
+                                                            "jenis_transaksi": {
+                                                                "type": "string",
+                                                                "example": "S"
+                                                            },
+                                                            "jenis_transaksi_text": {
+                                                                "type": "string",
+                                                                "example": "Setor"
+                                                            },
+                                                            "jumlah": {
+                                                                "type": "integer",
+                                                                "example": 50000
+                                                            },
+                                                            "saldo": {
+                                                                "type": "integer",
+                                                                "example": 250000
+                                                            },
+                                                            "berita": {
+                                                                "type": "string",
+                                                                "example": "Setoran tabungan bulanan"
+                                                            },
+                                                            "nama_petugas": {
+                                                                "type": "string",
+                                                                "example": "Admin Koperasi"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tabungan tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tabungan tidak ditemukan atau tidak milik siswa ini"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Terjadi kesalahan server",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Terjadi kesalahan server"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/public/testimonials": {
             "get": {
                 "tags": [
@@ -2473,6 +2858,10 @@
         {
             "name": "Prestasi Siswa",
             "description": "API Endpoints untuk data prestasi siswa"
+        },
+        {
+            "name": "Tabungan Santri",
+            "description": "API untuk mengelola data tabungan santri dari tabel koperasi_tabungan yang berelasi dengan siswa_anggota dan koperasi_anggota"
         },
         {
             "name": "Testimonials",

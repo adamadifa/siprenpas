@@ -248,6 +248,7 @@ class TabunganController extends Controller
         $request->validate([
             'no_anggota' => 'required',
             'kode_tabungan' => 'required',
+            'rfid' => 'nullable|string|max:20|unique:koperasi_tabungan,rfid',
         ]);
 
         $norek = $request->kode_tabungan . "-" . $request->no_anggota;
@@ -261,6 +262,7 @@ class TabunganController extends Controller
                     'kode_tabungan' => $request->kode_tabungan,
                     'no_anggota' => $request->no_anggota,
                     'saldo' => 0,
+                    'rfid' => $request->rfid,
                     'id_petugas' => auth()->user()->id
                 ]);
                 return Redirect::back()->with(messageSuccess('Data Berhasil Disimpan'));
@@ -342,5 +344,53 @@ class TabunganController extends Controller
             ->limit(15)
             ->get();
         return view('koperasi.tabungan.mutasi-mobile', $data);
+    }
+
+    public function edit($no_rekening)
+    {
+        $no_rekening = Crypt::decrypt($no_rekening);
+        $tabungan = Tabungan::where('no_rekening', $no_rekening)
+            ->join('koperasi_anggota', 'koperasi_tabungan.no_anggota', '=', 'koperasi_anggota.no_anggota')
+            ->join('koperasi_jenis_tabungan', 'koperasi_tabungan.kode_tabungan', '=', 'koperasi_jenis_tabungan.kode_tabungan')
+            ->select('koperasi_tabungan.*', 'koperasi_anggota.nama_lengkap', 'koperasi_jenis_tabungan.jenis_tabungan')
+            ->first();
+        
+        if (!$tabungan) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tabungan tidak ditemukan'
+            ], 404);
+        }
+        
+        return response()->json([
+            'success' => true,
+            'data' => $tabungan
+        ]);
+    }
+
+    public function update(Request $request, $no_rekening)
+    {
+        $no_rekening = Crypt::decrypt($no_rekening);
+        
+        $request->validate([
+            'rfid' => 'nullable|string|max:20|unique:koperasi_tabungan,rfid,' . $no_rekening . ',no_rekening',
+        ]);
+
+        try {
+            Tabungan::where('no_rekening', $no_rekening)
+                ->update([
+                    'rfid' => $request->rfid
+                ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Data RFID berhasil diperbarui'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

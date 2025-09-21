@@ -26,6 +26,15 @@
             @endforeach
         </select>
     </div>
+    
+    <div class="form-group">
+        <label for="rfid" class="form-label">RFID (Opsional)</label>
+        <input type="text" class="form-control" name="rfid" id="rfid" 
+               placeholder="Masukkan kode RFID" maxlength="20">
+        <small class="form-text text-muted">
+            Kode RFID harus unik dan maksimal 20 karakter. Kosongkan jika tidak ada RFID.
+        </small>
+    </div>
 
 
     <div class="form-group">
@@ -77,6 +86,11 @@
                     `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Loading...`
                 );
             }
+        });
+
+        // Auto-format RFID input (uppercase)
+        $('#rfid').on('input', function() {
+            this.value = this.value.toUpperCase();
         });
 
     });

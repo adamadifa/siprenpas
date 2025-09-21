@@ -53,13 +53,14 @@
                                         <th>Kode</th>
                                         <th>Jenis Tabungan</th>
                                         <th>Saldo</th>
+                                        <th>RFID</th>
                                         <th>#</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @if (count($tabungan) == 0)
                                         <tr>
-                                            <td colspan="7" class="text-center">Data tidak ditemukan</td>
+                                            <td colspan="9" class="text-center">Data tidak ditemukan</td>
                                         </tr>
                                     @endif
                                     @foreach ($tabungan as $d)
@@ -71,11 +72,24 @@
                                             <td>{{ $d->kode_tabungan }}</td>
                                             <td>{{ $d->jenis_tabungan }}</td>
                                             <td class="text-end">{{ formatAngka($d->saldo) }}</td>
+                                            <td class="text-center">
+                                                @if($d->rfid)
+                                                    <span class="badge bg-success">{{ $d->rfid }}</span>
+                                                @else
+                                                    <span class="badge bg-secondary">-</span>
+                                                @endif
+                                            </td>
                                             <td class="table-report__action w-56">
                                                 <div class="btn-group" role="group" aria-label="Basic example">
                                                     @can('tabungan.index')
-                                                        <a href="{{ route('tabungan.show', Crypt::encrypt($d->no_rekening)) }}" class="me-1">
+                                                        <a href="{{ route('tabungan.show', Crypt::encrypt($d->no_rekening)) }}" class="me-1" title="Detail">
                                                             <i class="ti ti-book"></i>
+                                                        </a>
+                                                    @endcan
+                                                    @can('tabungan.edit')
+                                                        <a href="javascript:void(0)" class="me-1 btnEditRfid" 
+                                                           data-no-rekening="{{ Crypt::encrypt($d->no_rekening) }}" title="Edit RFID">
+                                                            <i class="ti ti-link text-info"></i>
                                                         </a>
                                                     @endcan
                                                     @can('tabungan.delete')
@@ -83,7 +97,7 @@
                                                             action="{{ route('tabungan.deleterekening', Crypt::encrypt($d->no_rekening)) }}">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <a class="delete-confirm ml-1">
+                                                            <a class="delete-confirm ml-1" title="Hapus">
                                                                 <i class="ti ti-trash text-danger"></i>
                                                             </a>
                                                         </form>
@@ -125,6 +139,41 @@
                     </thead>
                     <tbody></tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit RFID -->
+<div class="modal fade" id="mdlEditRfid" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabelEditRfid">Edit RFID Tabungan</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditRfid">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" id="edit_no_rekening" name="no_rekening">
+                    
+                    <div class="mb-3">
+                        <label for="edit_rfid" class="form-label">RFID</label>
+                        <input type="text" class="form-control" id="edit_rfid" name="rfid" 
+                               placeholder="Masukkan kode RFID" maxlength="20">
+                        <div class="invalid-feedback" id="edit_rfid_error"></div>
+                        <small class="form-text text-muted">
+                            Kode RFID harus unik dan maksimal 20 karakter. Kosongkan jika tidak ada RFID.
+                        </small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btnUpdateRfid">
+                    <i class="ti ti-save me-1"></i> Simpan Perubahan
+                </button>
             </div>
         </div>
     </div>
@@ -203,6 +252,112 @@
             e.preventDefault();
             let no_anggota = $(this).attr('no_anggota');
             getAnggota(no_anggota);
+        });
+
+        // Handle Edit RFID Modal
+        $(document).on('click', '.btnEditRfid', function() {
+            let no_rekening = $(this).data('no-rekening');
+            
+            // Reset form
+            $('#formEditRfid')[0].reset();
+            $('#edit_rfid').removeClass('is-invalid');
+            $('#edit_rfid_error').text('');
+            
+            // Set no_rekening
+            $('#edit_no_rekening').val(no_rekening);
+            
+            // Load data RFID saja
+            $.ajax({
+                url: `{{ url('tabungan') }}/${no_rekening}/edit`,
+                type: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        let data = response.data;
+                        $('#edit_rfid').val(data.rfid || '');
+                        $('#mdlEditRfid').modal('show');
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Gagal memuat data tabungan'
+                    });
+                }
+            });
+        });
+
+        // Handle Update RFID
+        $('#btnUpdateRfid').click(function() {
+            let form = $('#formEditRfid');
+            let no_rekening = $('#edit_no_rekening').val();
+            let rfid = $('#edit_rfid').val();
+            
+            // Reset validation
+            $('#edit_rfid').removeClass('is-invalid');
+            $('#edit_rfid_error').text('');
+            
+            // Validate
+            if (rfid && rfid.length > 20) {
+                $('#edit_rfid').addClass('is-invalid');
+                $('#edit_rfid_error').text('RFID maksimal 20 karakter');
+                return;
+            }
+            
+            // Disable button
+            $(this).prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...');
+            
+            $.ajax({
+                url: `{{ url('tabungan') }}/${no_rekening}/update`,
+                type: 'PUT',
+                data: form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        $('#mdlEditRfid').modal('hide');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: response.message,
+                            timer: 2000
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    let errors = xhr.responseJSON?.errors;
+                    if (errors && errors.rfid) {
+                        $('#edit_rfid').addClass('is-invalid');
+                        $('#edit_rfid_error').text(errors.rfid[0]);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Gagal memperbarui data RFID'
+                        });
+                    }
+                },
+                complete: function() {
+                    $('#btnUpdateRfid').prop('disabled', false).html('<i class="ti ti-save me-1"></i> Simpan Perubahan');
+                }
+            });
+        });
+
+        // Auto-format RFID input (uppercase)
+        $('#edit_rfid').on('input', function() {
+            this.value = this.value.toUpperCase();
         });
 
     });
