@@ -122,8 +122,11 @@ function DateToIndo($date2)
     $tahun2 = substr($date2, 0, 4); // memisahkan format tahun menggunakan substring
     $bulan2 = substr($date2, 5, 2); // memisahkan format bulan menggunakan substring
     $tgl2   = substr($date2, 8, 2); // memisahkan format tanggal menggunakan substring
-
-    $result = $tgl2 . " " . $BulanIndo2[(int)$bulan2 - 1] . " " . $tahun2;
+    if (empty($date2)) {
+        return '-';
+    } else {
+        $result = $tgl2 . " " . $BulanIndo2[(int)$bulan2 - 1] . " " . $tahun2;
+    }
     return ($result);
 }
 
