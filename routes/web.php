@@ -723,7 +723,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/visimisi/misi/{id}', [VisiMisiController::class, 'deleteMisi'])->name('visimisi.misi.delete');
 
     // Sebaran Alumni
-    Route::resource('sebaran-alumni', SebaranAlumniController::class)->middleware('auth');
+    Route::resource('sebaran-alumni', SebaranAlumniController::class)->parameters(['sebaran-alumni' => 'sebaranAlumni'])->middleware('auth');
 
     Route::controller(PageController::class)->group(function () {
         Route::get('/page', 'index')->name('pages.index')->can('pages.index');
