@@ -2064,6 +2064,256 @@
                 }
             }
         },
+        "/api/public/rekening/{rfid}": {
+            "get": {
+                "tags": [
+                    "Rekening"
+                ],
+                "summary": "Mendapatkan data rekening berdasarkan RFID",
+                "operationId": "a9947dffc86c26d1aa3d740c46988209",
+                "parameters": [
+                    {
+                        "name": "X-API-Token",
+                        "in": "header",
+                        "description": "API Token untuk autentikasi",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "sipren-api-token-2024"
+                        }
+                    },
+                    {
+                        "name": "rfid",
+                        "in": "path",
+                        "description": "Kode RFID Tabungan",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "RFID123456"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Data rekening berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data rekening berhasil diambil"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "no_rekening": {
+                                                    "type": "string",
+                                                    "example": "TAB001"
+                                                },
+                                                "no_anggota": {
+                                                    "type": "string",
+                                                    "example": "ANG001"
+                                                },
+                                                "kode_tabungan": {
+                                                    "type": "string",
+                                                    "example": "T01"
+                                                },
+                                                "saldo": {
+                                                    "type": "integer",
+                                                    "example": 500000
+                                                },
+                                                "rfid": {
+                                                    "type": "string",
+                                                    "example": "RFID123456"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "datetime",
+                                                    "example": "2024-01-15T10:30:00.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "datetime",
+                                                    "example": "2024-01-15T10:30:00.000000Z"
+                                                },
+                                                "jenis_tabungan": {
+                                                    "properties": {
+                                                        "kode_tabungan": {
+                                                            "type": "string",
+                                                            "example": "T01"
+                                                        },
+                                                        "jenis_tabungan": {
+                                                            "type": "string",
+                                                            "example": "Tabungan Pendidikan"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "anggota": {
+                                                    "properties": {
+                                                        "no_anggota": {
+                                                            "type": "string",
+                                                            "example": "ANG001"
+                                                        },
+                                                        "nama_lengkap": {
+                                                            "type": "string",
+                                                            "example": "Ahmad Santri"
+                                                        },
+                                                        "alamat": {
+                                                            "type": "string",
+                                                            "example": "Jl. Pendidikan No. 123"
+                                                        },
+                                                        "no_hp": {
+                                                            "type": "string",
+                                                            "example": "081234567890"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Rekening dengan RFID tersebut tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Rekening dengan RFID tersebut tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid API Token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized. Invalid or missing API token."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Terjadi kesalahan server",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Terjadi kesalahan server"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/sebaran-alumni": {
+            "get": {
+                "tags": [
+                    "Sebaran Alumni (Public)"
+                ],
+                "summary": "Daftar sebaran alumni (publik)",
+                "description": "Mengembalikan seluruh data sebaran alumni berupa nama universitas dan URL logo.",
+                "operationId": "c79f73be2b6e042e0e463d73495501ad",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "count": {
+                                            "type": "integer",
+                                            "example": 3
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nama_universitas": {
+                                                        "type": "string",
+                                                        "example": "Institut Teknologi Bandung"
+                                                    },
+                                                    "logo": {
+                                                        "type": "string",
+                                                        "example": "sebaran_alumni/itb.png",
+                                                        "nullable": true
+                                                    },
+                                                    "logo_url": {
+                                                        "type": "string",
+                                                        "example": "https://domain.test/storage/sebaran_alumni/itb.png",
+                                                        "nullable": true
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-09-22T12:34:56Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-09-22T12:34:56Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/tabungan-santri/{id_siswa}": {
             "get": {
                 "tags": [
@@ -2823,6 +3073,93 @@
                     }
                 ]
             }
+        },
+        "/api/public/visi-misi": {
+            "get": {
+                "tags": [
+                    "Visi & Misi (Public)"
+                ],
+                "summary": "Data visi dan misi (publik)",
+                "description": "Mengembalikan data visi (single) dan daftar misi (multiple) dalam satu response.",
+                "operationId": "acefc4d6acc0858c26d0ac46b3d7d0e6",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "visi": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "deskripsi": {
+                                                    "type": "string",
+                                                    "example": "Menjadi lembaga pendidikan terdepan yang mencetak kader muslim berkualitas"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-09-22T12:34:56Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-09-22T12:34:56Z"
+                                                }
+                                            },
+                                            "type": "object",
+                                            "nullable": true
+                                        },
+                                        "misi": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "judul": {
+                                                        "type": "string",
+                                                        "example": "Pencetak Kader Muslim 5M",
+                                                        "nullable": true
+                                                    },
+                                                    "deskripsi": {
+                                                        "type": "string",
+                                                        "example": "Menjadi lembaga pencetak kader muslim dengan predikat 5M"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-09-22T12:34:56Z"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2025-09-22T12:34:56Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "misi_count": {
+                                            "type": "integer",
+                                            "example": 6
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -2860,6 +3197,10 @@
             "description": "API Endpoints untuk data prestasi siswa"
         },
         {
+            "name": "Rekening",
+            "description": "API untuk mendapatkan data rekening tabungan santri"
+        },
+        {
             "name": "Tabungan Santri",
             "description": "API untuk mengelola data tabungan santri dari tabel koperasi_tabungan yang berelasi dengan siswa_anggota dan koperasi_anggota"
         },
@@ -2890,6 +3231,14 @@
         {
             "name": "Post",
             "description": "Post"
+        },
+        {
+            "name": "Sebaran Alumni (Public)",
+            "description": "Sebaran Alumni (Public)"
+        },
+        {
+            "name": "Visi & Misi (Public)",
+            "description": "Visi & Misi (Public)"
         }
     ]
 }

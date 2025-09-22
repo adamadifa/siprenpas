@@ -64,6 +64,8 @@ use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\KategoriPengumumanController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\PrestasiSiswaController;
+use App\Http\Controllers\SebaranAlumniController;
+use App\Http\Controllers\VisiMisiController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Role;
 
@@ -712,6 +714,16 @@ Route::middleware('auth')->group(function () {
         Route::put('/post/{id}/update', 'update')->name('post.update')->can('post.edit');
         Route::delete('/post/{id}/delete', 'destroy')->name('post.delete')->can('post.delete');
     });
+
+    // Visi & Misi
+    Route::get('/visimisi', [VisiMisiController::class, 'index'])->name('visimisi.index');
+    Route::post('/visimisi/visi', [VisiMisiController::class, 'storeVisi'])->name('visimisi.visi.store');
+    Route::post('/visimisi/misi', [VisiMisiController::class, 'storeMisi'])->name('visimisi.misi.store');
+    Route::put('/visimisi/misi/{id}', [VisiMisiController::class, 'updateMisi'])->name('visimisi.misi.update');
+    Route::delete('/visimisi/misi/{id}', [VisiMisiController::class, 'deleteMisi'])->name('visimisi.misi.delete');
+
+    // Sebaran Alumni
+    Route::resource('sebaran-alumni', SebaranAlumniController::class)->middleware('auth');
 
     Route::controller(PageController::class)->group(function () {
         Route::get('/page', 'index')->name('pages.index')->can('pages.index');

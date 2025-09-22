@@ -73,6 +73,13 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::prefix('public')->group(function () {
+    Route::prefix('sebaran-alumni')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\SebaranAlumniController::class, 'index']);
+    });
+
+    Route::prefix('visi-misi')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\VisiMisiController::class, 'index']);
+    });
     //index posts
     Route::get('/posts', [App\Http\Controllers\Api\PostController::class, 'index']);
     Route::get('/posts/getposthomepage', [App\Http\Controllers\Api\PostController::class, 'getposthomepage']);

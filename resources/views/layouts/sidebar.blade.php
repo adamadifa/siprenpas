@@ -519,6 +519,11 @@
                             </a>
                         </li>
                     @endcan
+                    <li class="menu-item {{ request()->is(['sebaran-alumni', 'sebaran-alumni/*']) ? 'active' : '' }}">
+                        <a href="{{ route('sebaran-alumni.index') }}" class="menu-link">
+                            <div>Sebaran Alumni</div>
+                        </a>
+                    </li>
                     @can('pages.index')
                         <li class="menu-item {{ request()->is(['pages', 'pages/*']) ? 'active' : '' }}">
                             <a href="{{ route('pages.index') }}" class="menu-link">
@@ -526,6 +531,11 @@
                             </a>
                         </li>
                     @endcan
+                    <li class="menu-item {{ request()->is(['visimisi']) ? 'active' : '' }}">
+                        <a href="{{ route('visimisi.index') }}" class="menu-link">
+                            <div>Visi & Misi</div>
+                        </a>
+                    </li>
                     @can('testimonials.index')
                         <li class="menu-item {{ request()->is(['testimonials', 'testimonials/*']) ? 'active' : '' }}">
                             <a href="{{ route('testimonials.index') }}" class="menu-link">
