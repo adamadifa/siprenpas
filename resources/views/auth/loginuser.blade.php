@@ -22,7 +22,7 @@
                             @else
                                 <img src="{{ asset('assets/login/images/logoweb-1.png') }}" alt="easyclass" />
                             @endif
-                            <h4>SIP80MOBILE</h4>
+                            <h4>{{ $pengaturan && $pengaturan->nama_aplikasi ? $pengaturan->nama_aplikasi : 'SIP80MOBILE' }}</h4>
                         </div>
 
                         <div class="heading">

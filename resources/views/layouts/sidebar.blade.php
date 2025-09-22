@@ -138,7 +138,8 @@
                     <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="" width="52">
                 @endif
             </span>
-            <span class="app-brand-text demo menu-text fw-bold"><i><b></b></i>SIP 80</span>
+            <span
+                class="app-brand-text demo menu-text fw-bold"><i><b></b></i>{{ $pengaturan && $pengaturan->nama_aplikasi ? $pengaturan->nama_aplikasi : 'SIP 80' }}</span>
         </a>
 
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">

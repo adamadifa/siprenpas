@@ -13,6 +13,8 @@ class PengaturanUmum extends Model
 
     protected $fillable = [
         'logo',
+        'background_login',
+        'nama_aplikasi',
         'nama_sekolah',
         'alamat_sekolah',
         'telepon',

@@ -31,12 +31,14 @@ class PengaturanUmumController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'nama_aplikasi' => 'nullable|string|max:255',
             'nama_sekolah' => 'required|string|max:255',
             'alamat_sekolah' => 'required|string',
             'telepon' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'website' => 'nullable|url|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'background_login' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096'
         ]);
 
         $data = $request->all();
@@ -47,6 +49,14 @@ class PengaturanUmumController extends Controller
             $logoName = time() . '.' . $logo->getClientOriginalExtension();
             $logo->storeAs('public/logos', $logoName);
             $data['logo'] = 'logos/' . $logoName;
+        }
+
+        // Handle background login upload
+        if ($request->hasFile('background_login')) {
+            $bg = $request->file('background_login');
+            $bgName = 'bg_' . time() . '.' . $bg->getClientOriginalExtension();
+            $bg->storeAs('public/backgrounds', $bgName);
+            $data['background_login'] = 'backgrounds/' . $bgName;
         }
 
         PengaturanUmum::create($data);
@@ -79,12 +89,14 @@ class PengaturanUmumController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
+            'nama_aplikasi' => 'nullable|string|max:255',
             'nama_sekolah' => 'required|string|max:255',
             'alamat_sekolah' => 'required|string',
             'telepon' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'website' => 'nullable|url|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'background_login' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096'
         ]);
 
         $pengaturan = PengaturanUmum::findOrFail($id);
@@ -101,6 +113,17 @@ class PengaturanUmumController extends Controller
             $logoName = time() . '.' . $logo->getClientOriginalExtension();
             $logo->storeAs('public/logos', $logoName);
             $data['logo'] = 'logos/' . $logoName;
+        }
+
+        // Handle background login upload
+        if ($request->hasFile('background_login')) {
+            if ($pengaturan->background_login && Storage::exists('public/' . $pengaturan->background_login)) {
+                Storage::delete('public/' . $pengaturan->background_login);
+            }
+            $bg = $request->file('background_login');
+            $bgName = 'bg_' . time() . '.' . $bg->getClientOriginalExtension();
+            $bg->storeAs('public/backgrounds', $bgName);
+            $data['background_login'] = 'backgrounds/' . $bgName;
         }
 
         $pengaturan->update($data);

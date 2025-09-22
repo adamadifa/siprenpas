@@ -21,6 +21,16 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
+                                        <label for="nama_aplikasi" class="form-label">Nama Aplikasi</label>
+                                        <input type="text" class="form-control @error('nama_aplikasi') is-invalid @enderror" id="nama_aplikasi"
+                                            name="nama_aplikasi" value="{{ old('nama_aplikasi', $pengaturan->nama_aplikasi) }}">
+                                        @error('nama_aplikasi')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
                                         <label for="nama_sekolah" class="form-label">Nama Sekolah <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control @error('nama_sekolah') is-invalid @enderror" id="nama_sekolah"
                                             name="nama_sekolah" value="{{ old('nama_sekolah', $pengaturan->nama_sekolah) }}" required>
@@ -90,6 +100,23 @@
                                 @enderror
                             </div>
 
+                            <div class="mb-3">
+                                <label for="background_login" class="form-label">Background Login (Kiri)</label>
+                                @if ($pengaturan->background_login)
+                                    <div class="mb-2">
+                                        <img src="{{ asset('storage/' . $pengaturan->background_login) }}" alt="Background Login"
+                                            class="img-fluid rounded" style="max-height: 180px;">
+                                        <p class="text-muted small mt-1">Background login saat ini</p>
+                                    </div>
+                                @endif
+                                <input type="file" class="form-control @error('background_login') is-invalid @enderror" id="background_login"
+                                    name="background_login" accept="image/*">
+                                <div class="form-text">Disarankan ukuran besar (misal 1600x900). Maksimal 4MB. Kosongkan jika tidak ingin mengubah.</div>
+                                @error('background_login')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <div class="d-flex justify-content-end gap-2">
                                 <a href="{{ route('pengaturan-umum.index') }}" class="btn btn-secondary">
                                     Batal
@@ -106,4 +133,3 @@
         </div>
     </div>
 @endsection
-

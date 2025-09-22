@@ -70,7 +70,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            background-image: url('{{ asset('images/bgalamin.png') }}');
+            background-image: url('{{ $pengaturan && $pengaturan->background_login ? asset('storage/' . $pengaturan->background_login) : asset('images/bgalamin.png') }}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -308,14 +308,12 @@
                 @else
                     <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="Logo" class="login-logo">
                 @endif
-                <div class="brand-text">SIPREN</div>
+                <div class="brand-text">{{ $pengaturan && $pengaturan->nama_aplikasi ? strtoupper($pengaturan->nama_aplikasi) : 'SIPREN' }}</div>
                 <div class="brand-description">
                     @if ($pengaturan)
                         <p>{{ $pengaturan->nama_sekolah }}</p>
-                        <p>{{ $pengaturan->alamat_sekolah }}</p>
                     @else
                         <p>Sistem Informasi Pesantren Persatuan Islam 80 Al Amin</p>
-                        <p>Sindangkasih - Ciamis</p>
                     @endif
                 </div>
             </div>
