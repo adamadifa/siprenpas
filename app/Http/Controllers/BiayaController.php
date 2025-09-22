@@ -146,7 +146,7 @@ class BiayaController extends Controller
         $kode_biaya = Crypt::decrypt($kode_biaya);
         $data['biaya'] = Biaya::where('kode_biaya', $kode_biaya)
             ->join('unit', 'konfigurasi_biaya.kode_unit', '=', 'unit.kode_unit')
-            ->join('konfigurasi_tahun_ajaran', 'konfigurasi_biaya.kode_ta', '=', 'konfigurasi_tahun_ajaran.kode_ta')
+            ->join('konfigurasi_tahunajaran_ppdb', 'konfigurasi_biaya.kode_ta', '=', 'konfigurasi_tahunajaran_ppdb.kode_ta')
             ->first();
         $data['detail'] = Detailbiaya::join('jenis_biaya', 'konfigurasi_biaya_detail.kode_jenis_biaya', '=', 'jenis_biaya.kode_jenis_biaya')
             ->where('kode_biaya', $kode_biaya)
