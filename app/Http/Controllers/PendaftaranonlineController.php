@@ -61,7 +61,7 @@ class PendaftaranonlineController extends Controller
             $qpendaftaran->where('pendaftaran_online.nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
         }
 
-        if(auth()->user()->kode_unit != 'U06') {
+        if (auth()->user()->kode_unit != 'U06') {
             $qpendaftaran->where('pendaftaran_online.kode_unit', auth()->user()->kode_unit);
         }
 
@@ -98,7 +98,7 @@ class PendaftaranonlineController extends Controller
             ->leftJoin('regencies', 'regencies.id', 'pendaftaran_online.id_regency')
             ->leftJoin('districts', 'districts.id', 'pendaftaran_online.id_district')
             ->leftJoin('villages', 'villages.id', 'pendaftaran_online.id_village')
-            ->join('konfigurasi_tahunajaran_pddb', 'konfigurasi_tahunajaran_pddb.kode_ta', 'pendaftaran_online.kode_ta')
+            ->join('konfigurasi_tahunajaran_ppdb', 'konfigurasi_tahunajaran_ppdb.kode_ta', 'pendaftaran_online.kode_ta')
             ->leftJoin('pendaftaran_online_bayar', 'pendaftaran_online_bayar.no_register', 'pendaftaran_online.no_register')
             ->leftJoin('pendaftaran_online_register', 'pendaftaran_online.no_register', '=', 'pendaftaran_online_register.no_register')
             ->select(
