@@ -107,6 +107,7 @@ Route::prefix('public')->group(function () {
 Route::prefix('public')->middleware('api.token')->group(function () {
     // Rekening API Routes
     Route::get('/rekening/{rfid}', [App\Http\Controllers\Api\RekeningController::class, 'getRekeningByRfid']);
+    Route::post('/rekening/transfer', [App\Http\Controllers\Api\RekeningController::class, 'transfer']);
 });
 
 Route::get('/unit', [App\Http\Controllers\Api\UnitController::class, 'index']);

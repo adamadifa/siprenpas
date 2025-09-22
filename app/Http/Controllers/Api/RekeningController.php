@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tabungan;
+use App\Models\Transaksitabungan;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -151,6 +153,208 @@ class RekeningController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan server: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/public/rekening/transfer",
+     *     summary="Transfer antar rekening tabungan",
+     *     tags={"Rekening"},
+     *     @OA\Parameter(
+     *         name="X-API-Token",
+     *         in="header",
+     *         required=true,
+     *         description="API Token untuk autentikasi",
+     *         @OA\Schema(type="string", example="sipren-api-token-2024")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"rekening_pengirim","rekening_penerima","jumlah"},
+     *             @OA\Property(property="rekening_pengirim", type="string", example="TAB001", description="No rekening pengirim"),
+     *             @OA\Property(property="rekening_penerima", type="string", example="TAB002", description="No rekening penerima"),
+     *             @OA\Property(property="jumlah", type="number", example=100000, description="Jumlah transfer"),
+     *             @OA\Property(property="berita", type="string", example="PAYMENT-KOPERASI", description="Keterangan transfer (default: PAYMENT-KOPERASI)")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Transfer berhasil dilakukan",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Transfer berhasil dilakukan"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(property="no_transaksi_tarik", type="string", example="T01-24-01-001"),
+     *                 @OA\Property(property="no_transaksi_setor", type="string", example="T01-24-01-002"),
+     *                 @OA\Property(property="jumlah", type="number", example=100000),
+     *                 @OA\Property(property="saldo_pengirim", type="number", example=400000),
+     *                 @OA\Property(property="saldo_penerima", type="number", example=600000)
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request - Data tidak valid",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Saldo tidak mencukupi")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Rekening tidak ditemukan",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Rekening pengirim tidak ditemukan")
+     *         )
+     *     )
+     * )
+     */
+    public function transfer(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'rekening_pengirim' => 'required|string',
+                'rekening_penerima' => 'required|string',
+                'jumlah' => 'required|numeric|min:1',
+                'berita' => 'nullable|string|max:255'
+            ]);
+
+            $rekeningPengirim = $request->rekening_pengirim;
+            $rekeningPenerima = $request->rekening_penerima;
+            $jumlah = (int) $request->jumlah;
+            $berita = $request->berita ?? 'PAYMENT-KOPERASI';
+
+            // Validasi rekening tidak boleh sama
+            if ($rekeningPengirim === $rekeningPenerima) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Rekening pengirim dan penerima tidak boleh sama'
+                ], 400);
+            }
+
+            // Cek rekening pengirim
+            $tabunganPengirim = Tabungan::where('no_rekening', $rekeningPengirim)->first();
+            if (!$tabunganPengirim) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Rekening pengirim tidak ditemukan'
+                ], 404);
+            }
+
+            // Cek rekening penerima
+            $tabunganPenerima = Tabungan::where('no_rekening', $rekeningPenerima)->first();
+            if (!$tabunganPenerima) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Rekening penerima tidak ditemukan'
+                ], 404);
+            }
+
+            // Cek saldo pengirim
+            if ($tabunganPengirim->saldo < $jumlah) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Saldo tidak mencukupi'
+                ], 400);
+            }
+
+            $tanggal = date('Y-m-d');
+            $tgl = explode("-", $tanggal);
+            $tahun = $tgl[0];
+            $bulan = $tgl[1];
+
+            DB::beginTransaction();
+
+            try {
+                // Generate no transaksi untuk pengirim (Tarik)
+                $formatPengirim = $tabunganPengirim->kode_tabungan . substr($tahun, 2, 2) . $bulan;
+                $lastTransaksiPengirim = Transaksitabungan::select('no_transaksi')
+                    ->where(DB::raw('left(no_transaksi,7)'), $formatPengirim)
+                    ->orderBy('no_transaksi', 'desc')
+                    ->first();
+                $lastNoTransaksiPengirim = $lastTransaksiPengirim ? $lastTransaksiPengirim->no_transaksi : '';
+                $noTransaksiTarik = buatkode($lastNoTransaksiPengirim, $formatPengirim . "-", 3);
+
+                // Generate no transaksi untuk penerima (Setor)
+                $formatPenerima = $tabunganPenerima->kode_tabungan . substr($tahun, 2, 2) . $bulan;
+                $lastTransaksiPenerima = Transaksitabungan::select('no_transaksi')
+                    ->where(DB::raw('left(no_transaksi,7)'), $formatPenerima)
+                    ->orderBy('no_transaksi', 'desc')
+                    ->first();
+                $lastNoTransaksiPenerima = $lastTransaksiPenerima ? $lastTransaksiPenerima->no_transaksi : '';
+                $noTransaksiSetor = buatkode($lastNoTransaksiPenerima, $formatPenerima . "-", 3);
+
+                // Insert transaksi tarik (pengirim)
+                Transaksitabungan::create([
+                    'no_transaksi' => $noTransaksiTarik,
+                    'tanggal' => $tanggal,
+                    'no_rekening' => $rekeningPengirim,
+                    'jumlah' => $jumlah,
+                    'jenis_transaksi' => 'T',
+                    'berita' => $berita . ' (Transfer ke ' . $rekeningPenerima . ')',
+                    'saldo' => 0,
+                    'id_petugas' => 1 // Default system user
+                ]);
+
+                // Insert transaksi setor (penerima)
+                Transaksitabungan::create([
+                    'no_transaksi' => $noTransaksiSetor,
+                    'tanggal' => $tanggal,
+                    'no_rekening' => $rekeningPenerima,
+                    'jumlah' => $jumlah,
+                    'jenis_transaksi' => 'S',
+                    'berita' => $berita . ' (Transfer dari ' . $rekeningPengirim . ')',
+                    'saldo' => 0,
+                    'id_petugas' => 1 // Default system user
+                ]);
+
+                // Update saldo pengirim (kurangi)
+                Tabungan::where('no_rekening', $rekeningPengirim)
+                    ->update(['saldo' => DB::raw('saldo - ' . $jumlah)]);
+
+                // Update saldo penerima (tambah)
+                Tabungan::where('no_rekening', $rekeningPenerima)
+                    ->update(['saldo' => DB::raw('saldo + ' . $jumlah)]);
+
+                // Update saldo di transaksi
+                $saldoPengirimTerakhir = Tabungan::select('saldo')->where('no_rekening', $rekeningPengirim)->first();
+                $saldoPenerimaTerakhir = Tabungan::select('saldo')->where('no_rekening', $rekeningPenerima)->first();
+
+                Transaksitabungan::where('no_transaksi', $noTransaksiTarik)
+                    ->update(['saldo' => $saldoPengirimTerakhir->saldo]);
+
+                Transaksitabungan::where('no_transaksi', $noTransaksiSetor)
+                    ->update(['saldo' => $saldoPenerimaTerakhir->saldo]);
+
+                DB::commit();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Transfer berhasil dilakukan',
+                    'data' => [
+                        'no_transaksi_tarik' => $noTransaksiTarik,
+                        'no_transaksi_setor' => $noTransaksiSetor,
+                        'jumlah' => $jumlah,
+                        'saldo_pengirim' => $saldoPengirimTerakhir->saldo,
+                        'saldo_penerima' => $saldoPenerimaTerakhir->saldo
+                    ]
+                ], 200);
+            } catch (\Exception $e) {
+                DB::rollback();
+                throw $e;
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
     }

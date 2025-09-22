@@ -2246,6 +2246,151 @@
                 }
             }
         },
+        "/api/public/rekening/transfer": {
+            "post": {
+                "tags": [
+                    "Rekening"
+                ],
+                "summary": "Transfer antar rekening tabungan",
+                "operationId": "01af3d64dc7bababeb206cbff312c08b",
+                "parameters": [
+                    {
+                        "name": "X-API-Token",
+                        "in": "header",
+                        "description": "API Token untuk autentikasi",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "sipren-api-token-2024"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "rekening_pengirim",
+                                    "rekening_penerima",
+                                    "jumlah"
+                                ],
+                                "properties": {
+                                    "rekening_pengirim": {
+                                        "description": "No rekening pengirim",
+                                        "type": "string",
+                                        "example": "TAB001"
+                                    },
+                                    "rekening_penerima": {
+                                        "description": "No rekening penerima",
+                                        "type": "string",
+                                        "example": "TAB002"
+                                    },
+                                    "jumlah": {
+                                        "description": "Jumlah transfer",
+                                        "type": "number",
+                                        "example": 100000
+                                    },
+                                    "berita": {
+                                        "description": "Keterangan transfer (default: PAYMENT-KOPERASI)",
+                                        "type": "string",
+                                        "example": "PAYMENT-KOPERASI"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Transfer berhasil dilakukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Transfer berhasil dilakukan"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "no_transaksi_tarik": {
+                                                    "type": "string",
+                                                    "example": "T01-24-01-001"
+                                                },
+                                                "no_transaksi_setor": {
+                                                    "type": "string",
+                                                    "example": "T01-24-01-002"
+                                                },
+                                                "jumlah": {
+                                                    "type": "number",
+                                                    "example": 100000
+                                                },
+                                                "saldo_pengirim": {
+                                                    "type": "number",
+                                                    "example": 400000
+                                                },
+                                                "saldo_penerima": {
+                                                    "type": "number",
+                                                    "example": 600000
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request - Data tidak valid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Saldo tidak mencukupi"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Rekening tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Rekening pengirim tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/public/sebaran-alumni": {
             "get": {
                 "tags": [
