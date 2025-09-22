@@ -432,7 +432,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/pendaftaranonline/update', 'update')->name('pendaftaranonline.update')->can('pendaftaranonline.edit');
         Route::delete('/pendaftaranonline/{no_register}/delete', 'destroy')->name('pendaftaranonline.delete')->can('pendaftaranonline.delete');
         Route::get('pendaftaranonline/cetak/{no_register}', 'cetak')->name('pendaftaranonline.cetak');
-        Route::post('pendaftaranonline/{no_register}/konfirmasi', 'konfirmasi')->name('pendaftaranonline.konfirmasi');
+        Route::post('pendaftaranonline/{no_register}/konfirmasi', 'konfirmasiPembayaran')->name('pendaftaranonline.konfirmasiPembayaran');
         Route::post('pendaftaranonline/{no_register}/cancel', 'cancel')->name('pendaftaranonline.cancel');
     });
 
