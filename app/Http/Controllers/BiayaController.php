@@ -19,7 +19,7 @@ class BiayaController extends Controller
         $tahunajaran = Tahunajaranppdb::where('status', '1')->first();
         $query = Biaya::query();
         $query->join('unit', 'konfigurasi_biaya.kode_unit', '=', 'unit.kode_unit');
-        $query->join('konfigurasi_tahun_ajaran', 'konfigurasi_biaya.kode_ta', '=', 'konfigurasi_tahun_ajaran.kode_ta');
+        $query->join('konfigurasi_tahunajaran_ppdb', 'konfigurasi_biaya.kode_ta', '=', 'konfigurasi_tahunajaran_ppdb.kode_ta');
         if (!empty($request->kode_ta)) {
             $query->where('konfigurasi_biaya.kode_ta', $request->kode_ta);
         } else {
