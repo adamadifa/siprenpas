@@ -64,6 +64,7 @@ use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\KategoriPengumumanController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\PrestasiSiswaController;
+use App\Http\Controllers\ProgramUnggulanController;
 use App\Http\Controllers\SebaranAlumniController;
 use App\Http\Controllers\VisiMisiController;
 use Illuminate\Support\Facades\Route;
@@ -451,6 +452,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/pembayaranpendidikan/getsisatagihan', 'getsisatagihan')->name('pembayaranpendidikan.getsisatagihan')->can('pembayaranpdd.create');
         Route::get('/pembayaranpendidikan/{no_bukti}/showdetailbayar', 'showdetailbayar')->name('pembayaranpendidikan.showdetailbayar')->can('pembayaranpdd.show');
         Route::get('/pembayaranpendidikan/{no_bukti}/cetak', 'cetak')->name('pembayaranpendidikan.cetak')->can('pembayaranpdd.show');
+        Route::get('/pembayaranpendidikan/{no_pendaftaran}/prosesnaikkelas', 'prosesnaikkelas')->name('pembayaranpendidikan.prosesnaikkelas')->can('pembayaranpdd.create');
     });
 
     Route::controller(RencanasppController::class)->group(function () {
@@ -704,6 +706,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/prestasi-siswa/{prestasiSiswa}/edit', 'edit')->name('prestasi-siswa.edit')->can('prestasi-siswa.edit');
         Route::put('/prestasi-siswa/{prestasiSiswa}', 'update')->name('prestasi-siswa.update')->can('prestasi-siswa.edit');
         Route::delete('/prestasi-siswa/{prestasiSiswa}', 'destroy')->name('prestasi-siswa.destroy')->can('prestasi-siswa.delete');
+    });
+
+    Route::controller(ProgramUnggulanController::class)->group(function () {
+        Route::get('/program-unggulan', 'index')->name('program-unggulan.index')->can('program-unggulan.index');
+        Route::get('/program-unggulan/create', 'create')->name('program-unggulan.create')->can('program-unggulan.create');
+        Route::post('/program-unggulan', 'store')->name('program-unggulan.store')->can('program-unggulan.create');
+        Route::get('/program-unggulan/{programUnggulan}', 'show')->name('program-unggulan.show')->can('program-unggulan.index');
+        Route::get('/program-unggulan/{programUnggulan}/edit', 'edit')->name('program-unggulan.edit')->can('program-unggulan.edit');
+        Route::put('/program-unggulan/{programUnggulan}', 'update')->name('program-unggulan.update')->can('program-unggulan.edit');
+        Route::delete('/program-unggulan/{programUnggulan}', 'destroy')->name('program-unggulan.destroy')->can('program-unggulan.delete');
     });
 
     Route::controller(PostController::class)->group(function () {

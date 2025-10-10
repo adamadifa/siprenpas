@@ -42,8 +42,14 @@
                                             <option value="">Tahun Ajaran</option>
                                             @foreach ($tahunajaran as $d)
                                                 <option value="{{ $d->kode_ta }}"
-                                                    @if (Request('kode_ta') == $d->kode_ta) selected @elseif ($tahun_ajaran->kode_ta == $d->kode_ta) selected @endif>
-                                                    {{ $d->tahun_ajaran }}</option>
+                                                    @if (!empty(Request('kode_ta'))) @if (Request('kode_ta') == $d->kode_ta)
+                                                            selected @endif
+                                                @else @if ($kode_ta == $d->kode_ta) selected @endif
+                                                    @endif
+                                                    >
+                                                    {{ $d->tahun_ajaran }}
+
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -100,6 +106,13 @@
                                                             <i class="ti ti-moneybag text-info"></i>
                                                         </a>
                                                     @endcan
+                                                    @if ($d->kode_ta != $kode_ta)
+                                                        <a href="{{ route('pembayaranpendidikan.prosesnaikkelas', Crypt::encrypt($d->no_pendaftaran)) }}"
+                                                            class=""
+                                                            no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}">
+                                                            <i class="ti ti-arrow-up btn-warning ms-2"></i>
+                                                        </a>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>

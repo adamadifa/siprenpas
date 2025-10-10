@@ -3,12 +3,14 @@
     <div class="row">
         <div class="col-lg-6 col-md-12 col-sm-12">
             <x-input-with-icon-label icon="ti ti-barcode" label="No. Akad" name="no_akad" disabled="true" />
-            <x-input-with-icon-label icon="ti ti-calendar" label="Tanggal Akad" name="tanggal" datepicker="flatpickr-date" />
+            <x-input-with-icon-label icon="ti ti-calendar" label="Tanggal Akad" name="tanggal"
+                datepicker="flatpickr-date" />
             <label for="no_anggota" class="form-label" style="font-weight: 600"> Anggota</label>
             <div class="input-group mb-3">
-                <input type="text" class="form-control" name="no_anggota" id="no_anggota" readonly="" placeholder="Cari Anggota"
-                    aria-label="Cari Anggota" aria-describedby="no_anggota">
-                <a class="btn btn-primary waves-effect" id="no_anggota_search"><i class="ti ti-search text-white"></i></a>
+                <input type="text" class="form-control" name="no_anggota" id="no_anggota" readonly=""
+                    placeholder="Cari Anggota" aria-label="Cari Anggota" aria-describedby="no_anggota">
+                <a class="btn btn-primary waves-effect" id="no_anggota_search"><i
+                        class="ti ti-search text-white"></i></a>
             </div>
             <x-input-with-icon-label icon="ti ti-credit-card" label="Nomor Identitas" name="nik" />
             <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap" name="nama_lengkap" />
@@ -61,8 +63,8 @@
                 </div>
             </div>
             <x-textarea-label name="alamat" label="Alamat" />
-            <x-select-label label="Provinsi" name="id_province" :data="$provinsi" key="id" textShow="name" select2="select2Provinsi"
-                upperCase="true" />
+            <x-select-label label="Provinsi" name="id_province" :data="$provinsi" key="id" textShow="name"
+                select2="select2Provinsi" upperCase="true" />
             <div class="form-group mb-3">
                 <label style="font-weight: 600" class="form-label">Kabupaten / Kota</label>
                 <select name="id_regency" id="id_regency" class="select2Regency form-select">
@@ -101,24 +103,29 @@
                 <select name="kode_pembiayaan" id="kode_pembiayaan" class="form-select">
                     <option value="">Jenis Pembiayaan</option>
                     @foreach ($jenis_pembiayaan as $d)
-                        <option value="{{ $d->kode_pembiayaan }}" persentase="{{ $d->persentase }}">{{ $d->jenis_pembiayaan }}</option>
+                        <option value="{{ $d->kode_pembiayaan }}" persentase="{{ $d->persentase }}">
+                            {{ $d->jenis_pembiayaan }}</option>
                     @endforeach
                 </select>
             </div>
-            <x-input-with-icon-label icon="ti ti-percentage" label="Persentase (%)" name="persentase" value="0" readonly />
+            <x-input-with-icon-label icon="ti ti-percentage" label="Persentase (%)" name="persentase" value="0"
+                readonly />
             <div class="form-gropu mb-3">
                 <label for="jangka_watu" style="font-weight: 600" class="form-label"> Jangka Waktu</label>
                 <select name="jangka_waktu" id="jangka_waktu" class="form-select">
                     <option value="">Jangka Waktu</option>
-                    @for ($i = 1; $i <= 20; $i++)
+                    @for ($i = 1; $i <= 30; $i++)
                         <option value="{{ $i }}">{{ $i }} Bulan</option>
                     @endfor
                 </select>
             </div>
-            <x-input-with-icon-label label="Jumlah Pembiayaan" name="jumlah" icon="ti ti-moneybag" money="true" align="right" />
-            <x-input-with-icon-label label="Jumlah Pengembalian" name="jumlah_pengembalian" icon="ti ti-moneybag" readonly align="right" />
+            <x-input-with-icon-label label="Jumlah Pembiayaan" name="jumlah" icon="ti ti-moneybag" money="true"
+                align="right" />
+            <x-input-with-icon-label label="Jumlah Pengembalian" name="jumlah_pengembalian" icon="ti ti-moneybag"
+                readonly align="right" />
             <x-textarea-label name="keperluan" label="keperluan" />
-            <x-input-with-icon-label icon="ti ti-file-description" label="Jaminan" name="jaminan" datepicker="flatpickr-date" />
+            <x-input-with-icon-label icon="ti ti-file-description" label="Jaminan" name="jaminan"
+                datepicker="flatpickr-date" />
             <div class="form-group">
                 <button class="btn btn-primary w-100" id="btnSimpan" type="submit">
                     <ion-icon name="send-outline" class="me-1"></ion-icon>
@@ -185,13 +192,20 @@
             $(document).find("#formPembiayaan").find('input[name="nik"]').attr('disabled', 'disabled');
             $(document).find("#formPembiayaan").find('input[name="nama_lengkap"]').attr('disabled', 'disabled');
             $(document).find("#formPembiayaan").find('input[name="tempat_lahir"]').attr('disabled', 'disabled');
-            $(document).find("#formPembiayaan").find('input[name="tanggal_lahir"]').attr('disabled', 'disabled');
-            $(document).find("#formPembiayaan").find('select[name="jenis_kelamin"]').attr('disabled', 'disabled');
-            $(document).find("#formPembiayaan").find('select[name="pendidikan_terakhir"]').attr('disabled', 'disabled');
-            $(document).find("#formPembiayaan").find('select[name="status_pernikahan"]').attr('disabled', 'disabled');
-            $(document).find("#formPembiayaan").find('input[name="jml_tanggungan"]').attr('disabled', 'disabled');
-            $(document).find("#formPembiayaan").find('input[name="nama_pasangan"]').attr('disabled', 'disabled');
-            $(document).find("#formPembiayaan").find('input[name="pekerjaan_pasangan"]').attr('disabled', 'disabled');
+            $(document).find("#formPembiayaan").find('input[name="tanggal_lahir"]').attr('disabled',
+            'disabled');
+            $(document).find("#formPembiayaan").find('select[name="jenis_kelamin"]').attr('disabled',
+                'disabled');
+            $(document).find("#formPembiayaan").find('select[name="pendidikan_terakhir"]').attr('disabled',
+                'disabled');
+            $(document).find("#formPembiayaan").find('select[name="status_pernikahan"]').attr('disabled',
+                'disabled');
+            $(document).find("#formPembiayaan").find('input[name="jml_tanggungan"]').attr('disabled',
+                'disabled');
+            $(document).find("#formPembiayaan").find('input[name="nama_pasangan"]').attr('disabled',
+            'disabled');
+            $(document).find("#formPembiayaan").find('input[name="pekerjaan_pasangan"]').attr('disabled',
+                'disabled');
             $(document).find("#formPembiayaan").find('input[name="nama_ibu"]').attr('disabled', 'disabled');
             $(document).find("#formPembiayaan").find('input[name="nama_saudara"]').attr('disabled', 'disabled');
             $(document).find("#formPembiayaan").find('input[name="no_hp"]').attr('disabled', 'disabled');
@@ -200,7 +214,8 @@
             $(document).find("#formPembiayaan").find('select[name="id_regency"]').attr('disabled', 'disabled');
             $(document).find("#formPembiayaan").find('select[name="id_district"]').attr('disabled', 'disabled');
             $(document).find("#formPembiayaan").find('select[name="id_village"]').attr('disabled', 'disabled');
-            $(document).find("#formPembiayaan").find('select[name="status_tinggal"]').attr('disabled', 'disabled');
+            $(document).find("#formPembiayaan").find('select[name="status_tinggal"]').attr('disabled',
+                'disabled');
             $(document).find("#formPembiayaan").find('input[name="kode_pos"]').attr('disabled', 'disabled');
         }
         disableFields();

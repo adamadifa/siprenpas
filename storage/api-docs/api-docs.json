@@ -2064,6 +2064,448 @@
                 }
             }
         },
+        "/api/program-unggulan": {
+            "get": {
+                "tags": [
+                    "Program Unggulan"
+                ],
+                "summary": "Mendapatkan daftar Program Unggulan",
+                "description": "Mengambil semua data program unggulan yang tersedia",
+                "operationId": "65296284289fe1852e54b3b8361775d5",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data program unggulan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data program unggulan berhasil diambil"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nama_program": {
+                                                        "type": "string",
+                                                        "example": "Pembentukan Karakter"
+                                                    },
+                                                    "deskripsi": {
+                                                        "type": "string",
+                                                        "example": "Program ini fokus pada pembentukan akhlak mulia..."
+                                                    },
+                                                    "urutan": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "datetime",
+                                                        "example": "2024-01-01 00:00:00"
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "datetime",
+                                                        "example": "2024-01-01 00:00:00"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Program Unggulan"
+                ],
+                "summary": "Membuat Program Unggulan baru",
+                "description": "Membuat program unggulan baru dengan data yang diberikan",
+                "operationId": "ffa17489060363d86e617e4c3baf82aa",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama_program",
+                                    "urutan"
+                                ],
+                                "properties": {
+                                    "nama_program": {
+                                        "type": "string",
+                                        "example": "Program Baru"
+                                    },
+                                    "deskripsi": {
+                                        "type": "string",
+                                        "example": "Deskripsi program baru"
+                                    },
+                                    "urutan": {
+                                        "type": "integer",
+                                        "example": 5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Program unggulan berhasil dibuat",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Program unggulan berhasil dibuat"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProgramUnggulan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validasi gagal"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/program-unggulan/{id}": {
+            "get": {
+                "tags": [
+                    "Program Unggulan"
+                ],
+                "summary": "Mendapatkan detail Program Unggulan",
+                "description": "Mengambil detail program unggulan berdasarkan ID",
+                "operationId": "4d4a9012371c097ebb4dbdae4f98d9bb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Program Unggulan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil detail program unggulan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail program unggulan berhasil diambil"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProgramUnggulan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Program unggulan tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Program unggulan tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Program Unggulan"
+                ],
+                "summary": "Mengupdate Program Unggulan",
+                "description": "Mengupdate data program unggulan berdasarkan ID",
+                "operationId": "29dab7f47529301ad68a0a08951c8afb",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Program Unggulan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama_program",
+                                    "urutan"
+                                ],
+                                "properties": {
+                                    "nama_program": {
+                                        "type": "string",
+                                        "example": "Program Terupdate"
+                                    },
+                                    "deskripsi": {
+                                        "type": "string",
+                                        "example": "Deskripsi program terupdate"
+                                    },
+                                    "urutan": {
+                                        "type": "integer",
+                                        "example": 3
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Program unggulan berhasil diupdate",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Program unggulan berhasil diupdate"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/ProgramUnggulan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Program unggulan tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Program unggulan tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validasi gagal"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Program Unggulan"
+                ],
+                "summary": "Menghapus Program Unggulan",
+                "description": "Menghapus program unggulan berdasarkan ID",
+                "operationId": "827afc5a5b0be03420ff475f67fff9fe",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID Program Unggulan",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Program unggulan berhasil dihapus",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Program unggulan berhasil dihapus"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Program unggulan tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Program unggulan tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/program-unggulan/random/{limit}": {
+            "get": {
+                "tags": [
+                    "Program Unggulan"
+                ],
+                "summary": "Mendapatkan Program Unggulan secara acak",
+                "description": "Mengambil program unggulan secara acak dengan batasan jumlah",
+                "operationId": "8667e3ae87b2cff94e4dcebd4b7dcd35",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "path",
+                        "description": "Jumlah program unggulan yang diambil (default: 3)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 3
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil program unggulan secara acak",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data program unggulan acak berhasil diambil"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ProgramUnggulan"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/public/rekening/{rfid}": {
             "get": {
                 "tags": [
@@ -3309,6 +3751,37 @@
     },
     "components": {
         "schemas": {
+            "ProgramUnggulan": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nama_program": {
+                        "type": "string",
+                        "example": "Pembentukan Karakter"
+                    },
+                    "deskripsi": {
+                        "type": "string",
+                        "example": "Program ini fokus pada pembentukan akhlak mulia..."
+                    },
+                    "urutan": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2024-01-01 00:00:00"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2024-01-01 00:00:00"
+                    }
+                },
+                "type": "object"
+            },
             "Unit": {
                 "title": "Unit",
                 "required": [
@@ -3340,6 +3813,10 @@
         {
             "name": "Prestasi Siswa",
             "description": "API Endpoints untuk data prestasi siswa"
+        },
+        {
+            "name": "Program Unggulan",
+            "description": "API endpoints untuk mengelola Program Unggulan"
         },
         {
             "name": "Rekening",

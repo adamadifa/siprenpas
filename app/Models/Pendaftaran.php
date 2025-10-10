@@ -105,10 +105,13 @@ class Pendaftaran extends Model
             'provinces.name as provinsi',
             'regencies.name as kota',
             'logo',
-            'nama_unit',
+            'konfigurasi_biaya.kode_unit',
             'pendaftaran.nis',
             'kelas_siswa.nama_kelas',
-            'konfigurasi_biaya.tingkat'
+            'siswa_biaya.kode_biaya',
+            'konfigurasi_biaya.tingkat',
+            'siswa_biaya.status_naik_kelas',
+            'konfigurasi_biaya.kode_ta'
         );
         $query->join('pendaftaran', 'siswa_biaya.no_pendaftaran', 'pendaftaran.no_pendaftaran');
         $query->join('siswa', 'pendaftaran.id_siswa', 'siswa.id_siswa');

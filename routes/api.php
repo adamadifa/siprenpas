@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PengumumanController;
 use App\Http\Controllers\Api\PrestasiSiswaController;
+use App\Http\Controllers\Api\ProgramUnggulanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,6 +71,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/pendaftaranonline/{no_register}/update', [App\Http\Controllers\Api\PendaftaranonlineController::class, 'update']);
     Route::post('/pendaftaranonline/{no_register}/update-foto', [App\Http\Controllers\Api\PendaftaranonlineController::class, 'updateFoto']);
     Route::get('/pendaftaranonline/{id_user}', [App\Http\Controllers\Api\PendaftaranonlineController::class, 'getPendaftaranonlineByIdUser']);
+
+    // Program Unggulan API Routes (CRUD dengan authentication)
+    Route::apiResource('program-unggulan', ProgramUnggulanController::class);
 });
 
 Route::prefix('public')->group(function () {
@@ -98,6 +102,12 @@ Route::prefix('public')->group(function () {
         Route::get('/', [App\Http\Controllers\Api\PrestasiSiswaController::class, 'index']);
         Route::get('/random/{limit?}', [App\Http\Controllers\Api\PrestasiSiswaController::class, 'random']);
         Route::get('/{id}', [App\Http\Controllers\Api\PrestasiSiswaController::class, 'show']);
+    });
+
+    Route::prefix('program-unggulan')->group(function () {
+        Route::get('/', [ProgramUnggulanController::class, 'index']);
+        Route::get('/random/{limit?}', [ProgramUnggulanController::class, 'random']);
+        Route::get('/{id}', [ProgramUnggulanController::class, 'show']);
     });
 
     // Endpoint untuk mendapatkan data unit

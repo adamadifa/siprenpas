@@ -1,0 +1,414 @@
+openapi: 3.0.0
+info:
+  title: Program Unggulan API
+  description: API untuk mengelola Program Unggulan sekolah
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@sekolah.com
+
+servers:
+  - url: http://localhost:8000/api
+    description: Development server
+  - url: https://api.sekolah.com/api
+    description: Production server
+
+tags:
+  - name: Program Unggulan
+    description: Endpoints untuk mengelola Program Unggulan
+
+paths:
+  /program-unggulan:
+    get:
+      tags:
+        - Program Unggulan
+      summary: Mendapatkan daftar Program Unggulan
+      description: Mengambil semua data program unggulan yang tersedia
+      responses:
+        '200':
+          description: Berhasil mengambil data program unggulan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Data program unggulan berhasil diambil"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProgramUnggulan'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Program Unggulan
+      summary: Membuat Program Unggulan baru
+      description: Membuat program unggulan baru dengan data yang diberikan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nama_program
+                - urutan
+              properties:
+                nama_program:
+                  type: string
+                  example: "Program Baru"
+                  maxLength: 255
+                deskripsi:
+                  type: string
+                  example: "Deskripsi program baru"
+                urutan:
+                  type: integer
+                  example: 5
+                  minimum: 0
+      responses:
+        '201':
+          description: Program unggulan berhasil dibuat
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Program unggulan berhasil dibuat"
+                  data:
+                    $ref: '#/components/schemas/ProgramUnggulan'
+        '422':
+          description: Validasi gagal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /program-unggulan/{id}:
+    get:
+      tags:
+        - Program Unggulan
+      summary: Mendapatkan detail Program Unggulan
+      description: Mengambil detail program unggulan berdasarkan ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID Program Unggulan
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Berhasil mengambil detail program unggulan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Detail program unggulan berhasil diambil"
+                  data:
+                    $ref: '#/components/schemas/ProgramUnggulan'
+        '404':
+          description: Program unggulan tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - Program Unggulan
+      summary: Mengupdate Program Unggulan
+      description: Mengupdate data program unggulan berdasarkan ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID Program Unggulan
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nama_program
+                - urutan
+              properties:
+                nama_program:
+                  type: string
+                  example: "Program Terupdate"
+                  maxLength: 255
+                deskripsi:
+                  type: string
+                  example: "Deskripsi program terupdate"
+                urutan:
+                  type: integer
+                  example: 3
+                  minimum: 0
+      responses:
+        '200':
+          description: Program unggulan berhasil diupdate
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Program unggulan berhasil diupdate"
+                  data:
+                    $ref: '#/components/schemas/ProgramUnggulan'
+        '404':
+          description: Program unggulan tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        '422':
+          description: Validasi gagal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Program Unggulan
+      summary: Menghapus Program Unggulan
+      description: Menghapus program unggulan berdasarkan ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID Program Unggulan
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Program unggulan berhasil dihapus
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Program unggulan berhasil dihapus"
+        '404':
+          description: Program unggulan tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /public/program-unggulan:
+    get:
+      tags:
+        - Program Unggulan
+      summary: Mendapatkan daftar Program Unggulan (Public)
+      description: Mengambil semua data program unggulan untuk akses publik
+      responses:
+        '200':
+          description: Berhasil mengambil data program unggulan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Data program unggulan berhasil diambil"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProgramUnggulan'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /public/program-unggulan/{id}:
+    get:
+      tags:
+        - Program Unggulan
+      summary: Mendapatkan detail Program Unggulan (Public)
+      description: Mengambil detail program unggulan berdasarkan ID untuk akses publik
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID Program Unggulan
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Berhasil mengambil detail program unggulan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Detail program unggulan berhasil diambil"
+                  data:
+                    $ref: '#/components/schemas/ProgramUnggulan'
+        '404':
+          description: Program unggulan tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ProgramUnggulan:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nama_program:
+          type: string
+          example: "Pembentukan Karakter"
+        deskripsi:
+          type: string
+          example: "Program ini fokus pada pembentukan akhlak mulia, kedisiplinan, tanggung jawab, dan etika peserta didik melalui kegiatan rutin, mentoring, dan keteladanan."
+        urutan:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-01 00:00:00"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-01 00:00:00"
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Terjadi kesalahan pada server"
+        error:
+          type: string
+          example: "Error message details"
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Validasi gagal"
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            nama_program:
+              - "The nama program field is required."
+            urutan:
+              - "The urutan field is required."
+
+    NotFoundResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Program unggulan tidak ditemukan"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Masukkan token Bearer untuk autentikasi"
+
+security:
+  - bearerAuth: []
+
+
+

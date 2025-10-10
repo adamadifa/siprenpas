@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use Yajra\DataTables\Facades\DataTables;
 
 class PembayaranpendidikanController extends Controller
@@ -601,5 +602,42 @@ class PembayaranpendidikanController extends Controller
             ->orderBy('pendidikan_historibayar_detail.kode_jenis_biaya', 'asc')
             ->get();
         return view('pembayaranpendidikan.cetak', $data);
+    }
+
+
+    public function prosesnaikkelas($no_pendaftaran)
+    {
+        $no_pendaftaran = Crypt::decrypt($no_pendaftaran);
+        $p = new Pendaftaran();
+        $pendaftaran = $p->getPembayaranpendidikan($no_pendaftaran)->first();
+        $nexttingkat = $pendaftaran->tingkat + 1;
+        $ta_aktif = Tahunajaran::where('status', 1)->first();
+        $unit = Unit::where('kode_unit', $pendaftaran->kode_unit)->first();
+        $cekbiayanexttingkat = Biaya::where('kode_unit', $pendaftaran->kode_unit)
+            ->where('tingkat', $nexttingkat)
+            ->where('kode_ta', $ta_aktif->kode_ta)->first();
+
+        if ($cekbiayanexttingkat == null) {
+            return Redirect::back()->with(messageError('Biaya untuk Tingkat' . $nexttingkat . ' Jenjang ' . $unit->nama_unit . ' Tahun Ajaran ' . $ta_aktif->tahun_ajaran . ' tidak ditemukan'));
+        }
+
+        DB::beginTransaction();
+        try {
+            Biayasiswa::create([
+                'no_pendaftaran' => $no_pendaftaran,
+                'kode_biaya' => $cekbiayanexttingkat->kode_biaya,
+            ]);
+
+            Biayasiswa::where('no_pendaftaran', $no_pendaftaran)
+                ->where('kode_biaya', $pendaftaran->kode_biaya)
+                ->update([
+                    'status_naik_kelas' => 1,
+                ]);
+            DB::commit();
+            return Redirect::back()->with(messageSuccess('Biaya untuk Tingkat' . $nexttingkat . ' Jenjang ' . $unit->nama_unit . ' Tahun Ajaran ' . $ta_aktif->tahun_ajaran . ' berhasil ditambahkan'));
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return Redirect::back()->with(messageError($th->getMessage()));
+        }
     }
 }

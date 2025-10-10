@@ -28,6 +28,8 @@ class DatabaseSeeder extends Seeder
             Jenibiayapermissionseeder::class,
             Tahunajaranpermissionseeder::class,
             Pendaftaranpermissionseeder::class,
+            ProgramUnggulanPermissionSeeder::class,
+            ProgramUnggulanSeeder::class,
         ]);
     }
 }

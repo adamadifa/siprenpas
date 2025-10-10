@@ -275,7 +275,8 @@
                         </li>
                     @endcan
                     @can('jenispembiayaan.index')
-                        <li class="menu-item {{ request()->is(['jenispembiayaan', 'jenispembiayaan/*']) ? 'active' : '' }}">
+                        <li
+                            class="menu-item {{ request()->is(['jenispembiayaan', 'jenispembiayaan/*']) ? 'active' : '' }}">
                             <a href="{{ route('jenispembiayaan.index') }}" class="menu-link">
                                 <div>Jenis Pembiayaan</div>
                             </a>
@@ -300,7 +301,8 @@
         </li>
         @if (auth()->check() &&
                 auth()->user()->hasAnyPermission(['pendaftaran.index']))
-            <li class="menu-item {{ request()->is(['pendaftaran', 'pendaftaran/*', 'pendaftaranonline', 'pendaftaranonline/*']) ? 'open' : '' }}">
+            <li
+                class="menu-item {{ request()->is(['pendaftaran', 'pendaftaran/*', 'pendaftaranonline', 'pendaftaranonline/*']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-file-description"></i>
                     <div>Pendaftaran</div>
@@ -357,7 +359,8 @@
                             </a>
                         </li>
                     @endif
-                    <li class="menu-item {{ request()->is(['laporankoperasi', 'laporankoperasi/*']) ? 'active' : '' }}">
+                    <li
+                        class="menu-item {{ request()->is(['laporankoperasi', 'laporankoperasi/*']) ? 'active' : '' }}">
                         <a href="{{ route('laporankoperasi.index') }}" class="menu-link">
                             <i class="menu-icon tf-icons ti ti-file-description"></i>
                             <div>Laporan</div>
@@ -412,7 +415,8 @@
         @endif
         @if (auth()->check() &&
                 auth()->user()->hasAnyPermission(['izinabsen.index', 'izinsakit.index', 'presensi.index']))
-            <li class="menu-item {{ request()->is(['izinabsen', 'izinsakit', 'presensi', 'laporanmsdm']) ? 'open' : '' }}">
+            <li
+                class="menu-item {{ request()->is(['izinabsen', 'izinsakit', 'presensi', 'laporanmsdm']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-moneybag"></i>
                     <div>MSDM</div>
@@ -450,7 +454,8 @@
         @endif
         @if (auth()->check() &&
                 auth()->user()->hasAnyPermission(['realkegiatan.index', 'agendakegiatan.index', 'programkerja.index', 'jobdesk.index']))
-            <li class="menu-item {{ request()->is(['realisasikegiatan', 'agendakegiatan', 'programkerja', 'jobdesk']) ? 'open' : '' }}">
+            <li
+                class="menu-item {{ request()->is(['realisasikegiatan', 'agendakegiatan', 'programkerja', 'jobdesk']) ? 'open' : '' }}">
 
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-activity"></i>
@@ -497,8 +502,16 @@
         @endif
 
         @if (auth()->check() &&
-                auth()->user()->hasAnyPermission(['kategori.index', 'post.index', 'pages.index', 'testimonials.index', 'prestasi-siswa.index']))
-            <li class="menu-item {{ request()->is(['kategori', 'post', 'pages', 'testimonials', 'prestasi-siswa']) ? 'open' : '' }}">
+                auth()->user()->hasAnyPermission([
+                        'kategori.index',
+                        'post.index',
+                        'pages.index',
+                        'testimonials.index',
+                        'prestasi-siswa.index',
+                        'program-unggulan.index',
+                    ]))
+            <li
+                class="menu-item {{ request()->is(['kategori', 'post', 'pages', 'testimonials', 'prestasi-siswa', 'program-unggulan']) ? 'open' : '' }}">
 
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-globe"></i>
@@ -547,6 +560,14 @@
                         <li class="menu-item {{ request()->is(['prestasi-siswa', 'prestasi-siswa/*']) ? 'active' : '' }}">
                             <a href="{{ route('prestasi-siswa.index') }}" class="menu-link">
                                 <div>Prestasi Siswa</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('program-unggulan.index')
+                        <li
+                            class="menu-item {{ request()->is(['program-unggulan', 'program-unggulan/*']) ? 'active' : '' }}">
+                            <a href="{{ route('program-unggulan.index') }}" class="menu-link">
+                                <div>Program Unggulan</div>
                             </a>
                         </li>
                     @endcan
@@ -601,7 +622,8 @@
                         </li>
                     @endcan
                     @can('tahunajaranppdb.index')
-                        <li class="menu-item {{ request()->is(['tahunajaranppdb', 'tahunajaranppdb/*']) ? 'active' : '' }}">
+                        <li
+                            class="menu-item {{ request()->is(['tahunajaranppdb', 'tahunajaranppdb/*']) ? 'active' : '' }}">
                             <a href="{{ route('tahunajaranppdb.index') }}" class="menu-link">
                                 <div>Tahun Ajaran PPDB</div>
                             </a>
@@ -642,7 +664,8 @@
                             <div>Permission</div>
                         </a>
                     </li>
-                    <li class="menu-item  {{ request()->is(['permissiongroups', 'permissiongroups/*']) ? 'active' : '' }}">
+                    <li
+                        class="menu-item  {{ request()->is(['permissiongroups', 'permissiongroups/*']) ? 'active' : '' }}">
                         <a href="{{ route('permissiongroups.index') }}" class="menu-link">
                             <div>Group Permission</div>
                         </a>
