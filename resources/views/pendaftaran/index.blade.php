@@ -13,6 +13,7 @@
                 color: #fff !important;
                 border: none;
             }
+
             .rekap-card-green .card-body,
             .rekap-card-green .fs-4,
             .rekap-card-green .display-6,
@@ -21,28 +22,29 @@
             }
         </style>
         <div class="mb-3">
-            @if(auth()->user()->kode_unit == 'U06')
-            <div class="mb-2 fw-bold fs-5">Rekap Jumlah Siswa per Unit</div>
-            <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3">
-                @forelse ($rekap_unit as $r)
-                    <div class="col">
-                        <div class="card h-100 text-center @if($r->jumlah == 0) border-secondary bg-light text-muted @else rekap-card-green @endif">
-                            <div class="card-body">
-                                <div class="fs-4 fw-bold mb-1">{{ $r->nama_unit }}</div>
-                                <div class="display-6 fw-bold mb-1">{{ $r->jumlah }}</div>
-                                <div class="small">Siswa</div>
-                                @if($r->jumlah == 0)
-                                    <div class="badge bg-secondary mt-2">Belum ada siswa</div>
-                                @endif
+            @if (auth()->user()->kode_unit == 'U06')
+                <div class="mb-2 fw-bold fs-5">Rekap Jumlah Siswa per Unit</div>
+                <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3">
+                    @forelse ($rekap_unit as $r)
+                        <div class="col">
+                            <div
+                                class="card h-100 text-center @if ($r->jumlah == 0) border-secondary bg-light text-muted @else rekap-card-green @endif">
+                                <div class="card-body">
+                                    <div class="fs-4 fw-bold mb-1">{{ $r->nama_unit }}</div>
+                                    <div class="display-6 fw-bold mb-1">{{ $r->jumlah }}</div>
+                                    <div class="small">Siswa</div>
+                                    @if ($r->jumlah == 0)
+                                        <div class="badge bg-secondary mt-2">Belum ada siswa</div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                    </div>
-                @empty
-                    <div class="col">
-                        <div class="alert alert-warning">Tidak ada data unit.</div>
-                    </div>
-                @endforelse
-            </div>
+                    @empty
+                        <div class="col">
+                            <div class="alert alert-warning">Tidak ada data unit.</div>
+                        </div>
+                    @endforelse
+                </div>
         </div>
         @endif
         <div class="card">
@@ -57,30 +59,29 @@
                     <div class="col-12">
                         <form action="{{ route('pendaftaran.index') }}">
                             <div class="row">
-                                @if(auth()->user()->kode_unit == 'U06')
-                                <div class="col-lg-4 col-sm-12 col-md-12">
-                                    <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}"
-                                        name="nama_lengkap" icon="ti ti-search" />
-                                </div>
-                                @else
-                                <div class="col-lg-8 col-sm-12 col-md-12">
-                                    <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}"
-                                        name="nama_lengkap" icon="ti ti-search" />
-                                </div>
-                                @endif
-                                @if(auth()->user()->kode_unit == 'U06')
-                                <div class="col-lg-4 col-sm-12 col-md-12">
-                                    <div class="form-group mb-3">
-                                        <select name="kode_unit" id="kode_unit_search" class="form-select">
-                                            <option value="">Semua Unit</option>
-                                            @foreach ($unit as $d)
-                                                <option value="{{ $d->kode_unit }}"
-                                                    {{ Request('kode_unit') == $d->kode_unit ? 'selected' : '' }}>
-                                                    {{ $d->nama_unit }}</option>
-                                            @endforeach
-                                        </select>
+                                @if (auth()->user()->kode_unit == 'U06')
+                                    <div class="col-lg-4 col-sm-12 col-md-12">
+                                        <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
+                                            icon="ti ti-search" />
                                     </div>
-                                </div>
+                                @else
+                                    <div class="col-lg-8 col-sm-12 col-md-12">
+                                        <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
+                                            icon="ti ti-search" />
+                                    </div>
+                                @endif
+                                @if (auth()->user()->kode_unit == 'U06')
+                                    <div class="col-lg-4 col-sm-12 col-md-12">
+                                        <div class="form-group mb-3">
+                                            <select name="kode_unit" id="kode_unit_search" class="form-select">
+                                                <option value="">Semua Unit</option>
+                                                @foreach ($unit as $d)
+                                                    <option value="{{ $d->kode_unit }}" {{ Request('kode_unit') == $d->kode_unit ? 'selected' : '' }}>
+                                                        {{ $d->nama_unit }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
                                 @endif
                                 <div class="col-lg-2 col-sm-12 col-md-12">
                                     <div class="form-group mb-3">
@@ -88,7 +89,7 @@
                                             <option value="">Tahun Ajaran</option>
                                             @foreach ($tahunajaran as $d)
                                                 <option value="{{ $d->kode_ta }}"
-                                                    @if(Request('kode_ta') == $d->kode_ta) selected @elseif($tahun_ajaran->kode_ta == $d->kode_ta) selected @endif>
+                                                    @if (Request('kode_ta') == $d->kode_ta) selected @elseif($tahun_ajaran->kode_ta == $d->kode_ta) selected @endif>
                                                     {{ $d->tahun_ajaran }}</option>
                                             @endforeach
                                         </select>
@@ -137,15 +138,12 @@
                                             <td>
                                                 <div class="d-flex">
                                                     @can('pendaftaran.edit')
-                                                        <a href="#"
-                                                            no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}"
-                                                            class="btnEdit me-1">
+                                                        <a href="#" no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}" class="btnEdit me-1">
                                                             <i class="ti ti-edit text-success"></i>
                                                         </a>
                                                     @endcan
                                                     @can('pendaftaran.show')
-                                                        <a href="#" class="me-2 btnShow"
-                                                            no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}">
+                                                        <a href="#" class="me-2 btnShow" no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}">
                                                             <i class="ti ti-file-description text-info"></i>
                                                         </a>
                                                     @endcan
@@ -158,6 +156,13 @@
                                                                 <i class="ti ti-trash text-danger"></i>
                                                             </a>
                                                         </form>
+                                                    @endcan
+                                                    @can('pendaftaran.edit')
+                                                        <a href="#" class="btnRfid me-1" no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}"
+                                                            nama_siswa="{{ $d->nama_lengkap }}" rfid_code="{{ $d->rfid_code ?? '' }}"
+                                                            title="{{ $d->rfid_code ? 'Edit RFID' : 'Tambah RFID' }}">
+                                                            <i class="ti ti-id-badge {{ $d->rfid_code ? 'text-success' : 'text-warning' }}"></i>
+                                                        </a>
                                                     @endcan
 
                                                 </div>
@@ -178,8 +183,8 @@
 </div>
 <x-modal-form id="modal" size="modal-lg" show="loadmodal" title="" />
 <x-modal-form id="modalSekolah" size="" show="loadmodal" title="" />
-<div class="modal fade" id="modalSiswa" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
-    aria-hidden="true">
+<x-modal-form id="modalRfid" size="modal-md" show="loadmodalRfid" title="" />
+<div class="modal fade" id="modalSiswa" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -251,6 +256,44 @@
             $("#loadmodal").load(`/pendaftaran/${no_pendaftaran}/show`);
         });
 
+        $(".btnRfid").click(function(e) {
+            e.preventDefault();
+            const no_pendaftaran = $(this).attr("no_pendaftaran");
+            const namaSiswa = $(this).attr("nama_siswa");
+            const rfidCode = $(this).attr("rfid_code");
+
+            $("#modalRfid").modal("show");
+            $("#modalRfid").find("#loadmodalRfid").html(`
+                <form id="formRfid" method="POST">
+                    @csrf
+                    <div class="input-group input-group-merge mb-3">
+                        <span class="input-group-text" id="basic-addon-search31">
+                            <i class="ti ti-user"></i>
+                        </span>
+                        <input type="text" class="form-control" id="nama_siswa" value="${namaSiswa}" readonly placeholder="Nama Siswa">
+                    </div>
+                    <div class="input-group input-group-merge mb-3">
+                        <span class="input-group-text" id="basic-addon-search32">
+                            <i class="ti ti-id-badge"></i>
+                        </span>
+                        <input type="text" class="form-control" id="rfid_input" value="${rfidCode}" placeholder="RFID Code" autocomplete="off">
+                    </div>
+                    <div class="form-text mb-3">Kosongkan untuk menghapus RFID</div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">
+                            <i class="ti ti-x me-1"></i>
+                            Batal
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="saveRfid('${no_pendaftaran}')">
+                            <i class="ti ti-device-floppy me-1"></i>
+                            Simpan
+                        </button>
+                    </div>
+                </form>
+            `);
+            $("#modalRfid").find(".modal-title").text("Atur RFID");
+        });
+
         $('#tabelsiswa').DataTable({
             processing: true,
             serverSide: true,
@@ -277,6 +320,50 @@
                 }
             ]
         });
+
+        // Fungsi untuk menyimpan RFID
+        window.saveRfid = function(no_pendaftaran) {
+            const rfidCode = document.getElementById('rfid_input').value.trim();
+
+            fetch(`/pendaftaran/${no_pendaftaran}/update-rfid`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        rfid_code: rfidCode
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: data.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: data.message
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Terjadi kesalahan pada server!'
+                    });
+                    console.error('Error:', error);
+                });
+        };
     });
 </script>
 @endpush

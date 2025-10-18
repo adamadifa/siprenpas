@@ -36,4 +36,12 @@ class Siswa extends Model
     {
         return $this->hasMany(SiswaAnggota::class, 'id_siswa', 'id_siswa');
     }
+
+    /**
+     * Relasi ke presensi siswa
+     */
+    public function presensiSiswa()
+    {
+        return $this->hasMany(PresensiSiswa::class, 'id_siswa', 'id_siswa');
+    }
 }

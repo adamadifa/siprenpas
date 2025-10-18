@@ -27,6 +27,7 @@ class Pendaftaran extends Model
         $query->select(
             'siswa.*',
             'pendaftaran.no_pendaftaran',
+            'pendaftaran.rfid_code',
             'pendaftaran.foto as foto_pendaftaran',
             'tahun_ajaran',
             'villages.name as desa',
@@ -98,6 +99,7 @@ class Pendaftaran extends Model
         $query->select(
             'siswa.*',
             'pendaftaran.no_pendaftaran',
+            'pendaftaran.rfid_code',
             'tahun_ajaran',
             'villages.name as desa',
             'nama_unit',

@@ -497,4 +497,45 @@ class PendaftaranController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Update RFID code for pendaftaran
+     */
+    public function updateRfid(Request $request, $no_pendaftaran)
+    {
+        $no_pendaftaran = Crypt::decrypt($no_pendaftaran);
+
+        $request->validate([
+            'rfid_code' => 'nullable|string|max:50|unique:pendaftaran,rfid_code,' . $no_pendaftaran . ',no_pendaftaran'
+        ]);
+
+        try {
+            $pendaftaran = Pendaftaran::where('no_pendaftaran', $no_pendaftaran)->first();
+
+            if (!$pendaftaran) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data pendaftaran tidak ditemukan!'
+                ], 404);
+            }
+
+            $pendaftaran->update([
+                'rfid_code' => $request->rfid_code ?: null
+            ]);
+
+            $message = $request->rfid_code ?
+                'RFID berhasil disimpan!' :
+                'RFID berhasil dihapus!';
+
+            return response()->json([
+                'success' => true,
+                'message' => $message
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

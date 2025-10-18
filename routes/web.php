@@ -43,6 +43,7 @@ use App\Http\Controllers\Permission_groupController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PresensiController;
+use App\Http\Controllers\PresensiSiswaController;
 use App\Http\Controllers\PublicQuestionnaireController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProgramkerjaController;
@@ -421,6 +422,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/pendaftaran/{no_pendaftaran}/getdokumen', 'getdokumen')->name('pendaftaran.getdokumen')->can('pendaftaran.show');
         Route::delete('/pendaftaran/{no_pendaftaran}/delete', 'destroy')->name('pendaftaran.delete')->can('pendaftaran.delete');
         Route::post('/pendaftaran/deletedokumen', 'deletedokumen')->name('pendaftaran.deletedokumen')->can('pendaftaran.delete');
+        Route::post('/pendaftaran/{no_pendaftaran}/update-rfid', 'updateRfid')->name('pendaftaran.update-rfid')->can('pendaftaran.edit');
 
         Route::get('/pendaftaran/getsiswa', 'getsiswa')->name('pendaftaran.getsiswa');
     });
@@ -615,6 +617,19 @@ Route::middleware('auth')->group(function () {
         Route::post('/presensi/{pin}/{status_scan}/updatefrommachine', 'updatefrommachine')->name('presensi.updatefrommachine');
     });
 
+    // Route untuk Presensi Siswa
+    Route::controller(PresensiSiswaController::class)->group(function () {
+        Route::get('/presensisiswa', 'index')->name('presensisiswa.index')->can('presensisiswa.index');
+        Route::get('/presensisiswa/create', 'create')->name('presensisiswa.create')->can('presensisiswa.create');
+        Route::post('/presensisiswa', 'store')->name('presensisiswa.store')->can('presensisiswa.create');
+        Route::get('/presensisiswa/{id}', 'show')->name('presensisiswa.show')->can('presensisiswa.show');
+        Route::get('/presensisiswa/{id}/edit', 'edit')->name('presensisiswa.edit')->can('presensisiswa.edit');
+        Route::put('/presensisiswa/{id}', 'update')->name('presensisiswa.update')->can('presensisiswa.edit');
+        Route::delete('/presensisiswa/{id}', 'destroy')->name('presensisiswa.destroy')->can('presensisiswa.delete');
+        Route::post('/presensisiswa/bulk-update', 'bulkUpdate')->name('presensisiswa.bulk-update')->can('presensisiswa.edit');
+    });
+
+
     Route::controller(KategoriibadahController::class)->group(function () {
         Route::get('/kategoriibadah', 'index')->name('kategoriibadah.index')->can('kategoriibadah.index');
         Route::get('/kategoriibadah/create', 'create')->name('kategoriibadah.create')->can('kategoriibadah.create');
@@ -766,6 +781,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('kategori-pengumuman', KategoriPengumumanController::class);
 });
 
+// Route Public untuk Presensi Siswa (Tanpa Auth)
+Route::controller(PresensiSiswaController::class)->group(function () {
+    Route::get('/public/presensi-siswa', 'publicPresensi')->name('public.presensi-siswa');
+    Route::post('/public/presensi-siswa/scan', 'scanRfid')->name('public.presensi-siswa.scan');
+    Route::get('/public/presensi-siswa/status/{no_pendaftaran}', 'getPresensiStatus')->name('public.presensi-siswa.status');
+    Route::get('/public/presensi-siswa/riwayat', 'getRiwayatPresensi')->name('public.presensi-siswa.riwayat');
+});
 
 // PUBLIC QUESTIONNAIRE ROUTES
 Route::get('/questionnaires', [PublicQuestionnaireController::class, 'list'])->name('questionnaires.list');
