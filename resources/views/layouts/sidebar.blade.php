@@ -511,7 +511,7 @@
                         'program-unggulan.index',
                     ]))
             <li
-                class="menu-item {{ request()->is(['kategori', 'post', 'pages', 'testimonials', 'prestasi-siswa', 'program-unggulan']) ? 'open' : '' }}">
+                class="menu-item {{ request()->is(['kategori', 'kategori/*', 'post', 'post/*', 'sebaran-alumni', 'sebaran-alumni/*', 'pages', 'pages/*', 'visimisi', 'testimonials', 'testimonials/*', 'prestasi-siswa', 'prestasi-siswa/*', 'program-unggulan', 'program-unggulan/*']) ? 'open' : '' }}">
 
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-globe"></i>

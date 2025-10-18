@@ -250,7 +250,7 @@ class PendaftaranonlineController extends Controller
                 'pendidikan_ibu' => 'required|in:SD,SMP,SMA,D3,S1,S2,S3',
                 'pekerjaan_ibu' => 'required|string|min:3',
                 'no_hp' => ['required', 'regex:/^(\+62|62|0)8[1-9][0-9]{6,9}$/'],
-                'asal_sekolah' => 'required|string|min:3',
+                // 'asal_sekolah' => 'required|string|min:3',
                 // 'provinsi_id' => 'required',
                 // 'kabupaten_id' => 'required',
                 // 'kecamatan_id' => 'required',
