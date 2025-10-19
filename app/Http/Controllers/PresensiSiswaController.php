@@ -109,13 +109,15 @@ class PresensiSiswaController extends Controller
      */
     public function publicPresensi()
     {
-        // Ambil 10 data presensi terakhir dengan UNION untuk memisahkan jam_in dan jam_out
+        // Ambil data presensi hari ini dengan UNION untuk memisahkan jam_in dan jam_out
+        $today = now()->format('Y-m-d');
         $riwayatPresensi = DB::table(DB::raw("(
             SELECT
                 ps.id,
                 ps.no_pendaftaran,
                 s.nama_lengkap,
                 k.nama_kelas,
+                u.nama_unit,
                 ps.tanggal,
                 ps.jam_in as jam_presensi,
                 ps.status,
@@ -125,9 +127,10 @@ class PresensiSiswaController extends Controller
             FROM presensi_siswa ps
             JOIN pendaftaran p ON ps.no_pendaftaran = p.no_pendaftaran
             JOIN siswa s ON p.id_siswa = s.id_siswa
+            JOIN unit u ON p.kode_unit = u.kode_unit
             LEFT JOIN kelas_siswa ks ON s.id_siswa = ks.id_siswa
             LEFT JOIN kelas k ON ks.kode_kelas = k.kode_kelas
-            WHERE ps.jam_in IS NOT NULL
+            WHERE ps.jam_in IS NOT NULL AND ps.tanggal = '$today'
 
             UNION ALL
 
@@ -136,6 +139,7 @@ class PresensiSiswaController extends Controller
                 ps.no_pendaftaran,
                 s.nama_lengkap,
                 k.nama_kelas,
+                u.nama_unit,
                 ps.tanggal,
                 ps.jam_out as jam_presensi,
                 ps.status,
@@ -145,12 +149,12 @@ class PresensiSiswaController extends Controller
             FROM presensi_siswa ps
             JOIN pendaftaran p ON ps.no_pendaftaran = p.no_pendaftaran
             JOIN siswa s ON p.id_siswa = s.id_siswa
+            JOIN unit u ON p.kode_unit = u.kode_unit
             LEFT JOIN kelas_siswa ks ON s.id_siswa = ks.id_siswa
             LEFT JOIN kelas k ON ks.kode_kelas = k.kode_kelas
-            WHERE ps.jam_out IS NOT NULL
+            WHERE ps.jam_out IS NOT NULL AND ps.tanggal = '$today'
         ) as riwayat"))
             ->orderBy('created_at', 'desc')
-            ->limit(10)
             ->get();
 
         return view('public.presensi-siswa', compact('riwayatPresensi'));
@@ -169,15 +173,18 @@ class PresensiSiswaController extends Controller
         $tanggal = date('Y-m-d');
         $jamSekarang = date('H:i:s');
 
-        // Cari siswa berdasarkan rfid_code dengan join kelas
+        // Cari siswa berdasarkan rfid_code dengan join kelas dan unit
         $siswa = DB::table('pendaftaran')
             ->join('siswa', 'pendaftaran.id_siswa', '=', 'siswa.id_siswa')
+            ->join('unit', 'pendaftaran.kode_unit', '=', 'unit.kode_unit')
             ->leftJoin('kelas_siswa', 'siswa.id_siswa', '=', 'kelas_siswa.id_siswa')
             ->leftJoin('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
             ->select(
                 'pendaftaran.no_pendaftaran',
                 'siswa.nama_lengkap',
-                'kelas.nama_kelas'
+                'kelas.nama_kelas',
+                'unit.nama_unit',
+                'pendaftaran.foto as foto_siswa'
             )
             ->where('pendaftaran.rfid_code', $rfidCode)
             ->first();
@@ -209,9 +216,11 @@ class PresensiSiswaController extends Controller
                     'data' => [
                         'nama' => $siswa->nama_lengkap,
                         'kelas' => $siswa->nama_kelas ?? '-',
+                        'unit' => $siswa->nama_unit ?? '-',
                         'jam_masuk' => $presensiHariIni->jam_in,
                         'jam_keluar' => $jamSekarang,
-                        'status' => 'keluar'
+                        'status' => 'keluar',
+                        'foto_siswa' => $siswa->foto_siswa
                     ]
                 ]);
             } else {
@@ -242,9 +251,11 @@ class PresensiSiswaController extends Controller
                 'data' => [
                     'nama' => $siswa->nama_lengkap,
                     'kelas' => $siswa->nama_kelas ?? '-',
+                    'unit' => $siswa->nama_unit ?? '-',
                     'jam_masuk' => $jamSekarang,
                     'jam_keluar' => null,
-                    'status' => 'masuk'
+                    'status' => 'masuk',
+                    'foto_siswa' => $siswa->foto_siswa
                 ]
             ]);
         }
@@ -288,16 +299,18 @@ class PresensiSiswaController extends Controller
     }
 
     /**
-     * Get riwayat presensi terakhir
+     * Get riwayat presensi hari ini
      */
     public function getRiwayatPresensi()
     {
+        $today = now()->format('Y-m-d');
         $riwayatPresensi = DB::table(DB::raw("(
             SELECT
                 ps.id,
                 ps.no_pendaftaran,
                 s.nama_lengkap,
                 k.nama_kelas,
+                u.nama_unit,
                 ps.tanggal,
                 ps.jam_in as jam_presensi,
                 ps.status,
@@ -307,9 +320,10 @@ class PresensiSiswaController extends Controller
             FROM presensi_siswa ps
             JOIN pendaftaran p ON ps.no_pendaftaran = p.no_pendaftaran
             JOIN siswa s ON p.id_siswa = s.id_siswa
+            JOIN unit u ON p.kode_unit = u.kode_unit
             LEFT JOIN kelas_siswa ks ON s.id_siswa = ks.id_siswa
             LEFT JOIN kelas k ON ks.kode_kelas = k.kode_kelas
-            WHERE ps.jam_in IS NOT NULL
+            WHERE ps.jam_in IS NOT NULL AND ps.tanggal = '$today'
 
             UNION ALL
 
@@ -318,6 +332,7 @@ class PresensiSiswaController extends Controller
                 ps.no_pendaftaran,
                 s.nama_lengkap,
                 k.nama_kelas,
+                u.nama_unit,
                 ps.tanggal,
                 ps.jam_out as jam_presensi,
                 ps.status,
@@ -327,12 +342,12 @@ class PresensiSiswaController extends Controller
             FROM presensi_siswa ps
             JOIN pendaftaran p ON ps.no_pendaftaran = p.no_pendaftaran
             JOIN siswa s ON p.id_siswa = s.id_siswa
+            JOIN unit u ON p.kode_unit = u.kode_unit
             LEFT JOIN kelas_siswa ks ON s.id_siswa = ks.id_siswa
             LEFT JOIN kelas k ON ks.kode_kelas = k.kode_kelas
-            WHERE ps.jam_out IS NOT NULL
+            WHERE ps.jam_out IS NOT NULL AND ps.tanggal = '$today'
         ) as riwayat"))
             ->orderBy('created_at', 'desc')
-            ->limit(10)
             ->get();
 
         return response()->json([
