@@ -72,41 +72,6 @@
             }
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .swal2-popup-custom .text-center>* {
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-
-        .swal2-popup-custom .text-center>*:nth-child(1) {
-            animation-delay: 0.1s;
-        }
-
-        .swal2-popup-custom .text-center>*:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .swal2-popup-custom .text-center>*:nth-child(3) {
-            animation-delay: 0.3s;
-        }
-
-        .swal2-popup-custom .text-center>*:nth-child(4) {
-            animation-delay: 0.4s;
-        }
-
-        .swal2-popup-custom .text-center>*:nth-child(5) {
-            animation-delay: 0.5s;
-        }
 
         /* Ionicons styling */
         ion-icon {
@@ -221,45 +186,6 @@
                     <p class="text-sm text-gray-600 text-center mb-4">{{ \Carbon\Carbon::now()->format('l, d F Y') }}
                     </p>
 
-                    <!-- Status Display -->
-                    <div id="status-display" class="hidden mb-4">
-                        <div class="bg-gray-50 rounded-lg p-3">
-                            <div class="flex items-center justify-center mb-2">
-                                <div id="status-icon"
-                                    class="w-8 h-8 rounded-full flex items-center justify-center mr-3">
-                                    <i id="status-icon-class" class="text-white text-sm"></i>
-                                </div>
-                                <div>
-                                    <h3 id="status-title" class="text-sm font-semibold text-gray-800"></h3>
-                                    <p id="status-message" class="text-xs text-gray-600"></p>
-                                </div>
-                            </div>
-
-                            <!-- Student Info -->
-                            <div id="student-info" class="hidden">
-                                <div class="border-t pt-2">
-                                    <div class="grid grid-cols-2 gap-2 text-xs">
-                                        <div>
-                                            <span class="text-gray-500">Nama:</span>
-                                            <span id="student-name" class="font-medium text-gray-800 ml-1"></span>
-                                        </div>
-                                        <div>
-                                            <span class="text-gray-500">Kelas:</span>
-                                            <span id="student-class" class="font-medium text-gray-800 ml-1"></span>
-                                        </div>
-                                        <div>
-                                            <span class="text-gray-500">Masuk:</span>
-                                            <span id="jam-masuk" class="font-medium text-gray-800 ml-1">-</span>
-                                        </div>
-                                        <div>
-                                            <span class="text-gray-500">Keluar:</span>
-                                            <span id="jam-keluar" class="font-medium text-gray-800 ml-1">-</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Recent Activity -->
                     <div class="mt-4">
@@ -394,7 +320,7 @@
                         text: message,
                         confirmButtonText: 'OK',
                         confirmButtonColor: '#EF4444',
-                        timer: 5000,
+                        timer: 2000,
                         timerProgressBar: true
                     });
                 } else {
@@ -425,62 +351,77 @@
 
                         htmlContent = `
                             <div class="text-center" style="font-family: 'Poppins', sans-serif;">
-                                <!-- Student Photo -->
-                                <div class="mb-4">
-                                    <div class="w-28 h-28 rounded-full overflow-hidden mx-auto bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center shadow-lg border-3 border-white relative">
+                                <!-- Header with Success Icon -->
+                                <div class="mb-6">
+                                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full mb-4" style="background: linear-gradient(135deg, ${statusColor}20, ${statusColor}10);">
+                                        <ion-icon name="${statusIcon}" style="font-size: 32px; color: ${statusColor};"></ion-icon>
+                                    </div>
+                                    <h2 class="text-2xl font-bold text-gray-900 mb-2" style="font-family: 'Poppins', sans-serif;">Presensi Berhasil!</h2>
+                                    <p class="text-gray-600 text-sm">Data presensi telah tercatat dengan baik</p>
+                                </div>
+                                
+                                <!-- Student Photo with Enhanced Design -->
+                                <div class="mb-6">
+                                    <div class="w-24 h-24 rounded-full overflow-hidden mx-auto bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center shadow-xl border-4 border-white relative" style="border-color: ${statusColor}30;">
                                         ${fotoSiswa}
-                                        <!-- Status indicator ring -->
-                                        <div class="absolute inset-0 rounded-full border-3" style="border-color: ${statusColor}20;"></div>
+                                        <!-- Enhanced status indicator ring -->
+                                        <div class="absolute -inset-1 rounded-full border-2" style="border-color: ${statusColor}40;"></div>
                                     </div>
                                 </div>
                                 
-                                <!-- Student Name -->
-                                <h3 class="text-xl font-bold text-gray-900 mb-3" style="font-family: 'Poppins', sans-serif;">${data.nama || '-'}</h3>
+                                <!-- Student Name with Enhanced Typography -->
+                                <h3 class="text-xl font-bold text-gray-900 mb-4" style="font-family: 'Poppins', sans-serif;">${data.nama || '-'}</h3>
                                 
-                                <!-- Status Badge -->
-                                <div class="inline-flex items-center px-5 py-2 rounded-full mb-4" style="background: linear-gradient(135deg, ${statusColor}15, ${statusColor}05); border: 2px solid ${statusColor}30;">
-                                    <ion-icon name="${statusIcon}" class="mr-2" style="font-size: 18px; color: ${statusColor};"></ion-icon>
-                                    <span class="font-bold text-base" style="font-family: 'Poppins', sans-serif; color: ${statusColor};">${statusText}</span>
+                                <!-- Enhanced Status Badge -->
+                                <div class="inline-flex items-center px-6 py-3 rounded-full mb-6 shadow-lg" style="background: linear-gradient(135deg, ${statusColor}20, ${statusColor}10); border: 2px solid ${statusColor}30;">
+                                    <ion-icon name="${statusIcon}" class="mr-3" style="font-size: 20px; color: ${statusColor};"></ion-icon>
+                                    <span class="font-bold text-lg" style="font-family: 'Poppins', sans-serif; color: ${statusColor};">${statusText}</span>
                                 </div>
                                 
-                                <!-- Student Info -->
-                                <div class="mb-4">
-                                    <div class="space-y-2">
-                                        <div class="flex items-center justify-between py-2">
+                                <!-- Enhanced Student Info Cards -->
+                                <div class="mb-6">
+                                    <div class="grid grid-cols-1 gap-3">
+                                        <div class="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200">
                                             <div class="flex items-center">
-                                                <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center mr-2">
-                                                    <ion-icon name="business" class="text-blue-600" style="font-size: 16px;"></ion-icon>
+                                                <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center mr-3">
+                                                    <ion-icon name="business" style="font-size: 18px; color: white !important;"></ion-icon>
                                                 </div>
-                                                <span class="text-gray-600 font-medium text-sm" style="font-family: 'Poppins', sans-serif;">Unit</span>
+                                                <span class="text-gray-700 font-semibold text-sm" style="font-family: 'Poppins', sans-serif;">Unit Pendidikan</span>
                                             </div>
                                             <span class="font-bold text-gray-900 text-base" style="font-family: 'Poppins', sans-serif;">${data.unit || '-'}</span>
                                         </div>
                                         
-                                        <div class="flex items-center justify-between py-2">
+                                        <div class="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-50 to-emerald-100 rounded-xl border border-emerald-200">
                                             <div class="flex items-center">
-                                                <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center mr-2">
-                                                    <ion-icon name="school" class="text-green-600" style="font-size: 16px;"></ion-icon>
+                                                <div class="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center mr-3">
+                                                    <ion-icon name="school" style="font-size: 18px; color: white !important;"></ion-icon>
                                                 </div>
-                                                <span class="text-gray-600 font-medium text-sm" style="font-family: 'Poppins', sans-serif;">Kelas</span>
+                                                <span class="text-gray-700 font-semibold text-sm" style="font-family: 'Poppins', sans-serif;">Kelas</span>
                                             </div>
                                             <span class="font-bold text-gray-900 text-base" style="font-family: 'Poppins', sans-serif;">${data.kelas || '-'}</span>
                                         </div>
                                         
-                                        <div class="flex items-center justify-between py-2">
+                                        <div class="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl border border-orange-200">
                                             <div class="flex items-center">
-                                                <div class="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center mr-2">
-                                                    <ion-icon name="time" class="text-orange-600" style="font-size: 16px;"></ion-icon>
+                                                <div class="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center mr-3">
+                                                    <ion-icon name="time" style="font-size: 18px; color: white !important;"></ion-icon>
                                                 </div>
-                                                <span class="text-gray-600 font-medium text-sm" style="font-family: 'Poppins', sans-serif;">Waktu</span>
+                                                <span class="text-gray-700 font-semibold text-sm" style="font-family: 'Poppins', sans-serif;">Waktu Presensi</span>
                                             </div>
                                             <span class="font-mono font-bold text-gray-900 text-base">${currentTime}</span>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <!-- Success Message -->
-                                <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
-                                    <p class="text-gray-700 font-medium text-sm" style="font-family: 'Poppins', sans-serif;">${message}</p>
+                                <!-- Enhanced Success Message -->
+                                <div class="bg-gradient-to-r from-green-50 to-green-100 rounded-xl p-4 border border-green-200 shadow-sm">
+                                    <div class="flex items-center justify-center mb-2">
+                                        <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center mr-2">
+                                            <ion-icon name="checkmark-circle" class="text-white" style="font-size: 16px;"></ion-icon>
+                                        </div>
+                                        <span class="text-gray-800 font-semibold text-sm" style="font-family: 'Poppins', sans-serif;">Presensi Tercatat</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm" style="font-family: 'Poppins', sans-serif;">${message}</p>
                                 </div>
                             </div>
                         `;
@@ -499,7 +440,7 @@
                         html: htmlContent,
                         confirmButtonText: 'OK',
                         confirmButtonColor: '#10B981',
-                        timer: 3000,
+                        timer: 2000,
                         timerProgressBar: true,
                         showConfirmButton: true,
                         customClass: {
@@ -527,54 +468,10 @@
                                 fill: 'forwards'
                             });
 
-                            // Add pulse animation to status badge
-                            setTimeout(() => {
-                                const statusBadge = popup.querySelector('.inline-flex');
-                                if (statusBadge) {
-                                    statusBadge.style.animation = 'pulse 2s infinite';
-                                }
-                            }, 500);
                         }
                     });
                 }
 
-                // Keep the original status display for visual feedback
-                const statusDisplay = document.getElementById('status-display');
-                const statusIcon = document.getElementById('status-icon');
-                const statusIconClass = document.getElementById('status-icon-class');
-                const statusTitle = document.getElementById('status-title');
-                const statusMessage = document.getElementById('status-message');
-                const studentInfo = document.getElementById('student-info');
-
-                // Set status colors and icons
-                if (success) {
-                    statusIcon.className = 'w-12 h-12 rounded-full flex items-center justify-center mr-4 bg-success';
-                    statusIconClass.className = 'fas fa-check text-white text-xl';
-                } else {
-                    statusIcon.className = 'w-12 h-12 rounded-full flex items-center justify-center mr-4 bg-danger';
-                    statusIconClass.className = 'fas fa-times text-white text-xl';
-                }
-
-                statusTitle.textContent = title;
-                statusMessage.textContent = message;
-
-                // Show student info if available
-                if (data) {
-                    document.getElementById('student-name').textContent = data.nama || '-';
-                    document.getElementById('student-class').textContent = data.kelas || '-';
-                    document.getElementById('jam-masuk').textContent = data.jam_masuk || '-';
-                    document.getElementById('jam-keluar').textContent = data.jam_keluar || '-';
-                    studentInfo.classList.remove('hidden');
-                } else {
-                    studentInfo.classList.add('hidden');
-                }
-
-                statusDisplay.classList.remove('hidden');
-
-                // Auto hide after 2 seconds
-                setTimeout(() => {
-                    statusDisplay.classList.add('hidden');
-                }, 2000);
             }
 
             // Show loading
