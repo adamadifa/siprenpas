@@ -528,7 +528,7 @@
                         'program-unggulan.index',
                     ]))
             <li
-                class="menu-item {{ request()->is(['kategori', 'kategori/*', 'post', 'post/*', 'sebaran-alumni', 'sebaran-alumni/*', 'pages', 'pages/*', 'visimisi', 'testimonials', 'testimonials/*', 'prestasi-siswa', 'prestasi-siswa/*', 'program-unggulan', 'program-unggulan/*']) ? 'open' : '' }}">
+                class="menu-item {{ request()->is(['kategori', 'kategori/*', 'post', 'post/*', 'sebaran-alumni', 'sebaran-alumni/*', 'pages', 'pages/*', 'page/*', 'visimisi', 'testimonials', 'testimonials/*', 'prestasi-siswa', 'prestasi-siswa/*', 'program-unggulan', 'program-unggulan/*']) ? 'open' : '' }}">
 
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-globe"></i>
@@ -561,6 +561,11 @@
                             </a>
                         </li>
                     @endcan
+                    <li class="menu-item {{ request()->is(['tentang-pesantren']) || request()->routeIs('tentang-pesantren.*') ? 'active' : '' }}">
+                        <a href="{{ route('tentang-pesantren.index') }}" class="menu-link">
+                            <div>Tentang Pesantren</div>
+                        </a>
+                    </li>
                     <li class="menu-item {{ request()->is(['visimisi']) ? 'active' : '' }}">
                         <a href="{{ route('visimisi.index') }}" class="menu-link">
                             <div>Visi & Misi</div>

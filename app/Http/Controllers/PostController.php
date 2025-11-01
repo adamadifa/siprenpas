@@ -58,6 +58,53 @@ class PostController extends Controller
         return Redirect::back()->with(messageError('Gagal Menambahkan Data Post'));
     }
 
+    public function edit($id)
+    {
+        $id = Crypt::decrypt($id);
+        $post = Post::findOrFail($id);
+        $categories = Category::all();
+        return view('website.post.edit', compact('post', 'categories'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $id = Crypt::decrypt($id);
+        $post = Post::findOrFail($id);
+
+        $request->validate([
+            'title' => 'required|unique:posts,title,' . $id,
+            'category_id' => 'required',
+            'content' => 'required',
+            'image' => 'nullable|image|mimes:jpeg,jpg,png|max:2000'
+        ]);
+
+        $data = [
+            'title' => $request->title,
+            'slug' => Str::slug($request->title, '-'),
+            'category_id' => $request->category_id,
+            'content' => $request->content
+        ];
+
+        // Upload image jika ada file baru
+        if ($request->hasFile('image')) {
+            // Hapus gambar lama jika ada
+            // Ambil nama file asli dari database (tanpa accessor URL)
+            $oldImageName = $post->getAttributes()['image'] ?? null;
+            if ($oldImageName && file_exists(storage_path('app/public/posts/' . $oldImageName))) {
+                unlink(storage_path('app/public/posts/' . $oldImageName));
+            }
+
+            // Upload gambar baru
+            $image = $request->file('image');
+            $image->storeAs('public/posts', $image->hashName());
+            $data['image'] = $image->hashName();
+        }
+
+        $post->update($data);
+
+        return Redirect::back()->with(messageSuccess('Data Post Berhasil Diupdate'));
+    }
+
     public function destroy($id)
     {
         $id = Crypt::decrypt($id);

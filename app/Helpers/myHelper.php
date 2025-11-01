@@ -57,7 +57,10 @@ function getFotosiswa($file)
 
 function getfotoKaryawan($file)
 {
-    $url = url('/storage/karyawan/' . $file);
+    if (empty($file)) {
+        return asset('assets/img/avatars/No_Image_Available.jpg');
+    }
+    $url = url('/storage/photos/karyawan/' . $file);
     return $url;
 }
 

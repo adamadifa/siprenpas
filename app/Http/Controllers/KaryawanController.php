@@ -122,11 +122,47 @@ class KaryawanController extends Controller
             'kode_jabatan' => 'required',
             'kode_unit' => 'required',
             'status' => 'required',
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
         ]);
 
         DB::beginTransaction();
 
         try {
+            $karyawan = Karyawan::where('npp', $npp)->first();
+
+            // Handle photo upload/deletion
+            $fotoName = $karyawan->foto; // Keep existing photo by default
+
+            // Check if user wants to delete photo
+            if ($request->has('delete_photo') && $request->delete_photo == '1') {
+                // Delete old photo file if exists
+                if ($karyawan->foto && file_exists(public_path('storage/photos/karyawan/' . $karyawan->foto))) {
+                    unlink(public_path('storage/photos/karyawan/' . $karyawan->foto));
+                }
+                $fotoName = null;
+            }
+            // Check if new photo uploaded
+            elseif ($request->hasFile('foto')) {
+                // Delete old photo file if exists
+                if ($karyawan->foto && file_exists(public_path('storage/photos/karyawan/' . $karyawan->foto))) {
+                    unlink(public_path('storage/photos/karyawan/' . $karyawan->foto));
+                }
+
+                // Upload new photo
+                $file = $request->file('foto');
+                $fileName = time() . '_' . $karyawan->npp . '.' . $file->getClientOriginalExtension();
+
+                // Create directory if not exists
+                $uploadPath = public_path('storage/photos/karyawan');
+                if (!file_exists($uploadPath)) {
+                    mkdir($uploadPath, 0755, true);
+                }
+
+                // Move uploaded file
+                $file->move($uploadPath, $fileName);
+                $fotoName = $fileName;
+            }
+
             Karyawan::where('npp', $npp)->update([
                 'npp' => $request->npp,
                 'no_kk' => $request->no_kk,
@@ -144,7 +180,8 @@ class KaryawanController extends Controller
                 'kode_jabatan' => $request->kode_jabatan,
                 'kode_unit' => $request->kode_unit,
                 // 'password' => bcrypt('12345678'),
-                'status' => $request->status
+                'status' => $request->status,
+                'foto' => $fotoName
             ]);
 
             User::where('id', $userKaryawan->id_user)->update([

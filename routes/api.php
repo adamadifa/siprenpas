@@ -110,6 +110,11 @@ Route::prefix('public')->group(function () {
         Route::get('/{id}', [ProgramUnggulanController::class, 'show']);
     });
 
+    // Page API Routes
+    Route::prefix('pages')->group(function () {
+        Route::get('/{slug}', [App\Http\Controllers\Api\PageController::class, 'show']);
+    });
+
     // Endpoint untuk mendapatkan data unit
 });
 
@@ -121,6 +126,11 @@ Route::prefix('public')->middleware('api.token')->group(function () {
 });
 
 Route::get('/unit', [App\Http\Controllers\Api\UnitController::class, 'index']);
+
+// Karyawan API Routes
+Route::prefix('karyawan')->group(function () {
+    Route::get('/aktif', [App\Http\Controllers\Api\KaryawanController::class, 'getAktif']);
+});
 
 // Pengumuman API Routes
 Route::prefix('pengumuman')->group(function () {

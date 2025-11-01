@@ -759,6 +759,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/page/{id}/edit', 'edit')->name('pages.edit')->can('pages.edit');
         Route::put('/page/{id}/update', 'update')->name('pages.update')->can('pages.edit');
         Route::delete('/page/{id}/delete', 'destroy')->name('pages.delete')->can('pages.delete');
+        Route::get('/page/{slug}/show', 'show')->name('pages.show');
+        Route::get('/tentang-pesantren', 'tentangPesantren')->name('tentang-pesantren.index');
+        Route::post('/tentang-pesantren', 'storeOrUpdateTentangPesantren')->name('tentang-pesantren.store-or-update');
     });
 
     Route::controller(LaporanmsdmController::class)->group(function () {

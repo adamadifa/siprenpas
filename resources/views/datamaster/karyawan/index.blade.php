@@ -20,8 +20,8 @@
                         <form action="{{ route('karyawan.index') }}">
                             <div class="row">
                                 <div class="col-lg-10 col-sm-12 col-md-12">
-                                    <x-input-with-icon label="Cari Nama Karyawan" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
-                                        icon="ti ti-search" />
+                                    <x-input-with-icon label="Cari Nama Karyawan" value="{{ Request('nama_lengkap') }}"
+                                        name="nama_lengkap" icon="ti ti-search" />
                                 </div>
                                 <div class="col-lg-2 col-sm-12 col-md-12">
                                     <button class="btn btn-primary">Cari</button>
@@ -63,28 +63,25 @@
                                             <td>{{ !empty($d->tmt) ? date('d-m-Y', strtotime($d->tmt)) : '' }}</td>
                                             <td>{{ $d->no_hp }}</td>
                                             <td>
-                                                @if (!empty($d->foto))
-                                                    @if (Storage::disk('public')->exists('/karyawan/' . $d->foto))
-                                                        <div class="avatar avatar-xs me-2">
-                                                            <img src="{{ getfotoKaryawan($d->foto) }}" alt="" class="rounded-circle">
-                                                        </div>
+                                                <div class="avatar avatar-xs me-2">
+                                                    @if (!empty($d->foto))
+                                                        @if (Storage::disk('public')->exists('photos/karyawan/' . $d->foto))
+                                                            <img src="{{ getfotoKaryawan($d->foto) }}"
+                                                                alt="{{ $d->nama_lengkap }}" class="rounded-circle">
+                                                        @else
+                                                            <img src="{{ asset('assets/img/avatars/No_Image_Available.jpg') }}"
+                                                                alt="No Image" class="rounded-circle">
+                                                        @endif
                                                     @else
-                                                        <div class="avatar avatar-xs me-2">
-                                                            <img src="{{ asset('assets/img/avatars/No_Image_Available.jpg') }}" alt=""
-                                                                class="rounded-circle">
-                                                        </div>
+                                                        <img src="{{ asset('assets/img/avatars/No_Image_Available.jpg') }}"
+                                                            alt="No Image" class="rounded-circle">
                                                     @endif
-                                                @else
-                                                    <div class="avatar avatar-xs me-2">
-                                                        <img src="{{ asset('assets/img/avatars/No_Image_Available.jpg') }}" alt=""
-                                                            class="rounded-circle">
-                                                    </div>
-                                                @endif
-
+                                                </div>
                                             </td>
                                             <td>{{ $d->pin }}</td>
                                             <td>
-                                                <a href="{{ route('karyawan.updatestatus', Crypt::encrypt($d->npp)) }}">
+                                                <a
+                                                    href="{{ route('karyawan.updatestatus', Crypt::encrypt($d->npp)) }}">
                                                     @if ($d->status == 1)
                                                         <span class="badge bg-success">Aktif</span>
                                                     @else
@@ -96,27 +93,31 @@
                                                 <div class="d-flex">
                                                     @can('karyawan.create')
                                                         <div>
-                                                            <a href="#" class="me-2 btnSetJamkerja" npp="{{ Crypt::encrypt($d->npp) }}">
+                                                            <a href="#" class="me-2 btnSetJamkerja"
+                                                                npp="{{ Crypt::encrypt($d->npp) }}">
                                                                 <i class="ti ti-device-watch text-primary"></i>
                                                             </a>
                                                         </div>
                                                     @endcan
                                                     @can('karyawan.edit')
                                                         <div>
-                                                            <a href="#" class="me-2 editKaryawan" npp="{{ Crypt::encrypt($d->npp) }}">
+                                                            <a href="#" class="me-2 editKaryawan"
+                                                                npp="{{ Crypt::encrypt($d->npp) }}">
                                                                 <i class="ti ti-edit text-success"></i>
                                                             </a>
                                                         </div>
                                                     @endcan
                                                     @can('karyawan.show')
                                                         <div>
-                                                            <a href="{{ route('karyawan.show', Crypt::encrypt($d->npp)) }}" class="me-2">
+                                                            <a href="{{ route('karyawan.show', Crypt::encrypt($d->npp)) }}"
+                                                                class="me-2">
                                                                 <i class="ti ti-file-description text-info"></i>
                                                             </a>
                                                         </div>
                                                     @endcan
                                                     <div>
-                                                        <a href="#" npp="{{ Crypt::encrypt($d->npp) }}" class="me-1 btnSetharikerja">
+                                                        <a href="#" npp="{{ Crypt::encrypt($d->npp) }}"
+                                                            class="me-1 btnSetharikerja">
                                                             <i class="ti ti-clock-check text-warning"></i>
                                                         </a>
                                                     </div>
@@ -135,7 +136,8 @@
                                                     @endcan
                                                     @can('karyawan.createuser')
                                                         @if (empty($d->id_user))
-                                                            <a href="{{ route('karyawan.createuser', Crypt::encrypt($d->npp)) }}">
+                                                            <a
+                                                                href="{{ route('karyawan.createuser', Crypt::encrypt($d->npp)) }}">
                                                                 <i class="ti ti-user-plus text-danger"></i>
                                                             </a>
                                                         @else
