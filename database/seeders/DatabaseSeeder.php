@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             Pendaftaranpermissionseeder::class,
             ProgramUnggulanPermissionSeeder::class,
             ProgramUnggulanSeeder::class,
+            AlAminGotTalentPermissionSeeder::class,
         ]);
     }
 }

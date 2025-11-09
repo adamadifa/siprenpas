@@ -14,7 +14,9 @@ use App\Http\Controllers\IzinabsenController;
 use App\Http\Controllers\IzinsakitController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\JamkerjaController;
+use App\Http\Controllers\JenjangPendidikanController;
 use App\Http\Controllers\JenisbiayaController;
+use App\Http\Controllers\PerlombaanController;
 use App\Http\Controllers\JenispembiayaanController;
 use App\Http\Controllers\JenissimpananController;
 use App\Http\Controllers\JenistabunganController;
@@ -36,6 +38,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PembayaranpendidikanController;
 use App\Http\Controllers\PembiayaanController;
 use App\Http\Controllers\PendaftaranController;
+use App\Http\Controllers\PendaftaranGotTalentController;
 use App\Http\Controllers\PendaftaranonlineController;
 use App\Http\Controllers\PengajuanizinController;
 use App\Http\Controllers\PengaturanUmumController;
@@ -228,6 +231,34 @@ Route::middleware('auth')->group(function () {
 
         //AJAX REQUEST
         Route::post('/unit/gettingkatbyunit', 'gettingkatbyunit')->name('unit.gettingkatbyunit');
+    });
+
+    Route::controller(JenjangPendidikanController::class)->group(function () {
+        Route::get('/jenjang-pendidikan', 'index')->name('jenjang-pendidikan.index')->can('jenjang-pendidikan.index');
+        Route::get('/jenjang-pendidikan/create', 'create')->name('jenjang-pendidikan.create')->can('jenjang-pendidikan.create');
+        Route::post('/jenjang-pendidikan', 'store')->name('jenjang-pendidikan.store')->can('jenjang-pendidikan.store');
+        Route::get('/jenjang-pendidikan/{id}/edit', 'edit')->name('jenjang-pendidikan.edit')->can('jenjang-pendidikan.edit');
+        Route::put('/jenjang-pendidikan/{id}/update', 'update')->name('jenjang-pendidikan.update')->can('jenjang-pendidikan.update');
+        Route::delete('/jenjang-pendidikan/{id}/delete', 'destroy')->name('jenjang-pendidikan.delete')->can('jenjang-pendidikan.delete');
+    });
+
+    Route::controller(PerlombaanController::class)->group(function () {
+        Route::get('/perlombaan', 'index')->name('perlombaan.index')->can('perlombaan.index');
+        Route::get('/perlombaan/create', 'create')->name('perlombaan.create')->can('perlombaan.create');
+        Route::post('/perlombaan', 'store')->name('perlombaan.store')->can('perlombaan.store');
+        Route::get('/perlombaan/{id}/edit', 'edit')->name('perlombaan.edit')->can('perlombaan.edit');
+        Route::put('/perlombaan/{id}/update', 'update')->name('perlombaan.update')->can('perlombaan.update');
+        Route::delete('/perlombaan/{id}/delete', 'destroy')->name('perlombaan.delete')->can('perlombaan.delete');
+    });
+
+    Route::controller(PendaftaranGotTalentController::class)->group(function () {
+        Route::get('/pendaftaran-got-talent', 'index')->name('pendaftaran-got-talent.index')->can('pendaftaran-got-talent.index');
+        Route::get('/pendaftaran-got-talent/create', 'create')->name('pendaftaran-got-talent.create')->can('pendaftaran-got-talent.create');
+        Route::post('/pendaftaran-got-talent', 'store')->name('pendaftaran-got-talent.store')->can('pendaftaran-got-talent.store');
+        Route::get('/pendaftaran-got-talent/{id}/show', 'show')->name('pendaftaran-got-talent.show')->can('pendaftaran-got-talent.show');
+        Route::get('/pendaftaran-got-talent/{id}/edit', 'edit')->name('pendaftaran-got-talent.edit')->can('pendaftaran-got-talent.edit');
+        Route::put('/pendaftaran-got-talent/{id}/update', 'update')->name('pendaftaran-got-talent.update')->can('pendaftaran-got-talent.update');
+        Route::delete('/pendaftaran-got-talent/{id}/delete', 'destroy')->name('pendaftaran-got-talent.delete')->can('pendaftaran-got-talent.delete');
     });
 
     Route::controller(DepartemenConroller::class)->group(function () {
