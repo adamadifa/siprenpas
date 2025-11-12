@@ -255,10 +255,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/pendaftaran-got-talent', 'index')->name('pendaftaran-got-talent.index')->can('pendaftaran-got-talent.index');
         Route::get('/pendaftaran-got-talent/create', 'create')->name('pendaftaran-got-talent.create')->can('pendaftaran-got-talent.create');
         Route::post('/pendaftaran-got-talent', 'store')->name('pendaftaran-got-talent.store')->can('pendaftaran-got-talent.store');
-        Route::get('/pendaftaran-got-talent/{id}/show', 'show')->name('pendaftaran-got-talent.show')->can('pendaftaran-got-talent.show');
+        Route::get('/pendaftaran-got-talent/{id}/show', 'show')->name('pendaftaran-got-talent.show')->can('pendaftaran-got-talent.index');
         Route::get('/pendaftaran-got-talent/{id}/edit', 'edit')->name('pendaftaran-got-talent.edit')->can('pendaftaran-got-talent.edit');
         Route::put('/pendaftaran-got-talent/{id}/update', 'update')->name('pendaftaran-got-talent.update')->can('pendaftaran-got-talent.update');
         Route::delete('/pendaftaran-got-talent/{id}/delete', 'destroy')->name('pendaftaran-got-talent.delete')->can('pendaftaran-got-talent.delete');
+        Route::get('/pendaftaran-got-talent/{id}/createuser', 'createuser')->name('pendaftaran-got-talent.createuser')->can('pendaftaran-got-talent.index');
     });
 
     Route::controller(DepartemenConroller::class)->group(function () {

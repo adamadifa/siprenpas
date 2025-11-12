@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\PendaftaranGotTalent;
 use App\Models\JenjangPendidikan;
 use App\Models\Perlombaan;
+use App\Models\User;
+use App\Models\UserPendaftaranGotTalent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\DB;
 
@@ -17,7 +20,9 @@ class PendaftaranGotTalentController extends Controller
      */
     public function index(Request $request)
     {
-        $query = PendaftaranGotTalent::with('jenjangPendidikan');
+        $query = PendaftaranGotTalent::query();
+        $query->select('pendaftaran_got_talent.*', 'user_pendaftaran_got_talent.id_user');
+        $query->leftJoin('user_pendaftaran_got_talent', 'pendaftaran_got_talent.id', '=', 'user_pendaftaran_got_talent.id_pendaftaran');
 
         if (!empty($request->nomor_register_search)) {
             $query->where('nomor_register', 'like', '%' . $request->nomor_register_search . '%');
@@ -32,6 +37,10 @@ class PendaftaranGotTalentController extends Controller
         }
 
         $pendaftaranGotTalent = $query->orderBy('created_at', 'desc')->get();
+        
+        // Load relationship setelah query
+        $pendaftaranGotTalent->load('jenjangPendidikan');
+        
         $jenjangPendidikan = JenjangPendidikan::orderBy('jenjang_pendidikan')->get();
 
         return view('pendaftaran-got-talent.index', compact('pendaftaranGotTalent', 'jenjangPendidikan'));
@@ -58,6 +67,8 @@ class PendaftaranGotTalentController extends Controller
             'asal_sekolah' => 'required|string|max:200',
             'alamat_sekolah' => 'required|string',
             'alamat_rumah' => 'required|string',
+            'no_hp' => 'required|string|max:20',
+            'email' => 'required|email|max:100',
             'perlombaan' => 'required|array|min:1',
             'perlombaan.*' => 'exists:perlombaan,id'
         ], [
@@ -66,6 +77,9 @@ class PendaftaranGotTalentController extends Controller
             'asal_sekolah.required' => 'Asal Sekolah harus diisi',
             'alamat_sekolah.required' => 'Alamat Sekolah harus diisi',
             'alamat_rumah.required' => 'Alamat Rumah harus diisi',
+            'no_hp.required' => 'No. HP harus diisi',
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Format email tidak valid',
             'perlombaan.required' => 'Pilihan Lomba harus dipilih minimal 1',
             'perlombaan.min' => 'Pilihan Lomba harus dipilih minimal 1'
         ]);
@@ -88,7 +102,9 @@ class PendaftaranGotTalentController extends Controller
                 'id_jenjang' => $request->id_jenjang,
                 'asal_sekolah' => $request->asal_sekolah,
                 'alamat_sekolah' => $request->alamat_sekolah,
-                'alamat_rumah' => $request->alamat_rumah
+                'alamat_rumah' => $request->alamat_rumah,
+                'no_hp' => $request->no_hp,
+                'email' => $request->email
             ]);
 
             // Simpan pilihan lomba ke tabel pendaftaran_lomba
@@ -170,6 +186,8 @@ class PendaftaranGotTalentController extends Controller
             'asal_sekolah' => 'required|string|max:200',
             'alamat_sekolah' => 'required|string',
             'alamat_rumah' => 'required|string',
+            'no_hp' => 'required|string|max:20',
+            'email' => 'required|email|max:100',
             'perlombaan' => 'required|array|min:1',
             'perlombaan.*' => 'exists:perlombaan,id'
         ], [
@@ -178,6 +196,9 @@ class PendaftaranGotTalentController extends Controller
             'asal_sekolah.required' => 'Asal Sekolah harus diisi',
             'alamat_sekolah.required' => 'Alamat Sekolah harus diisi',
             'alamat_rumah.required' => 'Alamat Rumah harus diisi',
+            'no_hp.required' => 'No. HP harus diisi',
+            'email.required' => 'Email harus diisi',
+            'email.email' => 'Format email tidak valid',
             'perlombaan.required' => 'Pilihan Lomba harus dipilih minimal 1',
             'perlombaan.min' => 'Pilihan Lomba harus dipilih minimal 1'
         ]);
@@ -190,7 +211,9 @@ class PendaftaranGotTalentController extends Controller
                 'id_jenjang' => $request->id_jenjang,
                 'asal_sekolah' => $request->asal_sekolah,
                 'alamat_sekolah' => $request->alamat_sekolah,
-                'alamat_rumah' => $request->alamat_rumah
+                'alamat_rumah' => $request->alamat_rumah,
+                'no_hp' => $request->no_hp,
+                'email' => $request->email
             ]);
 
             // Hapus semua relasi lomba yang lama
@@ -237,6 +260,63 @@ class PendaftaranGotTalentController extends Controller
 
             DB::commit();
             return Redirect::back()->with(messageSuccess('Data Berhasil Dihapus'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with(messageError($e->getMessage()));
+        }
+    }
+
+    /**
+     * Create user for peserta
+     */
+    public function createuser($id)
+    {
+        $id = Crypt::decrypt($id);
+        $pendaftaranGotTalent = PendaftaranGotTalent::where('id', $id)->first();
+
+        if (!$pendaftaranGotTalent) {
+            return Redirect::back()->with(messageError('Data tidak ditemukan'));
+        }
+
+        // Cek apakah email ada
+        if (empty($pendaftaranGotTalent->email)) {
+            return Redirect::back()->with(messageError('Email peserta belum diisi. Silakan edit data peserta terlebih dahulu untuk menambahkan email.'));
+        }
+
+        $email = $pendaftaranGotTalent->email;
+
+        // Cek apakah user sudah ada berdasarkan email
+        $existingUser = User::where('email', $email)->orWhere('username', $email)->first();
+        if ($existingUser) {
+            return Redirect::back()->with(messageError('User untuk email ini sudah ada'));
+        }
+
+        // Cek apakah relasi sudah ada
+        $existingRelation = UserPendaftaranGotTalent::where('id_pendaftaran', $id)->first();
+        if ($existingRelation) {
+            return Redirect::back()->with(messageError('User untuk peserta ini sudah ada'));
+        }
+
+        DB::beginTransaction();
+        try {
+            $user = User::create([
+                'name' => $pendaftaranGotTalent->nama_lengkap,
+                'username' => $email,
+                'password' => Hash::make(12345678),
+                'email' => $email,
+                'kode_unit' => 'U00',
+            ]);
+
+            $user->assignRole('peserta');
+
+            // Simpan relasi ke tabel penghubung
+            UserPendaftaranGotTalent::create([
+                'id_pendaftaran' => $id,
+                'id_user' => $user->id
+            ]);
+
+            DB::commit();
+            return Redirect::back()->with(messageSuccess('User Berhasil Dibuat dengan password default: 12345678'));
         } catch (\Exception $e) {
             DB::rollBack();
             return Redirect::back()->with(messageError($e->getMessage()));

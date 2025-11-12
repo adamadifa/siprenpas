@@ -12,9 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pendaftaran_got_talent', function (Blueprint $table) {
-            $table->string('asal_sekolah', 200)->nullable()->after('id_jenjang');
-            $table->text('alamat_sekolah')->nullable()->after('asal_sekolah');
-            $table->text('alamat_rumah')->nullable()->after('alamat_sekolah');
+            $table->string('no_hp', 20)->nullable()->after('alamat_rumah');
+            $table->string('email', 100)->nullable()->after('no_hp');
         });
     }
 
@@ -24,13 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('pendaftaran_got_talent', function (Blueprint $table) {
-            $table->dropColumn(['asal_sekolah', 'alamat_sekolah', 'alamat_rumah']);
+            $table->dropColumn(['no_hp', 'email']);
         });
     }
 };
-
-
-
-
-
-

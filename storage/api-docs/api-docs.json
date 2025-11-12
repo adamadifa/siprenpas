@@ -449,6 +449,175 @@
                 ]
             }
         },
+        "/karyawan/aktif": {
+            "get": {
+                "tags": [
+                    "Karyawan"
+                ],
+                "summary": "Ambil daftar karyawan aktif",
+                "operationId": "20ed503182381e898c1a086e55044885",
+                "parameters": [
+                    {
+                        "name": "nama",
+                        "in": "query",
+                        "description": "Filter berdasarkan nama karyawan (partial match)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "John"
+                        }
+                    },
+                    {
+                        "name": "unit",
+                        "in": "query",
+                        "description": "Filter berdasarkan kode unit",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "U01"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil ambil daftar karyawan aktif",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "npp": {
+                                                        "type": "string",
+                                                        "example": "K001"
+                                                    },
+                                                    "nama": {
+                                                        "type": "string",
+                                                        "example": "John Doe"
+                                                    },
+                                                    "jabatan": {
+                                                        "type": "string",
+                                                        "example": "Guru"
+                                                    },
+                                                    "nama_unit": {
+                                                        "type": "string",
+                                                        "example": "SMP"
+                                                    },
+                                                    "foto": {
+                                                        "type": "string",
+                                                        "example": "http://example.com/storage/photos/karyawan/photo.jpg"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/public/pages/{slug}": {
+            "get": {
+                "tags": [
+                    "Page"
+                ],
+                "summary": "Ambil data halaman berdasarkan slug",
+                "operationId": "1c9f2bb04eba33cddae91d9e8718d931",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "description": "Slug halaman (contoh: tentang-pesantren)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "tentang-pesantren"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data halaman",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data halaman berhasil diambil"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "title": {
+                                                    "type": "string",
+                                                    "example": "Tentang Pesantren"
+                                                },
+                                                "slug": {
+                                                    "type": "string",
+                                                    "example": "tentang-pesantren"
+                                                },
+                                                "content": {
+                                                    "type": "string",
+                                                    "example": "<p>Konten halaman...</p>"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "example": "2024-01-01T00:00:00.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "example": "2024-01-01T00:00:00.000000Z"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Halaman tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Halaman tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/unit-by-id-siswa": {
             "post": {
                 "tags": [
@@ -638,6 +807,722 @@
                         }
                     }
                 }
+            }
+        },
+        "/api/pendaftaran-got-talent/register": {
+            "post": {
+                "tags": [
+                    "Pendaftaran Got Talent"
+                ],
+                "summary": "Daftar Al Amin Got Talent",
+                "description": "Register pendaftaran Al Amin Got Talent",
+                "operationId": "9e01a2ca2fa3a140633e8e4ee3a243f6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama_lengkap",
+                                    "id_jenjang",
+                                    "asal_sekolah",
+                                    "alamat_sekolah",
+                                    "alamat_rumah",
+                                    "no_hp",
+                                    "email",
+                                    "perlombaan",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "nama_lengkap": {
+                                        "type": "string",
+                                        "example": "Ahmad Fauzi"
+                                    },
+                                    "id_jenjang": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "asal_sekolah": {
+                                        "type": "string",
+                                        "example": "SD Al Amin"
+                                    },
+                                    "alamat_sekolah": {
+                                        "type": "string",
+                                        "example": "Jl. Raya No. 123"
+                                    },
+                                    "alamat_rumah": {
+                                        "type": "string",
+                                        "example": "Jl. Rumah No. 456"
+                                    },
+                                    "no_hp": {
+                                        "type": "string",
+                                        "example": "081234567890"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "ahmad@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "perlombaan": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            2,
+                                            3
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Registrasi berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "$ref": "#/components/schemas/RegisterResponse"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/pendaftaran-got-talent/my-pendaftaran": {
+            "get": {
+                "tags": [
+                    "Pendaftaran Got Talent"
+                ],
+                "summary": "Ambil data pendaftaran user yang login",
+                "description": "Get pendaftaran by user yang sedang login",
+                "operationId": "19819c595171a48cc6f82981781e259d",
+                "responses": {
+                    "200": {
+                        "description": "Data pendaftaran berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/PendaftaranGotTalent"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data pendaftaran tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/pendaftaran-got-talent/update": {
+            "put": {
+                "tags": [
+                    "Pendaftaran Got Talent"
+                ],
+                "summary": "Update data pendaftaran",
+                "description": "Update pendaftaran",
+                "operationId": "f47aa4d637cc09a6f8bc8731ee044f61",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nama_lengkap": {
+                                        "type": "string",
+                                        "example": "Ahmad Fauzi"
+                                    },
+                                    "id_jenjang": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "asal_sekolah": {
+                                        "type": "string",
+                                        "example": "SD Al Amin"
+                                    },
+                                    "alamat_sekolah": {
+                                        "type": "string",
+                                        "example": "Jl. Raya No. 123"
+                                    },
+                                    "alamat_rumah": {
+                                        "type": "string",
+                                        "example": "Jl. Rumah No. 456"
+                                    },
+                                    "no_hp": {
+                                        "type": "string",
+                                        "example": "081234567890"
+                                    },
+                                    "perlombaan": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            2,
+                                            3
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Data berhasil diupdate",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data berhasil diupdate"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/PendaftaranGotTalent"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data pendaftaran tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/pendaftaran-got-talent/jenjang-pendidikan": {
+            "get": {
+                "tags": [
+                    "Pendaftaran Got Talent"
+                ],
+                "summary": "Ambil list jenjang pendidikan",
+                "description": "Mengambil semua data jenjang pendidikan yang tersedia untuk pendaftaran Got Talent",
+                "operationId": "f88cad0ff957a94003e15211b7fccaff",
+                "responses": {
+                    "200": {
+                        "description": "List jenjang pendidikan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "jenjang_pendidikan": {
+                                                        "type": "string",
+                                                        "example": "SD"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "datetime",
+                                                        "nullable": true
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "datetime",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/jenjang-pendidikan": {
+            "get": {
+                "tags": [
+                    "Public API"
+                ],
+                "summary": "Ambil list jenjang pendidikan (Public)",
+                "description": "Mengambil semua data jenjang pendidikan yang tersedia (Public API)",
+                "operationId": "bd593b9e880c33d671bbaabaa873d35d",
+                "responses": {
+                    "200": {
+                        "description": "List jenjang pendidikan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "jenjang_pendidikan": {
+                                                        "type": "string",
+                                                        "example": "SD"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "datetime",
+                                                        "nullable": true
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "datetime",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/pendaftaran-got-talent/perlombaan": {
+            "get": {
+                "tags": [
+                    "Pendaftaran Got Talent"
+                ],
+                "summary": "Ambil list perlombaan",
+                "description": "Mengambil semua data perlombaan yang tersedia untuk pendaftaran Got Talent",
+                "operationId": "cff9f8212b0eb729e8f73cd21c02c052",
+                "parameters": [
+                    {
+                        "name": "id_jenjang",
+                        "in": "query",
+                        "description": "Filter by jenjang pendidikan",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List perlombaan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "jenis_perlombaan": {
+                                                        "type": "string",
+                                                        "example": "Lomba Baca Puisi"
+                                                    },
+                                                    "id_jenjang": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "jenjang_pendidikan": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "jenjang_pendidikan": {
+                                                                "type": "string",
+                                                                "example": "SD"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "datetime",
+                                                        "nullable": true
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "datetime",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/perlombaan": {
+            "get": {
+                "tags": [
+                    "Public API"
+                ],
+                "summary": "Ambil list perlombaan (Public)",
+                "description": "Mengambil semua data perlombaan yang tersedia (Public API)",
+                "operationId": "603c0c5e7b74384eed4cf8bbb0cdda27",
+                "parameters": [
+                    {
+                        "name": "id_jenjang",
+                        "in": "query",
+                        "description": "Filter by jenjang pendidikan",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List perlombaan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "jenis_perlombaan": {
+                                                        "type": "string",
+                                                        "example": "Lomba Baca Puisi"
+                                                    },
+                                                    "id_jenjang": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "jenjang_pendidikan": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "jenjang_pendidikan": {
+                                                                "type": "string",
+                                                                "example": "SD"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "datetime",
+                                                        "nullable": true
+                                                    },
+                                                    "updated_at": {
+                                                        "type": "string",
+                                                        "format": "datetime",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/pendaftaran-got-talent": {
+            "get": {
+                "tags": [
+                    "Pendaftaran Got Talent"
+                ],
+                "summary": "Ambil semua data pendaftar Al Amin Got Talent",
+                "description": "Mengambil semua data pendaftar Al Amin Got Talent dengan pagination dan filter opsional",
+                "operationId": "8f30d02db385a3d803686d45dc13606d",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Nomor halaman untuk pagination",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Jumlah data per halaman",
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "id_jenjang",
+                        "in": "query",
+                        "description": "Filter by jenjang pendidikan",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Pencarian berdasarkan nama lengkap, nomor register, atau email",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Data pendaftar berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/PendaftaranGotTalent"
+                                                    }
+                                                },
+                                                "first_page_url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8000/api/pendaftaran-got-talent?page=1"
+                                                },
+                                                "from": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "last_page_url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8000/api/pendaftaran-got-talent?page=5"
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "next_page_url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8000/api/pendaftaran-got-talent?page=2",
+                                                    "nullable": true
+                                                },
+                                                "path": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8000/api/pendaftaran-got-talent"
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "prev_page_url": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "to": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 50
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/pendaftaranonline/{no_register}/update-foto": {
@@ -3751,6 +4636,135 @@
     },
     "components": {
         "schemas": {
+            "PendaftaranGotTalent": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nomor_register": {
+                        "type": "string",
+                        "example": "GT241001"
+                    },
+                    "nama_lengkap": {
+                        "type": "string",
+                        "example": "Ahmad Fauzi"
+                    },
+                    "id_jenjang": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "asal_sekolah": {
+                        "type": "string",
+                        "example": "SD Al Amin"
+                    },
+                    "alamat_sekolah": {
+                        "type": "string",
+                        "example": "Jl. Raya No. 123"
+                    },
+                    "alamat_rumah": {
+                        "type": "string",
+                        "example": "Jl. Rumah No. 456"
+                    },
+                    "no_hp": {
+                        "type": "string",
+                        "example": "081234567890"
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "ahmad@example.com"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2024-01-01 00:00:00"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2024-01-01 00:00:00"
+                    },
+                    "jenjang_pendidikan": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "jenjang_pendidikan": {
+                                "type": "string",
+                                "example": "SD"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "perlombaan": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "jenis_perlombaan": {
+                                    "type": "string",
+                                    "example": "Lomba Baca Puisi"
+                                },
+                                "id_jenjang": {
+                                    "type": "integer",
+                                    "example": 1
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "RegisterResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Registrasi berhasil"
+                    },
+                    "data": {
+                        "properties": {
+                            "user": {
+                                "type": "object"
+                            },
+                            "pendaftaran": {
+                                "$ref": "#/components/schemas/PendaftaranGotTalent"
+                            },
+                            "token": {
+                                "type": "string",
+                                "example": "1|xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "ErrorResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Error message"
+                    },
+                    "errors": {
+                        "type": "object",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
             "ProgramUnggulan": {
                 "properties": {
                     "id": {
@@ -3811,6 +4825,18 @@
     },
     "tags": [
         {
+            "name": "Karyawan",
+            "description": "Manajemen Karyawan"
+        },
+        {
+            "name": "Page",
+            "description": "Manajemen Halaman"
+        },
+        {
+            "name": "Pendaftaran Got Talent",
+            "description": "API endpoints untuk pendaftaran Al Amin Got Talent"
+        },
+        {
             "name": "Prestasi Siswa",
             "description": "API Endpoints untuk data prestasi siswa"
         },
@@ -3841,6 +4867,10 @@
         {
             "name": "Pendaftaran",
             "description": "Pendaftaran"
+        },
+        {
+            "name": "Public API",
+            "description": "Public API"
         },
         {
             "name": "Pendaftaran Online",

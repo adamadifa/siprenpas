@@ -72,8 +72,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/pendaftaranonline/{no_register}/update-foto', [App\Http\Controllers\Api\PendaftaranonlineController::class, 'updateFoto']);
     Route::get('/pendaftaranonline/{id_user}', [App\Http\Controllers\Api\PendaftaranonlineController::class, 'getPendaftaranonlineByIdUser']);
 
+    //Pendaftaran Got Talent
+    Route::get('/pendaftaran-got-talent', [App\Http\Controllers\Api\PendaftaranGotTalentController::class, 'index']);
+    Route::get('/pendaftaran-got-talent/my-pendaftaran', [App\Http\Controllers\Api\PendaftaranGotTalentController::class, 'getMyPendaftaran']);
+    Route::put('/pendaftaran-got-talent/update', [App\Http\Controllers\Api\PendaftaranGotTalentController::class, 'update']);
+
     // Program Unggulan API Routes (CRUD dengan authentication)
     Route::apiResource('program-unggulan', ProgramUnggulanController::class);
+});
+
+// Public API Routes untuk Pendaftaran Got Talent
+Route::prefix('pendaftaran-got-talent')->group(function () {
+    Route::post('/register', [App\Http\Controllers\Api\PendaftaranGotTalentController::class, 'register']);
+    Route::get('/jenjang-pendidikan', [App\Http\Controllers\Api\PendaftaranGotTalentController::class, 'getJenjangPendidikan']);
+    Route::get('/perlombaan', [App\Http\Controllers\Api\PendaftaranGotTalentController::class, 'getPerlombaan']);
 });
 
 Route::prefix('public')->group(function () {
@@ -108,6 +120,15 @@ Route::prefix('public')->group(function () {
         Route::get('/', [ProgramUnggulanController::class, 'index']);
         Route::get('/random/{limit?}', [ProgramUnggulanController::class, 'random']);
         Route::get('/{id}', [ProgramUnggulanController::class, 'show']);
+    });
+
+    // Jenjang Pendidikan & Perlombaan API Routes
+    Route::prefix('jenjang-pendidikan')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\PendaftaranGotTalentController::class, 'getJenjangPendidikan']);
+    });
+
+    Route::prefix('perlombaan')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\PendaftaranGotTalentController::class, 'getPerlombaan']);
     });
 
     // Page API Routes

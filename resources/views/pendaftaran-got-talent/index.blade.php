@@ -10,7 +10,8 @@
         <div class="card">
             <div class="card-header">
                 @can('pendaftaran-got-talent.create')
-                    <a href="#" class="btn btn-primary" id="btncreatePendaftaranGotTalent"><i class="fa fa-plus me-2"></i> Tambah
+                    <a href="#" class="btn btn-primary" id="btncreatePendaftaranGotTalent"><i class="fa fa-plus me-2"></i>
+                        Tambah
                         Pendaftaran</a>
                 @endcan
             </div>
@@ -20,8 +21,9 @@
                         <form action="{{ route('pendaftaran-got-talent.index') }}">
                             <div class="row">
                                 <div class="col-lg-4 col-sm-12 col-md-12">
-                                    <x-input-with-icon label="Nomor Register" value="{{ Request('nomor_register_search') }}"
-                                        name="nomor_register_search" icon="ti ti-search" />
+                                    <x-input-with-icon label="Nomor Register"
+                                        value="{{ Request('nomor_register_search') }}" name="nomor_register_search"
+                                        icon="ti ti-search" />
                                 </div>
                                 <div class="col-lg-4 col-sm-12 col-md-12">
                                     <x-input-with-icon label="Nama Lengkap" value="{{ Request('nama_lengkap_search') }}"
@@ -56,6 +58,7 @@
                                         <th>Nama Lengkap</th>
                                         <th>Jenjang Pendidikan</th>
                                         <th>Asal Sekolah</th>
+                                        <th>No. HP</th>
                                         <th>#</th>
                                     </tr>
                                 </thead>
@@ -69,13 +72,15 @@
                                             <td>{{ $d->nama_lengkap }}</td>
                                             <td>{{ $d->jenjangPendidikan->jenjang_pendidikan ?? '-' }}</td>
                                             <td>{{ $d->asal_sekolah ?? '-' }}</td>
+                                            <td>{{ $d->no_hp ?? '-' }}</td>
                                             <td>
                                                 <div class="d-flex">
-                                                    @can('pendaftaran-got-talent.show')
+                                                    @can('pendaftaran-got-talent.index')
                                                         <div>
                                                             <a href="#" class="me-2 showDetailPendaftaranGotTalent"
                                                                 id_pendaftaran="{{ Crypt::encrypt($d->id) }}">
-                                                                <i class="ti ti-info-circle text-info" title="Detail Peserta & Lomba"></i>
+                                                                <i class="ti ti-info-circle text-info"
+                                                                    title="Detail Peserta & Lomba"></i>
                                                             </a>
                                                         </div>
                                                         <div>
@@ -93,6 +98,22 @@
                                                                 <i class="ti ti-edit text-success" title="Edit"></i>
                                                             </a>
                                                         </div>
+                                                    @endcan
+
+                                                    @can('pendaftaran-got-talent.index')
+                                                        @if (empty($d->id_user))
+                                                            <div>
+                                                                <a href="{{ route('pendaftaran-got-talent.createuser', Crypt::encrypt($d->id)) }}"
+                                                                    class="me-2" title="Buat User Peserta">
+                                                                    <i class="ti ti-user-plus text-warning"></i>
+                                                                </a>
+                                                            </div>
+                                                        @else
+                                                            <div>
+                                                                <i class="ti ti-user text-success me-2"
+                                                                    title="User sudah dibuat"></i>
+                                                            </div>
+                                                        @endif
                                                     @endcan
 
                                                     @can('pendaftaran-got-talent.delete')
@@ -128,28 +149,29 @@
     title="Detail Peserta & Lomba" />
 @endsection
 @push('myscript')
-    <script>
-        $(function() {
-            $("#btncreatePendaftaranGotTalent").click(function(e) {
-                e.preventDefault();
-                $('#mdlcreatePendaftaranGotTalent').modal("show");
-                $("#loadcreatePendaftaranGotTalent").load('/pendaftaran-got-talent/create');
-            });
-
-            $(".editPendaftaranGotTalent").click(function(e) {
-                var id_pendaftaran = $(this).attr("id_pendaftaran");
-                e.preventDefault();
-                $('#mdleditPendaftaranGotTalent').modal("show");
-                $("#loadeditPendaftaranGotTalent").load('/pendaftaran-got-talent/' + id_pendaftaran + '/edit');
-            });
-
-            $(".showDetailPendaftaranGotTalent").click(function(e) {
-                var id_pendaftaran = $(this).attr("id_pendaftaran");
-                e.preventDefault();
-                $('#mdlshowDetailPendaftaranGotTalent').modal("show");
-                $("#loadshowDetailPendaftaranGotTalent").load('/pendaftaran-got-talent/' + id_pendaftaran + '/show');
-            });
+<script>
+    $(function() {
+        $("#btncreatePendaftaranGotTalent").click(function(e) {
+            e.preventDefault();
+            $('#mdlcreatePendaftaranGotTalent').modal("show");
+            $("#loadcreatePendaftaranGotTalent").load('/pendaftaran-got-talent/create');
         });
-    </script>
-@endpush
 
+        $(".editPendaftaranGotTalent").click(function(e) {
+            var id_pendaftaran = $(this).attr("id_pendaftaran");
+            e.preventDefault();
+            $('#mdleditPendaftaranGotTalent').modal("show");
+            $("#loadeditPendaftaranGotTalent").load('/pendaftaran-got-talent/' + id_pendaftaran +
+                '/edit');
+        });
+
+        $(".showDetailPendaftaranGotTalent").click(function(e) {
+            var id_pendaftaran = $(this).attr("id_pendaftaran");
+            e.preventDefault();
+            $('#mdlshowDetailPendaftaranGotTalent').modal("show");
+            $("#loadshowDetailPendaftaranGotTalent").load('/pendaftaran-got-talent/' + id_pendaftaran +
+                '/show');
+        });
+    });
+</script>
+@endpush

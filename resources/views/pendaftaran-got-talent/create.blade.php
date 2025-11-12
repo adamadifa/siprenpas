@@ -6,6 +6,8 @@
     <x-input-with-icon-label icon="ti ti-school" label="Asal Sekolah" name="asal_sekolah" />
     <x-textarea-label label="Alamat Sekolah" name="alamat_sekolah" />
     <x-textarea-label label="Alamat Rumah" name="alamat_rumah" />
+    <x-input-with-icon-label icon="ti ti-phone" label="No. HP" name="no_hp" />
+    <x-input-with-icon-label icon="ti ti-mail" label="Email" name="email" type="email" />
 
     <div class="form-group mb-3">
         <label class="form-label">Pilihan Lomba</label>
@@ -48,6 +50,8 @@
             var asal_sekolah = $(this).find('input[name="asal_sekolah"]').val().trim();
             var alamat_sekolah = $(this).find('textarea[name="alamat_sekolah"]').val().trim();
             var alamat_rumah = $(this).find('textarea[name="alamat_rumah"]').val().trim();
+            var no_hp = $(this).find('input[name="no_hp"]').val().trim();
+            var email = $(this).find('input[name="email"]').val().trim();
             var perlombaan = $('input[name="perlombaan[]"]:checked').length;
 
             if (nama_lengkap == "") {
@@ -97,6 +101,26 @@
                     text: 'Alamat Rumah tidak boleh kosong!',
                     didClose: () => {
                         $(this).find("#alamat_rumah").focus();
+                    }
+                });
+                return false;
+            } else if (no_hp == "") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'No. HP tidak boleh kosong!',
+                    didClose: () => {
+                        $(this).find("#no_hp").focus();
+                    }
+                });
+                return false;
+            } else if (email == "") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Email tidak boleh kosong!',
+                    didClose: () => {
+                        $(this).find("#email").focus();
                     }
                 });
                 return false;

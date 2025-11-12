@@ -28,6 +28,14 @@
                     <td>{{ $pendaftaranGotTalent->alamat_rumah ?? '-' }}</td>
                 </tr>
                 <tr>
+                    <th>No. HP</th>
+                    <td>{{ $pendaftaranGotTalent->no_hp ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ $pendaftaranGotTalent->email ?? '-' }}</td>
+                </tr>
+                <tr>
                     <th>Tanggal Daftar</th>
                     <td>{{ $pendaftaranGotTalent->created_at ? date('d-m-Y H:i:s', strtotime($pendaftaranGotTalent->created_at)) : '-' }}</td>
                 </tr>
@@ -71,5 +79,6 @@
         </div>
     </div>
 @endif
+
 
 
