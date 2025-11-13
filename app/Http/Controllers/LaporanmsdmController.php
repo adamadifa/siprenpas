@@ -105,51 +105,53 @@ class LaporanmsdmController extends Controller
             // Mendefinisikan nama file ekspor "-SahabatEkspor.xls"
             header("Content-Disposition: attachment; filename=Rekap Presensi $periode_dari - $periode_sampai.xls");
         }
-        if (!empty($request->npp)) {
-            $karyawan = Karyawan::join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
-                ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
-                ->where('karyawan.npp', $request->npp)
-                ->first();
-            $data['karyawan'] = $karyawan;
-            $data['presensi'] = $presensi;
-            return view('laporan.presensi_karyawan_cetak', $data);
-        } else {
-            $laporan_presensi = $presensi->groupBy('npp')->map(function ($rows) {
-                $data = [
-                    'npp' => $rows->first()->npp,
-                    'nama_lengkap' => $rows->first()->nama_lengkap,
-                    'nama_jabatan' => $rows->first()->nama_jabatan,
-                    'kode_unit' => $rows->first()->kode_unit,
-                    'nama_unit' => $rows->first()->nama_unit,
-                    'status_karyawan' => $rows->first()->status_karyawan,
+
+        $laporan_presensi = $presensi->groupBy('npp')->map(function ($rows) {
+            $data = [
+                'npp' => $rows->first()->npp,
+                'nama_lengkap' => $rows->first()->nama_lengkap,
+                'nama_jabatan' => $rows->first()->nama_jabatan,
+                'kode_unit' => $rows->first()->kode_unit,
+                'nama_unit' => $rows->first()->nama_unit,
+                'status_karyawan' => $rows->first()->status_karyawan,
+            ];
+
+            foreach ($rows as $row) {
+                $data[$row->tanggal] = [
+                    'status' => $row->status,
+                    'kode_jam_kerja' => $row->kode_jam_kerja,
+                    'nama_jam_kerja' => $row->nama_jam_kerja,
+                    'jam_masuk' => $row->jam_masuk,
+                    'jam_pulang' => $row->jam_pulang,
+                    'jam_in' => $row->jam_in,
+                    'jam_out' => $row->jam_out,
+                    'istirahat' => $row->istirahat,
+                    'jam_awal_istirahat' => $row->jam_awal_istirahat,
+                    'jam_akhir_istirahat' => $row->jam_akhir_istirahat,
+                    'lintas_hari' => $row->lintas_hari,
+                    'keterangan_izin_absen' => $row->keterangan_izin_absen,
+                    'keterangan_izin_sakit' => $row->keterangan_izin_sakit,
+                    'keterangan_izin_cuti' => $row->keterangan_izin_cuti,
+                    'total_jam' => $row->total_jam
                 ];
+            }
+            return $data;
+        });
+        $data['laporan_presensi'] = $laporan_presensi;
 
-                foreach ($rows as $row) {
-                    $data[$row->tanggal] = [
-                        'status' => $row->status,
-                        'kode_jam_kerja' => $row->kode_jam_kerja,
-                        'nama_jam_kerja' => $row->nama_jam_kerja,
-                        'jam_masuk' => $row->jam_masuk,
-                        'jam_pulang' => $row->jam_pulang,
-                        'jam_in' => $row->jam_in,
-                        'jam_out' => $row->jam_out,
-                        'istirahat' => $row->istirahat,
-                        'jam_awal_istirahat' => $row->jam_awal_istirahat,
-                        'jam_akhir_istirahat' => $row->jam_akhir_istirahat,
-                        'lintas_hari' => $row->lintas_hari,
-                        'keterangan_izin_absen' => $row->keterangan_izin_absen,
-                        'keterangan_izin_sakit' => $row->keterangan_izin_sakit,
-                        'keterangan_izin_cuti' => $row->keterangan_izin_cuti,
-                        'total_jam' => $row->total_jam
-                    ];
-                }
-                return $data;
-            });
-            $data['laporan_presensi'] = $laporan_presensi;
+        // dd($data['laporan_presensi']);
+        return view('msdm.laporan.presensi_cetak', $data);
+        // if (!empty($request->npp)) {
+        //     $karyawan = Karyawan::join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+        //         ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+        //         ->where('karyawan.npp', $request->npp)
+        //         ->first();
+        //     $data['karyawan'] = $karyawan;
+        //     $data['presensi'] = $presensi;
+        //     return view('laporan.presensi_karyawan_cetak', $data);
+        // } else {
 
-            // dd($data['laporan_presensi']);
-            return view('msdm.laporan.presensi_cetak', $data);
-        }
+        // }
     }
 
     public function cetakchecklistibadah(Request $request)
