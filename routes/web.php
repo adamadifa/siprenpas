@@ -196,6 +196,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/karyawan/{npp}/createuser', 'createuser')->name('karyawan.createuser');
         Route::get('/karyawan/{npp}/updatestatus', 'updatestatus')->name('karyawan.updatestatus');
+        Route::get('/karyawan/get-by-unit', 'getKaryawanByUnit')->name('karyawan.get-by-unit');
     });
 
     Route::controller(SiswaController::class)->group(function () {

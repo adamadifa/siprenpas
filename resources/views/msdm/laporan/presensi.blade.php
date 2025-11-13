@@ -14,7 +14,7 @@
     @endif
 
     <div class="form-group mb-3">
-        <select name="nik" id="nik_presensi" class="form-select select2Nikpresensi">
+        <select name="npp" id="nik_presensi" class="form-select select2Nikpresensi">
             <option value="">Semua Karyawan</option>
         </select>
     </div>
@@ -58,3 +58,101 @@
         </div>
     </div>
 </form>
+@push('myscript')
+    <script>
+        $(document).ready(function() {
+            // Inisialisasi Select2 untuk unit dan karyawan
+            if ($('.select2Kodeunitpresensi').length) {
+                $('.select2Kodeunitpresensi').each(function() {
+                    var $this = $(this);
+                    $this.wrap('<div class="position-relative"></div>').select2({
+                        placeholder: 'Pilih Unit',
+                        dropdownParent: $this.parent(),
+                        allowClear: true
+                    });
+                });
+            }
+
+            if ($('.select2Nikpresensi').length) {
+                $('.select2Nikpresensi').each(function() {
+                    var $this = $(this);
+                    $this.wrap('<div class="position-relative"></div>').select2({
+                        placeholder: 'Pilih Karyawan',
+                        dropdownParent: $this.parent(),
+                        allowClear: true
+                    });
+                });
+            }
+
+            // Function untuk load karyawan berdasarkan unit
+            function loadKaryawanByUnit(kodeUnit) {
+                var selectKaryawan = $('#nik_presensi');
+
+                // Reset select karyawan
+                selectKaryawan.empty();
+                selectKaryawan.append('<option value="">Semua Karyawan</option>');
+
+                // Jika unit dipilih, ambil data karyawan
+                if (kodeUnit) {
+                    // Tampilkan loading
+                    selectKaryawan.prop('disabled', true);
+                    selectKaryawan.html('<option value="">Memuat data...</option>');
+
+                    // AJAX request ke controller
+                    $.ajax({
+                        url: '{{ route('karyawan.get-by-unit') }}',
+                        method: 'GET',
+                        data: {
+                            kode_unit: kodeUnit
+                        },
+                        success: function(response) {
+                            selectKaryawan.prop('disabled', false);
+                            selectKaryawan.empty();
+                            selectKaryawan.append('<option value="">Semua Karyawan</option>');
+
+                            if (response.success && response.data.length > 0) {
+                                $.each(response.data, function(index, karyawan) {
+                                    selectKaryawan.append(
+                                        $('<option></option>')
+                                        .attr('value', karyawan.npp)
+                                        .text(karyawan.nama + ' - ' + karyawan.jabatan)
+                                    );
+                                });
+                            } else {
+                                selectKaryawan.append('<option value="">Tidak ada karyawan</option>');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            selectKaryawan.prop('disabled', false);
+                            selectKaryawan.empty();
+                            selectKaryawan.append('<option value="">Error memuat data</option>');
+                            console.error('Error:', error);
+                        }
+                    });
+                } else {
+                    // Jika unit tidak dipilih, reset select karyawan
+                    selectKaryawan.prop('disabled', false);
+                }
+            }
+
+            // Handle change event pada select unit
+            $('#kode_unit').on('change', function() {
+                var kodeUnit = $(this).val();
+                loadKaryawanByUnit(kodeUnit);
+            });
+
+            // Load karyawan saat halaman pertama kali dimuat jika unit sudah dipilih
+            // Handle untuk select unit atau hidden input
+            var kodeUnitAwal = $('#kode_unit').val();
+            if (kodeUnitAwal) {
+                loadKaryawanByUnit(kodeUnitAwal);
+            } else {
+                // Cek apakah ada hidden input untuk kode_unit
+                var hiddenKodeUnit = $('input[name="kode_unit"]').val();
+                if (hiddenKodeUnit) {
+                    loadKaryawanByUnit(hiddenKodeUnit);
+                }
+            }
+        });
+    </script>
+@endpush

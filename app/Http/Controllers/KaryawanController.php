@@ -386,4 +386,45 @@ class KaryawanController extends Controller
         $karyawan->save();
         return Redirect::back()->with(messageSuccess('Status Berhasil Diubah'));
     }
+
+    public function getKaryawanByUnit(Request $request)
+    {
+        try {
+            $kodeUnit = $request->kode_unit;
+            
+            $query = Karyawan::select(
+                'karyawan.npp',
+                'karyawan.nama_lengkap as nama',
+                'jabatan.nama_jabatan as jabatan',
+                'unit.nama_unit',
+                'karyawan.kode_unit'
+            )
+                ->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+                ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+                ->where('karyawan.status', 1);
+
+            // Filter berdasarkan unit
+            if (!empty($kodeUnit)) {
+                $query->where('karyawan.kode_unit', $kodeUnit);
+            }
+
+            // Jika user bukan U06, filter berdasarkan unit user
+            if (auth()->user()->kode_unit != 'U06') {
+                $query->where('karyawan.kode_unit', auth()->user()->kode_unit);
+            }
+
+            $karyawan = $query->orderBy('karyawan.nama_lengkap', 'asc')->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $karyawan
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data karyawan.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
