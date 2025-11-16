@@ -6,7 +6,7 @@
     <span>Perlombaan</span>
 @endsection
 <div class="row">
-    <div class="col-lg-5 col-sm-12 col-xs-12">
+    <div class="col-lg-12 col-sm-12 col-xs-12">
         <div class="card">
             <div class="card-header">
                 @can('perlombaan.create')
@@ -19,12 +19,12 @@
                     <div class="col-12">
                         <form action="{{ route('perlombaan.index') }}">
                             <div class="row">
-                                <div class="col-lg-5 col-sm-12 col-md-12">
+                                <div class="col-lg-4 col-sm-12 col-md-12 mb-2">
                                     <x-input-with-icon label="Jenis Perlombaan"
                                         value="{{ Request('jenis_perlombaan_search') }}" name="jenis_perlombaan_search"
                                         icon="ti ti-search" />
                                 </div>
-                                <div class="col-lg-5 col-sm-12 col-md-12">
+                                <div class="col-lg-4 col-sm-12 col-md-12 mb-2">
                                     <select name="id_jenjang_search" id="id_jenjang_search" class="form-select">
                                         <option value="">Jenjang Pendidikan</option>
                                         @foreach ($jenjangPendidikan as $d)
@@ -35,8 +35,8 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-lg-2 col-sm-12 col-md-12">
-                                    <button class="btn btn-primary">Cari</button>
+                                <div class="col-lg-2 col-sm-12 col-md-12 mb-2">
+                                    <button class="btn btn-primary w-100">Cari</button>
                                 </div>
                             </div>
 
@@ -50,8 +50,10 @@
                                 <thead class="table-dark">
                                     <tr>
                                         <th>No.</th>
+                                        <th>Thumbnail</th>
                                         <th>Jenis Perlombaan</th>
                                         <th>Jenjang Pendidikan</th>
+                                        <th>Juknis & Juklak</th>
                                         <th>#</th>
                                     </tr>
                                 </thead>
@@ -61,8 +63,24 @@
                                             <td class="text-center">
                                                 {{ $loop->iteration }}
                                             </td>
+                                            <td class="text-center">
+                                                @if ($d->thumbnail)
+                                                    <img src="{{ asset('storage/' . $d->thumbnail) }}" alt="Thumbnail" class="img-thumbnail" style="max-width: 80px; max-height: 80px; object-fit: cover;">
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
                                             <td>{{ $d->jenis_perlombaan }}</td>
                                             <td>{{ $d->jenjangPendidikan->jenjang_pendidikan ?? '-' }}</td>
+                                            <td>
+                                                @if ($d->juknis_juklak)
+                                                    <a href="{{ asset('storage/' . $d->juknis_juklak) }}" target="_blank" class="btn btn-sm btn-info">
+                                                        <i class="ti ti-download me-1"></i>Download
+                                                    </a>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 <div class="d-flex">
                                                     @can('perlombaan.edit')

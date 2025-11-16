@@ -553,6 +553,10 @@ class PendaftaranGotTalentController extends Controller
      *                     @OA\Property(property="id", type="integer", example=1),
      *                     @OA\Property(property="jenis_perlombaan", type="string", example="Lomba Baca Puisi"),
      *                     @OA\Property(property="id_jenjang", type="integer", example=1),
+     *                     @OA\Property(property="juknis_juklak", type="string", nullable=true, example="juknis_juklak/file.pdf"),
+     *                     @OA\Property(property="juknis_juklak_url", type="string", nullable=true, example="http://localhost:8000/storage/juknis_juklak/file.pdf"),
+     *                     @OA\Property(property="thumbnail", type="string", nullable=true, example="thumbnails/image.jpg"),
+     *                     @OA\Property(property="thumbnail_url", type="string", nullable=true, example="http://localhost:8000/storage/thumbnails/image.jpg"),
      *                     @OA\Property(
      *                         property="jenjang_pendidikan",
      *                         type="object",
@@ -591,6 +595,10 @@ class PendaftaranGotTalentController extends Controller
      *                     @OA\Property(property="id", type="integer", example=1),
      *                     @OA\Property(property="jenis_perlombaan", type="string", example="Lomba Baca Puisi"),
      *                     @OA\Property(property="id_jenjang", type="integer", example=1),
+     *                     @OA\Property(property="juknis_juklak", type="string", nullable=true, example="juknis_juklak/file.pdf"),
+     *                     @OA\Property(property="juknis_juklak_url", type="string", nullable=true, example="http://localhost:8000/storage/juknis_juklak/file.pdf"),
+     *                     @OA\Property(property="thumbnail", type="string", nullable=true, example="thumbnails/image.jpg"),
+     *                     @OA\Property(property="thumbnail_url", type="string", nullable=true, example="http://localhost:8000/storage/thumbnails/image.jpg"),
      *                     @OA\Property(
      *                         property="jenjang_pendidikan",
      *                         type="object",
@@ -614,6 +622,23 @@ class PendaftaranGotTalentController extends Controller
         }
 
         $perlombaan = $query->get();
+
+        // Tambahkan URL lengkap untuk file juknis_juklak dan thumbnail
+        $perlombaan = $perlombaan->map(function ($item) {
+            if ($item->juknis_juklak) {
+                $item->juknis_juklak_url = url('storage/' . $item->juknis_juklak);
+            } else {
+                $item->juknis_juklak_url = null;
+            }
+
+            if ($item->thumbnail) {
+                $item->thumbnail_url = url('storage/' . $item->thumbnail);
+            } else {
+                $item->thumbnail_url = null;
+            }
+
+            return $item;
+        });
 
         return response()->json([
             'success' => true,

@@ -1257,6 +1257,26 @@
                                                         "type": "integer",
                                                         "example": 1
                                                     },
+                                                    "juknis_juklak": {
+                                                        "type": "string",
+                                                        "example": "juknis_juklak/file.pdf",
+                                                        "nullable": true
+                                                    },
+                                                    "juknis_juklak_url": {
+                                                        "type": "string",
+                                                        "example": "http://localhost:8000/storage/juknis_juklak/file.pdf",
+                                                        "nullable": true
+                                                    },
+                                                    "thumbnail": {
+                                                        "type": "string",
+                                                        "example": "thumbnails/image.jpg",
+                                                        "nullable": true
+                                                    },
+                                                    "thumbnail_url": {
+                                                        "type": "string",
+                                                        "example": "http://localhost:8000/storage/thumbnails/image.jpg",
+                                                        "nullable": true
+                                                    },
                                                     "jenjang_pendidikan": {
                                                         "properties": {
                                                             "id": {
@@ -1337,6 +1357,26 @@
                                                     "id_jenjang": {
                                                         "type": "integer",
                                                         "example": 1
+                                                    },
+                                                    "juknis_juklak": {
+                                                        "type": "string",
+                                                        "example": "juknis_juklak/file.pdf",
+                                                        "nullable": true
+                                                    },
+                                                    "juknis_juklak_url": {
+                                                        "type": "string",
+                                                        "example": "http://localhost:8000/storage/juknis_juklak/file.pdf",
+                                                        "nullable": true
+                                                    },
+                                                    "thumbnail": {
+                                                        "type": "string",
+                                                        "example": "thumbnails/image.jpg",
+                                                        "nullable": true
+                                                    },
+                                                    "thumbnail_url": {
+                                                        "type": "string",
+                                                        "example": "http://localhost:8000/storage/thumbnails/image.jpg",
+                                                        "nullable": true
                                                     },
                                                     "jenjang_pendidikan": {
                                                         "properties": {
