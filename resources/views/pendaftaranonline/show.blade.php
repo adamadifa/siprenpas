@@ -1,14 +1,29 @@
+@php
+    $namaSekolah = optional($pengaturan)->nama_sekolah ?? 'PESANTREN PERSATUAN ISLAM 80 AL AMIN SINDANGKASIH';
+    $alamatSekolah = optional($pengaturan)->alamat_sekolah ?? 'Jln. Raya Ancol No. 27 Ancol I Sindangkasih';
+    $teleponSekolah = optional($pengaturan)->telepon ?? '(0265) 325285';
+    $emailSekolah = optional($pengaturan)->email ?? 'peris.alamin80sinkas@gmail.com';
+    $websiteSekolah = optional($pengaturan)->website ?? 'persisalamin.com';
+    $logoUrl = optional($pengaturan)->logo
+        ? asset('storage/' . $pengaturan->logo)
+        : asset('assets/img/logo/persisalamin.png');
+@endphp
 <div class="row">
     <div class="col-md-12 text-center">
-        <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="Logo" style="height:80px; margin-bottom:8px;">
+        <img src="{{ $logoUrl }}" alt="Logo" style="height:80px; margin-bottom:8px;">
         <h5 class="m-0">PANITIA PENERIMAAN SANTRI BARU (PSB)</h5>
-        <h5 class="m-0">PESANTREN PERSATUAN ISLAM 80 AL AMIN SINDANGKASIH</h5>
+        <h5 class="m-0">{{ strtoupper($namaSekolah) }}</h5>
         <h5 class="m-0">TINGKAT {{ $pendaftaran->nama_unit }} TAHUN {{ $pendaftaran->tahun_ajaran }}</h5>
         <p>
             <i>
-                Jln. Raya Ancol No. 27 Ancol I Sindangkasih Telp.-Fax. (0265) 325285 Ciamis 46268 e-mail :
-                peris.alamin80sinkas@gmail.com - web :
-                persisalamin.com
+                {{ $alamatSekolah }}
+                @if ($teleponSekolah)
+                    Telp. {{ $teleponSekolah }}
+                @endif
+                e-mail : {{ $emailSekolah }}
+                @if ($websiteSekolah)
+                    - web : {{ $websiteSekolah }}
+                @endif
             </i>
         </p>
     </div>

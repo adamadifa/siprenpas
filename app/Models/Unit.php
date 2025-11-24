@@ -12,7 +12,12 @@ use Illuminate\Database\Eloquent\Model;
  *   title="Unit",
  *   required={"kode_unit"},
  *   @OA\Property(property="kode_unit", type="string", description="Kode unit"),
- *   @OA\Property(property="nama_unit", type="string", description="Nama unit")
+ *   @OA\Property(property="nama_unit", type="string", description="Nama unit"),
+ *   @OA\Property(property="logo", type="string", nullable=true, description="URL logo unit"),
+ *   @OA\Property(property="status", type="integer", description="Status unit (1=Show, 0=Hide)"),
+ *   @OA\Property(property="keterangan", type="string", nullable=true, description="Keterangan unit"),
+ *   @OA\Property(property="created_at", type="string", format="date-time"),
+ *   @OA\Property(property="updated_at", type="string", format="date-time")
  * )
  */
 class Unit extends Model

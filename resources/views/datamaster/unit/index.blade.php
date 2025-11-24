@@ -3,15 +3,15 @@
 
 @section('content')
 @section('navigasi')
-<span>Unit</span>
+    <span>Unit</span>
 @endsection
 <div class="row">
-    <div class="col-lg-5 col-sm-12 col-xs-12">
+    <div class="col-lg-6 col-sm-12 col-xs-12">
         <div class="card">
             <div class="card-header">
                 @can('unit.create')
-                <a href="#" class="btn btn-primary" id="btncreateUnit"><i class="fa fa-plus me-2"></i> Tambah
-                    Unit</a>
+                    <a href="#" class="btn btn-primary" id="btncreateUnit"><i class="fa fa-plus me-2"></i> Tambah
+                        Unit</a>
                 @endcan
             </div>
             <div class="card-body">
@@ -40,43 +40,61 @@
                                         <th>No.</th>
                                         <th>Kode Unit</th>
                                         <th>Nama Unit</th>
+                                        <th>Logo</th>
+                                        <th>Status</th>
                                         <th>#</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($unit as $d)
-                                    <tr>
-                                        <td class="text-center">
-                                            {{ $loop->iteration }}
-                                        </td>
-                                        <td>{{ $d->kode_unit }}</td>
-                                        <td>{{ $d->nama_unit }}</td>
-                                        <td>
-                                            <div class="d-flex">
-                                                @can('unit.edit')
-                                                <div>
-                                                    <a href="#" class="me-2 editUnit"
-                                                        kode_unit="{{ Crypt::encrypt($d->kode_unit) }}">
-                                                        <i class="ti ti-edit text-success"></i>
-                                                    </a>
-                                                </div>
-                                                @endcan
+                                        <tr>
+                                            <td class="text-center">
+                                                {{ $loop->iteration }}
+                                            </td>
+                                            <td>{{ $d->kode_unit }}</td>
+                                            <td>{{ $d->nama_unit }}</td>
+                                            <td class="text-center">
+                                                @if ($d->logo)
+                                                    <img src="{{ asset('storage/' . $d->logo) }}"
+                                                        alt="Logo {{ $d->nama_unit }}" class="img-fluid"
+                                                        style="max-height: 50px;">
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">
+                                                @if ($d->status == 1)
+                                                    <span class="badge bg-success">Show</span>
+                                                @else
+                                                    <span class="badge bg-secondary">Hide</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <div class="d-flex">
+                                                    @can('unit.edit')
+                                                        <div>
+                                                            <a href="#" class="me-2 editUnit"
+                                                                kode_unit="{{ Crypt::encrypt($d->kode_unit) }}">
+                                                                <i class="ti ti-edit text-success"></i>
+                                                            </a>
+                                                        </div>
+                                                    @endcan
 
-                                                @can('unit.delete')
-                                                <div>
-                                                    <form method="POST" name="deleteform" class="deleteform"
-                                                        action="{{ route('unit.delete', Crypt::encrypt($d->kode_unit)) }}">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <a href="#" class="delete-confirm ml-1">
-                                                            <i class="ti ti-trash text-danger"></i>
-                                                        </a>
-                                                    </form>
+                                                    @can('unit.delete')
+                                                        <div>
+                                                            <form method="POST" name="deleteform" class="deleteform"
+                                                                action="{{ route('unit.delete', Crypt::encrypt($d->kode_unit)) }}">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <a href="#" class="delete-confirm ml-1">
+                                                                    <i class="ti ti-trash text-danger"></i>
+                                                                </a>
+                                                            </form>
+                                                        </div>
+                                                    @endcan
                                                 </div>
-                                                @endcan
-                                            </div>
-                                        </td>
-                                    </tr>
+                                            </td>
+                                        </tr>
                                     @endforeach
                                 </tbody>
                             </table>

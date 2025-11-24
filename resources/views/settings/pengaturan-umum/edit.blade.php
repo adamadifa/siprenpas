@@ -117,6 +117,84 @@
                                 @enderror
                             </div>
 
+                            <hr class="my-4">
+                            <h6 class="mb-3">Foto Model</h6>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="model_1" class="form-label">Model 1</label>
+                                        @if ($pengaturan->model_1)
+                                            <div class="mb-2">
+                                                <img src="{{ asset('storage/' . $pengaturan->model_1) }}" alt="Model 1"
+                                                    class="img-fluid rounded" style="max-height: 150px;">
+                                                <p class="text-muted small mt-1">Model 1 saat ini</p>
+                                            </div>
+                                        @endif
+                                        <input type="file" class="form-control @error('model_1') is-invalid @enderror" id="model_1"
+                                            name="model_1" accept="image/*">
+                                        <div class="form-text">Format: JPEG, PNG, JPG, GIF, SVG. Maksimal 4MB. Kosongkan jika tidak ingin mengubah.</div>
+                                        @error('model_1')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="model_2" class="form-label">Model 2</label>
+                                        @if ($pengaturan->model_2)
+                                            <div class="mb-2">
+                                                <img src="{{ asset('storage/' . $pengaturan->model_2) }}" alt="Model 2"
+                                                    class="img-fluid rounded" style="max-height: 150px;">
+                                                <p class="text-muted small mt-1">Model 2 saat ini</p>
+                                            </div>
+                                        @endif
+                                        <input type="file" class="form-control @error('model_2') is-invalid @enderror" id="model_2"
+                                            name="model_2" accept="image/*">
+                                        <div class="form-text">Format: JPEG, PNG, JPG, GIF, SVG. Maksimal 4MB. Kosongkan jika tidak ingin mengubah.</div>
+                                        @error('model_2')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="model_3" class="form-label">Model 3</label>
+                                        @if ($pengaturan->model_3)
+                                            <div class="mb-2">
+                                                <img src="{{ asset('storage/' . $pengaturan->model_3) }}" alt="Model 3"
+                                                    class="img-fluid rounded" style="max-height: 150px;">
+                                                <p class="text-muted small mt-1">Model 3 saat ini</p>
+                                            </div>
+                                        @endif
+                                        <input type="file" class="form-control @error('model_3') is-invalid @enderror" id="model_3"
+                                            name="model_3" accept="image/*">
+                                        <div class="form-text">Format: JPEG, PNG, JPG, GIF, SVG. Maksimal 4MB. Kosongkan jika tidak ingin mengubah.</div>
+                                        @error('model_3')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="model_4" class="form-label">Model 4</label>
+                                        @if ($pengaturan->model_4)
+                                            <div class="mb-2">
+                                                <img src="{{ asset('storage/' . $pengaturan->model_4) }}" alt="Model 4"
+                                                    class="img-fluid rounded" style="max-height: 150px;">
+                                                <p class="text-muted small mt-1">Model 4 saat ini</p>
+                                            </div>
+                                        @endif
+                                        <input type="file" class="form-control @error('model_4') is-invalid @enderror" id="model_4"
+                                            name="model_4" accept="image/*">
+                                        <div class="form-text">Format: JPEG, PNG, JPG, GIF, SVG. Maksimal 4MB. Kosongkan jika tidak ingin mengubah.</div>
+                                        @error('model_4')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="d-flex justify-content-end gap-2">
                                 <a href="{{ route('pengaturan-umum.index') }}" class="btn btn-secondary">
                                     Batal

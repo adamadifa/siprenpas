@@ -136,6 +136,11 @@ Route::prefix('public')->group(function () {
         Route::get('/{slug}', [App\Http\Controllers\Api\PageController::class, 'show']);
     });
 
+    // Pengaturan Umum API Routes
+    Route::prefix('pengaturan-umum')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\PengaturanUmumController::class, 'index']);
+    });
+
     // Endpoint untuk mendapatkan data unit
 });
 

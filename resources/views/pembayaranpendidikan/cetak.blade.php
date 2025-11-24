@@ -45,14 +45,21 @@
 <body class="container py-4">
 
     <!-- BUKTI 1 -->
+    @php
+        $namaSekolah = optional($pengaturan)->nama_sekolah ?? 'Pesantren Persis 80 Al-Amin Sindangkasih';
+        $alamatSekolah = optional($pengaturan)->alamat_sekolah ?? 'Jl. Raya Ancol No. 27 Sindangkasih Ciamis';
+        $logoUrl = optional($pengaturan)->logo
+            ? asset('storage/' . $pengaturan->logo)
+            : asset('assets/img/logo/persisalamin.png');
+    @endphp
     <div class="bukti-pembayaran">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
                 <div class="judul">BUKTI PEMBAYARAN</div>
-                <div>Pesantren Persis 80 Al-Amin Sindangkasih</div>
-                <small>Jl. Raya Ancol No. 27 Sindangkasih Ciamis</small>
+                <div>{{ $namaSekolah }}</div>
+                <small>{{ $alamatSekolah }}</small>
             </div>
-            <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="Logo" height="60">
+            <img src="{{ $logoUrl }}" alt="Logo" height="60">
         </div>
 
         <div class="row mb-2">

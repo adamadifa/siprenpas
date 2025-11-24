@@ -38,7 +38,11 @@ class PengaturanUmumController extends Controller
             'email' => 'nullable|email|max:255',
             'website' => 'nullable|url|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'background_login' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096'
+            'background_login' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'model_1' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'model_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'model_3' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'model_4' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096'
         ]);
 
         $data = $request->all();
@@ -57,6 +61,17 @@ class PengaturanUmumController extends Controller
             $bgName = 'bg_' . time() . '.' . $bg->getClientOriginalExtension();
             $bg->storeAs('public/backgrounds', $bgName);
             $data['background_login'] = 'backgrounds/' . $bgName;
+        }
+
+        // Handle model uploads
+        for ($i = 1; $i <= 4; $i++) {
+            $fieldName = 'model_' . $i;
+            if ($request->hasFile($fieldName)) {
+                $model = $request->file($fieldName);
+                $modelName = 'model_' . $i . '_' . time() . '.' . $model->getClientOriginalExtension();
+                $model->storeAs('public/models', $modelName);
+                $data[$fieldName] = 'models/' . $modelName;
+            }
         }
 
         PengaturanUmum::create($data);
@@ -96,7 +111,11 @@ class PengaturanUmumController extends Controller
             'email' => 'nullable|email|max:255',
             'website' => 'nullable|url|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'background_login' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096'
+            'background_login' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'model_1' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'model_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'model_3' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'model_4' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096'
         ]);
 
         $pengaturan = PengaturanUmum::findOrFail($id);
@@ -126,6 +145,23 @@ class PengaturanUmumController extends Controller
             $data['background_login'] = 'backgrounds/' . $bgName;
         }
 
+        // Handle model uploads
+        for ($i = 1; $i <= 4; $i++) {
+            $fieldName = 'model_' . $i;
+            if ($request->hasFile($fieldName)) {
+                // Delete old model if exists
+                $oldModelField = 'model_' . $i;
+                if ($pengaturan->$oldModelField && Storage::exists('public/' . $pengaturan->$oldModelField)) {
+                    Storage::delete('public/' . $pengaturan->$oldModelField);
+                }
+
+                $model = $request->file($fieldName);
+                $modelName = 'model_' . $i . '_' . time() . '.' . $model->getClientOriginalExtension();
+                $model->storeAs('public/models', $modelName);
+                $data[$fieldName] = 'models/' . $modelName;
+            }
+        }
+
         $pengaturan->update($data);
 
         return redirect()->route('pengaturan-umum.index')
@@ -142,6 +178,19 @@ class PengaturanUmumController extends Controller
         // Delete logo if exists
         if ($pengaturan->logo && Storage::exists('public/' . $pengaturan->logo)) {
             Storage::delete('public/' . $pengaturan->logo);
+        }
+
+        // Delete background login if exists
+        if ($pengaturan->background_login && Storage::exists('public/' . $pengaturan->background_login)) {
+            Storage::delete('public/' . $pengaturan->background_login);
+        }
+
+        // Delete model files if exists
+        for ($i = 1; $i <= 4; $i++) {
+            $fieldName = 'model_' . $i;
+            if ($pengaturan->$fieldName && Storage::exists('public/' . $pengaturan->$fieldName)) {
+                Storage::delete('public/' . $pengaturan->$fieldName);
+            }
         }
 
         $pengaturan->delete();

@@ -137,7 +137,7 @@ class PendaftaranonlineController extends Controller
             ->leftJoin('regencies', 'regencies.id', 'pendaftaran_online.id_regency')
             ->leftJoin('districts', 'districts.id', 'pendaftaran_online.id_district')
             ->leftJoin('villages', 'villages.id', 'pendaftaran_online.id_village')
-            ->join('konfigurasi_tahunajaran_pddb', 'konfigurasi_tahunajaran_pddb.kode_ta', 'pendaftaran_online.kode_ta')
+            ->join('konfigurasi_tahunajaran_ppdb', 'konfigurasi_tahunajaran_ppdb.kode_ta', 'pendaftaran_online.kode_ta')
             ->first();
         $pdf = FacadePdf::loadView('pendaftaranonline.cetak', compact('pendaftaran'));
         return $pdf->stream('formulir-pendaftaran-online.pdf');

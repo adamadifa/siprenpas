@@ -30,7 +30,17 @@ class UnitController extends Controller
     {
         $units = \App\Models\Unit::whereNotIn('kode_unit', ['U00', 'U06'])
             ->orderBy('kode_unit')
-            ->get();
+            ->get()
+            ->map(function ($unit) {
+                $data = $unit->toArray();
+                
+                // Format URL untuk logo jika ada
+                if (!empty($data['logo'])) {
+                    $data['logo'] = asset('storage/' . $data['logo']);
+                }
+                
+                return $data;
+            });
         return response()->json($units);
     }
 }

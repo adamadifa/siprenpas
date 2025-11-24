@@ -2178,6 +2178,48 @@
                 ]
             }
         },
+        "/api/public/pengaturan-umum": {
+            "get": {
+                "tags": [
+                    "Pengaturan Umum"
+                ],
+                "summary": "Mendapatkan data pengaturan umum aplikasi",
+                "description": "Mengembalikan data pengaturan umum seperti nama aplikasi, nama sekolah, alamat, kontak, logo, dan background login. Endpoint ini dapat diakses secara publik tanpa autentikasi. Jika data belum tersedia, field 'data' akan bernilai null dan akan ada field 'message'.",
+                "operationId": "getPengaturanUmum",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data pengaturan umum",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "oneOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PengaturanUmum"
+                                                }
+                                            ],
+                                            "nullable": true,
+                                            "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data pengaturan umum belum tersedia",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/pengumuman/terbaru": {
             "get": {
                 "tags": [
@@ -4805,6 +4847,63 @@
                 },
                 "type": "object"
             },
+            "PengaturanUmum": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nama_aplikasi": {
+                        "type": "string",
+                        "example": "SIP 80",
+                        "nullable": true
+                    },
+                    "nama_sekolah": {
+                        "type": "string",
+                        "example": "Pesantren Al Amin"
+                    },
+                    "alamat_sekolah": {
+                        "type": "string",
+                        "example": "Jl. Raya No. 123, Bandung"
+                    },
+                    "telepon": {
+                        "type": "string",
+                        "example": "081234567890",
+                        "nullable": true
+                    },
+                    "email": {
+                        "type": "string",
+                        "example": "info@pesantren.com",
+                        "nullable": true
+                    },
+                    "website": {
+                        "type": "string",
+                        "example": "https://pesantren.com",
+                        "nullable": true
+                    },
+                    "logo": {
+                        "type": "string",
+                        "example": "http://localhost/storage/logos/logo.png",
+                        "nullable": true
+                    },
+                    "background_login": {
+                        "type": "string",
+                        "example": "http://localhost/storage/backgrounds/bg.png",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
             "ProgramUnggulan": {
                 "properties": {
                     "id": {
@@ -4875,6 +4974,10 @@
         {
             "name": "Pendaftaran Got Talent",
             "description": "API endpoints untuk pendaftaran Al Amin Got Talent"
+        },
+        {
+            "name": "Pengaturan Umum",
+            "description": "API endpoints untuk mendapatkan data pengaturan umum aplikasi"
         },
         {
             "name": "Prestasi Siswa",

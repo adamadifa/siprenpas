@@ -6,6 +6,7 @@ use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 
 class UnitController extends Controller
 {
@@ -37,14 +38,28 @@ class UnitController extends Controller
     {
         $request->validate([
             'kode_unit' => 'required|max:3|min:3|unique:unit,kode_unit',
-            'nama_unit' => 'required'
+            'nama_unit' => 'required',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'status' => 'required|in:0,1'
         ]);
 
         try {
-            Unit::create([
+            $data = [
                 'kode_unit' => $request->kode_unit,
-                'nama_unit' => $request->nama_unit
-            ]);
+                'nama_unit' => $request->nama_unit,
+                'status' => $request->status ?? 1,
+                'keterangan' => $request->keterangan
+            ];
+
+            // Handle logo upload
+            if ($request->hasFile('logo')) {
+                $logo = $request->file('logo');
+                $logoName = 'unit_' . $request->kode_unit . '_' . time() . '.' . $logo->getClientOriginalExtension();
+                $logo->storeAs('public/unit_logos', $logoName);
+                $data['logo'] = 'unit_logos/' . $logoName;
+            }
+
+            Unit::create($data);
 
             return Redirect::back()->with(messageSuccess('Data Berhasil Disimpan'));
         } catch (\Exception $e) {
@@ -78,12 +93,32 @@ class UnitController extends Controller
 
         $kode_unit = Crypt::decrypt($kode_unit);
         $request->validate([
-            'nama_unit' => 'required'
+            'nama_unit' => 'required',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'status' => 'required|in:0,1'
         ]);
         try {
-            Unit::where('kode_unit', $kode_unit)->update([
-                'nama_unit' => $request->nama_unit
-            ]);
+            $unit = Unit::where('kode_unit', $kode_unit)->first();
+            $data = [
+                'nama_unit' => $request->nama_unit,
+                'status' => $request->status ?? 1,
+                'keterangan' => $request->keterangan
+            ];
+
+            // Handle logo upload
+            if ($request->hasFile('logo')) {
+                // Delete old logo if exists
+                if ($unit->logo && Storage::exists('public/' . $unit->logo)) {
+                    Storage::delete('public/' . $unit->logo);
+                }
+
+                $logo = $request->file('logo');
+                $logoName = 'unit_' . $kode_unit . '_' . time() . '.' . $logo->getClientOriginalExtension();
+                $logo->storeAs('public/unit_logos', $logoName);
+                $data['logo'] = 'unit_logos/' . $logoName;
+            }
+
+            Unit::where('kode_unit', $kode_unit)->update($data);
 
             return Redirect::back()->with(messageSuccess('Data Berhasil Diupdate'));
         } catch (\Exception $e) {
@@ -98,6 +133,13 @@ class UnitController extends Controller
     {
         $kode_unit = Crypt::decrypt($kode_unit);
         try {
+            $unit = Unit::where('kode_unit', $kode_unit)->first();
+            
+            // Delete logo if exists
+            if ($unit && $unit->logo && Storage::exists('public/' . $unit->logo)) {
+                Storage::delete('public/' . $unit->logo);
+            }
+
             Unit::where('kode_unit', $kode_unit)->delete();
             return Redirect::back()->with(['success' => 'Data Berhasil Dihapus']);
         } catch (\Exception $e) {

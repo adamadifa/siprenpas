@@ -16,28 +16,42 @@
 </head>
 
 <body>
+    @php
+        $namaSekolah = optional($pengaturan)->nama_sekolah ?? 'PESANTREN PERSIS 80 AL AMIN';
+        $alamatSekolah = optional($pengaturan)->alamat_sekolah ?? 'Jln. Raya Ancol No. 27 Sindangkasih - Ciamis';
+        $teleponSekolah = optional($pengaturan)->telepon ?? '(0265) 325285';
+        $emailSekolah = optional($pengaturan)->email ?? 'peris.alamin80sinkas@gmail.com';
+        $websiteSekolah = optional($pengaturan)->website ?? 'persisalamin.com';
+        $logoUrl = optional($pengaturan)->logo ? asset('storage/' . $pengaturan->logo) : asset('assets/img/logo/persisalamin.png');
+    @endphp
     <div class="header" style="margin-bottom: 10px">
         <table>
             <tr>
                 <td>
-                
-                    <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="Logo Perusahaan"
-                        style="max-width: 100px;">
+                    <img src="{{ $logoUrl }}" alt="Logo Perusahaan" style="max-width: 100px;">
                 </td>
                 <td>
                     <h4 style="line-height: 20px; margin-bottom: 5px">
                         LAPORAN PEMBAYARAN SANTRI
                         <br>
-                        PESANTREN PERSIS AL AMIN 80 AL AMIN
+                        {{ strtoupper($namaSekolah) }}
                         <br>
                         SINDANGKASIH - CIAMIS
                         <br>
                         PERIODE {{ DateToIndo($dari) }} s/d {{ DateToIndo($sampai) }}
                     </h4>
                     <span style="font-style: italic;">
-                        Jln. Raya Ancol No. 27 Sindangkasih - Ciamis
+                        {{ $alamatSekolah }}
+                        @if ($teleponSekolah)
+                            | Telp. {{ $teleponSekolah }}
+                        @endif
                     </span><br>
-                    {{-- <span style="font-style: italic;">08123456789</span> --}}
+                    <span style="font-style: italic;">
+                        e-mail : {{ $emailSekolah }}
+                        @if ($websiteSekolah)
+                            | web : {{ $websiteSekolah }}
+                        @endif
+                    </span>
                 </td>
             </tr>
         </table>
