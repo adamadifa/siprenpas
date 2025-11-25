@@ -45,6 +45,8 @@ class PerlombaanController extends Controller
         $request->validate([
             'jenis_perlombaan' => 'required',
             'id_jenjang' => 'required|exists:jenjang_pendidikan,id',
+            'biaya_pendaftaran' => 'required|numeric|min:0',
+            'contact_person' => 'required|string|max:255',
             'juknis_juklak' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
@@ -52,7 +54,9 @@ class PerlombaanController extends Controller
         try {
             $data = [
                 'jenis_perlombaan' => $request->jenis_perlombaan,
-                'id_jenjang' => $request->id_jenjang
+                'id_jenjang' => $request->id_jenjang,
+                'biaya_pendaftaran' => $request->biaya_pendaftaran,
+                'contact_person' => $request->contact_person,
             ];
 
             // Handle file upload juknis_juklak
@@ -107,6 +111,8 @@ class PerlombaanController extends Controller
         $request->validate([
             'jenis_perlombaan' => 'required',
             'id_jenjang' => 'required|exists:jenjang_pendidikan,id',
+            'biaya_pendaftaran' => 'required|numeric|min:0',
+            'contact_person' => 'required|string|max:255',
             'juknis_juklak' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
@@ -115,7 +121,9 @@ class PerlombaanController extends Controller
             
             $data = [
                 'jenis_perlombaan' => $request->jenis_perlombaan,
-                'id_jenjang' => $request->id_jenjang
+                'id_jenjang' => $request->id_jenjang,
+                'biaya_pendaftaran' => $request->biaya_pendaftaran,
+                'contact_person' => $request->contact_person,
             ];
 
             // Handle file upload juknis_juklak

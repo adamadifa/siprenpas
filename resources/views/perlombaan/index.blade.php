@@ -53,6 +53,8 @@
                                         <th>Thumbnail</th>
                                         <th>Jenis Perlombaan</th>
                                         <th>Jenjang Pendidikan</th>
+                                        <th>Biaya Pendaftaran</th>
+                                        <th>Contact Person</th>
                                         <th>Juknis & Juklak</th>
                                         <th>#</th>
                                     </tr>
@@ -72,6 +74,14 @@
                                             </td>
                                             <td>{{ $d->jenis_perlombaan }}</td>
                                             <td>{{ $d->jenjangPendidikan->jenjang_pendidikan ?? '-' }}</td>
+                                            <td class="text-end">
+                                                @if (!is_null($d->biaya_pendaftaran))
+                                                    Rp {{ formatRupiah($d->biaya_pendaftaran) }}
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td>{{ $d->contact_person ?? '-' }}</td>
                                             <td>
                                                 @if ($d->juknis_juklak)
                                                     <a href="{{ asset('storage/' . $d->juknis_juklak) }}" target="_blank" class="btn btn-sm btn-info">

@@ -7,6 +7,9 @@
             <option value="{{ $d->id }}">{{ $d->jenjang_pendidikan }}</option>
         @endforeach
     </select>
+    <x-input-with-icon icon="ti ti-currency-rupiah" label="Biaya Pendaftaran" name="biaya_pendaftaran" type="number"
+        textalign="right" />
+    <x-input-with-icon icon="ti ti-phone" label="Contact Person" name="contact_person" />
     <div class="form-group mb-3">
         <label class="form-label">File Juknis & Juklak</label>
         <input type="file" class="form-control" name="juknis_juklak" id="juknis_juklak" accept=".pdf,.doc,.docx">
@@ -30,6 +33,8 @@
         $("#formcreatePerlombaan").submit(function() {
             var jenis_perlombaan = $("#jenis_perlombaan").val();
             var id_jenjang = $("#id_jenjang").val();
+            var biaya_pendaftaran = $("#biaya_pendaftaran").val();
+            var contact_person = $("#contact_person").val();
             if (jenis_perlombaan == "") {
                 Swal.fire({
                     title: 'Oops!',
@@ -49,6 +54,28 @@
                     confirmButtonText: 'OK'
                 }).then((result) => {
                     $("#id_jenjang").focus();
+                });
+                return false;
+            }
+            if (biaya_pendaftaran == "") {
+                Swal.fire({
+                    title: 'Oops!',
+                    text: 'Biaya Pendaftaran Harus Diisi !',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    $("#biaya_pendaftaran").focus();
+                });
+                return false;
+            }
+            if (contact_person == "") {
+                Swal.fire({
+                    title: 'Oops!',
+                    text: 'Contact Person Harus Diisi !',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    $("#contact_person").focus();
                 });
                 return false;
             }

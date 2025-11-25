@@ -5,6 +5,10 @@
         value="{{ $perlombaan->jenis_perlombaan }}" />
     <x-select-label label="Jenjang Pendidikan" name="id_jenjang" :data="$jenjangPendidikan"
         key="id" textShow="jenjang_pendidikan" selected="{{ $perlombaan->id_jenjang }}" />
+<x-input-with-icon-label icon="ti ti-currency-rupiah" label="Biaya Pendaftaran" name="biaya_pendaftaran"
+    type="number" value="{{ $perlombaan->biaya_pendaftaran }}" align="right" />
+<x-input-with-icon-label icon="ti ti-phone" label="Contact Person" name="contact_person"
+    value="{{ $perlombaan->contact_person }}" />
     <div class="form-group mb-3">
         <label class="form-label">File Juknis & Juklak</label>
         <input type="file" class="form-control" name="juknis_juklak" id="juknis_juklak" accept=".pdf,.doc,.docx">
@@ -42,6 +46,8 @@
         $("#formeditPerlombaan").submit(function() {
             var jenis_perlombaan = $("#jenis_perlombaan").val();
             var id_jenjang = $("#id_jenjang").val();
+            var biaya_pendaftaran = $("#biaya_pendaftaran").val();
+            var contact_person = $("#contact_person").val();
             if (jenis_perlombaan == "") {
                 Swal.fire({
                     title: 'Oops!',
@@ -61,6 +67,28 @@
                     confirmButtonText: 'OK'
                 }).then((result) => {
                     $("#id_jenjang").focus();
+                });
+                return false;
+            }
+            if (biaya_pendaftaran == "") {
+                Swal.fire({
+                    title: 'Oops!',
+                    text: 'Biaya Pendaftaran Harus Diisi !',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    $("#biaya_pendaftaran").focus();
+                });
+                return false;
+            }
+            if (contact_person == "") {
+                Swal.fire({
+                    title: 'Oops!',
+                    text: 'Contact Person Harus Diisi !',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    $("#contact_person").focus();
                 });
                 return false;
             }
