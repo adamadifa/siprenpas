@@ -20,4 +20,9 @@ class PendaftaranGotTalent extends Model
     {
         return $this->belongsToMany(Perlombaan::class, 'pendaftaran_lomba', 'id_pendaftaran', 'id_perlombaan');
     }
+
+    public function konfirmasiPembayaran()
+    {
+        return $this->hasMany(KonfirmasiPembayaranGotTalent::class, 'pendaftaran_got_talent_id');
+    }
 }

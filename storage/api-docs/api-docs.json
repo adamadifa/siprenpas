@@ -526,6 +526,388 @@
                 }
             }
         },
+        "/api/pendaftaran-got-talent/konfirmasi-pembayaran": {
+            "post": {
+                "tags": [
+                    "Konfirmasi Pembayaran Got Talent"
+                ],
+                "summary": "Kirim konfirmasi pembayaran",
+                "description": "Endpoint untuk mengirim konfirmasi pembayaran Al Amin Got Talent. User harus sudah terdaftar dan memiliki pendaftaran aktif.",
+                "operationId": "d39c2acd36893a018f494f5597f8e814",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "tanggal_pembayaran",
+                                    "jumlah_pembayaran",
+                                    "metode_pembayaran",
+                                    "bukti_pembayaran"
+                                ],
+                                "properties": {
+                                    "tanggal_pembayaran": {
+                                        "description": "Tanggal pembayaran (tidak boleh lebih dari hari ini)",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-01-15"
+                                    },
+                                    "jumlah_pembayaran": {
+                                        "description": "Jumlah pembayaran (minimal 1)",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 50000
+                                    },
+                                    "metode_pembayaran": {
+                                        "description": "Metode pembayaran",
+                                        "type": "string",
+                                        "enum": [
+                                            "transfer",
+                                            "tunai"
+                                        ],
+                                        "example": "transfer"
+                                    },
+                                    "bukti_pembayaran": {
+                                        "description": "File bukti pembayaran (JPG, PNG, PDF, maksimal 5MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "keterangan": {
+                                        "description": "Keterangan tambahan (opsional)",
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "example": "Transfer dari BCA"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Konfirmasi pembayaran berhasil dikirim",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/KonfirmasiPembayaranResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data pendaftaran tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal atau sudah ada konfirmasi yang sedang diproses",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/pendaftaran-got-talent/get-konfirmasi-pembayaran": {
+            "get": {
+                "tags": [
+                    "Konfirmasi Pembayaran Got Talent"
+                ],
+                "summary": "Ambil konfirmasi pembayaran user",
+                "description": "Endpoint untuk mengambil data konfirmasi pembayaran terbaru dari user yang sedang login",
+                "operationId": "195f7c6a58f0310ee2d35605f454f688",
+                "responses": {
+                    "200": {
+                        "description": "Data konfirmasi pembayaran berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/KonfirmasiPembayaran"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Data pendaftaran atau konfirmasi pembayaran tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/konfirmasi-pembayaran-got-talent/{id}/status": {
+            "put": {
+                "tags": [
+                    "Konfirmasi Pembayaran Got Talent"
+                ],
+                "summary": "Update status konfirmasi pembayaran (Admin)",
+                "description": "Endpoint untuk admin mengupdate status konfirmasi pembayaran (diverifikasi/ditolak)",
+                "operationId": "8779a34db8a2bff703b384f1ea3b835f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID konfirmasi pembayaran",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "description": "Status baru",
+                                        "type": "string",
+                                        "enum": [
+                                            "diverifikasi",
+                                            "ditolak"
+                                        ],
+                                        "example": "diverifikasi"
+                                    },
+                                    "catatan_admin": {
+                                        "description": "Catatan dari admin (opsional)",
+                                        "type": "string",
+                                        "maxLength": 500,
+                                        "example": "Pembayaran sudah diterima"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status berhasil diupdate",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Status konfirmasi pembayaran berhasil diupdate"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/KonfirmasiPembayaran"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Konfirmasi pembayaran tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/konfirmasi-pembayaran-got-talent": {
+            "get": {
+                "tags": [
+                    "Konfirmasi Pembayaran Got Talent"
+                ],
+                "summary": "List semua konfirmasi pembayaran (Admin)",
+                "description": "Endpoint untuk admin melihat semua konfirmasi pembayaran dengan filter dan pagination",
+                "operationId": "01006a2d143c916612811cb666c35242",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter berdasarkan status",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pending",
+                                "diverifikasi",
+                                "ditolak"
+                            ],
+                            "example": "pending"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search berdasarkan nama, email, atau nomor register",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Ahmad"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List konfirmasi pembayaran berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/KonfirmasiPembayaran"
+                                                    }
+                                                },
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 75
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/public/pages/{slug}": {
             "get": {
                 "tags": [
@@ -4718,6 +5100,98 @@
     },
     "components": {
         "schemas": {
+            "KonfirmasiPembayaran": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "pendaftaran_got_talent_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "tanggal_pembayaran": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-01-15"
+                    },
+                    "jumlah_pembayaran": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 50000
+                    },
+                    "metode_pembayaran": {
+                        "type": "string",
+                        "enum": [
+                            "transfer",
+                            "tunai"
+                        ],
+                        "example": "transfer"
+                    },
+                    "bukti_pembayaran": {
+                        "type": "string",
+                        "example": "http://domain.com/storage/bukti_pembayaran_got_talent/bukti_pembayaran_1_1234567890_abc123.jpg",
+                        "nullable": true
+                    },
+                    "keterangan": {
+                        "type": "string",
+                        "example": "Transfer dari BCA",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "diverifikasi",
+                            "ditolak"
+                        ],
+                        "example": "pending"
+                    },
+                    "catatan_admin": {
+                        "type": "string",
+                        "example": "Pembayaran sudah diterima",
+                        "nullable": true
+                    },
+                    "diverifikasi_oleh": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "diverifikasi_pada": {
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2026-01-16 14:20:00",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2026-01-15 10:30:00"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2026-01-15 10:30:00"
+                    }
+                },
+                "type": "object"
+            },
+            "KonfirmasiPembayaranResponse": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Konfirmasi pembayaran berhasil dikirim"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/KonfirmasiPembayaran"
+                    }
+                },
+                "type": "object"
+            },
             "PendaftaranGotTalent": {
                 "properties": {
                     "id": {
@@ -4891,6 +5365,26 @@
                         "example": "http://localhost/storage/backgrounds/bg.png",
                         "nullable": true
                     },
+                    "model_1": {
+                        "type": "string",
+                        "example": "http://localhost/storage/models/model_1_1234567890.jpg",
+                        "nullable": true
+                    },
+                    "model_2": {
+                        "type": "string",
+                        "example": "http://localhost/storage/models/model_2_1234567890.jpg",
+                        "nullable": true
+                    },
+                    "model_3": {
+                        "type": "string",
+                        "example": "http://localhost/storage/models/model_3_1234567890.jpg",
+                        "nullable": true
+                    },
+                    "model_4": {
+                        "type": "string",
+                        "example": "http://localhost/storage/models/model_4_1234567890.jpg",
+                        "nullable": true
+                    },
                     "created_at": {
                         "type": "string",
                         "format": "date-time",
@@ -4948,6 +5442,28 @@
                     "nama_unit": {
                         "description": "Nama unit",
                         "type": "string"
+                    },
+                    "logo": {
+                        "description": "URL logo unit",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "status": {
+                        "description": "Status unit (1=Show, 0=Hide)",
+                        "type": "integer"
+                    },
+                    "keterangan": {
+                        "description": "Keterangan unit",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
                     }
                 },
                 "type": "object"
@@ -4966,6 +5482,10 @@
         {
             "name": "Karyawan",
             "description": "Manajemen Karyawan"
+        },
+        {
+            "name": "Konfirmasi Pembayaran Got Talent",
+            "description": "API endpoints untuk konfirmasi pembayaran Al Amin Got Talent"
         },
         {
             "name": "Page",

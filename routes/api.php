@@ -77,6 +77,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/pendaftaran-got-talent/my-pendaftaran', [App\Http\Controllers\Api\PendaftaranGotTalentController::class, 'getMyPendaftaran']);
     Route::put('/pendaftaran-got-talent/update', [App\Http\Controllers\Api\PendaftaranGotTalentController::class, 'update']);
 
+    // Konfirmasi Pembayaran Got Talent
+    Route::post('/pendaftaran-got-talent/konfirmasi-pembayaran', [App\Http\Controllers\Api\KonfirmasiPembayaranGotTalentController::class, 'store']);
+    Route::get('/pendaftaran-got-talent/get-konfirmasi-pembayaran', [App\Http\Controllers\Api\KonfirmasiPembayaranGotTalentController::class, 'show']);
+
     // Program Unggulan API Routes (CRUD dengan authentication)
     Route::apiResource('program-unggulan', ProgramUnggulanController::class);
 });

@@ -263,6 +263,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/pendaftaran-got-talent/{id}/createuser', 'createuser')->name('pendaftaran-got-talent.createuser')->can('pendaftaran-got-talent.index');
     });
 
+    Route::controller(App\Http\Controllers\KonfirmasiPembayaranGotTalentController::class)->group(function () {
+        Route::get('/konfirmasi-pembayaran-got-talent', 'index')->name('konfirmasi-pembayaran-got-talent.index')->can('pendaftaran-got-talent.index');
+        Route::get('/konfirmasi-pembayaran-got-talent/{id}/show', 'show')->name('konfirmasi-pembayaran-got-talent.show')->can('pendaftaran-got-talent.index');
+        Route::put('/konfirmasi-pembayaran-got-talent/{id}/update-status', 'updateStatus')->name('konfirmasi-pembayaran-got-talent.update-status')->can('pendaftaran-got-talent.index');
+    });
+
     Route::controller(DepartemenConroller::class)->group(function () {
         Route::get('/departemen', 'index')->name('departemen.index')->can('departemen.index');
         Route::get('/departemen/create', 'create')->name('departemen.create')->can('departemen.create');

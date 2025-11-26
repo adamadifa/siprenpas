@@ -529,7 +529,7 @@
         @if (auth()->check() &&
                 auth()->user()->hasAnyPermission(['perlombaan.index', 'pendaftaran-got-talent.index', 'jenjang-pendidikan.index']))
             <li
-                class="menu-item {{ request()->is(['perlombaan', 'perlombaan/*', 'pendaftaran-got-talent', 'pendaftaran-got-talent/*', 'jenjang-pendidikan', 'jenjang-pendidikan/*']) ? 'open' : '' }}">
+                class="menu-item {{ request()->is(['perlombaan', 'perlombaan/*', 'pendaftaran-got-talent', 'pendaftaran-got-talent/*', 'konfirmasi-pembayaran-got-talent', 'konfirmasi-pembayaran-got-talent/*', 'jenjang-pendidikan', 'jenjang-pendidikan/*']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-award"></i>
                     <div>Al Amin Got Talent</div>
@@ -547,6 +547,14 @@
                             class="menu-item {{ request()->is(['pendaftaran-got-talent', 'pendaftaran-got-talent/*']) ? 'active' : '' }}">
                             <a href="{{ route('pendaftaran-got-talent.index') }}" class="menu-link">
                                 <div>Pendaftaran Got Talent</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('pendaftaran-got-talent.index')
+                        <li
+                            class="menu-item {{ request()->is(['konfirmasi-pembayaran-got-talent', 'konfirmasi-pembayaran-got-talent/*']) ? 'active' : '' }}">
+                            <a href="{{ route('konfirmasi-pembayaran-got-talent.index') }}" class="menu-link">
+                                <div>Konfirmasi Pembayaran</div>
                             </a>
                         </li>
                     @endcan
