@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\KonfirmasiPembayaranRequest;
 use App\Models\KonfirmasiPembayaranGotTalent;
 use App\Models\PendaftaranGotTalent;
+use App\Models\UserPendaftaranGotTalent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -99,10 +100,15 @@ class KonfirmasiPembayaranGotTalentController extends Controller
             // Get user yang sedang login (dari token)
             $user = Auth::user();
             
-            // Cari pendaftaran berdasarkan user_id
-            $pendaftaran = PendaftaranGotTalent::where('user_id', $user->id)
-                ->orWhere('email', $user->email)
-                ->first();
+            // Cari pendaftaran melalui tabel user_pendaftaran_got_talent
+            $userPendaftaran = UserPendaftaranGotTalent::where('id_user', $user->id)->first();
+            
+            if (!$userPendaftaran) {
+                // Fallback: cari berdasarkan email
+                $pendaftaran = PendaftaranGotTalent::where('email', $user->email)->first();
+            } else {
+                $pendaftaran = PendaftaranGotTalent::where('id', $userPendaftaran->id_pendaftaran)->first();
+            }
 
             if (!$pendaftaran) {
                 return response()->json([
@@ -205,10 +211,15 @@ class KonfirmasiPembayaranGotTalentController extends Controller
         try {
             $user = Auth::user();
             
-            // Cari pendaftaran berdasarkan user_id
-            $pendaftaran = PendaftaranGotTalent::where('user_id', $user->id)
-                ->orWhere('email', $user->email)
-                ->first();
+            // Cari pendaftaran melalui tabel user_pendaftaran_got_talent
+            $userPendaftaran = UserPendaftaranGotTalent::where('id_user', $user->id)->first();
+            
+            if (!$userPendaftaran) {
+                // Fallback: cari berdasarkan email
+                $pendaftaran = PendaftaranGotTalent::where('email', $user->email)->first();
+            } else {
+                $pendaftaran = PendaftaranGotTalent::where('id', $userPendaftaran->id_pendaftaran)->first();
+            }
 
             if (!$pendaftaran) {
                 return response()->json([
