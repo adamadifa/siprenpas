@@ -7,6 +7,7 @@ use App\Models\JenjangPendidikan;
 use App\Models\Perlombaan;
 use App\Models\User;
 use App\Models\UserPendaftaranGotTalent;
+use App\Models\KonfirmasiPembayaranGotTalent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
@@ -37,10 +38,10 @@ class PendaftaranGotTalentController extends Controller
         }
 
         $pendaftaranGotTalent = $query->orderBy('created_at', 'desc')->get();
-        
+
         // Load relationship setelah query
         $pendaftaranGotTalent->load('jenjangPendidikan');
-        
+
         $jenjangPendidikan = JenjangPendidikan::orderBy('jenjang_pendidikan')->get();
 
         return view('pendaftaran-got-talent.index', compact('pendaftaranGotTalent', 'jenjangPendidikan'));
@@ -254,6 +255,16 @@ class PendaftaranGotTalentController extends Controller
             DB::table('pendaftaran_lomba')
                 ->where('id_pendaftaran', $id)
                 ->delete();
+
+            // Hapus relasi user dan user terkait
+            $userRelations = UserPendaftaranGotTalent::where('id_pendaftaran', $id)->get();
+            foreach ($userRelations as $relasi) {
+                User::where('id', $relasi->id_user)->delete();
+            }
+            UserPendaftaranGotTalent::where('id_pendaftaran', $id)->delete();
+
+            // Hapus konfirmasi pembayaran jika ada
+            KonfirmasiPembayaranGotTalent::where('pendaftaran_got_talent_id', $id)->delete();
 
             // Hapus data pendaftaran
             PendaftaranGotTalent::where('id', $id)->delete();
