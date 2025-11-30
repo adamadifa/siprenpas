@@ -131,7 +131,7 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
         <a href="{{ route('dashboard.index') }}" class="app-brand-link">
-            <span class="app-brand-logo demo" style="width:auto !important; height: 52px !important;">
+            <span class="app-brand-logo demo" style="width:auto !important; height: 46px !important;">
                 @if ($pengaturan && $pengaturan->logo)
                     <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="" width="52">
                 @else
