@@ -23,7 +23,9 @@ class BiayaController extends Controller
         if (!empty($request->kode_ta)) {
             $query->where('konfigurasi_biaya.kode_ta', $request->kode_ta);
         } else {
-            $query->where('konfigurasi_biaya.kode_ta', $tahunajaran->kode_ta);
+            if ($tahunajaran) {
+                $query->where('konfigurasi_biaya.kode_ta', $tahunajaran->kode_ta);
+            }
         }
 
         if (!empty($request->kode_unit)) {
