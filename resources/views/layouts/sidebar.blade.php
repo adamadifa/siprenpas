@@ -35,22 +35,114 @@
         margin: 0 auto;
     }
 
-    .layout-menu.layout-menu-collapsed .sidebar-user-info {
-        padding: 0.8rem 0 !important;
-        flex-direction: column;
-        align-items: center !important;
-        gap: 0.3rem !important;
+    .sidebar-user-info {
+        padding: 1rem 1.5rem;
+        margin: 0.5rem 0.75rem;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        border-radius: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
     }
 
-    .layout-menu.layout-menu-collapsed .sidebar-user-info>div:not(:first-child) {
+    .sidebar-user-info:hover {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+        transform: translateY(-2px);
+    }
+
+    .sidebar-user-info-content {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+    }
+
+    .sidebar-user-avatar {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .sidebar-user-avatar img {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar-user-info:hover .sidebar-user-avatar img {
+        transform: scale(1.05);
+    }
+
+    .sidebar-user-status {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 12px;
+        height: 12px;
+        background: #4caf50;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-user-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .sidebar-user-name {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.3;
+    }
+
+    .sidebar-user-role {
+        font-size: 0.8125rem;
+        color: rgba(255, 255, 255, 0.7);
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sidebar-user-role i {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .layout-menu.layout-menu-collapsed .sidebar-user-info {
+        padding: 0.75rem 0.5rem !important;
+        margin: 0.5rem 0.25rem !important;
+        justify-content: center !important;
+    }
+
+    .layout-menu.layout-menu-collapsed .sidebar-user-info-content {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+    }
+
+    .layout-menu.layout-menu-collapsed .sidebar-user-details {
         display: none !important;
     }
 
-    .layout-menu.layout-menu-collapsed .sidebar-user-info>div:first-child,
-    .layout-menu.layout-menu-collapsed .sidebar-user-info img {
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 1.1rem !important;
+    .layout-menu.layout-menu-collapsed .sidebar-user-avatar img {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    .layout-menu.layout-menu-collapsed .sidebar-user-status {
+        width: 10px !important;
+        height: 10px !important;
         border-width: 1.5px !important;
     }
 
@@ -147,8 +239,24 @@
             <i class="ti ti-x d-block d-xl-none ti-sm align-middle"></i>
         </a>
     </div>
-    <!-- User Info Section -->
 
+    <!-- User Info Section -->
+    <div class="sidebar-user-info">
+        <div class="sidebar-user-info-content">
+            <div class="sidebar-user-avatar">
+                <img src="{{ asset(auth()->user()->avatar ? 'storage/avatars/' . auth()->user()->avatar : 'assets/img/avatars/1.png') }}"
+                    alt="{{ auth()->user()->name }}">
+                <span class="sidebar-user-status"></span>
+            </div>
+            <div class="sidebar-user-details">
+                <div class="sidebar-user-name">{{ auth()->user()->name }}</div>
+                <div class="sidebar-user-role">
+                    <i class="ti ti-shield-check"></i>
+                    <span>{{ auth()->user()->getRoleNames()->first() ?? 'User' }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <ul class="menu-inner py-1">
         <li class="menu-item {{ request()->is(['dashboard', 'dashboard/*']) ? 'active' : '' }}">

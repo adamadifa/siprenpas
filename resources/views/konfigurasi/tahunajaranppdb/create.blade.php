@@ -1,6 +1,5 @@
 <form action="{{ route('tahunajaranppdb.store') }}" id="formTahunajaran" method="POST">
     @csrf
-    <x-input-with-icon-label icon="ti ti-barcode" label="Kode Tahun Ajaran" name="kode_ta" />
     <x-input-with-icon-label icon="ti ti-file-description" label="Tahun Ajaran" name="tahun_ajaran" />
     <div class="form-group mb-3">
         <label for="exampleFormControlInput1" style="font-weight: 600" class="form-label">Status</label>
@@ -19,8 +18,7 @@
 </form>
 <script src="{{ asset('assets/js/pages/tahunajaran.js') }}"></script>
 <script>
-    $(function(){
+    $(function() {
         $('#tahun_ajaran').mask('0000/0000');
-        $('#kode_ta').mask('AA0000');
     });
 </script>

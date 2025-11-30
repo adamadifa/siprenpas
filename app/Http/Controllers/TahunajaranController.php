@@ -23,14 +23,37 @@ class TahunajaranController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kode_ta' => 'required|max:6|min:6|unique:konfigurasi_tahun_ajaran,kode_ta',
             'tahun_ajaran' => 'required',
             'status' => 'required'
         ]);
 
         try {
+            // Auto-generate kode_ta dari tahun_ajaran
+            // Format: 2025/2026 -> TA2526
+            $tahun_ajaran = $request->tahun_ajaran;
+            $tahun_parts = explode('/', $tahun_ajaran);
+            
+            if (count($tahun_parts) != 2) {
+                return Redirect::back()->with(messageError('Format tahun ajaran tidak valid. Gunakan format: YYYY/YYYY'));
+            }
+            
+            $tahun_awal = substr($tahun_parts[0], -2); // 2 digit terakhir tahun pertama
+            $tahun_akhir = substr($tahun_parts[1], -2); // 2 digit terakhir tahun kedua
+            $kode_ta = 'TA' . $tahun_awal . $tahun_akhir;
+            
+            // Validasi unique kode_ta
+            $request->merge(['kode_ta' => $kode_ta]);
+            $request->validate([
+                'kode_ta' => 'required|max:6|min:6|unique:konfigurasi_tahun_ajaran,kode_ta',
+            ]);
+            
+            // Jika status aktif (1), set semua data lain menjadi nonaktif (0)
+            if ($request->status == 1) {
+                Tahunajaran::where('status', 1)->update(['status' => 0]);
+            }
+            
             Tahunajaran::create([
-                'kode_ta' => $request->kode_ta,
+                'kode_ta' => $kode_ta,
                 'tahun_ajaran' => $request->tahun_ajaran,
                 'status' => $request->status
             ]);
@@ -60,6 +83,13 @@ class TahunajaranController extends Controller
         ]);
 
         try {
+            // Jika status aktif (1), set semua data lain menjadi nonaktif (0)
+            if ($request->status == 1) {
+                Tahunajaran::where('status', 1)
+                    ->where('kode_ta', '!=', $kode_ta)
+                    ->update(['status' => 0]);
+            }
+            
             Tahunajaran::where('kode_ta', $kode_ta)->update([
                 'tahun_ajaran' => $request->tahun_ajaran,
                 'status' => $request->status

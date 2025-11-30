@@ -20,37 +20,163 @@
         }
 
         .dashboard-header {
-            background: linear-gradient(120deg, #1B5E20 60%, #388e3c 100%);
-            border-radius: 1.2rem;
-            padding: 1.5rem 2rem 1.2rem 2rem;
+            background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 50%, #388e3c 100%);
+            border-radius: 1.5rem;
+            padding: 2rem;
             margin-bottom: 1.5rem;
             color: #fff;
-            box-shadow: 0 4px 16px 0 rgba(27, 94, 32, 0.10);
+            box-shadow: 0 8px 24px 0 rgba(27, 94, 32, 0.15);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dashboard-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px 0 rgba(27, 94, 32, 0.20);
+        }
+
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        .dashboard-header-content {
+            position: relative;
+            z-index: 2;
             display: flex;
             align-items: center;
-            gap: 1.2rem;
+            gap: 1.5rem;
+        }
+
+        .dashboard-header .avatar-wrapper {
+            position: relative;
+            flex-shrink: 0;
         }
 
         .dashboard-header .avatar {
-            width: 56px;
-            height: 56px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #fff;
-            box-shadow: 0 2px 8px rgba(27, 94, 32, 0.10);
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 4px rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-header:hover .avatar {
+            transform: scale(1.05);
+        }
+
+        .dashboard-header .avatar-status {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 20px;
+            height: 20px;
+            background: #4caf50;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .dashboard-header .welcome-content {
+            flex: 1;
+        }
+
+        .dashboard-header .welcome-greeting {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .dashboard-header .welcome {
-            font-size: 1.7rem;
+            font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 0.1rem;
+            margin-bottom: 0.5rem;
             color: #fff;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            line-height: 1.2;
         }
 
         .dashboard-header .desc {
             font-size: 1rem;
-            color: #b9f6ca;
-            opacity: 1;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .dashboard-header .info-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .dashboard-header .info-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-header .info-badge:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .dashboard-header .info-badge i {
+            font-size: 1rem;
+        }
+
+        .dashboard-header .datetime-info {
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .dashboard-header .current-date {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+        }
+
+        .dashboard-header .current-time {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .card.h-100 {
@@ -251,156 +377,128 @@
             font-weight: 700;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             .dashboard-header {
-                padding: 1rem 0.7rem 0.8rem 0.7rem;
-                gap: 0.7rem;
+                padding: 1.5rem;
+            }
+
+            .dashboard-header-content {
+                flex-direction: column;
+                text-align: center;
             }
 
             .dashboard-header .avatar {
-                width: 38px;
-                height: 38px;
+                width: 70px;
+                height: 70px;
             }
 
             .dashboard-header .welcome {
-                font-size: 1.1rem;
+                font-size: 1.5rem;
             }
 
             .dashboard-header .desc {
-                font-size: 0.85rem;
+                font-size: 0.9rem;
+            }
+
+            .dashboard-header .info-badges {
+                justify-content: center;
+            }
+
+            .dashboard-header .datetime-info {
+                text-align: center;
+                margin-top: 1rem;
+            }
+
+            .dashboard-header .current-time {
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-header {
+                padding: 1.2rem;
+            }
+
+            .dashboard-header .avatar {
+                width: 60px;
+                height: 60px;
+            }
+
+            .dashboard-header .welcome {
+                font-size: 1.3rem;
+            }
+
+            .dashboard-header .info-badge {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
             }
         }
     </style>
 
     <div class="dashboard-header">
-        <img src="{{ asset(auth()->user()->avatar ? 'storage/avatars/' . auth()->user()->avatar : 'assets/img/avatars/1.png') }}" class="avatar"
-            alt="Avatar">
-        <div>
-            <div class="welcome">Selamat Datang, {{ auth()->user()->name }}</div>
-            <div class="desc">Semoga harimu menyenangkan dan produktif!</div>
-            <div class="role">Role: {{ auth()->user()->getRoleNames()->first() }}</div>
-            @if ($pengaturan)
-                <div class="desc" style="font-size: 0.9rem; margin-top: 0.5rem;">
-                    <i class="ti ti-building me-1"></i>{{ $pengaturan->nama_sekolah }}
-                </div>
-            @endif
-        </div>
-    </div>
-
-
-    <div class="nav-align-top">
-        <ul class="nav nav-pills nav-scrollable" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button type="button" class="nav-link active waves-effect waves-light" role="tab" data-bs-toggle="tab"
-                    data-bs-target="#agenda-realisasi" aria-controls="agenda-realisasi" aria-selected="true">Agenda &
-                    Kegiatan</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button type="button" class="nav-link  waves-effect waves-light" role="tab" data-bs-toggle="tab" data-bs-target="#jadwal-kerja"
-                    aria-controls="jadwal-kerja" aria-selected="true">Jadwal Kerja
-                    SDM</button>
-            </li>
-        </ul>
-    </div>
-    <div class="tab-content p-0 m-0 bg-transparent" id="tab-content-main">
-        <div class="tab-pane fade show active" id="agenda-realisasi" role="tabpanel">
-            <div class="row">
-                <div class="col-12">
-                    <div class="form-group mt-3">
-                        <select name="kode_dept" id="kode_dept" class="form-select select2Kodedept">
-                            <option value="">Departemen</option>
-                            @foreach ($departemen as $d)
-                                <option value="{{ $d->kode_dept }}">{{ strtoupper($d->nama_dept) }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <x-input-with-icon icon="ti ti-calendar" label="Tanggal" name="dari" datepicker="flatpickr-date"
-                                value="{{ date('Y-m-d') }}" />
-                        </div>
-                        <div class="col">
-                            <x-input-with-icon icon="ti ti-calendar" label="Tanggal" name="sampai" datepicker="flatpickr-date"
-                                value="{{ date('Y-m-d') }}" />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="nav-align-top">
-                    <ul class="nav nav-tabs nav-fill" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-justified-new"
-                                aria-controls="navs-justified-new" aria-selected="true">Agenda
-                                Kegiatan</button>
-
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button type="button" class="nav-link" role="tab" data-bs-toggle="tab" data-bs-target="#navs-justified-link-preparing"
-                                aria-controls="navs-justified-link-preparing" aria-selected="false" tabindex="-1">Realisasi
-                                Kegiatan</button>
-                        </li>
-                    </ul>
-                    <div class="tab-content px-2 mx-1 pb-0">
-                        <div class="tab-pane fade active show" id="navs-justified-new" role="tabpanel">
-                            <ul class="timeline mb-0 pb-1" id="getagendakegiatan">
-
-                            </ul>
-
-                        </div>
-
-                        <div class="tab-pane fade" id="navs-justified-link-preparing" role="tabpanel">
-                            <ul class="timeline mb-0 pb-1" id="getrealisasikegiatan">
-
-                            </ul>
-
-                        </div>
-                    </div>
-                </div>
-
+        <div class="dashboard-header-content">
+            <div class="avatar-wrapper">
+                <img src="{{ asset(auth()->user()->avatar ? 'storage/avatars/' . auth()->user()->avatar : 'assets/img/avatars/1.png') }}" class="avatar"
+                    alt="Avatar">
+                <span class="avatar-status"></span>
             </div>
-        </div>
-
-        <div class="tab-pane fade" id="jadwal-kerja" role="tabpanel">
-            <div class="row mt-2">
-                <div class="col">
-                    <div class="form-group">
-                        @php
-                            $hariini = date('Y-m-d');
-                            $nama_hari = getnamaHari(date('D', strtotime($hariini)));
-                        @endphp
-                        <select name="hari" id="hari" class="form-select">
-                            <option value="Senin" {{ $nama_hari == 'Senin' ? 'selected' : '' }}>Senin</option>
-                            <option value="Selasa" {{ $nama_hari == 'Selasa' ? 'selected' : '' }}>Selasa</option>
-                            <option value="Rabu" {{ $nama_hari == 'Rabu' ? 'selected' : '' }}>Rabu</option>
-                            <option value="Kamis" {{ $nama_hari == 'Kamis' ? 'selected' : '' }}>Kamis</option>
-                            <option value="Jumat" {{ $nama_hari == 'Jumat' ? 'selected' : '' }}>Jumat</option>
-                            <option value="Sabtu" {{ $nama_hari == 'Sabtu' ? 'selected' : '' }}>Sabtu</option>
-                            <option value="Minggu" {{ $nama_hari == 'Minggu' ? 'selected' : '' }}>Minggu</option>
-                        </select>
+            <div class="welcome-content">
+                <div class="welcome-greeting">
+                    <i class="ti ti-sun me-1"></i>Selamat Datang
+                </div>
+                <div class="welcome">{{ auth()->user()->name }}</div>
+                <div class="desc">Semoga harimu menyenangkan dan produktif!</div>
+                <div class="info-badges">
+                    <div class="info-badge">
+                        <i class="ti ti-shield-check"></i>
+                        <span>{{ auth()->user()->getRoleNames()->first() ?? 'User' }}</span>
                     </div>
-                    <div class="form-group">
-                        <select name="unit" id="unit" class="form-select">
-                            <option value="">Unit</option>
-                            @foreach ($unit as $u)
-                                <option value="{{ $u->kode_unit }}">{{ $u->nama_unit }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                    @if ($pengaturan)
+                        <div class="info-badge">
+                            <i class="ti ti-building"></i>
+                            <span>{{ $pengaturan->nama_sekolah }}</span>
+                        </div>
+                    @endif
                 </div>
             </div>
-            <div class="row">
-                <div class="col" id="loadjadwalkerja">
-
-                </div>
+            <div class="datetime-info">
+                <div class="current-date" id="currentDate"></div>
+                <div class="current-time" id="currentTime"></div>
             </div>
         </div>
     </div>
-    <x-modal-form id="modal" show="loadmodal" title="Detail Aktifitas" size="modal-lg" />
+
+
+
 @endsection
 @push('myscript')
     <script>
         $(function() {
+            // Update waktu dan tanggal
+            function updateDateTime() {
+                const now = new Date();
+                const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                ];
+
+                const dayName = days[now.getDay()];
+                const day = now.getDate();
+                const month = months[now.getMonth()];
+                const year = now.getFullYear();
+
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+
+                $('#currentDate').text(`${dayName}, ${day} ${month} ${year}`);
+                $('#currentTime').text(`${hours}:${minutes}:${seconds}`);
+            }
+
+            // Update setiap detik
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+
             function getrealisasikegiatan() {
                 // alert('test');
                 let dari = $('#dari').val();
