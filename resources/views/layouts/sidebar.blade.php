@@ -133,9 +133,9 @@
         <a href="{{ route('dashboard.index') }}" class="app-brand-link">
             <span class="app-brand-logo demo" style="width:auto !important; height: 46px !important;">
                 @if ($pengaturan && $pengaturan->logo)
-                    <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="" width="52">
+                    <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="" width="32">
                 @else
-                    <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="" width="52">
+                    <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="" width="32">
                 @endif
             </span>
             <span
