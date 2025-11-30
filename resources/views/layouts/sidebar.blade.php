@@ -849,23 +849,28 @@
             </li>
         @endhasrole
 
-        @if (auth()->check())
+        @if (auth()->check() &&
+                auth()->user()->hasAnyPermission(['questionnaires.index', 'questionnaires.create']))
             <li class="menu-item {{ request()->is(['admin/questionnaires*']) ? 'open active' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-clipboard-list"></i>
                     <div>Kuisioner</div>
                 </a>
                 <ul class="menu-sub">
-                    <li class="menu-item {{ request()->is('admin/questionnaires') ? 'active' : '' }}">
-                        <a href="{{ route('admin.questionnaires.index') }}" class="menu-link">
-                            <div>Daftar Kuisioner</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ request()->is('admin/questionnaires/create') ? 'active' : '' }}">
-                        <a href="{{ route('admin.questionnaires.create') }}" class="menu-link">
-                            <div>Tambah Kuisioner</div>
-                        </a>
-                    </li>
+                    @can('questionnaires.index')
+                        <li class="menu-item {{ request()->is('admin/questionnaires') ? 'active' : '' }}">
+                            <a href="{{ route('admin.questionnaires.index') }}" class="menu-link">
+                                <div>Daftar Kuisioner</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('questionnaires.create')
+                        <li class="menu-item {{ request()->is('admin/questionnaires/create') ? 'active' : '' }}">
+                            <a href="{{ route('admin.questionnaires.create') }}" class="menu-link">
+                                <div>Tambah Kuisioner</div>
+                            </a>
+                        </li>
+                    @endcan
                 </ul>
             </li>
         @endif

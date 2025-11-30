@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             ProgramUnggulanSeeder::class,
             AlAminGotTalentPermissionSeeder::class,
             PesertaRoleSeeder::class,
+            KuisionerPermissionSeeder::class,
         ]);
     }
 }
