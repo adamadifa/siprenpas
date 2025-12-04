@@ -235,12 +235,12 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(JenjangPendidikanController::class)->group(function () {
-        Route::get('/jenjang-pendidikan', 'index')->name('jenjang-pendidikan.index')->can('jenjang-pendidikan.index');
-        Route::get('/jenjang-pendidikan/create', 'create')->name('jenjang-pendidikan.create')->can('jenjang-pendidikan.create');
-        Route::post('/jenjang-pendidikan', 'store')->name('jenjang-pendidikan.store')->can('jenjang-pendidikan.store');
-        Route::get('/jenjang-pendidikan/{id}/edit', 'edit')->name('jenjang-pendidikan.edit')->can('jenjang-pendidikan.edit');
-        Route::put('/jenjang-pendidikan/{id}/update', 'update')->name('jenjang-pendidikan.update')->can('jenjang-pendidikan.update');
-        Route::delete('/jenjang-pendidikan/{id}/delete', 'destroy')->name('jenjang-pendidikan.delete')->can('jenjang-pendidikan.delete');
+        Route::get('/jenjang-pendidikan', 'index')->name('jenjang-pendidikan.index')->can('jenjangpendidikan.index');
+        Route::get('/jenjang-pendidikan/create', 'create')->name('jenjang-pendidikan.create')->can('jenjangpendidikan.create');
+        Route::post('/jenjang-pendidikan', 'store')->name('jenjang-pendidikan.store')->can('jenjangpendidikan.store');
+        Route::get('/jenjang-pendidikan/{id}/edit', 'edit')->name('jenjang-pendidikan.edit')->can('jenjangpendidikan.edit');
+        Route::put('/jenjang-pendidikan/{id}/update', 'update')->name('jenjang-pendidikan.update')->can('jenjangpendidikan.update');
+        Route::delete('/jenjang-pendidikan/{id}/delete', 'destroy')->name('jenjang-pendidikan.delete')->can('jenjangpendidikan.delete');
     });
 
     Route::controller(PerlombaanController::class)->group(function () {
@@ -253,20 +253,21 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(PendaftaranGotTalentController::class)->group(function () {
-        Route::get('/pendaftaran-got-talent', 'index')->name('pendaftaran-got-talent.index')->can('pendaftaran-got-talent.index');
-        Route::get('/pendaftaran-got-talent/create', 'create')->name('pendaftaran-got-talent.create')->can('pendaftaran-got-talent.create');
-        Route::post('/pendaftaran-got-talent', 'store')->name('pendaftaran-got-talent.store')->can('pendaftaran-got-talent.store');
-        Route::get('/pendaftaran-got-talent/{id}/show', 'show')->name('pendaftaran-got-talent.show')->can('pendaftaran-got-talent.index');
-        Route::get('/pendaftaran-got-talent/{id}/edit', 'edit')->name('pendaftaran-got-talent.edit')->can('pendaftaran-got-talent.edit');
-        Route::put('/pendaftaran-got-talent/{id}/update', 'update')->name('pendaftaran-got-talent.update')->can('pendaftaran-got-talent.update');
-        Route::delete('/pendaftaran-got-talent/{id}/delete', 'destroy')->name('pendaftaran-got-talent.delete')->can('pendaftaran-got-talent.delete');
-        Route::get('/pendaftaran-got-talent/{id}/createuser', 'createuser')->name('pendaftaran-got-talent.createuser')->can('pendaftaran-got-talent.index');
+        Route::get('/pendaftaran-got-talent', 'index')->name('pendaftaran-got-talent.index')->can('pendaftarangottalent.index');
+        Route::get('/pendaftaran-got-talent/create', 'create')->name('pendaftaran-got-talent.create')->can('pendaftarangottalent.create');
+        Route::post('/pendaftaran-got-talent', 'store')->name('pendaftaran-got-talent.store')->can('pendaftarangottalent.store');
+        Route::get('/pendaftaran-got-talent/detail-lomba/{id_lomba}', 'detailLomba')->name('pendaftaran-got-talent.detail-lomba')->can('pendaftarangottalent.index');
+        Route::get('/pendaftaran-got-talent/{id}/show', 'show')->name('pendaftaran-got-talent.show')->can('pendaftarangottalent.index');
+        Route::get('/pendaftaran-got-talent/{id}/edit', 'edit')->name('pendaftaran-got-talent.edit')->can('pendaftarangottalent.edit');
+        Route::put('/pendaftaran-got-talent/{id}/update', 'update')->name('pendaftaran-got-talent.update')->can('pendaftarangottalent.update');
+        Route::delete('/pendaftaran-got-talent/{id}/delete', 'destroy')->name('pendaftaran-got-talent.delete')->can('pendaftarangottalent.delete');
+        Route::get('/pendaftaran-got-talent/{id}/createuser', 'createuser')->name('pendaftaran-got-talent.createuser')->can('pendaftarangottalent.index');
     });
 
     Route::controller(App\Http\Controllers\KonfirmasiPembayaranGotTalentController::class)->group(function () {
-        Route::get('/konfirmasi-pembayaran-got-talent', 'index')->name('konfirmasi-pembayaran-got-talent.index')->can('pendaftaran-got-talent.index');
-        Route::get('/konfirmasi-pembayaran-got-talent/{id}/show', 'show')->name('konfirmasi-pembayaran-got-talent.show')->can('pendaftaran-got-talent.index');
-        Route::put('/konfirmasi-pembayaran-got-talent/{id}/update-status', 'updateStatus')->name('konfirmasi-pembayaran-got-talent.update-status')->can('pendaftaran-got-talent.index');
+        Route::get('/konfirmasi-pembayaran-got-talent', 'index')->name('konfirmasi-pembayaran-got-talent.index')->can('pendaftarangottalent.index');
+        Route::get('/konfirmasi-pembayaran-got-talent/{id}/show', 'show')->name('konfirmasi-pembayaran-got-talent.show')->can('pendaftarangottalent.index');
+        Route::put('/konfirmasi-pembayaran-got-talent/{id}/update-status', 'updateStatus')->name('konfirmasi-pembayaran-got-talent.update-status')->can('pendaftarangottalent.index');
     });
 
     Route::controller(DepartemenConroller::class)->group(function () {
@@ -763,13 +764,13 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(ProgramUnggulanController::class)->group(function () {
-        Route::get('/program-unggulan', 'index')->name('program-unggulan.index')->can('program-unggulan.index');
-        Route::get('/program-unggulan/create', 'create')->name('program-unggulan.create')->can('program-unggulan.create');
-        Route::post('/program-unggulan', 'store')->name('program-unggulan.store')->can('program-unggulan.create');
-        Route::get('/program-unggulan/{programUnggulan}', 'show')->name('program-unggulan.show')->can('program-unggulan.index');
-        Route::get('/program-unggulan/{programUnggulan}/edit', 'edit')->name('program-unggulan.edit')->can('program-unggulan.edit');
-        Route::put('/program-unggulan/{programUnggulan}', 'update')->name('program-unggulan.update')->can('program-unggulan.edit');
-        Route::delete('/program-unggulan/{programUnggulan}', 'destroy')->name('program-unggulan.destroy')->can('program-unggulan.delete');
+        Route::get('/program-unggulan', 'index')->name('program-unggulan.index')->can('programunggulan.index');
+        Route::get('/program-unggulan/create', 'create')->name('program-unggulan.create')->can('programunggulan.create');
+        Route::post('/program-unggulan', 'store')->name('program-unggulan.store')->can('programunggulan.create');
+        Route::get('/program-unggulan/{programUnggulan}', 'show')->name('program-unggulan.show')->can('programunggulan.index');
+        Route::get('/program-unggulan/{programUnggulan}/edit', 'edit')->name('program-unggulan.edit')->can('programunggulan.edit');
+        Route::put('/program-unggulan/{programUnggulan}', 'update')->name('program-unggulan.update')->can('programunggulan.edit');
+        Route::delete('/program-unggulan/{programUnggulan}', 'destroy')->name('program-unggulan.destroy')->can('programunggulan.delete');
     });
 
     Route::controller(PostController::class)->group(function () {
@@ -835,6 +836,9 @@ Route::controller(PresensiSiswaController::class)->group(function () {
 Route::get('/questionnaires', [PublicQuestionnaireController::class, 'list'])->name('questionnaires.list');
 Route::get('/questionnaire/{id}', [PublicQuestionnaireController::class, 'index'])->name('questionnaire.form');
 Route::post('/questionnaire/{id}', [PublicQuestionnaireController::class, 'store'])->name('questionnaire.submit');
+
+// PUBLIC GOT TALENT STATISTICS
+Route::get('/got-talent/statistik', [PendaftaranGotTalentController::class, 'publicView'])->name('got-talent.public');
 
 // ADMIN QUESTIONNAIRE ROUTES
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {

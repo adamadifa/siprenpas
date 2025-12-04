@@ -44,7 +44,25 @@ class PendaftaranGotTalentController extends Controller
 
         $jenjangPendidikan = JenjangPendidikan::orderBy('jenjang_pendidikan')->get();
 
-        return view('pendaftaran-got-talent.index', compact('pendaftaranGotTalent', 'jenjangPendidikan'));
+        // Statistik berdasarkan lomba (menampilkan semua lomba termasuk yang belum ada peserta)
+        $statistikLomba = DB::table('perlombaan')
+            ->leftJoin('pendaftaran_lomba', 'perlombaan.id', '=', 'pendaftaran_lomba.id_perlombaan')
+            ->join('jenjang_pendidikan', 'perlombaan.id_jenjang', '=', 'jenjang_pendidikan.id')
+            ->select(
+                'perlombaan.id',
+                'perlombaan.jenis_perlombaan',
+                'jenjang_pendidikan.jenjang_pendidikan',
+                DB::raw('COUNT(DISTINCT pendaftaran_lomba.id_pendaftaran) as jumlah_peserta')
+            )
+            ->groupBy('perlombaan.id', 'perlombaan.jenis_perlombaan', 'jenjang_pendidikan.jenjang_pendidikan')
+            ->orderBy('jumlah_peserta', 'desc')
+            ->orderBy('perlombaan.jenis_perlombaan', 'asc')
+            ->get();
+
+        // Total pendaftar
+        $totalPendaftar = PendaftaranGotTalent::count();
+
+        return view('pendaftaran-got-talent.index', compact('pendaftaranGotTalent', 'jenjangPendidikan', 'statistikLomba', 'totalPendaftar'));
     }
 
     /**
@@ -275,6 +293,77 @@ class PendaftaranGotTalentController extends Controller
             DB::rollBack();
             return Redirect::back()->with(messageError($e->getMessage()));
         }
+    }
+
+    /**
+     * Public view untuk statistik dan data peserta
+     */
+    public function publicView(Request $request)
+    {
+        // Statistik berdasarkan lomba (menampilkan semua lomba termasuk yang belum ada peserta)
+        $statistikLomba = DB::table('perlombaan')
+            ->leftJoin('pendaftaran_lomba', 'perlombaan.id', '=', 'pendaftaran_lomba.id_perlombaan')
+            ->join('jenjang_pendidikan', 'perlombaan.id_jenjang', '=', 'jenjang_pendidikan.id')
+            ->select(
+                'perlombaan.id',
+                'perlombaan.jenis_perlombaan',
+                'jenjang_pendidikan.jenjang_pendidikan',
+                DB::raw('COUNT(DISTINCT pendaftaran_lomba.id_pendaftaran) as jumlah_peserta')
+            )
+            ->groupBy('perlombaan.id', 'perlombaan.jenis_perlombaan', 'jenjang_pendidikan.jenjang_pendidikan')
+            ->orderBy('jumlah_peserta', 'desc')
+            ->orderBy('perlombaan.jenis_perlombaan', 'asc')
+            ->get();
+
+        // Total pendaftar
+        $totalPendaftar = PendaftaranGotTalent::count();
+
+        // Query peserta dengan filter
+        $query = PendaftaranGotTalent::with(['jenjangPendidikan', 'perlombaan']);
+
+        // Filter nomor register
+        if (!empty($request->nomor_register)) {
+            $query->where('nomor_register', 'like', '%' . $request->nomor_register . '%');
+        }
+
+        // Filter nama lengkap
+        if (!empty($request->nama_lengkap)) {
+            $query->where('nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
+        }
+
+        // Filter jenjang pendidikan
+        if (!empty($request->id_jenjang)) {
+            $query->where('id_jenjang', $request->id_jenjang);
+        }
+
+        // Filter lomba
+        if (!empty($request->id_lomba)) {
+            $query->whereHas('perlombaan', function ($q) use ($request) {
+                $q->where('perlombaan.id', $request->id_lomba);
+            });
+        }
+
+        $peserta = $query->orderBy('nomor_register', 'desc')->get();
+
+        return view('pendaftaran-got-talent.public', compact('statistikLomba', 'totalPendaftar', 'peserta'));
+    }
+
+    /**
+     * Show detail peserta per lomba
+     */
+    public function detailLomba($id_lomba)
+    {
+        $perlombaan = Perlombaan::with('jenjangPendidikan')->findOrFail($id_lomba);
+
+        // Ambil semua peserta yang mendaftar lomba ini
+        $peserta = PendaftaranGotTalent::select('pendaftaran_got_talent.*')
+            ->join('pendaftaran_lomba', 'pendaftaran_got_talent.id', '=', 'pendaftaran_lomba.id_pendaftaran')
+            ->with(['jenjangPendidikan', 'konfirmasiPembayaran'])
+            ->where('pendaftaran_lomba.id_perlombaan', $id_lomba)
+            ->orderBy('pendaftaran_got_talent.nomor_register', 'asc')
+            ->get();
+
+        return view('pendaftaran-got-talent.detail-lomba', compact('perlombaan', 'peserta'));
     }
 
     /**

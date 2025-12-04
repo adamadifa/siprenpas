@@ -15,27 +15,27 @@ class ProgramUnggulanPermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Program Unggulan'
         ]);
 
-        Permission::create([
-            'name' => 'program-unggulan.index',
+        Permission::firstOrCreate([
+            'name' => 'programunggulan.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
-            'name' => 'program-unggulan.create',
+        Permission::firstOrCreate([
+            'name' => 'programunggulan.create',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
-            'name' => 'program-unggulan.edit',
+        Permission::firstOrCreate([
+            'name' => 'programunggulan.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
-            'name' => 'program-unggulan.delete',
+        Permission::firstOrCreate([
+            'name' => 'programunggulan.delete',
             'id_permission_group' => $permissiongroup->id
         ]);
 
@@ -46,5 +46,3 @@ class ProgramUnggulanPermissionSeeder extends Seeder
         $role->givePermissionTo($permissions);
     }
 }
-
-

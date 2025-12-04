@@ -56,32 +56,32 @@ class AlAminGotTalentPermissionSeeder extends Seeder
         ]);
 
         Permission::firstOrCreate([
-            'name' => 'pendaftaran-got-talent.index',
+            'name' => 'pendaftarangottalent.index',
             'id_permission_group' => $permissiongroupPendaftaran->id
         ]);
 
         Permission::firstOrCreate([
-            'name' => 'pendaftaran-got-talent.create',
+            'name' => 'pendaftarangottalent.create',
             'id_permission_group' => $permissiongroupPendaftaran->id
         ]);
 
         Permission::firstOrCreate([
-            'name' => 'pendaftaran-got-talent.edit',
+            'name' => 'pendaftarangottalent.edit',
             'id_permission_group' => $permissiongroupPendaftaran->id
         ]);
 
         Permission::firstOrCreate([
-            'name' => 'pendaftaran-got-talent.store',
+            'name' => 'pendaftarangottalent.store',
             'id_permission_group' => $permissiongroupPendaftaran->id
         ]);
 
         Permission::firstOrCreate([
-            'name' => 'pendaftaran-got-talent.update',
+            'name' => 'pendaftarangottalent.update',
             'id_permission_group' => $permissiongroupPendaftaran->id
         ]);
 
         Permission::firstOrCreate([
-            'name' => 'pendaftaran-got-talent.delete',
+            'name' => 'pendaftarangottalent.delete',
             'id_permission_group' => $permissiongroupPendaftaran->id
         ]);
 
@@ -91,32 +91,32 @@ class AlAminGotTalentPermissionSeeder extends Seeder
         ]);
 
         Permission::firstOrCreate([
-            'name' => 'jenjang-pendidikan.index',
+            'name' => 'jenjangpendidikan.index',
             'id_permission_group' => $permissiongroupJenjangPendidikan->id
         ]);
 
         Permission::firstOrCreate([
-            'name' => 'jenjang-pendidikan.create',
+            'name' => 'jenjangpendidikan.create',
             'id_permission_group' => $permissiongroupJenjangPendidikan->id
         ]);
 
         Permission::firstOrCreate([
-            'name' => 'jenjang-pendidikan.edit',
+            'name' => 'jenjangpendidikan.edit',
             'id_permission_group' => $permissiongroupJenjangPendidikan->id
         ]);
 
         Permission::firstOrCreate([
-            'name' => 'jenjang-pendidikan.store',
+            'name' => 'jenjangpendidikan.store',
             'id_permission_group' => $permissiongroupJenjangPendidikan->id
         ]);
 
         Permission::firstOrCreate([
-            'name' => 'jenjang-pendidikan.update',
+            'name' => 'jenjangpendidikan.update',
             'id_permission_group' => $permissiongroupJenjangPendidikan->id
         ]);
 
         Permission::firstOrCreate([
-            'name' => 'jenjang-pendidikan.delete',
+            'name' => 'jenjangpendidikan.delete',
             'id_permission_group' => $permissiongroupJenjangPendidikan->id
         ]);
 

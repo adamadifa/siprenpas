@@ -628,7 +628,7 @@
 
         <!-- Menu Al Amin Got Talent -->
         @if (auth()->check() &&
-                auth()->user()->hasAnyPermission(['perlombaan.index', 'pendaftaran-got-talent.index', 'jenjang-pendidikan.index']))
+                auth()->user()->hasAnyPermission(['perlombaan.index', 'pendaftarangottalent.index', 'jenjangpendidikan.index']))
             <li
                 class="menu-item {{ request()->is(['perlombaan', 'perlombaan/*', 'pendaftaran-got-talent', 'pendaftaran-got-talent/*', 'konfirmasi-pembayaran-got-talent', 'konfirmasi-pembayaran-got-talent/*', 'jenjang-pendidikan', 'jenjang-pendidikan/*']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -643,14 +643,14 @@
                             </a>
                         </li>
                     @endcan
-                    @can('pendaftaran-got-talent.index')
+                    @can('pendaftarangottalent.index')
                         <li class="menu-item {{ request()->is(['pendaftaran-got-talent', 'pendaftaran-got-talent/*']) ? 'active' : '' }}">
                             <a href="{{ route('pendaftaran-got-talent.index') }}" class="menu-link">
                                 <div>Pendaftaran Got Talent</div>
                             </a>
                         </li>
                     @endcan
-                    @can('pendaftaran-got-talent.index')
+                    @can('pendaftarangottalent.index')
                         <li
                             class="menu-item {{ request()->is(['konfirmasi-pembayaran-got-talent', 'konfirmasi-pembayaran-got-talent/*']) ? 'active' : '' }}">
                             <a href="{{ route('konfirmasi-pembayaran-got-talent.index') }}" class="menu-link">
@@ -658,7 +658,7 @@
                             </a>
                         </li>
                     @endcan
-                    @can('jenjang-pendidikan.index')
+                    @can('jenjangpendidikan.index')
                         <li class="menu-item {{ request()->is(['jenjang-pendidikan', 'jenjang-pendidikan/*']) ? 'active' : '' }}">
                             <a href="{{ route('jenjang-pendidikan.index') }}" class="menu-link">
                                 <div>Jenjang Pendidikan</div>
@@ -676,7 +676,7 @@
                         'pages.index',
                         'testimonials.index',
                         'prestasi-siswa.index',
-                        'program-unggulan.index',
+                        'programunggulan.index',
                     ]))
             <li
                 class="menu-item {{ request()->is(['kategori', 'kategori/*', 'post', 'post/*', 'sebaran-alumni', 'sebaran-alumni/*', 'pages', 'pages/*', 'page/*', 'visimisi', 'testimonials', 'testimonials/*', 'prestasi-siswa', 'prestasi-siswa/*', 'program-unggulan', 'program-unggulan/*']) ? 'open' : '' }}">
@@ -736,7 +736,7 @@
                             </a>
                         </li>
                     @endcan
-                    @can('program-unggulan.index')
+                    @can('programunggulan.index')
                         <li class="menu-item {{ request()->is(['program-unggulan', 'program-unggulan/*']) ? 'active' : '' }}">
                             <a href="{{ route('program-unggulan.index') }}" class="menu-link">
                                 <div>Program Unggulan</div>
