@@ -670,14 +670,7 @@
         @endif
 
         @if (auth()->check() &&
-                auth()->user()->hasAnyPermission([
-                        'kategori.index',
-                        'post.index',
-                        'pages.index',
-                        'testimonials.index',
-                        'prestasi-siswa.index',
-                        'programunggulan.index',
-                    ]))
+                auth()->user()->hasAnyPermission(['kategori.index', 'post.index', 'pages.index', 'testimonials.index', 'prestasisiswa.index', 'programunggulan.index']))
             <li
                 class="menu-item {{ request()->is(['kategori', 'kategori/*', 'post', 'post/*', 'sebaran-alumni', 'sebaran-alumni/*', 'pages', 'pages/*', 'page/*', 'visimisi', 'testimonials', 'testimonials/*', 'prestasi-siswa', 'prestasi-siswa/*', 'program-unggulan', 'program-unggulan/*']) ? 'open' : '' }}">
 
@@ -729,9 +722,9 @@
                             </a>
                         </li>
                     @endcan
-                    @can('prestasi-siswa.index')
+                    @can('prestatsisiswa.index')
                         <li class="menu-item {{ request()->is(['prestasi-siswa', 'prestasi-siswa/*']) ? 'active' : '' }}">
-                            <a href="{{ route('prestasi-siswa.index') }}" class="menu-link">
+                            <a href="{{ route('prestatsisiswa.index') }}" class="menu-link">
                                 <div>Prestasi Siswa</div>
                             </a>
                         </li>
