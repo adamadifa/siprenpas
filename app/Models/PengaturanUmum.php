@@ -23,7 +23,11 @@ class PengaturanUmum extends Model
         'alamat_sekolah',
         'telepon',
         'email',
-        'website'
+        'website',
+        'facebook',
+        'youtube',
+        'instagram',
+        'tiktok'
     ];
 
     protected $casts = [

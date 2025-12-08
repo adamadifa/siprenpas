@@ -70,6 +70,46 @@
                                                 </td>
                                             </tr>
                                         @endif
+                                        @if ($pengaturan->facebook)
+                                            <tr>
+                                                <td><strong>Facebook:</strong></td>
+                                                <td>
+                                                    <a href="{{ $pengaturan->facebook }}" target="_blank" class="text-primary">
+                                                        {{ $pengaturan->facebook }}
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                        @if ($pengaturan->youtube)
+                                            <tr>
+                                                <td><strong>YouTube:</strong></td>
+                                                <td>
+                                                    <a href="{{ $pengaturan->youtube }}" target="_blank" class="text-primary">
+                                                        {{ $pengaturan->youtube }}
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                        @if ($pengaturan->instagram)
+                                            <tr>
+                                                <td><strong>Instagram:</strong></td>
+                                                <td>
+                                                    <a href="{{ $pengaturan->instagram }}" target="_blank" class="text-primary">
+                                                        {{ $pengaturan->instagram }}
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                        @if ($pengaturan->tiktok)
+                                            <tr>
+                                                <td><strong>TikTok:</strong></td>
+                                                <td>
+                                                    <a href="{{ $pengaturan->tiktok }}" target="_blank" class="text-primary">
+                                                        {{ $pengaturan->tiktok }}
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endif
                                     </table>
 
                                     <div class="mt-3">

@@ -81,6 +81,52 @@
                                 </div>
                             </div>
 
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="facebook" class="form-label">Facebook</label>
+                                        <input type="url" class="form-control @error('facebook') is-invalid @enderror" id="facebook" name="facebook"
+                                            value="{{ old('facebook') }}" placeholder="https://facebook.com/username">
+                                        @error('facebook')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="youtube" class="form-label">YouTube</label>
+                                        <input type="url" class="form-control @error('youtube') is-invalid @enderror" id="youtube" name="youtube"
+                                            value="{{ old('youtube') }}" placeholder="https://youtube.com/channel/...">
+                                        @error('youtube')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="instagram" class="form-label">Instagram</label>
+                                        <input type="url" class="form-control @error('instagram') is-invalid @enderror" id="instagram" name="instagram"
+                                            value="{{ old('instagram') }}" placeholder="https://instagram.com/username">
+                                        @error('instagram')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="tiktok" class="form-label">TikTok</label>
+                                        <input type="url" class="form-control @error('tiktok') is-invalid @enderror" id="tiktok" name="tiktok"
+                                            value="{{ old('tiktok') }}" placeholder="https://www.tiktok.com/@username">
+                                        @error('tiktok')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="mb-3">
                                 <label for="logo" class="form-label">Logo Sekolah</label>
                                 <input type="file" class="form-control @error('logo') is-invalid @enderror" id="logo" name="logo"

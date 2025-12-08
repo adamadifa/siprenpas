@@ -120,6 +120,12 @@ Route::prefix('public')->group(function () {
         Route::get('/{id}', [App\Http\Controllers\Api\PrestasiSiswaController::class, 'show']);
     });
 
+    // Gallery public endpoints
+    Route::prefix('gallery')->group(function () {
+        Route::get('/albums', [App\Http\Controllers\Api\GalleryController::class, 'getAlbums']);
+        Route::get('/albums/{id}', [App\Http\Controllers\Api\GalleryController::class, 'getAlbumDetail']);
+    });
+
     Route::prefix('program-unggulan')->group(function () {
         Route::get('/', [ProgramUnggulanController::class, 'index']);
         Route::get('/random/{limit?}', [ProgramUnggulanController::class, 'random']);

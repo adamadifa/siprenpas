@@ -743,6 +743,11 @@
                             </a>
                         </li>
                     @endcan
+                    <li class="menu-item {{ request()->is(['gallery', 'gallery/*']) ? 'active' : '' }}">
+                        <a href="{{ route('gallery.index') }}" class="menu-link">
+                            <div>Galeri Kegiatan</div>
+                        </a>
+                    </li>
                 </ul>
 
             </li>

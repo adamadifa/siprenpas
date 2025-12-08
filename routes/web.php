@@ -270,6 +270,18 @@ Route::middleware('auth')->group(function () {
         Route::put('/konfirmasi-pembayaran-got-talent/{id}/update-status', 'updateStatus')->name('konfirmasi-pembayaran-got-talent.update-status')->can('pendaftarangottalent.index');
     });
 
+    Route::controller(\App\Http\Controllers\GalleryAlbumController::class)->group(function () {
+        Route::get('/gallery', 'index')->name('gallery.index');
+        Route::get('/gallery/create', 'create')->name('gallery.create');
+        Route::post('/gallery', 'store')->name('gallery.store');
+        Route::get('/gallery/{gallery}/edit', 'edit')->name('gallery.edit');
+        Route::put('/gallery/{gallery}', 'update')->name('gallery.update');
+        Route::delete('/gallery/{gallery}', 'destroy')->name('gallery.destroy');
+        Route::get('/gallery/{gallery}', 'show')->name('gallery.show');
+        Route::post('/gallery/{gallery}/photos', 'uploadPhoto')->name('gallery.photos.upload');
+        Route::delete('/gallery/{gallery}/photos/{photo}', 'destroyPhoto')->name('gallery.photos.destroy');
+    });
+
     Route::controller(DepartemenConroller::class)->group(function () {
         Route::get('/departemen', 'index')->name('departemen.index')->can('departemen.index');
         Route::get('/departemen/create', 'create')->name('departemen.create')->can('departemen.create');

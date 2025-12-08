@@ -449,6 +449,126 @@
                 ]
             }
         },
+        "/public/gallery/albums": {
+            "get": {
+                "tags": [
+                    "Gallery"
+                ],
+                "summary": "Ambil daftar album galeri beserta jumlah foto",
+                "operationId": "fdf60c46c4821d31ab91f9f069d0e861",
+                "responses": {
+                    "200": {
+                        "description": "Daftar album",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "title": {
+                                                "type": "string",
+                                                "example": "Kegiatan Pramuka"
+                                            },
+                                            "description": {
+                                                "type": "string",
+                                                "example": "Dokumentasi pramuka 2025"
+                                            },
+                                            "cover_url": {
+                                                "type": "string",
+                                                "example": "https://domain.com/storage/gallery/covers/cover.jpg"
+                                            },
+                                            "photos_count": {
+                                                "type": "integer",
+                                                "example": 12
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/public/gallery/albums/{id}": {
+            "get": {
+                "tags": [
+                    "Gallery"
+                ],
+                "summary": "Ambil detail album beserta daftar foto",
+                "operationId": "dcae6f58cb5fccd40fec6c1b45a08b64",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID album",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detail album",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "title": {
+                                            "type": "string",
+                                            "example": "Kegiatan Pramuka"
+                                        },
+                                        "description": {
+                                            "type": "string",
+                                            "example": "Dokumentasi pramuka 2025"
+                                        },
+                                        "cover_url": {
+                                            "type": "string",
+                                            "example": "https://domain.com/storage/gallery/covers/cover.jpg"
+                                        },
+                                        "photos": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 10
+                                                    },
+                                                    "title": {
+                                                        "type": "string",
+                                                        "example": "Upacara pembukaan",
+                                                        "nullable": true
+                                                    },
+                                                    "url": {
+                                                        "type": "string",
+                                                        "example": "https://domain.com/storage/gallery/photos/photo.jpg"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Album tidak ditemukan"
+                    }
+                }
+            }
+        },
         "/karyawan/aktif": {
             "get": {
                 "tags": [
@@ -5526,6 +5646,10 @@
         {
             "name": "Auth",
             "description": "Auth"
+        },
+        {
+            "name": "Gallery",
+            "description": "Gallery"
         },
         {
             "name": "Pendaftaran",
