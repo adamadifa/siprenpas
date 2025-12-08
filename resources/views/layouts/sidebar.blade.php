@@ -672,7 +672,7 @@
         @if (auth()->check() &&
                 auth()->user()->hasAnyPermission(['kategori.index', 'post.index', 'pages.index', 'testimonials.index', 'prestasisiswa.index', 'programunggulan.index']))
             <li
-                class="menu-item {{ request()->is(['kategori', 'kategori/*', 'post', 'post/*', 'sebaran-alumni', 'sebaran-alumni/*', 'pages', 'pages/*', 'page/*', 'visimisi', 'testimonials', 'testimonials/*', 'prestasi-siswa', 'prestasi-siswa/*', 'program-unggulan', 'program-unggulan/*']) ? 'open' : '' }}">
+                class="menu-item {{ request()->is(['kategori', 'kategori/*', 'post', 'post/*', 'sebaran-alumni', 'sebaran-alumni/*', 'pages', 'pages/*', 'page/*', 'visimisi', 'testimonials', 'testimonials/*', 'prestasisiswa', 'prestasisiswa/*', 'program-unggulan', 'program-unggulan/*']) ? 'open' : '' }}">
 
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-globe"></i>
@@ -723,7 +723,7 @@
                         </li>
                     @endcan
                     @can('prestasisiswa.index')
-                        <li class="menu-item {{ request()->is(['prestasi-siswa', 'prestasi-siswa/*']) ? 'active' : '' }}">
+                        <li class="menu-item {{ request()->is(['prestasisiswa', 'prestasisiswa/*']) ? 'active' : '' }}">
                             <a href="{{ route('prestasisiswa.index') }}" class="menu-link">
                                 <div>Prestasi Siswa</div>
                             </a>

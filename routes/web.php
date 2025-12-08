@@ -765,14 +765,14 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(PrestasiSiswaController::class)->group(function () {
-        Route::get('/prestasi-siswa', 'index')->name('prestasi-siswa.index')->can('prestasi-siswa.index');
-        Route::get('/prestasi-siswa/create', 'create')->name('prestasi-siswa.create')->can('prestasi-siswa.create');
-        Route::post('/prestasi-siswa', 'store')->name('prestasi-siswa.store')->can('prestasi-siswa.create');
-        Route::get('/prestasi-siswa/search-siswa', 'searchSiswa')->name('prestasi-siswa.search-siswa')->can('prestasi-siswa.create');
-        Route::get('/prestasi-siswa/{prestasiSiswa}', 'show')->name('prestasi-siswa.show')->can('prestasi-siswa.index');
-        Route::get('/prestasi-siswa/{prestasiSiswa}/edit', 'edit')->name('prestasi-siswa.edit')->can('prestasi-siswa.edit');
-        Route::put('/prestasi-siswa/{prestasiSiswa}', 'update')->name('prestasi-siswa.update')->can('prestasi-siswa.edit');
-        Route::delete('/prestasi-siswa/{prestasiSiswa}', 'destroy')->name('prestasi-siswa.destroy')->can('prestasi-siswa.delete');
+        Route::get('/prestasisiswa', 'index')->name('prestasisiswa.index')->can('prestasisiswa.index');
+        Route::get('/prestasisiswa/create', 'create')->name('prestasisiswa.create')->can('prestasisiswa.create');
+        Route::post('/prestasisiswa', 'store')->name('prestasisiswa.store')->can('prestasisiswa.create');
+        Route::get('/prestasisiswa/search-siswa', 'searchSiswa')->name('prestasisiswa.search-siswa')->can('prestasisiswa.create');
+        Route::get('/prestasisiswa/{prestasiSiswa}', 'show')->name('prestasisiswa.show')->can('prestasisiswa.index');
+        Route::get('/prestasisiswa/{prestasiSiswa}/edit', 'edit')->name('prestasisiswa.edit')->can('prestasisiswa.edit');
+        Route::put('/prestasisiswa/{prestasiSiswa}', 'update')->name('prestasisiswa.update')->can('prestasisiswa.edit');
+        Route::delete('/prestasisiswa/{prestasiSiswa}', 'destroy')->name('prestasisiswa.destroy')->can('prestasisiswa.delete');
     });
 
     Route::controller(ProgramUnggulanController::class)->group(function () {
