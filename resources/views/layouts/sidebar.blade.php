@@ -722,9 +722,9 @@
                             </a>
                         </li>
                     @endcan
-                    @can('prestatsisiswa.index')
+                    @can('prestasisiswa.index')
                         <li class="menu-item {{ request()->is(['prestasi-siswa', 'prestasi-siswa/*']) ? 'active' : '' }}">
-                            <a href="{{ route('prestatsisiswa.index') }}" class="menu-link">
+                            <a href="{{ route('prestasisiswa.index') }}" class="menu-link">
                                 <div>Prestasi Siswa</div>
                             </a>
                         </li>
