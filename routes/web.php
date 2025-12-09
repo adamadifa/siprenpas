@@ -69,6 +69,7 @@ use App\Http\Controllers\KategoriPengumumanController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\PrestasiSiswaController;
 use App\Http\Controllers\ProgramUnggulanController;
+use App\Http\Controllers\PilarPendidikanController;
 use App\Http\Controllers\SebaranAlumniController;
 use App\Http\Controllers\VisiMisiController;
 use Illuminate\Support\Facades\Route;
@@ -783,6 +784,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/program-unggulan/{programUnggulan}/edit', 'edit')->name('program-unggulan.edit')->can('programunggulan.edit');
         Route::put('/program-unggulan/{programUnggulan}', 'update')->name('program-unggulan.update')->can('programunggulan.edit');
         Route::delete('/program-unggulan/{programUnggulan}', 'destroy')->name('program-unggulan.destroy')->can('programunggulan.delete');
+    });
+
+    Route::controller(PilarPendidikanController::class)->group(function () {
+        Route::get('/pilar-pendidikan', 'index')->name('pilar-pendidikan.index')->can('pilarpendidikan.index');
+        Route::get('/pilar-pendidikan/create', 'create')->name('pilar-pendidikan.create')->can('pilarpendidikan.create');
+        Route::post('/pilar-pendidikan', 'store')->name('pilar-pendidikan.store')->can('pilarpendidikan.create');
+        Route::get('/pilar-pendidikan/{pilarPendidikan}/edit', 'edit')->name('pilar-pendidikan.edit')->can('pilarpendidikan.edit');
+        Route::put('/pilar-pendidikan/{pilarPendidikan}', 'update')->name('pilar-pendidikan.update')->can('pilarpendidikan.edit');
+        Route::delete('/pilar-pendidikan/{pilarPendidikan}', 'destroy')->name('pilar-pendidikan.destroy')->can('pilarpendidikan.delete');
     });
 
     Route::controller(PostController::class)->group(function () {

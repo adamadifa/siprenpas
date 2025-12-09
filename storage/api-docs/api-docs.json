@@ -3011,6 +3011,109 @@
                 }
             }
         },
+        "/api/pilar-pendidikan": {
+            "get": {
+                "tags": [
+                    "Pilar Pendidikan"
+                ],
+                "summary": "Daftar Pilar Pendidikan",
+                "description": "Mengambil semua pilar pendidikan terurut",
+                "operationId": "94b4f2178d1bcb2a16e5281da5f3dca6",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil mengambil data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data pilar pendidikan berhasil diambil"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/PilarPendidikan"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/pilar-pendidikan/{id}": {
+            "get": {
+                "tags": [
+                    "Pilar Pendidikan"
+                ],
+                "summary": "Detail Pilar Pendidikan",
+                "description": "Mengambil detail pilar pendidikan berdasarkan ID",
+                "operationId": "dd2760d3acb0bc9ea4a01332559935cf",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Detail pilar pendidikan berhasil diambil"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/PilarPendidikan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Pilar pendidikan tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/public/posts/getposthomepage": {
             "get": {
                 "tags": [
@@ -5518,6 +5621,37 @@
                 },
                 "type": "object"
             },
+            "PilarPendidikan": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "nama_pilar": {
+                        "type": "string",
+                        "example": "Akhlak Mulia"
+                    },
+                    "deskripsi": {
+                        "type": "string",
+                        "example": "Fokus pada pembentukan karakter santri"
+                    },
+                    "urutan": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2024-01-01 00:00:00"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2024-01-01 00:00:00"
+                    }
+                },
+                "type": "object"
+            },
             "ProgramUnggulan": {
                 "properties": {
                     "id": {
@@ -5618,6 +5752,10 @@
         {
             "name": "Pengaturan Umum",
             "description": "API endpoints untuk mendapatkan data pengaturan umum aplikasi"
+        },
+        {
+            "name": "Pilar Pendidikan",
+            "description": "API endpoints untuk mengelola Pilar Pendidikan"
         },
         {
             "name": "Prestasi Siswa",

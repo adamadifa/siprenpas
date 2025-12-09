@@ -670,9 +670,17 @@
         @endif
 
         @if (auth()->check() &&
-                auth()->user()->hasAnyPermission(['kategori.index', 'post.index', 'pages.index', 'testimonials.index', 'prestasisiswa.index', 'programunggulan.index']))
+                auth()->user()->hasAnyPermission([
+                        'kategori.index',
+                        'post.index',
+                        'pages.index',
+                        'testimonials.index',
+                        'prestasisiswa.index',
+                        'programunggulan.index',
+                        'pilarpendidikan.index',
+                    ]))
             <li
-                class="menu-item {{ request()->is(['kategori', 'kategori/*', 'post', 'post/*', 'sebaran-alumni', 'sebaran-alumni/*', 'pages', 'pages/*', 'page/*', 'visimisi', 'testimonials', 'testimonials/*', 'prestasisiswa', 'prestasisiswa/*', 'program-unggulan', 'program-unggulan/*']) ? 'open' : '' }}">
+                class="menu-item {{ request()->is(['kategori', 'kategori/*', 'post', 'post/*', 'sebaran-alumni', 'sebaran-alumni/*', 'pages', 'pages/*', 'page/*', 'visimisi', 'testimonials', 'testimonials/*', 'prestasisiswa', 'prestasisiswa/*', 'program-unggulan', 'program-unggulan/*', 'pilar-pendidikan', 'pilar-pendidikan/*']) ? 'open' : '' }}">
 
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-globe"></i>
@@ -733,6 +741,13 @@
                         <li class="menu-item {{ request()->is(['program-unggulan', 'program-unggulan/*']) ? 'active' : '' }}">
                             <a href="{{ route('program-unggulan.index') }}" class="menu-link">
                                 <div>Program Unggulan</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('pilarpendidikan.index')
+                        <li class="menu-item {{ request()->is(['pilar-pendidikan', 'pilar-pendidikan/*']) ? 'active' : '' }}">
+                            <a href="{{ route('pilar-pendidikan.index') }}" class="menu-link">
+                                <div>Pilar Pendidikan</div>
                             </a>
                         </li>
                     @endcan

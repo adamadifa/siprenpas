@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PengumumanController;
 use App\Http\Controllers\Api\PrestasiSiswaController;
 use App\Http\Controllers\Api\ProgramUnggulanController;
+use App\Http\Controllers\Api\PilarPendidikanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -130,6 +131,11 @@ Route::prefix('public')->group(function () {
         Route::get('/', [ProgramUnggulanController::class, 'index']);
         Route::get('/random/{limit?}', [ProgramUnggulanController::class, 'random']);
         Route::get('/{id}', [ProgramUnggulanController::class, 'show']);
+    });
+
+    Route::prefix('pilar-pendidikan')->group(function () {
+        Route::get('/', [PilarPendidikanController::class, 'index']);
+        Route::get('/{id}', [PilarPendidikanController::class, 'show']);
     });
 
     // Jenjang Pendidikan & Perlombaan API Routes

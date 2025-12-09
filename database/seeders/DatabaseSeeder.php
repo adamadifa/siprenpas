@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
             AlAminGotTalentPermissionSeeder::class,
             PesertaRoleSeeder::class,
             KuisionerPermissionSeeder::class,
+            PilarPendidikanPermissionSeeder::class,
         ]);
     }
 }
