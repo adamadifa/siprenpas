@@ -12,6 +12,7 @@ use App\Models\Siswa;
 use App\Models\Tahunajaran;
 use App\Models\Tahunajaranppdb;
 use App\Models\Unit;
+use App\Models\Province;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Illuminate\Http\Request;
 
@@ -119,6 +120,88 @@ class PendaftaranonlineController extends Controller
         return view('pendaftaranonline.show', $data);
     }
 
+    public function edit($no_register)
+    {
+        $no_register = Crypt::decrypt($no_register);
+        $data['pendaftaran'] = Pendaftaranonline::where('no_register', $no_register)->first();
+        $data['provinsi'] = Province::orderBy('name')->get();
+        $data['pendidikan'] = config('global.list_pendidikan ') ?? [];
+        $data['unit'] = Unit::orderBy('kode_unit')->get();
+        $data['jenis_kelamin'] = config('global.jenis_kelamin') ?? [];
+        $data['tahunajaran'] = Tahunajaranppdb::orderBy('kode_ta')->get();
+
+        return view('pendaftaranonline.edit', $data);
+    }
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'no_register' => 'required',
+            'nama_lengkap' => 'required|string|min:3',
+            'jenis_kelamin' => 'required|in:L,P',
+            'tempat_lahir' => 'nullable|string',
+            'tanggal_lahir' => 'nullable|date',
+            'anak_ke' => 'nullable|integer|min:1|max:20',
+            'jumlah_saudara' => 'nullable|integer|min:0|max:20',
+            'alamat' => 'nullable|string',
+            'kode_pos' => 'nullable|digits:5',
+            'no_kk' => 'nullable|digits:16',
+            'nik_ayah' => 'nullable|digits:16',
+            'nama_ayah' => 'nullable|string',
+            'pendidikan_ayah' => 'nullable|string',
+            'pekerjaan_ayah' => 'nullable|string',
+            'nik_ibu' => 'nullable|digits:16',
+            'nama_ibu' => 'nullable|string',
+            'pendidikan_ibu' => 'nullable|string',
+            'pekerjaan_ibu' => 'nullable|string',
+            'no_hp' => 'nullable|string',
+            'asal_sekolah' => 'nullable|string',
+            'kode_unit' => 'required',
+            'id_province' => 'nullable',
+            'id_regency' => 'nullable',
+            'id_district' => 'nullable',
+            'id_village' => 'nullable',
+        ]);
+
+        try {
+            $no_register = Crypt::decrypt($request->no_register);
+
+            Pendaftaranonline::where('no_register', $no_register)->update([
+                'nama_lengkap' => $request->nama_lengkap,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir ? date('Y-m-d', strtotime($request->tanggal_lahir)) : null,
+                'anak_ke' => $request->anak_ke,
+                'jumlah_saudara' => $request->jumlah_saudara,
+                'alamat' => $request->alamat,
+                'kode_pos' => $request->kode_pos,
+                'no_kk' => $request->no_kk,
+                'nik_ayah' => $request->nik_ayah,
+                'nama_ayah' => $request->nama_ayah,
+                'pendidikan_ayah' => $request->pendidikan_ayah,
+                'pekerjaan_ayah' => $request->pekerjaan_ayah,
+                'nik_ibu' => $request->nik_ibu,
+                'nama_ibu' => $request->nama_ibu,
+                'pendidikan_ibu' => $request->pendidikan_ibu,
+                'pekerjaan_ibu' => $request->pekerjaan_ibu,
+                'no_hp' => $request->no_hp,
+                'asal_sekolah' => $request->asal_sekolah,
+                'kode_unit' => $request->kode_unit,
+                'id_province' => $request->id_province,
+                'id_regency' => $request->id_regency,
+                'id_district' => $request->id_district,
+                'id_village' => $request->id_village,
+            ]);
+
+            return Redirect::route('pendaftaranonline.show', Crypt::encrypt($no_register))
+                ->with(messageSuccess('Data pendaftaran online berhasil diperbarui'));
+        } catch (\Exception $e) {
+            return Redirect::back()
+                ->withInput()
+                ->with(messageError('Data gagal diperbarui: ' . $e->getMessage()));
+        }
+    }
+
     public function cetak($no_register)
     {
         $no_register = Crypt::decrypt($no_register);
@@ -153,8 +236,8 @@ class PendaftaranonlineController extends Controller
         $ta_nis = substr($tahun_ajaran->tahun_ajaran, 2, 2) . substr($tahun_ajaran->tahun_ajaran, 7, 2);
         $ta_pendaftaran = substr($tahun_ajaran->tahun_ajaran, 2, 2);
         $lastpendaftaran = Pendaftaran::select('no_pendaftaran', 'nis')
-            ->where('kode_ta', $tahun_ajaran->kode_ta)
-            ->where('kode_unit', $request->kode_unit)
+            ->where('kode_ta', $pendaftaran->kode_ta)
+            ->where('kode_unit', $pendaftaran->kode_unit)
             ->orderBy('no_pendaftaran', 'desc')
             ->first();
         $last_no_pendaftaran = $lastpendaftaran != null ? $lastpendaftaran->no_pendaftaran : '';

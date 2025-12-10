@@ -55,30 +55,29 @@
                     <div class="col-12">
                         <form action="{{ route('pendaftaranonline.index') }}">
                             <div class="row">
-                                @if(auth()->user()->kode_unit == 'U06')
-                                <div class="col-lg-4 col-sm-12 col-md-12">
-                                    <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}"
-                                        name="nama_lengkap" icon="ti ti-search" />
-                                </div>
-                                @else
-                                <div class="col-lg-8 col-sm-12 col-md-12">
-                                    <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}"
-                                        name="nama_lengkap" icon="ti ti-search" />
-                                </div>
-                                @endif
-                                @if(auth()->user()->kode_unit == 'U06')
-                                <div class="col-lg-4 col-sm-12 col-md-12">
-                                    <div class="form-group mb-3">
-                                        <select name="kode_unit" id="kode_unit_search" class="form-select">
-                                            <option value="">Semua Unit</option>
-                                            @foreach ($unit as $d)
-                                                <option value="{{ $d->kode_unit }}"
-                                                    {{ Request('kode_unit') == $d->kode_unit ? 'selected' : '' }}>
-                                                    {{ $d->nama_unit }}</option>
-                                            @endforeach
-                                        </select>
+                                @if (auth()->user()->kode_unit == 'U06')
+                                    <div class="col-lg-4 col-sm-12 col-md-12">
+                                        <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
+                                            icon="ti ti-search" />
                                     </div>
-                                </div>
+                                @else
+                                    <div class="col-lg-8 col-sm-12 col-md-12">
+                                        <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
+                                            icon="ti ti-search" />
+                                    </div>
+                                @endif
+                                @if (auth()->user()->kode_unit == 'U06')
+                                    <div class="col-lg-4 col-sm-12 col-md-12">
+                                        <div class="form-group mb-3">
+                                            <select name="kode_unit" id="kode_unit_search" class="form-select">
+                                                <option value="">Semua Unit</option>
+                                                @foreach ($unit as $d)
+                                                    <option value="{{ $d->kode_unit }}" {{ Request('kode_unit') == $d->kode_unit ? 'selected' : '' }}>
+                                                        {{ $d->nama_unit }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
                                 @endif
                                 <div class="col-lg-2 col-sm-12 col-md-12">
                                     <div class="form-group mb-3">
@@ -148,15 +147,12 @@
                                             <td>
                                                 <div class="d-flex">
                                                     @can('pendaftaranonline.edit')
-                                                        <a href="#"
-                                                            no_register="{{ Crypt::encrypt($d->no_register) }}"
-                                                            class="btnEdit me-1">
+                                                        <a href="#" no_register="{{ Crypt::encrypt($d->no_register) }}" class="btnEdit me-1">
                                                             <i class="ti ti-edit text-success"></i>
                                                         </a>
                                                     @endcan
                                                     @can('pendaftaranonline.show')
-                                                        <a href="#" class="me-2 btnShow"
-                                                            no_register="{{ Crypt::encrypt($d->no_register) }}">
+                                                        <a href="#" class="me-2 btnShow" no_register="{{ Crypt::encrypt($d->no_register) }}">
                                                             <i class="ti ti-file-description text-info"></i>
                                                         </a>
                                                     @endcan
@@ -216,7 +212,12 @@
             $("#modal").modal("show");
             $("#modal").find("#loadmodal").html(loading);
             $("#modal").find(".modal-title").text("Edit Pendaftaran ");
-            $("#loadmodal").load(`/pendaftaranonline/${no_register}/edit`);
+            $("#loadmodal").load(`/pendaftaranonline/${no_register}/edit`, function() {
+                // Inisialisasi flatpickr setelah konten dimuat
+                if (typeof flatpickr !== 'undefined') {
+                    $(".flatpickr-date").flatpickr();
+                }
+            });
         });
 
 
