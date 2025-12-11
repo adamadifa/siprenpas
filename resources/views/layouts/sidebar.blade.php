@@ -645,7 +645,7 @@
                     @endcan
                     @can('pendaftarangottalent.index')
                         <li class="menu-item {{ request()->is(['pendaftaran-got-talent', 'pendaftaran-got-talent/*']) ? 'active' : '' }}">
-                            <a href="{{ route('pendaftaran-got-talent.index') }}" class="menu-link">
+                            <a href="{{ route('pendaftarangottalent.index') }}" class="menu-link">
                                 <div>Pendaftaran Got Talent</div>
                             </a>
                         </li>
