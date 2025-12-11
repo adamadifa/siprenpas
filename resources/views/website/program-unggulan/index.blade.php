@@ -9,7 +9,7 @@
     <div class="col-lg-12 col-sm-12 col-xs-12">
         <div class="card">
             <div class="card-header">
-                @can('program-unggulan.create')
+                @can('programunggulan.create')
                     <a href="{{ route('program-unggulan.create') }}" class="btn btn-primary">
                         <i class="fa fa-plus me-2"></i> Tambah Program Unggulan
                     </a>
@@ -38,8 +38,7 @@
                                             </td>
                                             <td>{{ $d->nama_program }}</td>
                                             <td>
-                                                <div class="text-truncate" style="max-width: 300px;"
-                                                    title="{{ $d->deskripsi }}">
+                                                <div class="text-truncate" style="max-width: 300px;" title="{{ $d->deskripsi }}">
                                                     {{ $d->deskripsi ?: '-' }}
                                                 </div>
                                             </td>
@@ -51,16 +50,15 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex">
-                                                    @can('program-unggulan.edit')
+                                                    @can('programunggulan.edit')
                                                         <div>
-                                                            <a href="{{ route('program-unggulan.edit', $d->id) }}"
-                                                                class="me-2">
+                                                            <a href="{{ route('program-unggulan.edit', $d->id) }}" class="me-2">
                                                                 <i class="ti ti-edit text-success"></i>
                                                             </a>
                                                         </div>
                                                     @endcan
 
-                                                    @can('program-unggulan.delete')
+                                                    @can('programunggulan.delete')
                                                         <div>
                                                             <form method="POST" name="deleteform" class="deleteform"
                                                                 action="{{ route('program-unggulan.destroy', $d->id) }}">

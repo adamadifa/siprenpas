@@ -12,7 +12,7 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="card-title">Detail Program Unggulan</h5>
                 <div class="d-flex gap-2">
-                    @can('program-unggulan.edit')
+                    @can('programunggulan.edit')
                         <a href="{{ route('program-unggulan.edit', $programUnggulan) }}" class="btn btn-warning">
                             <i class="ti ti-pencil me-1"></i>
                             Edit
