@@ -55,7 +55,7 @@ class PrestasiSiswaController extends Controller
 
         PrestasiSiswa::create($data);
 
-        return redirect()->route('prestasi-siswa.index')
+        return redirect()->route('prestasisiswa.index')
             ->with('success', 'Prestasi siswa berhasil ditambahkan');
     }
 
@@ -108,7 +108,7 @@ class PrestasiSiswaController extends Controller
 
         $prestasiSiswa->update($data);
 
-        return redirect()->route('prestasi-siswa.index')
+        return redirect()->route('prestasisiswa.index')
             ->with('success', 'Prestasi siswa berhasil diperbarui');
     }
 
@@ -124,7 +124,7 @@ class PrestasiSiswaController extends Controller
 
         $prestasiSiswa->delete();
 
-        return redirect()->route('prestasi-siswa.index')
+        return redirect()->route('prestasisiswa.index')
             ->with('success', 'Prestasi siswa berhasil dihapus');
     }
 

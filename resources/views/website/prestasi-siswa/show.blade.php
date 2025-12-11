@@ -96,10 +96,10 @@
                 </div>
                 <div class="row mt-3">
                     <div class="col-12">
-                        <a href="{{ route('prestasi-siswa.edit', $prestasiSiswa->id) }}" class="btn btn-primary">
+                        <a href="{{ route('prestasisiswa.edit', $prestasiSiswa->id) }}" class="btn btn-primary">
                             <i class="ti ti-edit me-1"></i> Edit
                         </a>
-                        <a href="{{ route('prestasi-siswa.index') }}" class="btn btn-secondary">
+                        <a href="{{ route('prestasisiswa.index') }}" class="btn btn-secondary">
                             <i class="ti ti-arrow-left me-1"></i> Kembali
                         </a>
                     </div>

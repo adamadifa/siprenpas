@@ -13,7 +13,7 @@
                 <h5 class="card-title">Tambah Prestasi Siswa</h5>
             </div>
             <div class="card-body">
-                <form action="{{ route('prestasi-siswa.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('prestasisiswa.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="row">
                         <div class="col-12">
@@ -115,7 +115,7 @@
                                 <button type="submit" class="btn btn-primary">
                                     <i class="ti ti-device-floppy me-1"></i> Simpan
                                 </button>
-                                <a href="{{ route('prestasi-siswa.index') }}" class="btn btn-secondary">
+                                <a href="{{ route('prestasisiswa.index') }}" class="btn btn-secondary">
                                     <i class="ti ti-arrow-left me-1"></i> Kembali
                                 </a>
                             </div>
@@ -233,7 +233,7 @@
             `);
 
             $.ajax({
-                url: '{{ route('prestasi-siswa.search-siswa') }}',
+                url: '{{ route('prestasisiswa.search-siswa') }}',
                 type: 'GET',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
