@@ -138,7 +138,7 @@
     <div class="col-lg-12 col-sm-12 col-xs-12">
         <div class="card">
             <div class="card-header">
-                @can('pendaftaran-got-talent.create')
+                @can('pendaftarangottalent.create')
                     <a href="#" class="btn btn-primary" id="btncreatePendaftaranGotTalent"><i class="fa fa-plus me-2"></i>
                         Tambah
                         Pendaftaran</a>
@@ -147,7 +147,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-12">
-                        <form action="{{ route('pendaftaran-got-talent.index') }}">
+                        <form action="{{ route('pendaftarangottalent.index') }}">
                             <div class="row">
                                 <div class="col-lg-4 col-sm-12 col-md-12">
                                     <x-input-with-icon label="Nomor Register" value="{{ Request('nomor_register_search') }}"
@@ -202,7 +202,7 @@
                                             <td>{{ $d->no_hp ?? '-' }}</td>
                                             <td>
                                                 <div class="d-flex">
-                                                    @can('pendaftaran-got-talent.index')
+                                                    @can('pendaftarangottalent.index')
                                                         <div>
                                                             <a href="#" class="me-2 showDetailPendaftaranGotTalent"
                                                                 id_pendaftaran="{{ Crypt::encrypt($d->id) }}">
@@ -210,13 +210,13 @@
                                                             </a>
                                                         </div>
                                                         <div>
-                                                            <a href="{{ route('pendaftaran-got-talent.show', Crypt::encrypt($d->id)) }}" class="me-2">
+                                                            <a href="{{ route('pendaftarangottalent.show', Crypt::encrypt($d->id)) }}" class="me-2">
                                                                 <i class="ti ti-eye text-primary" title="Lihat Detail"></i>
                                                             </a>
                                                         </div>
                                                     @endcan
 
-                                                    @can('pendaftaran-got-talent.edit')
+                                                    @can('pendaftarangottalent.edit')
                                                         <div>
                                                             <a href="#" class="me-2 editPendaftaranGotTalent"
                                                                 id_pendaftaran="{{ Crypt::encrypt($d->id) }}">
@@ -225,10 +225,10 @@
                                                         </div>
                                                     @endcan
 
-                                                    @can('pendaftaran-got-talent.index')
+                                                    @can('pendaftarangottalent.index')
                                                         @if (empty($d->id_user))
                                                             <div>
-                                                                <a href="{{ route('pendaftaran-got-talent.createuser', Crypt::encrypt($d->id)) }}"
+                                                                <a href="{{ route('pendaftarangottalent.createuser', Crypt::encrypt($d->id)) }}"
                                                                     class="me-2" title="Buat User Peserta">
                                                                     <i class="ti ti-user-plus text-warning"></i>
                                                                 </a>
@@ -240,10 +240,10 @@
                                                         @endif
                                                     @endcan
 
-                                                    @can('pendaftaran-got-talent.delete')
+                                                    @can('pendaftarangottalent.delete')
                                                         <div>
                                                             <form method="POST" name="deleteform" class="deleteform"
-                                                                action="{{ route('pendaftaran-got-talent.delete', Crypt::encrypt($d->id)) }}">
+                                                                action="{{ route('pendaftarangottalent.delete', Crypt::encrypt($d->id)) }}">
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <a href="#" class="delete-confirm ml-1">
