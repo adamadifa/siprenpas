@@ -1,4 +1,4 @@
-<form action="{{ route('pendaftaran-got-talent.update', Crypt::encrypt($pendaftaranGotTalent->id)) }}"
+<form action="{{ route('pendaftarangottalent.update', Crypt::encrypt($pendaftaranGotTalent->id)) }}"
     id="formeditPendaftaranGotTalent" method="POST">
     @csrf
     @method('PUT')

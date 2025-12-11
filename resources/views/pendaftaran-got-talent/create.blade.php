@@ -1,4 +1,4 @@
-<form action="{{ route('pendaftaran-got-talent.store') }}" id="formcreatePendaftaranGotTalent" method="POST">
+<form action="{{ route('pendaftarangottalent.store') }}" id="formcreatePendaftaranGotTalent" method="POST">
     @csrf
     <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap" name="nama_lengkap" />
     <x-select-label label="Jenjang Pendidikan" name="id_jenjang" :data="$jenjangPendidikan" key="id"

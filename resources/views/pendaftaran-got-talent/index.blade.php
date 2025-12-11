@@ -276,23 +276,21 @@
         $("#btncreatePendaftaranGotTalent").click(function(e) {
             e.preventDefault();
             $('#mdlcreatePendaftaranGotTalent').modal("show");
-            $("#loadcreatePendaftaranGotTalent").load('/pendaftaran-got-talent/create');
+            $("#loadcreatePendaftaranGotTalent").load("{{ route('pendaftarangottalent.create') }}");
         });
 
         $(".editPendaftaranGotTalent").click(function(e) {
             var id_pendaftaran = $(this).attr("id_pendaftaran");
             e.preventDefault();
             $('#mdleditPendaftaranGotTalent').modal("show");
-            $("#loadeditPendaftaranGotTalent").load('/pendaftaran-got-talent/' + id_pendaftaran +
-                '/edit');
+            $("#loadeditPendaftaranGotTalent").load("{{ url('/pendaftaran-got-talent') }}/" + id_pendaftaran + "/edit");
         });
 
         $(".showDetailPendaftaranGotTalent").click(function(e) {
             var id_pendaftaran = $(this).attr("id_pendaftaran");
             e.preventDefault();
             $('#mdlshowDetailPendaftaranGotTalent').modal("show");
-            $("#loadshowDetailPendaftaranGotTalent").load('/pendaftaran-got-talent/' + id_pendaftaran +
-                '/show');
+            $("#loadshowDetailPendaftaranGotTalent").load("{{ url('/pendaftaran-got-talent') }}/" + id_pendaftaran + "/show");
         });
 
         // Handle klik pada card lomba untuk menampilkan detail peserta
@@ -314,7 +312,7 @@
                 </div>
             `);
 
-            $("#loadDetailPesertaLomba").load('/pendaftaran-got-talent/detail-lomba/' + id_lomba);
+            $("#loadDetailPesertaLomba").load("{{ url('/pendaftaran-got-talent/detail-lomba') }}/" + id_lomba);
         });
     });
 </script>

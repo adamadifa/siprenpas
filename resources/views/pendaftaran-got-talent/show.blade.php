@@ -9,7 +9,7 @@
     <div class="col-lg-12 col-sm-12 col-xs-12">
         <div class="card">
             <div class="card-header">
-                <a href="{{ route('pendaftaran-got-talent.index') }}" class="btn btn-secondary">
+                <a href="{{ route('pendaftarangottalent.index') }}" class="btn btn-secondary">
                     <i class="ti ti-arrow-left me-2"></i> Kembali
                 </a>
             </div>
