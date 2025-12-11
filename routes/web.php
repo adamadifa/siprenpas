@@ -254,15 +254,15 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(PendaftaranGotTalentController::class)->group(function () {
-        Route::get('/pendaftaran-got-talent', 'index')->name('pendaftaran-got-talent.index')->can('pendaftarangottalent.index');
-        Route::get('/pendaftaran-got-talent/create', 'create')->name('pendaftaran-got-talent.create')->can('pendaftarangottalent.create');
-        Route::post('/pendaftaran-got-talent', 'store')->name('pendaftaran-got-talent.store')->can('pendaftarangottalent.store');
-        Route::get('/pendaftaran-got-talent/detail-lomba/{id_lomba}', 'detailLomba')->name('pendaftaran-got-talent.detail-lomba')->can('pendaftarangottalent.index');
-        Route::get('/pendaftaran-got-talent/{id}/show', 'show')->name('pendaftaran-got-talent.show')->can('pendaftarangottalent.index');
-        Route::get('/pendaftaran-got-talent/{id}/edit', 'edit')->name('pendaftaran-got-talent.edit')->can('pendaftarangottalent.edit');
-        Route::put('/pendaftaran-got-talent/{id}/update', 'update')->name('pendaftaran-got-talent.update')->can('pendaftarangottalent.update');
-        Route::delete('/pendaftaran-got-talent/{id}/delete', 'destroy')->name('pendaftaran-got-talent.delete')->can('pendaftarangottalent.delete');
-        Route::get('/pendaftaran-got-talent/{id}/createuser', 'createuser')->name('pendaftaran-got-talent.createuser')->can('pendaftarangottalent.index');
+        Route::get('/pendaftaran-got-talent', 'index')->name('pendaftarangottalent.index')->can('pendaftarangottalent.index');
+        Route::get('/pendaftaran-got-talent/create', 'create')->name('pendaftarangottalent.create')->can('pendaftarangottalent.create');
+        Route::post('/pendaftaran-got-talent', 'store')->name('pendaftarangottalent.store')->can('pendaftarangottalent.store');
+        Route::get('/pendaftaran-got-talent/detail-lomba/{id_lomba}', 'detailLomba')->name('pendaftarangottalent.detail-lomba')->can('pendaftarangottalent.index');
+        Route::get('/pendaftaran-got-talent/{id}/show', 'show')->name('pendaftarangottalent.show')->can('pendaftarangottalent.index');
+        Route::get('/pendaftaran-got-talent/{id}/edit', 'edit')->name('pendaftarangottalent.edit')->can('pendaftarangottalent.edit');
+        Route::put('/pendaftaran-got-talent/{id}/update', 'update')->name('pendaftarangottalent.update')->can('pendaftarangottalent.update');
+        Route::delete('/pendaftaran-got-talent/{id}/delete', 'destroy')->name('pendaftarangottalent.delete')->can('pendaftarangottalent.delete');
+        Route::get('/pendaftaran-got-talent/{id}/createuser', 'createuser')->name('pendaftarangottalent.createuser')->can('pendaftarangottalent.index');
     });
 
     Route::controller(App\Http\Controllers\KonfirmasiPembayaranGotTalentController::class)->group(function () {
