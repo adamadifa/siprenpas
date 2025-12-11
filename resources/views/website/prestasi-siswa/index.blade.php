@@ -9,7 +9,7 @@
     <div class="col-lg-12 col-sm-12 col-xs-12">
         <div class="card">
             <div class="card-header">
-                @can('prestasi-siswa.create')
+                @can('prestasisiswa.create')
                     <a href="{{ route('prestasi-siswa.create') }}" class="btn btn-primary">
                         <i class="fa fa-plus me-2"></i> Tambah Prestasi Siswa
                     </a>
@@ -79,7 +79,7 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex">
-                                                    @can('prestasi-siswa.edit')
+                                                    @can('prestasisiswa.edit')
                                                         <div>
                                                             <a href="{{ route('prestasi-siswa.edit', $d->id) }}" class="me-2">
                                                                 <i class="ti ti-edit text-success"></i>
@@ -87,7 +87,7 @@
                                                         </div>
                                                     @endcan
 
-                                                    @can('prestasi-siswa.delete')
+                                                    @can('prestasisiswa.delete')
                                                         <div>
                                                             <form method="POST" name="deleteform" class="deleteform"
                                                                 action="{{ route('prestasi-siswa.destroy', $d->id) }}">
