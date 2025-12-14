@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Validator;
  *     name="Pendaftaran Got Talent",
  *     description="API endpoints untuk pendaftaran Al Amin Got Talent"
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="PendaftaranGotTalent",
  *     type="object",
@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\Validator;
  *     @OA\Property(property="alamat_sekolah", type="string", example="Jl. Raya No. 123"),
  *     @OA\Property(property="alamat_rumah", type="string", example="Jl. Rumah No. 456"),
  *     @OA\Property(property="no_hp", type="string", example="081234567890"),
- *     @OA\Property(property="email", type="string", example="ahmad@example.com"),
+ *     @OA\Property(property="email", type="string", example="GT241001@agt.com", description="Email di-generate otomatis dari nomor register dengan akhiran @agt.com"),
  *     @OA\Property(property="created_at", type="string", format="datetime", example="2024-01-01 00:00:00"),
  *     @OA\Property(property="updated_at", type="string", format="datetime", example="2024-01-01 00:00:00"),
  *     @OA\Property(
@@ -51,7 +51,7 @@ use Illuminate\Support\Facades\Validator;
  *         )
  *     )
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="RegisterResponse",
  *     type="object",
@@ -65,7 +65,7 @@ use Illuminate\Support\Facades\Validator;
  *         @OA\Property(property="token", type="string", example="1|xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
  *     )
  * )
- * 
+ *
  * @OA\Schema(
  *     schema="ErrorResponse",
  *     type="object",
@@ -78,33 +78,58 @@ class PendaftaranGotTalentController extends Controller
 {
     /**
      * Register pendaftaran Al Amin Got Talent
-     * 
+     *
+     * Catatan: Email dan password akan di-generate otomatis. Email dibuat dari nomor register dengan akhiran @agt.com (contoh: GT241001@agt.com). Password sama dengan nomor HP yang diinput.
+     *
      * @OA\Post(
      *     path="/api/pendaftaran-got-talent/register",
      *     summary="Daftar Al Amin Got Talent",
+     *     description="Endpoint untuk mendaftar Al Amin Got Talent. Email akan di-generate otomatis dari nomor register dengan format: {nomor_register}@agt.com. Password akan di-set sama dengan nomor HP yang diinput.",
      *     tags={"Pendaftaran Got Talent"},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"nama_lengkap", "id_jenjang", "asal_sekolah", "alamat_sekolah", "alamat_rumah", "no_hp", "email", "perlombaan", "password"},
-     *             @OA\Property(property="nama_lengkap", type="string", example="Ahmad Fauzi"),
-     *             @OA\Property(property="id_jenjang", type="integer", example=1),
-     *             @OA\Property(property="asal_sekolah", type="string", example="SD Al Amin"),
-     *             @OA\Property(property="alamat_sekolah", type="string", example="Jl. Raya No. 123"),
-     *             @OA\Property(property="alamat_rumah", type="string", example="Jl. Rumah No. 456"),
-     *             @OA\Property(property="no_hp", type="string", example="081234567890"),
-     *             @OA\Property(property="email", type="string", example="ahmad@example.com"),
-     *             @OA\Property(property="password", type="string", example="password123"),
-     *             @OA\Property(property="perlombaan", type="array", @OA\Items(type="integer"), example={1, 2, 3})
+     *             required={"nama_lengkap", "id_jenjang", "asal_sekolah", "alamat_sekolah", "alamat_rumah", "no_hp", "perlombaan"},
+     *             @OA\Property(property="nama_lengkap", type="string", example="Ahmad Fauzi", description="Nama lengkap peserta"),
+     *             @OA\Property(property="id_jenjang", type="integer", example=1, description="ID jenjang pendidikan"),
+     *             @OA\Property(property="asal_sekolah", type="string", example="SD Al Amin", description="Nama asal sekolah"),
+     *             @OA\Property(property="alamat_sekolah", type="string", example="Jl. Raya No. 123", description="Alamat sekolah"),
+     *             @OA\Property(property="alamat_rumah", type="string", example="Jl. Rumah No. 456", description="Alamat rumah"),
+     *             @OA\Property(property="no_hp", type="string", example="081234567890", description="Nomor HP (akan digunakan sebagai password)"),
+     *             @OA\Property(property="perlombaan", type="array", @OA\Items(type="integer"), example={1, 2, 3}, description="Array ID perlombaan yang dipilih")
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Registrasi berhasil",
+     *         description="Registrasi berhasil. Email dan password akan dikembalikan dalam response data user.",
      *         @OA\JsonContent(
      *             allOf={
      *                 @OA\Schema(ref="#/components/schemas/RegisterResponse")
-     *             }
+     *             },
+     *             @OA\Examples(
+     *                 example="success",
+     *                 summary="Contoh response sukses",
+     *                 value={
+     *                     "success": true,
+     *                     "message": "Registrasi berhasil",
+     *                     "data": {
+     *                         "user": {
+     *                             "id": 1,
+     *                             "name": "Ahmad Fauzi",
+     *                             "email": "GT241001@agt.com",
+     *                             "username": "GT241001@agt.com"
+     *                         },
+     *                         "pendaftaran": {
+     *                             "id": 1,
+     *                             "nomor_register": "GT241001",
+     *                             "nama_lengkap": "Ahmad Fauzi",
+     *                             "email": "GT241001@agt.com",
+     *                             "no_hp": "081234567890"
+     *                         },
+     *                         "token": "1|xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+     *                     }
+     *                 }
+     *             )
      *         )
      *     ),
      *     @OA\Response(
@@ -132,8 +157,6 @@ class PendaftaranGotTalentController extends Controller
             'alamat_sekolah' => 'required|string',
             'alamat_rumah' => 'required|string',
             'no_hp' => 'required|string|max:20',
-            'email' => 'required|email|max:100|unique:users,email',
-            'password' => 'required|string|min:6',
             'perlombaan' => 'required|array|min:1',
             'perlombaan.*' => 'exists:perlombaan,id'
         ], [
@@ -144,11 +167,6 @@ class PendaftaranGotTalentController extends Controller
             'alamat_sekolah.required' => 'Alamat Sekolah harus diisi',
             'alamat_rumah.required' => 'Alamat Rumah harus diisi',
             'no_hp.required' => 'No. HP harus diisi',
-            'email.required' => 'Email harus diisi',
-            'email.email' => 'Format email tidak valid',
-            'email.unique' => 'Email sudah terdaftar',
-            'password.required' => 'Password harus diisi',
-            'password.min' => 'Password minimal 6 karakter',
             'perlombaan.required' => 'Pilihan Lomba harus dipilih minimal 1',
             'perlombaan.min' => 'Pilihan Lomba harus dipilih minimal 1'
         ]);
@@ -172,6 +190,9 @@ class PendaftaranGotTalentController extends Controller
             $format = "GT" . date('y');
             $nomor_register = buatkode($last_nomor_register, $format, 4);
 
+            // Generate email dari nomor register dengan akhiran @agt.com
+            $email = $nomor_register . '@agt.com';
+
             // Create pendaftaran
             $pendaftaran = PendaftaranGotTalent::create([
                 'nomor_register' => $nomor_register,
@@ -181,7 +202,7 @@ class PendaftaranGotTalentController extends Controller
                 'alamat_sekolah' => $request->alamat_sekolah,
                 'alamat_rumah' => $request->alamat_rumah,
                 'no_hp' => $request->no_hp,
-                'email' => $request->email
+                'email' => $email
             ]);
 
             // Simpan pilihan lomba
@@ -196,12 +217,12 @@ class PendaftaranGotTalentController extends Controller
                 }
             }
 
-            // Create user
+            // Create user dengan email dari nomor register dan password dari no_hp
             $user = User::create([
                 'name' => $request->nama_lengkap,
-                'username' => $request->email,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
+                'username' => $email,
+                'email' => $email,
+                'password' => Hash::make($request->no_hp),
                 'kode_unit' => 'U00',
             ]);
 
@@ -241,7 +262,7 @@ class PendaftaranGotTalentController extends Controller
 
     /**
      * Get pendaftaran by user yang sedang login
-     * 
+     *
      * @OA\Get(
      *     path="/api/pendaftaran-got-talent/my-pendaftaran",
      *     summary="Ambil data pendaftaran user yang login",
@@ -310,7 +331,7 @@ class PendaftaranGotTalentController extends Controller
 
     /**
      * Update pendaftaran
-     * 
+     *
      * @OA\Put(
      *     path="/api/pendaftaran-got-talent/update",
      *     summary="Update data pendaftaran",
@@ -465,7 +486,7 @@ class PendaftaranGotTalentController extends Controller
 
     /**
      * Get list jenjang pendidikan
-     * 
+     *
      * @OA\Get(
      *     path="/api/pendaftaran-got-talent/jenjang-pendidikan",
      *     summary="Ambil list jenjang pendidikan",
@@ -490,7 +511,7 @@ class PendaftaranGotTalentController extends Controller
      *         )
      *     )
      * )
-     * 
+     *
      * @OA\Get(
      *     path="/api/public/jenjang-pendidikan",
      *     summary="Ambil list jenjang pendidikan (Public)",
@@ -528,7 +549,7 @@ class PendaftaranGotTalentController extends Controller
 
     /**
      * Get list perlombaan
-     * 
+     *
      * @OA\Get(
      *     path="/api/pendaftaran-got-talent/perlombaan",
      *     summary="Ambil list perlombaan",
@@ -570,7 +591,7 @@ class PendaftaranGotTalentController extends Controller
      *         )
      *     )
      * )
-     * 
+     *
      * @OA\Get(
      *     path="/api/public/perlombaan",
      *     summary="Ambil list perlombaan (Public)",
@@ -648,7 +669,7 @@ class PendaftaranGotTalentController extends Controller
 
     /**
      * Get all pendaftar Al Amin Got Talent
-     * 
+     *
      * @OA\Get(
      *     path="/api/pendaftaran-got-talent",
      *     summary="Ambil semua data pendaftar Al Amin Got Talent",

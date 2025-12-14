@@ -1317,7 +1317,7 @@
                     "Pendaftaran Got Talent"
                 ],
                 "summary": "Daftar Al Amin Got Talent",
-                "description": "Register pendaftaran Al Amin Got Talent",
+                "description": "Endpoint untuk mendaftar Al Amin Got Talent. Email akan di-generate otomatis dari nomor register dengan format: {nomor_register}@agt.com. Password akan di-set sama dengan nomor HP yang diinput.",
                 "operationId": "9e01a2ca2fa3a140633e8e4ee3a243f6",
                 "requestBody": {
                     "required": true,
@@ -1331,44 +1331,41 @@
                                     "alamat_sekolah",
                                     "alamat_rumah",
                                     "no_hp",
-                                    "email",
-                                    "perlombaan",
-                                    "password"
+                                    "perlombaan"
                                 ],
                                 "properties": {
                                     "nama_lengkap": {
+                                        "description": "Nama lengkap peserta",
                                         "type": "string",
                                         "example": "Ahmad Fauzi"
                                     },
                                     "id_jenjang": {
+                                        "description": "ID jenjang pendidikan",
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "asal_sekolah": {
+                                        "description": "Nama asal sekolah",
                                         "type": "string",
                                         "example": "SD Al Amin"
                                     },
                                     "alamat_sekolah": {
+                                        "description": "Alamat sekolah",
                                         "type": "string",
                                         "example": "Jl. Raya No. 123"
                                     },
                                     "alamat_rumah": {
+                                        "description": "Alamat rumah",
                                         "type": "string",
                                         "example": "Jl. Rumah No. 456"
                                     },
                                     "no_hp": {
+                                        "description": "Nomor HP (akan digunakan sebagai password)",
                                         "type": "string",
                                         "example": "081234567890"
                                     },
-                                    "email": {
-                                        "type": "string",
-                                        "example": "ahmad@example.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "example": "password123"
-                                    },
                                     "perlombaan": {
+                                        "description": "Array ID perlombaan yang dipilih",
                                         "type": "array",
                                         "items": {
                                             "type": "integer"
@@ -1387,7 +1384,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Registrasi berhasil",
+                        "description": "Registrasi berhasil. Email dan password akan dikembalikan dalam response data user.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1396,6 +1393,31 @@
                                             "$ref": "#/components/schemas/RegisterResponse"
                                         }
                                     ]
+                                },
+                                "examples": {
+                                    "success": {
+                                        "summary": "Contoh response sukses",
+                                        "value": {
+                                            "success": true,
+                                            "message": "Registrasi berhasil",
+                                            "data": {
+                                                "user": {
+                                                    "id": 1,
+                                                    "name": "Ahmad Fauzi",
+                                                    "email": "GT241001@agt.com",
+                                                    "username": "GT241001@agt.com"
+                                                },
+                                                "pendaftaran": {
+                                                    "id": 1,
+                                                    "nomor_register": "GT241001",
+                                                    "nama_lengkap": "Ahmad Fauzi",
+                                                    "email": "GT241001@agt.com",
+                                                    "no_hp": "081234567890"
+                                                },
+                                                "token": "1|xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -5450,8 +5472,9 @@
                         "example": "081234567890"
                     },
                     "email": {
+                        "description": "Email di-generate otomatis dari nomor register dengan akhiran @agt.com",
                         "type": "string",
-                        "example": "ahmad@example.com"
+                        "example": "GT241001@agt.com"
                     },
                     "created_at": {
                         "type": "string",
