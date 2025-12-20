@@ -255,6 +255,7 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(PendaftaranGotTalentController::class)->group(function () {
         Route::get('/pendaftaran-got-talent', 'index')->name('pendaftarangottalent.index')->can('pendaftarangottalent.index');
+        Route::get('/pendaftaran-got-talent/export', 'export')->name('pendaftarangottalent.export')->can('pendaftarangottalent.index');
         Route::get('/pendaftaran-got-talent/create', 'create')->name('pendaftarangottalent.create')->can('pendaftarangottalent.create');
         Route::post('/pendaftaran-got-talent', 'store')->name('pendaftarangottalent.store')->can('pendaftarangottalent.store');
         Route::get('/pendaftaran-got-talent/detail-lomba/{id_lomba}', 'detailLomba')->name('pendaftarangottalent.detail-lomba')->can('pendaftarangottalent.index');

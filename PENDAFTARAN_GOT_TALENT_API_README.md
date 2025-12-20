@@ -33,16 +33,21 @@ Registrasi pendaftaran baru Al Amin Got Talent
 ```json
 {
   "nama_lengkap": "Ahmad Fauzi",
+  "tempat_lahir": "Jakarta",
+  "tanggal_lahir": "2010-05-15",
   "id_jenjang": 1,
   "asal_sekolah": "SD Al Amin",
   "alamat_sekolah": "Jl. Raya No. 123",
   "alamat_rumah": "Jl. Rumah No. 456",
   "no_hp": "081234567890",
-  "email": "ahmad@example.com",
-  "password": "password123",
   "perlombaan": [1, 2, 3]
 }
 ```
+
+**Catatan:**
+- `tempat_lahir`: Tempat lahir peserta (required, string, max 100 karakter)
+- `tanggal_lahir`: Tanggal lahir peserta (required, format: YYYY-MM-DD, contoh: 2010-05-15)
+- Email dan password akan di-generate otomatis. Email dibuat dari nomor register dengan akhiran @agt.com. Password sama dengan nomor HP yang diinput.
 
 **Response:**
 ```json
@@ -117,12 +122,14 @@ Authorization: Bearer {token}
     "id": 1,
     "nomor_register": "GT241001",
     "nama_lengkap": "Ahmad Fauzi",
+    "tempat_lahir": "Jakarta",
+    "tanggal_lahir": "2010-05-15",
     "id_jenjang": 1,
     "asal_sekolah": "SD Al Amin",
     "alamat_sekolah": "Jl. Raya No. 123",
     "alamat_rumah": "Jl. Rumah No. 456",
     "no_hp": "081234567890",
-    "email": "ahmad@example.com",
+    "email": "GT241001@agt.com",
     "jenjang_pendidikan": {
       "id": 1,
       "jenjang_pendidikan": "SD"
@@ -150,6 +157,8 @@ Authorization: Bearer {token}
 ```json
 {
   "nama_lengkap": "Ahmad Fauzi",
+  "tempat_lahir": "Jakarta",
+  "tanggal_lahir": "2010-05-15",
   "id_jenjang": 1,
   "asal_sekolah": "SD Al Amin",
   "alamat_sekolah": "Jl. Raya No. 123",
@@ -158,6 +167,10 @@ Authorization: Bearer {token}
   "perlombaan": [1, 2, 3]
 }
 ```
+
+**Catatan:**
+- `tempat_lahir`: Tempat lahir peserta (required, string, max 100 karakter)
+- `tanggal_lahir`: Tanggal lahir peserta (required, format: YYYY-MM-DD, contoh: 2010-05-15)
 
 **Response:**
 ```json

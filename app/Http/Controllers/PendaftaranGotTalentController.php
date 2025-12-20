@@ -8,11 +8,13 @@ use App\Models\Perlombaan;
 use App\Models\User;
 use App\Models\UserPendaftaranGotTalent;
 use App\Models\KonfirmasiPembayaranGotTalent;
+use App\Exports\PendaftaranGotTalentExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PendaftaranGotTalentController extends Controller
 {
@@ -82,6 +84,8 @@ class PendaftaranGotTalentController extends Controller
     {
         $request->validate([
             'nama_lengkap' => 'required|string|max:100',
+            'tempat_lahir' => 'required|string|max:100',
+            'tanggal_lahir' => 'required|date',
             'id_jenjang' => 'required|exists:jenjang_pendidikan,id',
             'asal_sekolah' => 'required|string|max:200',
             'alamat_sekolah' => 'required|string',
@@ -92,6 +96,9 @@ class PendaftaranGotTalentController extends Controller
             'perlombaan.*' => 'exists:perlombaan,id'
         ], [
             'nama_lengkap.required' => 'Nama Lengkap harus diisi',
+            'tempat_lahir.required' => 'Tempat Lahir harus diisi',
+            'tanggal_lahir.required' => 'Tanggal Lahir harus diisi',
+            'tanggal_lahir.date' => 'Format Tanggal Lahir tidak valid',
             'id_jenjang.required' => 'Jenjang Pendidikan harus dipilih',
             'asal_sekolah.required' => 'Asal Sekolah harus diisi',
             'alamat_sekolah.required' => 'Alamat Sekolah harus diisi',
@@ -118,6 +125,8 @@ class PendaftaranGotTalentController extends Controller
             $pendaftaran = PendaftaranGotTalent::create([
                 'nomor_register' => $nomor_register,
                 'nama_lengkap' => $request->nama_lengkap,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
                 'id_jenjang' => $request->id_jenjang,
                 'asal_sekolah' => $request->asal_sekolah,
                 'alamat_sekolah' => $request->alamat_sekolah,
@@ -201,6 +210,8 @@ class PendaftaranGotTalentController extends Controller
         $id = Crypt::decrypt($id);
         $request->validate([
             'nama_lengkap' => 'required|string|max:100',
+            'tempat_lahir' => 'required|string|max:100',
+            'tanggal_lahir' => 'required|date',
             'id_jenjang' => 'required|exists:jenjang_pendidikan,id',
             'asal_sekolah' => 'required|string|max:200',
             'alamat_sekolah' => 'required|string',
@@ -211,6 +222,9 @@ class PendaftaranGotTalentController extends Controller
             'perlombaan.*' => 'exists:perlombaan,id'
         ], [
             'nama_lengkap.required' => 'Nama Lengkap harus diisi',
+            'tempat_lahir.required' => 'Tempat Lahir harus diisi',
+            'tanggal_lahir.required' => 'Tanggal Lahir harus diisi',
+            'tanggal_lahir.date' => 'Format Tanggal Lahir tidak valid',
             'id_jenjang.required' => 'Jenjang Pendidikan harus dipilih',
             'asal_sekolah.required' => 'Asal Sekolah harus diisi',
             'alamat_sekolah.required' => 'Alamat Sekolah harus diisi',
@@ -227,6 +241,8 @@ class PendaftaranGotTalentController extends Controller
 
             PendaftaranGotTalent::where('id', $id)->update([
                 'nama_lengkap' => $request->nama_lengkap,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
                 'id_jenjang' => $request->id_jenjang,
                 'asal_sekolah' => $request->asal_sekolah,
                 'alamat_sekolah' => $request->alamat_sekolah,
@@ -420,6 +436,42 @@ class PendaftaranGotTalentController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return Redirect::back()->with(messageError($e->getMessage()));
+        }
+    }
+
+    /**
+     * Export data pendaftaran to Excel
+     */
+    public function export(Request $request)
+    {
+        try {
+            $query = PendaftaranGotTalent::query();
+            $query->select('pendaftaran_got_talent.*', 'user_pendaftaran_got_talent.id_user');
+            $query->leftJoin('user_pendaftaran_got_talent', 'pendaftaran_got_talent.id', '=', 'user_pendaftaran_got_talent.id_pendaftaran');
+
+            // Apply filters jika ada
+            if (!empty($request->nomor_register_search)) {
+                $query->where('nomor_register', 'like', '%' . $request->nomor_register_search . '%');
+            }
+
+            if (!empty($request->nama_lengkap_search)) {
+                $query->where('nama_lengkap', 'like', '%' . $request->nama_lengkap_search . '%');
+            }
+
+            if (!empty($request->id_jenjang_search)) {
+                $query->where('id_jenjang', $request->id_jenjang_search);
+            }
+
+            $pendaftaranGotTalent = $query->orderBy('created_at', 'desc')->get();
+
+            // Load relationships
+            $pendaftaranGotTalent->load('jenjangPendidikan', 'perlombaan');
+
+            $filename = 'Pendaftaran_Got_Talent_' . date('Y-m-d_His') . '.xlsx';
+
+            return Excel::download(new PendaftaranGotTalentExport($pendaftaranGotTalent), $filename);
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError('Gagal export data: ' . $e->getMessage()));
         }
     }
 }

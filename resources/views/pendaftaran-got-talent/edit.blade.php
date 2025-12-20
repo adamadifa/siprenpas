@@ -4,6 +4,10 @@
     @method('PUT')
     <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap" name="nama_lengkap"
         value="{{ $pendaftaranGotTalent->nama_lengkap }}" />
+    <x-input-with-icon-label icon="ti ti-map-pin" label="Tempat Lahir" name="tempat_lahir"
+        value="{{ $pendaftaranGotTalent->tempat_lahir ?? '' }}" />
+    <x-input-with-icon-label icon="ti ti-calendar" label="Tanggal Lahir" name="tanggal_lahir" datepicker="flatpickr-date"
+        value="{{ $pendaftaranGotTalent->tanggal_lahir ?? '' }}" />
     <x-select-label label="Jenjang Pendidikan" name="id_jenjang" :data="$jenjangPendidikan" key="id"
         textShow="jenjang_pendidikan" selected="{{ $pendaftaranGotTalent->id_jenjang }}" />
     <x-input-with-icon-label icon="ti ti-school" label="Asal Sekolah" name="asal_sekolah"
@@ -46,10 +50,28 @@
 <script>
     $(function() {
         const formeditPendaftaranGotTalent = $("#formeditPendaftaranGotTalent");
+
+        // Inisialisasi flatpickr untuk datepicker
+        if (typeof flatpickr !== 'undefined') {
+            $(".flatpickr-date").flatpickr({
+                dateFormat: "Y-m-d"
+            });
+        } else {
+            // Jika flatpickr belum tersedia, tunggu sebentar
+            setTimeout(function() {
+                if (typeof flatpickr !== 'undefined') {
+                    $(".flatpickr-date").flatpickr({
+                        dateFormat: "Y-m-d"
+                    });
+                }
+            }, 100);
+        }
         
         formeditPendaftaranGotTalent.submit(function(e) {
             e.preventDefault();
             var nama_lengkap = $(this).find('input[name="nama_lengkap"]').val().trim();
+            var tempat_lahir = $(this).find('input[name="tempat_lahir"]').val().trim();
+            var tanggal_lahir = $(this).find('input[name="tanggal_lahir"]').val().trim();
             var id_jenjang = $(this).find('select[name="id_jenjang"]').val();
             var asal_sekolah = $(this).find('input[name="asal_sekolah"]').val().trim();
             var alamat_sekolah = $(this).find('textarea[name="alamat_sekolah"]').val().trim();
@@ -65,6 +87,26 @@
                     text: 'Nama Lengkap tidak boleh kosong!',
                     didClose: () => {
                         $(this).find("#nama_lengkap").focus();
+                    }
+                });
+                return false;
+            } else if (tempat_lahir == "") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Tempat Lahir tidak boleh kosong!',
+                    didClose: () => {
+                        $(this).find("#tempat_lahir").focus();
+                    }
+                });
+                return false;
+            } else if (tanggal_lahir == "") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Tanggal Lahir tidak boleh kosong!',
+                    didClose: () => {
+                        $(this).find("#tanggal_lahir").focus();
                     }
                 });
                 return false;

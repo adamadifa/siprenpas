@@ -138,11 +138,18 @@
     <div class="col-lg-12 col-sm-12 col-xs-12">
         <div class="card">
             <div class="card-header">
-                @can('pendaftarangottalent.create')
-                    <a href="#" class="btn btn-primary" id="btncreatePendaftaranGotTalent"><i class="fa fa-plus me-2"></i>
-                        Tambah
-                        Pendaftaran</a>
-                @endcan
+                <div class="d-flex gap-2">
+                    @can('pendaftarangottalent.create')
+                        <a href="#" class="btn btn-primary" id="btncreatePendaftaranGotTalent"><i class="fa fa-plus me-2"></i>
+                            Tambah
+                            Pendaftaran</a>
+                    @endcan
+                    @can('pendaftarangottalent.index')
+                        <a href="{{ route('pendaftarangottalent.export', request()->all()) }}" class="btn btn-success">
+                            <i class="ti ti-file-excel me-2"></i>Export Excel
+                        </a>
+                    @endcan
+                </div>
             </div>
             <div class="card-body">
                 <div class="row">

@@ -26,6 +26,8 @@ use Illuminate\Support\Facades\Validator;
  *     @OA\Property(property="id", type="integer", example=1),
  *     @OA\Property(property="nomor_register", type="string", example="GT241001"),
  *     @OA\Property(property="nama_lengkap", type="string", example="Ahmad Fauzi"),
+ *     @OA\Property(property="tempat_lahir", type="string", example="Jakarta"),
+ *     @OA\Property(property="tanggal_lahir", type="string", format="date", example="2010-05-15"),
  *     @OA\Property(property="id_jenjang", type="integer", example=1),
  *     @OA\Property(property="asal_sekolah", type="string", example="SD Al Amin"),
  *     @OA\Property(property="alamat_sekolah", type="string", example="Jl. Raya No. 123"),
@@ -89,9 +91,11 @@ class PendaftaranGotTalentController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"nama_lengkap", "id_jenjang", "asal_sekolah", "alamat_sekolah", "alamat_rumah", "no_hp", "perlombaan"},
-     *             @OA\Property(property="nama_lengkap", type="string", example="Ahmad Fauzi", description="Nama lengkap peserta"),
-     *             @OA\Property(property="id_jenjang", type="integer", example=1, description="ID jenjang pendidikan"),
+ *             required={"nama_lengkap", "tempat_lahir", "tanggal_lahir", "id_jenjang", "asal_sekolah", "alamat_sekolah", "alamat_rumah", "no_hp", "perlombaan"},
+ *             @OA\Property(property="nama_lengkap", type="string", example="Ahmad Fauzi", description="Nama lengkap peserta"),
+ *             @OA\Property(property="tempat_lahir", type="string", example="Jakarta", description="Tempat lahir peserta"),
+ *             @OA\Property(property="tanggal_lahir", type="string", format="date", example="2010-05-15", description="Tanggal lahir peserta (format: YYYY-MM-DD)"),
+ *             @OA\Property(property="id_jenjang", type="integer", example=1, description="ID jenjang pendidikan"),
      *             @OA\Property(property="asal_sekolah", type="string", example="SD Al Amin", description="Nama asal sekolah"),
      *             @OA\Property(property="alamat_sekolah", type="string", example="Jl. Raya No. 123", description="Alamat sekolah"),
      *             @OA\Property(property="alamat_rumah", type="string", example="Jl. Rumah No. 456", description="Alamat rumah"),
@@ -152,6 +156,8 @@ class PendaftaranGotTalentController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama_lengkap' => 'required|string|max:100',
+            'tempat_lahir' => 'required|string|max:100',
+            'tanggal_lahir' => 'required|date',
             'id_jenjang' => 'required|exists:jenjang_pendidikan,id',
             'asal_sekolah' => 'required|string|max:200',
             'alamat_sekolah' => 'required|string',
@@ -161,6 +167,9 @@ class PendaftaranGotTalentController extends Controller
             'perlombaan.*' => 'exists:perlombaan,id'
         ], [
             'nama_lengkap.required' => 'Nama Lengkap harus diisi',
+            'tempat_lahir.required' => 'Tempat Lahir harus diisi',
+            'tanggal_lahir.required' => 'Tanggal Lahir harus diisi',
+            'tanggal_lahir.date' => 'Format Tanggal Lahir tidak valid',
             'id_jenjang.required' => 'Jenjang Pendidikan harus dipilih',
             'id_jenjang.exists' => 'Jenjang Pendidikan tidak valid',
             'asal_sekolah.required' => 'Asal Sekolah harus diisi',
@@ -197,6 +206,8 @@ class PendaftaranGotTalentController extends Controller
             $pendaftaran = PendaftaranGotTalent::create([
                 'nomor_register' => $nomor_register,
                 'nama_lengkap' => $request->nama_lengkap,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
                 'id_jenjang' => $request->id_jenjang,
                 'asal_sekolah' => $request->asal_sekolah,
                 'alamat_sekolah' => $request->alamat_sekolah,
@@ -339,15 +350,17 @@ class PendaftaranGotTalentController extends Controller
      *     security={{"sanctum":{}}},
      *     @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="nama_lengkap", type="string", example="Ahmad Fauzi"),
-     *             @OA\Property(property="id_jenjang", type="integer", example=1),
-     *             @OA\Property(property="asal_sekolah", type="string", example="SD Al Amin"),
-     *             @OA\Property(property="alamat_sekolah", type="string", example="Jl. Raya No. 123"),
-     *             @OA\Property(property="alamat_rumah", type="string", example="Jl. Rumah No. 456"),
-     *             @OA\Property(property="no_hp", type="string", example="081234567890"),
-     *             @OA\Property(property="perlombaan", type="array", @OA\Items(type="integer"), example={1, 2, 3})
-     *         )
+ *         @OA\JsonContent(
+ *             @OA\Property(property="nama_lengkap", type="string", example="Ahmad Fauzi"),
+ *             @OA\Property(property="tempat_lahir", type="string", example="Jakarta"),
+ *             @OA\Property(property="tanggal_lahir", type="string", format="date", example="2010-05-15"),
+ *             @OA\Property(property="id_jenjang", type="integer", example=1),
+ *             @OA\Property(property="asal_sekolah", type="string", example="SD Al Amin"),
+ *             @OA\Property(property="alamat_sekolah", type="string", example="Jl. Raya No. 123"),
+ *             @OA\Property(property="alamat_rumah", type="string", example="Jl. Rumah No. 456"),
+ *             @OA\Property(property="no_hp", type="string", example="081234567890"),
+ *             @OA\Property(property="perlombaan", type="array", @OA\Items(type="integer"), example={1, 2, 3})
+ *         )
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -410,6 +423,8 @@ class PendaftaranGotTalentController extends Controller
 
         $validator = Validator::make($request->all(), [
             'nama_lengkap' => 'required|string|max:100',
+            'tempat_lahir' => 'required|string|max:100',
+            'tanggal_lahir' => 'required|date',
             'id_jenjang' => 'required|exists:jenjang_pendidikan,id',
             'asal_sekolah' => 'required|string|max:200',
             'alamat_sekolah' => 'required|string',
@@ -419,6 +434,9 @@ class PendaftaranGotTalentController extends Controller
             'perlombaan.*' => 'exists:perlombaan,id'
         ], [
             'nama_lengkap.required' => 'Nama Lengkap harus diisi',
+            'tempat_lahir.required' => 'Tempat Lahir harus diisi',
+            'tanggal_lahir.required' => 'Tanggal Lahir harus diisi',
+            'tanggal_lahir.date' => 'Format Tanggal Lahir tidak valid',
             'id_jenjang.required' => 'Jenjang Pendidikan harus dipilih',
             'asal_sekolah.required' => 'Asal Sekolah harus diisi',
             'alamat_sekolah.required' => 'Alamat Sekolah harus diisi',
@@ -440,6 +458,8 @@ class PendaftaranGotTalentController extends Controller
         try {
             PendaftaranGotTalent::where('id', $userPendaftaran->id_pendaftaran)->update([
                 'nama_lengkap' => $request->nama_lengkap,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
                 'id_jenjang' => $request->id_jenjang,
                 'asal_sekolah' => $request->asal_sekolah,
                 'alamat_sekolah' => $request->alamat_sekolah,

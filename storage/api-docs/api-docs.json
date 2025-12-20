@@ -1326,6 +1326,8 @@
                             "schema": {
                                 "required": [
                                     "nama_lengkap",
+                                    "tempat_lahir",
+                                    "tanggal_lahir",
                                     "id_jenjang",
                                     "asal_sekolah",
                                     "alamat_sekolah",
@@ -1338,6 +1340,17 @@
                                         "description": "Nama lengkap peserta",
                                         "type": "string",
                                         "example": "Ahmad Fauzi"
+                                    },
+                                    "tempat_lahir": {
+                                        "description": "Tempat lahir peserta",
+                                        "type": "string",
+                                        "example": "Jakarta"
+                                    },
+                                    "tanggal_lahir": {
+                                        "description": "Tanggal lahir peserta (format: YYYY-MM-DD)",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-05-15"
                                     },
                                     "id_jenjang": {
                                         "description": "ID jenjang pendidikan",
@@ -1518,6 +1531,15 @@
                                     "nama_lengkap": {
                                         "type": "string",
                                         "example": "Ahmad Fauzi"
+                                    },
+                                    "tempat_lahir": {
+                                        "type": "string",
+                                        "example": "Jakarta"
+                                    },
+                                    "tanggal_lahir": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2010-05-15"
                                     },
                                     "id_jenjang": {
                                         "type": "integer",
@@ -5450,6 +5472,15 @@
                     "nama_lengkap": {
                         "type": "string",
                         "example": "Ahmad Fauzi"
+                    },
+                    "tempat_lahir": {
+                        "type": "string",
+                        "example": "Jakarta"
+                    },
+                    "tanggal_lahir": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2010-05-15"
                     },
                     "id_jenjang": {
                         "type": "integer",

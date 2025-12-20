@@ -26,6 +26,14 @@
                                 <td>{{ $pendaftaranGotTalent->nama_lengkap }}</td>
                             </tr>
                             <tr>
+                                <th>Tempat Lahir</th>
+                                <td>{{ $pendaftaranGotTalent->tempat_lahir ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Tanggal Lahir</th>
+                                <td>{{ $pendaftaranGotTalent->tanggal_lahir ? date('d-m-Y', strtotime($pendaftaranGotTalent->tanggal_lahir)) : '-' }}</td>
+                            </tr>
+                            <tr>
                                 <th>Jenjang Pendidikan</th>
                                 <td>{{ $pendaftaranGotTalent->jenjangPendidikan->jenjang_pendidikan ?? '-' }}</td>
                             </tr>
