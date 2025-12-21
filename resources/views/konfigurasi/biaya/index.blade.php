@@ -6,7 +6,7 @@
     <span>Biaya</span>
 @endsection
 <div class="row">
-    <div class="col-lg-6 col-sm-12 col-xs-12">
+    <div class="col-lg-10 col-sm-12 col-xs-12">
         <div class="card">
             <div class="card-header">
                 @can('biaya.create')
