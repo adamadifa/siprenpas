@@ -280,10 +280,10 @@ class PendaftaranonlineController extends Controller
                 'pekerjaan_ibu' => $request->pekerjaan_ibu,
                 'no_hp' => $request->no_hp,
                 'asal_sekolah' => $request->asal_sekolah,
-                // 'id_province' => $request->provinsi_id,
-                // 'id_regency' => $request->kabupaten_id,
-                // 'id_district' => $request->kecamatan_id,
-                // 'id_village' => $request->desa_id,
+                'id_province' => $request->province_id,
+                'id_regency' => $request->regency_id,
+                'id_district' => $request->district_id,
+                'id_village' => $request->village_id,
             ]);
 
             $user_pendaftar = Userpendaftar::where('no_register', $no_register)->first();

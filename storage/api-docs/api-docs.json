@@ -4122,6 +4122,294 @@
                 }
             }
         },
+        "/api/public/regions/provinces": {
+            "get": {
+                "tags": [
+                    "Regions"
+                ],
+                "summary": "Daftar semua provinsi",
+                "description": "Mengembalikan seluruh data provinsi di Indonesia",
+                "operationId": "6ee32d81c26c16ec87ac2ccf34ce567a",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "count": {
+                                            "type": "integer",
+                                            "example": 34
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "example": "32"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Jawa Barat"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/regions/regencies": {
+            "get": {
+                "tags": [
+                    "Regions"
+                ],
+                "summary": "Daftar kabupaten/kota berdasarkan provinsi",
+                "description": "Mengembalikan data kabupaten/kota berdasarkan provinsi yang dipilih",
+                "operationId": "d837367a142e32fc7b57fe70fe790704",
+                "parameters": [
+                    {
+                        "name": "province_id",
+                        "in": "query",
+                        "description": "ID Provinsi",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "count": {
+                                            "type": "integer",
+                                            "example": 27
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "example": "3201"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Bogor"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request - Province ID tidak ditemukan atau tidak valid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The province id field is required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/regions/districts": {
+            "get": {
+                "tags": [
+                    "Regions"
+                ],
+                "summary": "Daftar kecamatan berdasarkan kabupaten/kota",
+                "description": "Mengembalikan data kecamatan berdasarkan kabupaten/kota yang dipilih",
+                "operationId": "859c95df9b4f97eebc48e1425e9953b8",
+                "parameters": [
+                    {
+                        "name": "regency_id",
+                        "in": "query",
+                        "description": "ID Kabupaten/Kota",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "3201"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "count": {
+                                            "type": "integer",
+                                            "example": 40
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "example": "3201010"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Bogor Selatan"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request - Regency ID tidak ditemukan atau tidak valid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The regency id field is required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/public/regions/villages": {
+            "get": {
+                "tags": [
+                    "Regions"
+                ],
+                "summary": "Daftar kelurahan/desa berdasarkan kecamatan",
+                "description": "Mengembalikan data kelurahan/desa berdasarkan kecamatan yang dipilih",
+                "operationId": "04d9fa3d53f82c6134c86d322701ff47",
+                "parameters": [
+                    {
+                        "name": "district_id",
+                        "in": "query",
+                        "description": "ID Kecamatan",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "3201010"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "count": {
+                                            "type": "integer",
+                                            "example": 15
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string",
+                                                        "example": "3201010001"
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Bojongkerta"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request - District ID tidak ditemukan atau tidak valid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The district id field is required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/public/rekening/{rfid}": {
             "get": {
                 "tags": [
@@ -5862,6 +6150,10 @@
         {
             "name": "Post",
             "description": "Post"
+        },
+        {
+            "name": "Regions",
+            "description": "Regions"
         },
         {
             "name": "Sebaran Alumni (Public)",

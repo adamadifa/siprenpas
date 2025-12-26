@@ -157,6 +157,14 @@ Route::prefix('public')->group(function () {
         Route::get('/', [App\Http\Controllers\Api\PengaturanUmumController::class, 'index']);
     });
 
+    // Regions API Routes (Select Berjenjang: Provinsi -> Kabupaten -> Kecamatan -> Kelurahan)
+    Route::prefix('regions')->group(function () {
+        Route::get('/provinces', [App\Http\Controllers\Api\RegionController::class, 'getProvinces']);
+        Route::get('/regencies', [App\Http\Controllers\Api\RegionController::class, 'getRegencies']);
+        Route::get('/districts', [App\Http\Controllers\Api\RegionController::class, 'getDistricts']);
+        Route::get('/villages', [App\Http\Controllers\Api\RegionController::class, 'getVillages']);
+    });
+
     // Endpoint untuk mendapatkan data unit
 });
 
