@@ -98,7 +98,7 @@ class PendaftaranController extends Controller
         $query->join('unit', 'pendaftaran.kode_unit', 'unit.kode_unit');
         $query->join('konfigurasi_biaya', 'siswa_biaya.kode_biaya', 'konfigurasi_biaya.kode_biaya');
         $query->leftjoin('asal_sekolah', 'pendaftaran.kode_asal_sekolah', 'asal_sekolah.kode_asal_sekolah');
-        $query->join('konfigurasi_tahun_ajaran', 'konfigurasi_biaya.kode_ta', 'konfigurasi_tahun_ajaran.kode_ta');
+        $query->join('konfigurasi_tahunajaran_ppdb', 'konfigurasi_biaya.kode_ta', 'konfigurasi_tahunajaran_ppdb.kode_ta');
         $query->leftJoinSub($kelas_siswa, 'kelas_siswa', function ($join) {
             $join->on('kelas_siswa.id_siswa', '=', 'pendaftaran.id_siswa');
         });
@@ -182,7 +182,7 @@ class PendaftaranController extends Controller
             ->join('konfigurasi_biaya', 'konfigurasi_biaya.kode_biaya', '=', 'siswa_biaya.kode_biaya')
             ->join('konfigurasi_biaya_detail', 'konfigurasi_biaya_detail.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
             ->join('jenis_biaya', 'jenis_biaya.kode_jenis_biaya', '=', 'konfigurasi_biaya_detail.kode_jenis_biaya')
-            ->join('konfigurasi_tahun_ajaran', 'konfigurasi_tahun_ajaran.kode_ta', '=', 'konfigurasi_biaya.kode_ta')
+            ->join('konfigurasi_tahunajaran_ppdb', 'konfigurasi_tahunajaran_ppdb.kode_ta', '=', 'konfigurasi_biaya.kode_ta')
             ->leftJoin('pendaftaran_potongan', function ($join) {
                 $join->on('pendaftaran_potongan.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
                     ->on('pendaftaran_potongan.kode_jenis_biaya', '=', 'konfigurasi_biaya_detail.kode_jenis_biaya')
@@ -231,7 +231,7 @@ class PendaftaranController extends Controller
         $no_pendaftaran = $request->no_pendaftaran;
         $detailrencanaspp = Detailrencanaspp::join('spp_rencana', 'spp_rencana_detail.kode_rencana_spp', '=', 'spp_rencana.kode_rencana_spp')
             ->join('konfigurasi_biaya', 'spp_rencana.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
-            ->join('konfigurasi_tahun_ajaran', 'konfigurasi_biaya.kode_ta', '=', 'konfigurasi_tahun_ajaran.kode_ta')
+            ->join('konfigurasi_tahunajaran_ppdb', 'konfigurasi_biaya.kode_ta', '=', 'konfigurasi_tahunajaran_ppdb.kode_ta')
             ->where('no_pendaftaran', $no_pendaftaran)
             ->where('spp_rencana.kode_biaya', $kode_biaya)
             ->orderBy('konfigurasi_biaya.kode_ta')
@@ -314,7 +314,7 @@ class PendaftaranController extends Controller
             ->join('pendaftaran', 'pendidikan_historibayar.no_pendaftaran', '=', 'pendaftaran.no_pendaftaran')
             ->join('users', 'pendidikan_historibayar.id_user', '=', 'users.id')
             ->join('konfigurasi_biaya', 'konfigurasi_biaya.kode_biaya', '=', 'pendidikan_historibayar_detail.kode_biaya')
-            ->join('konfigurasi_tahun_ajaran', 'konfigurasi_tahun_ajaran.kode_ta', '=', 'konfigurasi_biaya.kode_ta')
+            ->join('konfigurasi_tahunajaran_ppdb', 'konfigurasi_tahunajaran_ppdb.kode_ta', '=', 'konfigurasi_biaya.kode_ta')
             ->join('jenis_biaya', 'jenis_biaya.kode_jenis_biaya', '=', 'pendidikan_historibayar_detail.kode_jenis_biaya')
             ->where('pendidikan_historibayar_detail.no_bukti', $no_bukti)
             ->get();
