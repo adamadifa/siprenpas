@@ -272,4 +272,24 @@ class AnggotaController extends Controller
             ]);
         }
     }
+
+    /**
+     * Hapus data anggota
+     */
+    public function destroy($id)
+    {
+        try {
+            $no_anggota = Crypt::decrypt($id);
+
+            // Hapus relasi siswa_anggota terlebih dahulu
+            SiswaAnggota::where('no_anggota', $no_anggota)->delete();
+
+            // Hapus data anggota
+            Anggota::where('no_anggota', $no_anggota)->delete();
+
+            return Redirect::back()->with(messageSuccess('Data Berhasil Dihapus'));
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError('Data Gagal Dihapus: ' . $e->getMessage()));
+        }
+    }
 }
