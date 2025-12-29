@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Anggota;
 use App\Models\Province;
+use App\Models\Regency;
+use App\Models\District;
+use App\Models\Village;
 use App\Models\Siswa;
 use App\Models\SiswaAnggota;
 use Illuminate\Http\Request;
@@ -168,7 +171,36 @@ class AnggotaController extends Controller
     public function show($no_anggota)
     {
         $no_anggota = Crypt::decrypt($no_anggota);
-        $data['anggota'] = Anggota::where('no_anggota', $no_anggota)->first();
+        $anggota = Anggota::with('siswa')
+            ->where('no_anggota', $no_anggota)
+            ->first();
+        
+        if (!$anggota) {
+            return Redirect::route('anggota.index')->with(messageError('Data anggota tidak ditemukan'));
+        }
+        
+        // Ambil data provinsi, regency, district, village
+        if ($anggota->id_province) {
+            $province = Province::find($anggota->id_province);
+            $anggota->nama_provinsi = $province ? $province->name : null;
+        }
+        
+        if ($anggota->id_regency) {
+            $regency = Regency::find($anggota->id_regency);
+            $anggota->nama_kabupaten = $regency ? $regency->name : null;
+        }
+        
+        if ($anggota->id_district) {
+            $district = District::find($anggota->id_district);
+            $anggota->nama_kecamatan = $district ? $district->name : null;
+        }
+        
+        if ($anggota->id_village) {
+            $village = Village::find($anggota->id_village);
+            $anggota->nama_desa = $village ? $village->name : null;
+        }
+        
+        $data['anggota'] = $anggota;
         return view('koperasi.anggota.show', $data);
     }
 
