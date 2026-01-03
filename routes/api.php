@@ -89,6 +89,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // Public API Routes untuk Pendaftaran Got Talent
 Route::prefix('pendaftaran-got-talent')->group(function () {
     Route::post('/register', [App\Http\Controllers\Api\PendaftaranGotTalentController::class, 'register']);
+    Route::get('/list-by-lomba', [App\Http\Controllers\Api\PendaftaranGotTalentController::class, 'listByLomba']);
     Route::get('/jenjang-pendidikan', [App\Http\Controllers\Api\PendaftaranGotTalentController::class, 'getJenjangPendidikan']);
     Route::get('/perlombaan', [App\Http\Controllers\Api\PendaftaranGotTalentController::class, 'getPerlombaan']);
 });

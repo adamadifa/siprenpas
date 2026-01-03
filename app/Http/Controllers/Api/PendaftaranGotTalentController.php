@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\PendaftaranGotTalent;
+use App\Models\PendaftaranLomba;
 use App\Models\JenjangPendidikan;
 use App\Models\Perlombaan;
 use App\Models\User;
@@ -848,6 +849,233 @@ class PendaftaranGotTalentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal mengambil data pendaftar: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get list pendaftaran berdasarkan pendaftaran_lomba
+     * Setiap row mewakili 1 peserta untuk 1 lomba
+     * Jika 1 peserta ikut 2 lomba, maka akan tampil 2 rows
+     *
+     * @OA\Get(
+     *     path="/api/pendaftaran-got-talent/list-by-lomba",
+     *     summary="Ambil list pendaftaran berdasarkan pendaftaran_lomba",
+     *     description="Mengambil semua data pendaftaran dari tabel pendaftaran_lomba. Setiap row mewakili 1 peserta untuk 1 lomba. Jika 1 peserta ikut 2 lomba, maka akan tampil 2 rows. Public API - tidak memerlukan authentication.",
+     *     tags={"Pendaftaran Got Talent"},
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Nomor halaman untuk pagination",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Jumlah data per halaman",
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Parameter(
+     *         name="id_perlombaan",
+     *         in="query",
+     *         description="Filter by ID perlombaan",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="id_jenjang",
+     *         in="query",
+     *         description="Filter by jenjang pendidikan",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         description="Pencarian berdasarkan nama lengkap, nomor register, atau email",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Data pendaftaran berhasil diambil",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="current_page",
+     *                     type="integer",
+     *                     example=1
+     *                 ),
+     *                 @OA\Property(
+     *                     property="data",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         type="object",
+     *                         @OA\Property(property="id_pendaftaran", type="integer", example=1),
+     *                         @OA\Property(property="id_perlombaan", type="integer", example=1),
+     *                         @OA\Property(property="created_at", type="string", format="datetime"),
+     *                         @OA\Property(property="updated_at", type="string", format="datetime"),
+     *                         @OA\Property(
+     *                             property="pendaftaran",
+     *                             type="object",
+     *                             @OA\Property(property="id", type="integer", example=1),
+     *                             @OA\Property(property="nomor_register", type="string", example="GT241001"),
+     *                             @OA\Property(property="nama_lengkap", type="string", example="Ahmad Fauzi"),
+     *                             @OA\Property(property="tempat_lahir", type="string", example="Jakarta"),
+     *                             @OA\Property(property="tanggal_lahir", type="string", format="date", example="2010-05-15"),
+     *                             @OA\Property(property="id_jenjang", type="integer", example=1),
+     *                             @OA\Property(property="asal_sekolah", type="string", example="SD Al Amin"),
+     *                             @OA\Property(property="alamat_sekolah", type="string", example="Jl. Raya No. 123"),
+     *                             @OA\Property(property="alamat_rumah", type="string", example="Jl. Rumah No. 456"),
+     *                             @OA\Property(property="no_hp", type="string", example="081234567890"),
+     *                             @OA\Property(property="email", type="string", example="GT241001@agt.com"),
+     *                             @OA\Property(
+     *                                 property="jenjang_pendidikan",
+     *                                 type="object",
+     *                                 @OA\Property(property="id", type="integer", example=1),
+     *                                 @OA\Property(property="jenjang_pendidikan", type="string", example="SD")
+     *                             )
+     *                         ),
+     *                         @OA\Property(
+     *                             property="perlombaan",
+     *                             type="object",
+     *                             @OA\Property(property="id", type="integer", example=1),
+     *                             @OA\Property(property="jenis_perlombaan", type="string", example="Lomba Baca Puisi"),
+     *                             @OA\Property(property="id_jenjang", type="integer", example=1),
+     *                             @OA\Property(
+     *                                 property="jenjang_pendidikan",
+     *                                 type="object",
+     *                                 @OA\Property(property="id", type="integer", example=1),
+     *                                 @OA\Property(property="jenjang_pendidikan", type="string", example="SD")
+     *                             )
+     *                         )
+     *                     )
+     *                 ),
+     *                 @OA\Property(
+     *                     property="first_page_url",
+     *                     type="string",
+     *                     example="http://localhost:8000/api/pendaftaran-got-talent/list-by-lomba?page=1"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="from",
+     *                     type="integer",
+     *                     example=1
+     *                 ),
+     *                 @OA\Property(
+     *                     property="last_page",
+     *                     type="integer",
+     *                     example=5
+     *                 ),
+     *                 @OA\Property(
+     *                     property="last_page_url",
+     *                     type="string",
+     *                     example="http://localhost:8000/api/pendaftaran-got-talent/list-by-lomba?page=5"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="links",
+     *                     type="array",
+     *                     @OA\Items(type="object")
+     *                 ),
+     *                 @OA\Property(
+     *                     property="next_page_url",
+     *                     type="string",
+     *                     nullable=true,
+     *                     example="http://localhost:8000/api/pendaftaran-got-talent/list-by-lomba?page=2"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="path",
+     *                     type="string",
+     *                     example="http://localhost:8000/api/pendaftaran-got-talent/list-by-lomba"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="per_page",
+     *                     type="integer",
+     *                     example=10
+     *                 ),
+     *                 @OA\Property(
+     *                     property="prev_page_url",
+     *                     type="string",
+     *                     nullable=true
+     *                 ),
+     *                 @OA\Property(
+     *                     property="to",
+     *                     type="integer",
+     *                     example=10
+     *                 ),
+     *                 @OA\Property(
+     *                     property="total",
+     *                     type="integer",
+     *                     example=50
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server error",
+     *         @OA\JsonContent(
+     *             ref="#/components/schemas/ErrorResponse"
+     *         )
+     *     )
+     * )
+     */
+    public function listByLomba(Request $request)
+    {
+        try {
+            $query = PendaftaranLomba::with([
+                'pendaftaranGotTalent.jenjangPendidikan',
+                'perlombaan.jenjangPendidikan'
+            ])
+                ->orderBy('created_at', 'desc');
+
+            // Filter by ID perlombaan
+            if ($request->has('id_perlombaan') && $request->id_perlombaan) {
+                $query->where('id_perlombaan', $request->id_perlombaan);
+            }
+
+            // Filter by jenjang pendidikan (dari pendaftaran)
+            if ($request->has('id_jenjang') && $request->id_jenjang) {
+                $query->whereHas('pendaftaranGotTalent', function ($q) use ($request) {
+                    $q->where('id_jenjang', $request->id_jenjang);
+                });
+            }
+
+            // Search filter
+            if ($request->has('search') && $request->search) {
+                $search = $request->search;
+                $query->whereHas('pendaftaranGotTalent', function ($q) use ($search) {
+                    $q->where('nama_lengkap', 'like', '%' . $search . '%')
+                        ->orWhere('nomor_register', 'like', '%' . $search . '%')
+                        ->orWhere('email', 'like', '%' . $search . '%')
+                        ->orWhere('no_hp', 'like', '%' . $search . '%')
+                        ->orWhere('asal_sekolah', 'like', '%' . $search . '%');
+                });
+            }
+
+            // Pagination
+            $perPage = $request->get('per_page', 10);
+            $pendaftaranLomba = $query->paginate($perPage);
+
+            // Transform data untuk response
+            $pendaftaranLomba->getCollection()->transform(function ($item) {
+                return [
+                    'id_pendaftaran' => $item->id_pendaftaran,
+                    'id_perlombaan' => $item->id_perlombaan,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                    'pendaftaran' => $item->pendaftaranGotTalent,
+                    'perlombaan' => $item->perlombaan,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $pendaftaranLomba
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil data pendaftaran: ' . $e->getMessage()
             ], 500);
         }
     }

@@ -365,6 +365,39 @@ class PendaftaranGotTalentController extends Controller
     }
 
     /**
+     * Public view untuk halaman peserta (mengambil data dari API)
+     */
+    public function pesertaView(Request $request)
+    {
+        // Ambil data dari API endpoint
+        $apiUrl = url('/api/pendaftaran-got-talent/list-by-lomba');
+        
+        // Build query parameters
+        $params = [];
+        if ($request->has('page')) {
+            $params['page'] = $request->page;
+        }
+        if ($request->has('id_perlombaan') && $request->id_perlombaan) {
+            $params['id_perlombaan'] = $request->id_perlombaan;
+        }
+        if ($request->has('id_jenjang') && $request->id_jenjang) {
+            $params['id_jenjang'] = $request->id_jenjang;
+        }
+        if ($request->has('search') && $request->search) {
+            $params['search'] = $request->search;
+        }
+        if ($request->has('per_page')) {
+            $params['per_page'] = $request->per_page;
+        }
+
+        // Ambil data jenjang dan perlombaan untuk filter
+        $jenjangPendidikan = \App\Models\JenjangPendidikan::orderBy('jenjang_pendidikan')->get();
+        $perlombaan = \App\Models\Perlombaan::with('jenjangPendidikan')->orderBy('jenis_perlombaan')->get();
+
+        return view('pendaftaran-got-talent.peserta', compact('apiUrl', 'params', 'jenjangPendidikan', 'perlombaan'));
+    }
+
+    /**
      * Show detail peserta per lomba
      */
     public function detailLomba($id_lomba)

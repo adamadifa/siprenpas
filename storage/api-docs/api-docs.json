@@ -2111,6 +2111,261 @@
                 ]
             }
         },
+        "/api/pendaftaran-got-talent/list-by-lomba": {
+            "get": {
+                "tags": [
+                    "Pendaftaran Got Talent"
+                ],
+                "summary": "Ambil list pendaftaran berdasarkan pendaftaran_lomba",
+                "description": "Mengambil semua data pendaftaran dari tabel pendaftaran_lomba. Setiap row mewakili 1 peserta untuk 1 lomba. Jika 1 peserta ikut 2 lomba, maka akan tampil 2 rows. Public API - tidak memerlukan authentication.",
+                "operationId": "41fcd12ebb1f2698fa87f1641932bac5",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Nomor halaman untuk pagination",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Jumlah data per halaman",
+                        "schema": {
+                            "type": "integer",
+                            "example": 10
+                        }
+                    },
+                    {
+                        "name": "id_perlombaan",
+                        "in": "query",
+                        "description": "Filter by ID perlombaan",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "id_jenjang",
+                        "in": "query",
+                        "description": "Filter by jenjang pendidikan",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Pencarian berdasarkan nama lengkap, nomor register, atau email",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Data pendaftaran berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id_pendaftaran": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "id_perlombaan": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string",
+                                                                "format": "datetime"
+                                                            },
+                                                            "updated_at": {
+                                                                "type": "string",
+                                                                "format": "datetime"
+                                                            },
+                                                            "pendaftaran": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "nomor_register": {
+                                                                        "type": "string",
+                                                                        "example": "GT241001"
+                                                                    },
+                                                                    "nama_lengkap": {
+                                                                        "type": "string",
+                                                                        "example": "Ahmad Fauzi"
+                                                                    },
+                                                                    "tempat_lahir": {
+                                                                        "type": "string",
+                                                                        "example": "Jakarta"
+                                                                    },
+                                                                    "tanggal_lahir": {
+                                                                        "type": "string",
+                                                                        "format": "date",
+                                                                        "example": "2010-05-15"
+                                                                    },
+                                                                    "id_jenjang": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "asal_sekolah": {
+                                                                        "type": "string",
+                                                                        "example": "SD Al Amin"
+                                                                    },
+                                                                    "alamat_sekolah": {
+                                                                        "type": "string",
+                                                                        "example": "Jl. Raya No. 123"
+                                                                    },
+                                                                    "alamat_rumah": {
+                                                                        "type": "string",
+                                                                        "example": "Jl. Rumah No. 456"
+                                                                    },
+                                                                    "no_hp": {
+                                                                        "type": "string",
+                                                                        "example": "081234567890"
+                                                                    },
+                                                                    "email": {
+                                                                        "type": "string",
+                                                                        "example": "GT241001@agt.com"
+                                                                    },
+                                                                    "jenjang_pendidikan": {
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "jenjang_pendidikan": {
+                                                                                "type": "string",
+                                                                                "example": "SD"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "perlombaan": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "jenis_perlombaan": {
+                                                                        "type": "string",
+                                                                        "example": "Lomba Baca Puisi"
+                                                                    },
+                                                                    "id_jenjang": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "jenjang_pendidikan": {
+                                                                        "properties": {
+                                                                            "id": {
+                                                                                "type": "integer",
+                                                                                "example": 1
+                                                                            },
+                                                                            "jenjang_pendidikan": {
+                                                                                "type": "string",
+                                                                                "example": "SD"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "first_page_url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8000/api/pendaftaran-got-talent/list-by-lomba?page=1"
+                                                },
+                                                "from": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "last_page_url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8000/api/pendaftaran-got-talent/list-by-lomba?page=5"
+                                                },
+                                                "links": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "next_page_url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8000/api/pendaftaran-got-talent/list-by-lomba?page=2",
+                                                    "nullable": true
+                                                },
+                                                "path": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8000/api/pendaftaran-got-talent/list-by-lomba"
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "prev_page_url": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "to": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 50
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/pendaftaranonline/{no_register}/update-foto": {
             "post": {
                 "tags": [
