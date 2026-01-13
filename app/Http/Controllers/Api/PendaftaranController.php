@@ -129,6 +129,48 @@ class PendaftaranController extends Controller
         return response()->json($siswa);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/getbiayasiswa-by-nopendaftaran",
+     *     tags={"Pendaftaran"},
+     *     summary="Ambil detail biaya siswa berdasarkan no_pendaftaran",
+     *     description="Mengambil daftar biaya tagihan siswa beserta status pembayaran, potongan, dan mutasi berdasarkan nomor pendaftaran.",
+     *     security={{"sanctum":{}}},
+     *     @OA\Parameter(
+     *         name="no_pendaftaran",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         description="Nomor Pendaftaran Siswa"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Berhasil mengambil data biaya",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="kode_biaya", type="string", example="B001"),
+     *                 @OA\Property(property="nama_biaya", type="string", example="SPP Bulan Juli"),
+     *                 @OA\Property(property="nominal", type="integer", example=500000),
+     *                 @OA\Property(property="kode_jenis_biaya", type="string", example="JB01"),
+     *                 @OA\Property(property="jenis_biaya", type="string", example="SPP"),
+     *                 @OA\Property(property="jumlah_potongan", type="integer", example=0),
+     *                 @OA\Property(property="jumlah_mutasi", type="integer", example=0),
+     *                 @OA\Property(property="jmlbayar", type="integer", example=500000),
+     *                 @OA\Property(property="tahun_ajaran", type="string", example="2024/2025")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     )
+     * )
+     */
     public function getbiayasiswaByNoPendaftaran(Request $request)
     {
         $no_pendaftaran = $request->no_pendaftaran;
@@ -208,9 +250,10 @@ class PendaftaranController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/getrencanaspp-by-kodebiaya",
+     *     path="/api/getrencanaspp-by-kodebiaya",
      *     tags={"Pendaftaran"},
      *     summary="Ambil rencana spp berdasarkan kode_biaya",
+     *     security={{"sanctum":{}}},
      *     @OA\Parameter(
      *         name="kode_biaya",
      *         in="query",
@@ -218,10 +261,24 @@ class PendaftaranController extends Controller
      *         @OA\Schema(type="string"),
      *         description="Kode biaya"
      *     ),
+     *     @OA\Parameter(
+     *         name="no_pendaftaran",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         description="Nomor Pendaftaran"
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Berhasil ambil rencana spp",
      *         @OA\JsonContent(type="array", @OA\Items(type="object"))
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
      *     )
      * )
      */

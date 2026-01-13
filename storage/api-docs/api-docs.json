@@ -5060,6 +5060,55 @@
                 }
             }
         },
+        "/api/siswa-anak": {
+            "get": {
+                "tags": [
+                    "Siswa"
+                ],
+                "summary": "Ambil data siswa berdasarkan nik ayah/ibu user login",
+                "operationId": "2dd0c0d13ae3fbb94a3f72db4fb1c62a",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil ambil data siswa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "example": {
+                                            "id_siswa": 1,
+                                            "nik": "1234567890123456",
+                                            "nis": "2023001",
+                                            "nama_lengkap": "Ahmad Fulan",
+                                            "jenis_kelamin": "L",
+                                            "tempat_lahir": "Jakarta",
+                                            "tanggal_lahir": "2015-05-20",
+                                            "alamat": "Jl. Mawar No. 10",
+                                            "no_hp": "08123456789",
+                                            "email": "siswa@example.com",
+                                            "foto": "siswa.jpg",
+                                            "status": "Aktif",
+                                            "no_pendaftaran": "REG2023001",
+                                            "tahun_ajaran": "2023/2024",
+                                            "nama_kelas": "1A",
+                                            "tingkat": "SD",
+                                            "nama_unit": "SD Al Amin",
+                                            "logo": "logo.png"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/tabungan-santri/{id_siswa}": {
             "get": {
                 "tags": [
@@ -6413,6 +6462,10 @@
         {
             "name": "Sebaran Alumni (Public)",
             "description": "Sebaran Alumni (Public)"
+        },
+        {
+            "name": "Siswa",
+            "description": "Siswa"
         },
         {
             "name": "Visi & Misi (Public)",

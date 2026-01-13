@@ -156,20 +156,30 @@
                     <div class="col-12">
                         <form action="{{ route('pendaftarangottalent.index') }}">
                             <div class="row">
-                                <div class="col-lg-4 col-sm-12 col-md-12">
+                                <div class="col-lg-3 col-sm-12 col-md-12">
                                     <x-input-with-icon label="Nomor Register" value="{{ Request('nomor_register_search') }}"
                                         name="nomor_register_search" icon="ti ti-search" />
                                 </div>
-                                <div class="col-lg-4 col-sm-12 col-md-12">
+                                <div class="col-lg-3 col-sm-12 col-md-12">
                                     <x-input-with-icon label="Nama Lengkap" value="{{ Request('nama_lengkap_search') }}" name="nama_lengkap_search"
                                         icon="ti ti-search" />
                                 </div>
-                                <div class="col-lg-3 col-sm-12 col-md-12">
+                                <div class="col-lg-2 col-sm-12 col-md-12">
                                     <select name="id_jenjang_search" id="id_jenjang_search" class="form-select">
                                         <option value="">Jenjang Pendidikan</option>
                                         @foreach ($jenjangPendidikan as $d)
                                             <option value="{{ $d->id }}" {{ Request('id_jenjang_search') == $d->id ? 'selected' : '' }}>
                                                 {{ $d->jenjang_pendidikan }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-lg-3 col-sm-12 col-md-12">
+                                    <select name="id_lomba_search" id="id_lomba_search" class="form-select">
+                                        <option value="">Semua Lomba</option>
+                                        @foreach ($perlombaan as $l)
+                                            <option value="{{ $l->id }}" {{ Request('id_lomba_search') == $l->id ? 'selected' : '' }}>
+                                                {{ $l->jenis_perlombaan }} ({{ $l->jenjangPendidikan->jenjang_pendidikan }})
                                             </option>
                                         @endforeach
                                     </select>

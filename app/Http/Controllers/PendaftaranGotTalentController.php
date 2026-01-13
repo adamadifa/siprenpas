@@ -39,12 +39,19 @@ class PendaftaranGotTalentController extends Controller
             $query->where('id_jenjang', $request->id_jenjang_search);
         }
 
+        if (!empty($request->id_lomba_search)) {
+            $query->whereHas('perlombaan', function ($q) use ($request) {
+                $q->where('perlombaan.id', $request->id_lomba_search);
+            });
+        }
+
         $pendaftaranGotTalent = $query->orderBy('created_at', 'desc')->get();
 
         // Load relationship setelah query
         $pendaftaranGotTalent->load('jenjangPendidikan');
 
         $jenjangPendidikan = JenjangPendidikan::orderBy('jenjang_pendidikan')->get();
+        $perlombaan = Perlombaan::with('jenjangPendidikan')->orderBy('jenis_perlombaan')->get();
 
         // Statistik berdasarkan lomba (menampilkan semua lomba termasuk yang belum ada peserta)
         $statistikLomba = DB::table('perlombaan')
@@ -64,7 +71,7 @@ class PendaftaranGotTalentController extends Controller
         // Total pendaftar
         $totalPendaftar = PendaftaranGotTalent::count();
 
-        return view('pendaftaran-got-talent.index', compact('pendaftaranGotTalent', 'jenjangPendidikan', 'statistikLomba', 'totalPendaftar'));
+        return view('pendaftaran-got-talent.index', compact('pendaftaranGotTalent', 'jenjangPendidikan', 'statistikLomba', 'totalPendaftar', 'perlombaan'));
     }
 
     /**
@@ -495,10 +502,16 @@ class PendaftaranGotTalentController extends Controller
                 $query->where('id_jenjang', $request->id_jenjang_search);
             }
 
+            if (!empty($request->id_lomba_search)) {
+                $query->whereHas('perlombaan', function ($q) use ($request) {
+                    $q->where('perlombaan.id', $request->id_lomba_search);
+                });
+            }
+
             $pendaftaranGotTalent = $query->orderBy('created_at', 'desc')->get();
 
             // Load relationships
-            $pendaftaranGotTalent->load('jenjangPendidikan', 'perlombaan');
+            $pendaftaranGotTalent->load('jenjangPendidikan', 'perlombaan', 'konfirmasiPembayaran');
 
             $filename = 'Pendaftaran_Got_Talent_' . date('Y-m-d_His') . '.xlsx';
 

@@ -45,7 +45,8 @@ class PendaftaranGotTalentExport implements FromCollection, WithHeadings, WithMa
             'No. HP',
             'Email',
             'Lomba yang Diikuti',
-            'Tanggal Daftar'
+            'Tanggal Daftar',
+            'Link Bukti Pembayaran'
         ];
     }
 
@@ -61,6 +62,10 @@ class PendaftaranGotTalentExport implements FromCollection, WithHeadings, WithMa
         // Ambil data lomba yang diikuti
         $lomba = $row->perlombaan->pluck('jenis_perlombaan')->implode(', ');
 
+        // Ambil bukti pembayaran terbaru
+        $pembayaran = $row->konfirmasiPembayaran->sortByDesc('created_at')->first();
+        $buktiPembayaran = $pembayaran ? $pembayaran->bukti_pembayaran_url : '-';
+
         return [
             $no,
             $row->nomor_register,
@@ -74,7 +79,8 @@ class PendaftaranGotTalentExport implements FromCollection, WithHeadings, WithMa
             $row->no_hp ?? '-',
             $row->email ?? '-',
             $lomba ?: '-',
-            $row->created_at ? date('d-m-Y H:i:s', strtotime($row->created_at)) : '-'
+            $row->created_at ? date('d-m-Y H:i:s', strtotime($row->created_at)) : '-',
+            $buktiPembayaran
         ];
     }
 

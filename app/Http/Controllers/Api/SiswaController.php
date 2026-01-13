@@ -14,18 +14,41 @@ class SiswaController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/siswa-anak",
+     *     path="/api/siswa-anak",
      *     tags={"Siswa"},
      *     summary="Ambil data siswa berdasarkan nik ayah/ibu user login",
      *     security={{"sanctum":{}}},
      *     @OA\Response(
      *         response=200,
      *         description="Berhasil ambil data siswa",
-     *         @OA\JsonContent(type="array", @OA\Items(type="object"))
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 example={
+     *                     "id_siswa": 1,
+     *                     "nik": "1234567890123456",
+     *                     "nis": "2023001",
+     *                     "nama_lengkap": "Ahmad Fulan",
+     *                     "jenis_kelamin": "L",
+     *                     "tempat_lahir": "Jakarta",
+     *                     "tanggal_lahir": "2015-05-20",
+     *                     "alamat": "Jl. Mawar No. 10",
+     *                     "no_hp": "08123456789",
+     *                     "email": "siswa@example.com",
+     *                     "foto": "siswa.jpg",
+     *                     "status": "Aktif",
+     *                     "no_pendaftaran": "REG2023001",
+     *                     "tahun_ajaran": "2023/2024",
+     *                     "nama_kelas": "1A",
+     *                     "tingkat": "SD",
+     *                     "nama_unit": "SD Al Amin",
+     *                     "logo": "logo.png"
+     *                 }
+     *             )
+     *         )
      *     )
      * )
-     */
-    /**
      * API: Get siswa by nik_ayah or nik_ibu matching logged in user's username
      * @return \Illuminate\Http\JsonResponse
      */
