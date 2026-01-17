@@ -56,18 +56,18 @@
                         <form action="{{ route('pendaftaranonline.index') }}">
                             <div class="row">
                                 @if (auth()->user()->kode_unit == 'U06')
-                                    <div class="col-lg-4 col-sm-12 col-md-12">
+                                    <div class="col-lg-3 col-sm-12 col-md-12">
                                         <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
                                             icon="ti ti-search" />
                                     </div>
                                 @else
-                                    <div class="col-lg-8 col-sm-12 col-md-12">
+                                    <div class="col-lg-6 col-sm-12 col-md-12">
                                         <x-input-with-icon label="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
                                             icon="ti ti-search" />
                                     </div>
                                 @endif
                                 @if (auth()->user()->kode_unit == 'U06')
-                                    <div class="col-lg-4 col-sm-12 col-md-12">
+                                    <div class="col-lg-3 col-sm-12 col-md-12">
                                         <div class="form-group mb-3">
                                             <select name="kode_unit" id="kode_unit_search" class="form-select">
                                                 <option value="">Semua Unit</option>
@@ -91,8 +91,13 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-lg-2 col-sm-12 col-md-12">
-                                    <button class="btn btn-primary">Cari</button>
+                                <div class="col-lg-4 col-sm-12 col-md-12">
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-primary"><i class="ti ti-search me-1"></i>Cari</button>
+                                        <button type="submit" class="btn btn-success" formaction="{{ route('pendaftaranonline.export') }}">
+                                            <i class="ti ti-file-spreadsheet me-1"></i>Export
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 

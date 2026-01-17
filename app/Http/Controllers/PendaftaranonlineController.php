@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Symfony\Component\Mailer\Event\MessageEvent;
+use App\Exports\PendaftaranOnlineExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 class PendaftaranonlineController extends Controller
@@ -318,6 +320,49 @@ class PendaftaranonlineController extends Controller
             DB::rollBack();
             return Redirect::back()->with(messageError($th->getMessage()));
         }
+    }
+
+    public function export(Request $request)
+    {
+        $tahunajaran = Tahunajaranppdb::where('status', 1)->first();
+        $kode_ta = $tahunajaran->kode_ta;
+
+        $qpendaftaran = Pendaftaranonline::query();
+        $qpendaftaran->select(
+            'pendaftaran_online.*',
+            'pendaftaran_online_bayar.id as id_bayar',
+            'pendaftaran_online_bayar.status as status_bayar',
+            'unit.nama_unit as nama_unit',
+            'konfigurasi_tahunajaran_ppdb.tahun_ajaran as tahun_ajaran',
+            'pendaftaran_online_register.no_pendaftaran'
+        );
+        $qpendaftaran->join('unit', 'unit.kode_unit', 'pendaftaran_online.kode_unit');
+        $qpendaftaran->join('konfigurasi_tahunajaran_ppdb', 'konfigurasi_tahunajaran_ppdb.kode_ta', 'pendaftaran_online.kode_ta');
+        $qpendaftaran->leftJoin('pendaftaran_online_bayar', 'pendaftaran_online_bayar.no_register', 'pendaftaran_online.no_register');
+        $qpendaftaran->leftJoin('pendaftaran_online_register', 'pendaftaran_online.no_register', '=', 'pendaftaran_online_register.no_register');
+        $qpendaftaran->orderBy('no_register', 'desc');
+
+        if (!empty($request->kode_ta)) {
+            $qpendaftaran->where('pendaftaran_online.kode_ta', $request->kode_ta);
+        } else {
+            $qpendaftaran->where('pendaftaran_online.kode_ta', $kode_ta);
+        }
+
+        if (!empty($request->kode_unit)) {
+            $qpendaftaran->where('pendaftaran_online.kode_unit', $request->kode_unit);
+        }
+
+        if (!empty($request->nama_lengkap)) {
+            $qpendaftaran->where('pendaftaran_online.nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
+        }
+
+        if (auth()->user()->kode_unit != 'U06') {
+            $qpendaftaran->where('pendaftaran_online.kode_unit', auth()->user()->kode_unit);
+        }
+
+        $pendaftaran = $qpendaftaran->get();
+
+        return Excel::download(new PendaftaranOnlineExport($pendaftaran), 'pendaftaran_online.xlsx');
     }
 
     public function destroy($no_register)

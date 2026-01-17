@@ -484,6 +484,7 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(PendaftaranonlineController::class)->group(function () {
         Route::get('/pendaftaranonline', 'index')->name('pendaftaranonline.index')->can('pendaftaranonline.index');
+        Route::get('/pendaftaranonline/export', 'export')->name('pendaftaranonline.export')->can('pendaftaranonline.index');
         Route::get('/pendaftaranonline/{no_register}/show', 'show')->name('pendaftaranonline.show')->can('pendaftaranonline.show');
         Route::get('/pendaftaranonline/{no_register}/edit', 'edit')->name('pendaftaranonline.edit')->can('pendaftaranonline.edit');
         Route::post('/pendaftaranonline/update', 'update')->name('pendaftaranonline.update')->can('pendaftaranonline.edit');
