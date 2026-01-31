@@ -5,16 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Karyawan extends Model
+class JabatanAkademik extends Model
 {
     use HasFactory;
-    protected $table = "karyawan";
-    protected $primaryKey = "npp";
+    protected $table = 'jabatan_akademik';
+    protected $primaryKey = 'kode_jabatan';
     protected $guarded = [];
     public $incrementing = false;
-
-    public function guru()
-    {
-        return $this->hasOne(Guru::class, 'npp', 'npp');
-    }
 }

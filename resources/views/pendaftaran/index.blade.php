@@ -89,7 +89,18 @@
                                             <option value="">Tahun Ajaran</option>
                                             @foreach ($tahunajaran as $d)
                                                 <option value="{{ $d->kode_ta }}"
-                                                    @if (Request('kode_ta') == $d->kode_ta) selected @elseif($tahun_ajaran->kode_ta == $d->kode_ta) selected @endif>
+
+                                                @if(!empty(Request('kode_ta')))
+                                                    @if(Request('kode_ta') == $d->kode_ta)
+                                                        selected
+                                                    @endif
+                                                @else
+                                                    @if($d->kode_ta == $tahun_ajaran->kode_ta)
+                                                        selected
+                                                    @endif
+                                                @endif 
+                                                
+                                                >
                                                     {{ $d->tahun_ajaran }}</option>
                                             @endforeach
                                         </select>

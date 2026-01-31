@@ -659,6 +659,57 @@ Route::middleware('auth')->group(function () {
         Route::get('/pembiayaan/createmobile', 'createmobile')->name('pembiayaan.createmobile');
     });
 
+    Route::controller(App\Http\Controllers\GuruController::class)->group(function () {
+        Route::get('/guru', 'index')->name('guru.index')->can('guru.index');
+        Route::get('/guru/create', 'create')->name('guru.create')->can('guru.create');
+        Route::post('/guru', 'store')->name('guru.store')->can('guru.store');
+        Route::post('/guru', 'store')->name('guru.store')->can('guru.create');
+        Route::get('/guru/{id}/edit', 'edit')->name('guru.edit')->can('guru.edit');
+        Route::put('/guru/{id}/update', 'update')->name('guru.update')->can('guru.edit');
+        Route::delete('/guru/{id}/delete', 'destroy')->name('guru.delete')->can('guru.delete');
+    });
+
+
+    Route::controller(App\Http\Controllers\MataPelajaranController::class)->group(function () {
+        Route::get('/mata-pelajaran', 'index')->name('mata-pelajaran.index')->can('matapelajaran.index');
+        Route::get('/mata-pelajaran/create', 'create')->name('mata-pelajaran.create')->can('matapelajaran.create');
+        Route::post('/mata-pelajaran', 'store')->name('mata-pelajaran.store')->can('matapelajaran.store');
+        Route::get('/mata-pelajaran/{id}/edit', 'edit')->name('mata-pelajaran.edit')->can('matapelajaran.edit');
+        Route::put('/mata-pelajaran/{id}/update', 'update')->name('mata-pelajaran.update')->can('matapelajaran.edit');
+        Route::delete('/mata-pelajaran/{id}/delete', 'destroy')->name('mata-pelajaran.delete')->can('matapelajaran.delete');
+    });
+
+    Route::controller(App\Http\Controllers\JadwalPelajaranController::class)->group(function () {
+        Route::get('/jadwal-pelajaran', 'index')->name('jadwal-pelajaran.index')->can('jadwalpelajaran.index');
+        Route::get('/jadwal-pelajaran/create', 'create')->name('jadwal-pelajaran.create')->can('jadwalpelajaran.create');
+        Route::post('/jadwal-pelajaran/get-data-by-unit', 'getDataByUnit')->name('jadwal-pelajaran.get-data-by-unit')->can('jadwalpelajaran.create');
+        Route::post('/jadwal-pelajaran', 'store')->name('jadwal-pelajaran.store')->can('jadwalpelajaran.store');
+        Route::get('/jadwal-pelajaran/{id}/edit', 'edit')->name('jadwal-pelajaran.edit')->can('jadwalpelajaran.edit');
+        Route::put('/jadwal-pelajaran/{id}/update', 'update')->name('jadwal-pelajaran.update')->can('jadwalpelajaran.update');
+        Route::delete('/jadwal-pelajaran/{id}/delete', 'destroy')->name('jadwal-pelajaran.delete')->can('jadwalpelajaran.delete');
+    });
+
+    Route::controller(App\Http\Controllers\PenilaianController::class)->group(function () {
+        Route::get('/penilaian/{jadwal_id}', 'index')->name('penilaian.index');
+        Route::post('/penilaian/bobot', 'storeBobot')->name('penilaian.store-bobot');
+        Route::post('/penilaian/rencana', 'storeRencana')->name('penilaian.store-rencana');
+        Route::delete('/penilaian/rencana/{id}', 'destroyRencana')->name('penilaian.destroy-rencana');
+        Route::get('/penilaian/nilai/{rencana_id}', 'inputNilai')->name('penilaian.input-nilai');
+        Route::post('/penilaian/nilai', 'storeNilai')->name('penilaian.store-nilai');
+        
+        // Multi Column Management
+        Route::get('/penilaian/manage/{bobot_id}/{kategori}', 'manageNilai')->name('penilaian.manage');
+        Route::post('/penilaian/store-multi', 'storeMultiNilai')->name('penilaian.store-multi-nilai');
+    });
+
+    Route::controller(App\Http\Controllers\JabatanAkademikController::class)->group(function () {
+        Route::get('/jabatan-akademik', 'index')->name('jabatan-akademik.index')->can('jabatanakademik.index');
+        Route::post('/jabatan-akademik', 'store')->name('jabatan-akademik.store')->can('jabatanakademik.store');
+        Route::get('/jabatan-akademik/{kode_jabatan}/edit', 'edit')->name('jabatan-akademik.edit')->can('jabatanakademik.edit');
+        Route::put('/jabatan-akademik/{kode_jabatan}/update', 'update')->name('jabatan-akademik.update')->can('jabatanakademik.update');
+        Route::delete('/jabatan-akademik/{kode_jabatan}/delete', 'destroy')->name('jabatan-akademik.delete')->can('jabatanakademik.delete');
+    });
+
     Route::controller(PresensiController::class)->group(function () {
         Route::get('/presensi', 'index')->name('presensi.index')->can('presensi.index');
         Route::get('/presensi/create', 'create')->name('presensi.create')->can('presensi.create');
