@@ -464,6 +464,17 @@ Route::middleware('auth')->group(function () {
         Route::delete('/tahunajaranppdb/{kode_ta_ppdb}/delete', 'destroy')->name('tahunajaranppdb.delete')->can('tahunajaranppdb.delete');
     });
 
+    // Mesin Fingerprint
+    Route::controller(App\Http\Controllers\MesinFingerprintController::class)->group(function () {
+        Route::get('/mesinfingerprint', 'index')->name('mesinfingerprint.index');
+        Route::get('/mesinfingerprint/create', 'create')->name('mesinfingerprint.create');
+        Route::post('/mesinfingerprint', 'store')->name('mesinfingerprint.store');
+        Route::get('/mesinfingerprint/{id}/edit', 'edit')->name('mesinfingerprint.edit');
+        Route::put('/mesinfingerprint/{id}/update', 'update')->name('mesinfingerprint.update');
+        Route::delete('/mesinfingerprint/{id}/delete', 'destroy')->name('mesinfingerprint.delete');
+        Route::get('/mesinfingerprint/logmesin', 'logmesin')->name('mesinfingerprint.logmesin');
+    });
+
     Route::controller(PendaftaranController::class)->group(function () {
         Route::get('/pendaftaran/{no_pendaftaran}/cetakpdf', 'cetakpdf')->name('pendaftaran.cetakpdf')->can('pendaftaran.show');
         Route::get('/pendaftaran', 'index')->name('pendaftaran.index')->can('pendaftaran.index');

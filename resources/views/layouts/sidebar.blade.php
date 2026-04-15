@@ -815,7 +815,7 @@
         @endif
         <!-- KONFIGURASI-->
         <li
-            class="menu-item {{ request()->is(['jamkerja', 'jamkerja/*', 'tahunajaran', 'biaya', 'tahunajaranppdb', 'tahunajaranppdb/*']) ? 'open' : '' }}">
+            class="menu-item {{ request()->is(['jamkerja', 'jamkerja/*', 'tahunajaran', 'biaya', 'tahunajaranppdb', 'tahunajaranppdb/*', 'mesinfingerprint', 'mesinfingerprint/*']) ? 'open' : '' }}">
             @if (auth()->check() &&
                     auth()->user()->hasAnyPermission(['jamkerja.index', 'biaya.index', 'tahunajaran.index', 'tahunajaranppdb.index']))
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -851,6 +851,11 @@
                             </a>
                         </li>
                     @endcan
+                    <li class="menu-item {{ request()->is(['mesinfingerprint', 'mesinfingerprint/*']) ? 'active' : '' }}">
+                        <a href="{{ route('mesinfingerprint.index') }}" class="menu-link">
+                            <div>Mesin Fingerprint</div>
+                        </a>
+                    </li>
                 </ul>
             @endif
         </li>
