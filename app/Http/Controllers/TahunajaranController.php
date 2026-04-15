@@ -12,6 +12,7 @@ class TahunajaranController extends Controller
     public function index()
     {
         $data['tahun_ajaran'] = Tahunajaran::orderBy('kode_ta', 'desc')->get();
+        $data['semester'] = \App\Models\Semester::orderBy('semester', 'asc')->get();
         return view('konfigurasi.tahunajaran.index', $data);
     }
 
@@ -109,6 +110,20 @@ class TahunajaranController extends Controller
             return Redirect::back()->with(['success' => 'Data Berhasil Dihapus']);
         } catch (\Exception $e) {
             return Redirect::back()->with(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function setSemester($id)
+    {
+        try {
+            // Set all to inactive
+            \App\Models\Semester::where('status', '1')->update(['status' => '0']);
+            // Set selected to active
+            \App\Models\Semester::where('id', $id)->update(['status' => '1']);
+
+            return Redirect::back()->with(messageSuccess('Data Berhasil Disimpan'));
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError($e->getMessage()));
         }
     }
 }

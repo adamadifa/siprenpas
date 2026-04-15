@@ -451,6 +451,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/tahunajaran/{kode_ta}/show', 'show')->name('tahunajaran.show')->can('tahunajaran.show');
         Route::put('/tahunajaran/{kode_ta}/update', 'update')->name('tahunajaran.update')->can('tahunajaran.update');
         Route::delete('/tahunajaran/{kode_ta}/delete', 'destroy')->name('tahunajaran.delete')->can('tahunajaran.delete');
+        Route::get('/tahunajaran/{id}/setsemester', 'setSemester')->name('tahunajaran.setsemester')->can('tahunajaran.index');
     });
 
     Route::controller(TahunajaranppdbController::class)->group(function () {

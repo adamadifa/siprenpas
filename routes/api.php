@@ -191,3 +191,18 @@ Route::prefix('pengumuman')->group(function () {
 });
 
 // Testimonials API Routes
+
+// ADMS Fingerprint Machine Routes (tanpa middleware auth karena mesin yang push data)
+Route::prefix('adms')->group(function () {
+    // Endpoint utama untuk mesin Fingerspot JSON format
+    Route::any('/capture/{any?}', [App\Http\Controllers\Api\AdmsController::class, 'capture'])->where('any', '.*');
+
+    // Endpoint backup V1 (antisipasi)
+    Route::any('/capture-v1/{any?}', [App\Http\Controllers\Api\AdmsController::class, 'captureV1'])->where('any', '.*');
+
+    // Endpoint untuk mesin ZKTeco / Solution X100C (Plain Text ATTLOG format)
+    Route::any('/x100c', [App\Http\Controllers\Api\AdmsController::class, 'receiveX100c']);
+
+    // Endpoint debug: log raw data mentah dari mesin (tanpa proses apapun)
+    Route::any('/raw-dump', [App\Http\Controllers\Api\AdmsController::class, 'rawDump']);
+});

@@ -17,6 +17,10 @@ class SiswaController extends Controller
             $query->where('nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
         }
 
+        if (!empty($request->tahun_masuk)) {
+            $query->where('siswa.tahun_masuk', $request->tahun_masuk);
+        }
+
         if (auth()->user()->kode_unit != 'U06') {
             $query->where('siswa.kode_unit', auth()->user()->kode_unit);
         }
@@ -25,7 +29,18 @@ class SiswaController extends Controller
         $siswa = $query->paginate(15);
         $siswa->appends(request()->all());
 
+        // Statistics
+        $tahun_ppdb = config('global.tahun_ppdb');
+        $stats['total_siswa'] = Siswa::count();
+        $stats['laki_laki'] = Siswa::where('jenis_kelamin', 'L')->count();
+        $stats['perempuan'] = Siswa::where('jenis_kelamin', 'P')->count();
+        $stats['siswa_baru'] = Siswa::where('tahun_masuk', $tahun_ppdb)->count();
+
+        $tahun_masuk = Siswa::select('tahun_masuk')->distinct()->orderBy('tahun_masuk', 'desc')->get();
+
         $data['siswa'] = $siswa;
+        $data['stats'] = $stats;
+        $data['list_tahun_masuk'] = $tahun_masuk;
         $data['jenis_kelamin'] = config('global.jenis_kelamin');
         return view('datamaster.siswa.index', $data);
     }

@@ -134,7 +134,7 @@
                         <div class="container-fluid flex-grow-1 @if (!$agent->isMobile()) container-p-y @endif ">
 
 
-                            <h4 class="py-3 mb-4">@yield('navigasi')</h4>
+                            <div class="pt-1 mb-0">@yield('navigasi')</div>
 
                             @yield('content')
                         </div>
@@ -163,6 +163,7 @@
                     <!-- Content wrapper -->
                     <div class="content-wrapper">
                         <div class="container-fluid flex-grow-1  ">
+                            <div class="pt-1 mb-0">@yield('navigasi')</div>
                             @yield('content')
                         </div>
                     </div>

@@ -63,4 +63,57 @@
      .btn-group {
          cursor: pointer;
      }
+
+     /* Select2 Green Theme Override */
+     .select2-container--default .select2-results__option--highlighted[aria-selected] {
+         background-color: #1B5E20 !important;
+         color: #fff !important;
+     }
+
+     .select2-container--default .select2-selection--focus {
+         border-color: #1B5E20 !important;
+     }
+
+     /* Green Theme Utilities */
+     .btn-primary {
+         background-color: #104e30 !important;
+         border-color: #104e30 !important;
+     }
+
+     .btn-primary:hover {
+         background-color: #0b3d24 !important;
+         border-color: #0b3d24 !important;
+     }
+
+     .text-primary {
+         color: #104e30 !important;
+     }
+
+     .bg-label-primary {
+         background-color: #e8f5e9 !important;
+         color: #104e30 !important;
+     }
+
+     /* Ensure icon is centered and use correct green */
+     .avatar.bg-label-primary {
+         background-color: #e8f5e9 !important;
+         display: flex !important;
+         align-items: center !important;
+         justify-content: center !important;
+     }
+
+     .avatar.bg-label-primary i {
+         color: #104e30 !important;
+         margin: 0 !important;
+     }
+
+     /* Breadcrumb Customization */
+     .breadcrumb-style1 .breadcrumb-item a {
+         color: #8592a3 !important;
+     }
+
+     .breadcrumb-style1 .breadcrumb-item.active {
+         color: #104e30 !important;
+         font-weight: 600;
+     }
  </style>

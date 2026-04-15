@@ -3,32 +3,54 @@
 
 @section('content')
 @section('navigasi')
-    <span>Jadwal Pelajaran</span>
-@endsection
-<div class="row">
-    <div class="col-lg-12 col-sm-12 col-xs-12">
-        <div class="card">
-             <div class="card-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                         @if ($semuaTa->count() > 0)
-                            @php
-                                $currentTa = $semuaTa->firstWhere('kode_ta', $selectedKodeTa);
-                            @endphp
-                            @if($currentTa)
-                               <span class="badge bg-label-primary">{{ $currentTa->tahun_ajaran }} ({{ $currentTa->semester == 1 ? 'Ganjil' : 'Genap' }})</span>
-                            @else
-                                <span class="badge bg-label-danger">Tahun Ajaran Tidak Ditemukan</span>
-                            @endif
-                        @else
-                            <span class="badge bg-label-danger">Tidak ada Tahun Ajaran</span>
-                        @endif
+    <div class="card shadow-none bg-transparent border-0 mb-4">
+        <div class="card-body p-0">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar avatar-md bg-label-primary rounded-circle">
+                        <i class="ti ti-calendar-event fs-3"></i>
                     </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold text-primary">Jadwal Pelajaran</h4>
+                        <p class="text-muted mb-0 small">
+                            @if ($semuaTa->count() > 0)
+                                @php
+                                    $currentTa = $semuaTa->firstWhere('kode_ta', $selectedKodeTa);
+                                @endphp
+                                @if($currentTa)
+                                    <span class="badge bg-label-primary">{{ $currentTa->tahun_ajaran }}</span>
+                                    @if($selectedSemester)
+                                        <span class="badge bg-label-info">Semester {{ $selectedSemester == 1 ? 'Ganjil' : 'Genap' }}</span>
+                                    @endif
+                                @endif
+                            @endif
+                        </p>
+                    </div>
+                </div>
+                <div class="d-flex flex-column align-items-end gap-2">
                     @can('jadwalpelajaran.create')
-                        <a href="#" class="btn btn-primary" id="btnCreate"><i class="fa fa-plus me-2"></i> Tambah Jadwal</a>
+                        <a href="#" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm" id="btnCreate">
+                            <i class="ti ti-plus fs-4"></i>
+                            <span>Tambah Jadwal</span>
+                        </a>
                     @endcan
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb breadcrumb-style1 mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="javascript:void(0);" class="text-muted">Akademik</a>
+                            </li>
+                            <li class="breadcrumb-item active">Jadwal Pelajaran</li>
+                        </ol>
+                    </nav>
                 </div>
             </div>
+        </div>
+    </div>
+@endsection
+
+<div class="row">
+    <div class="col-lg-12 col-sm-12 col-xs-12">
+        <div class="card shadow-sm">
             <div class="card-body">
                 <div class="row">
                     <div class="col-12">
@@ -37,7 +59,7 @@
                                  <div class="col-lg-12 col-sm-12 col-md-12 mb-1">
                                      <select name="kode_ta" class="form-select select2">
                                          @foreach ($semuaTa as $ta)
-                                             <option value="{{ $ta->kode_ta }}" {{ $selectedKodeTa == $ta->kode_ta ? 'selected' : '' }}>{{ $ta->tahun_ajaran }} ({{ $ta->semester == 1 ? 'Ganjil' : 'Genap' }}) {{ $ta->status == 1 ? '(Aktif)' : '' }}</option>
+                                             <option value="{{ $ta->kode_ta }}" {{ $selectedKodeTa == $ta->kode_ta ? 'selected' : '' }}>{{ $ta->tahun_ajaran }} {{ $ta->status == 1 ? '(Aktif)' : '' }}</option>
                                          @endforeach
                                      </select>
                                  </div>
@@ -119,11 +141,16 @@
                                                 </div>
                                             </div>
                                             <!-- Guru -->
-                                            <div class="col-lg-3 col-md-6 col-sm-12 border-end">
+                                            <div class="col-lg-2 col-md-6 col-sm-12 border-end">
                                                  <div class="d-flex flex-column">
                                                     <small class="text-muted">Guru Pengampu</small>
                                                     <span class="fw-bold">{{ $item->guru->nama_guru ?? '-' }}</span>
                                                 </div>
+                                            </div>
+                                            <!-- Tahun Ajaran -->
+                                            <div class="col-lg-1 col-md-6 col-sm-12 border-end text-center">
+                                                <small class="d-block text-muted">TA</small>
+                                                <span class="fw-bold text-primary" style="font-size: 0.75rem;">{{ $item->tahunAjaran->tahun_ajaran ?? '-' }}</span>
                                             </div>
                                             <!-- Semester -->
                                             <div class="col-lg-1 col-md-6 col-sm-12 border-end text-center">

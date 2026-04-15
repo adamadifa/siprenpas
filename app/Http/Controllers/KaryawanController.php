@@ -25,6 +25,10 @@ class KaryawanController extends Controller
             $query->where('nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
         }
 
+        if (!empty($request->kode_unit)) {
+            $query->where('karyawan.kode_unit', $request->kode_unit);
+        }
+
         if (auth()->user()->kode_unit != 'U06') {
             $query->where('karyawan.kode_unit', auth()->user()->kode_unit);
         }
@@ -35,7 +39,20 @@ class KaryawanController extends Controller
         $query->orderBy('karyawan.nama_lengkap', 'asc');
         $karyawan = $query->paginate(15);
         $karyawan->appends(request()->all());
-        return view('datamaster.karyawan.index', compact('karyawan'));
+
+        // Statistics
+        $statsQuery = Karyawan::query();
+        if (auth()->user()->kode_unit != 'U06') {
+            $statsQuery->where('kode_unit', auth()->user()->kode_unit);
+        }
+        $stats['total_karyawan'] = (clone $statsQuery)->count();
+        $stats['aktif'] = (clone $statsQuery)->where('status', 1)->count();
+        $stats['nonaktif'] = (clone $statsQuery)->where('status', 0)->count();
+        $stats['total_unit'] = Unit::count();
+
+        $units = Unit::orderBy('nama_unit')->get();
+
+        return view('datamaster.karyawan.index', compact('karyawan', 'stats', 'units'));
     }
 
     public function create()

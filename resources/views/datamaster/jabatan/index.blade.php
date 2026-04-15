@@ -3,17 +3,42 @@
 
 @section('content')
 @section('navigasi')
-    <span>Jabatan</span>
-@endsection
-<div class="row">
-    <div class="col-lg-5 col-sm-12 col-xs-12">
-        <div class="card">
-            <div class="card-header">
-                @can('jabatan.create')
-                    <a href="#" class="btn btn-primary" id="btncreateJabatan"><i class="fa fa-plus me-2"></i> Tambah
-                        Jabatan</a>
-                @endcan
+    <div class="card shadow-none bg-transparent border-0 mb-4">
+        <div class="card-body p-0">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar avatar-md bg-label-primary rounded-circle">
+                        <i class="ti ti-briefcase fs-3"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold text-primary">Data Jabatan</h4>
+                        <p class="text-muted mb-0 small">Manajemen struktur jabatan dan peran karyawan</p>
+                    </div>
+                </div>
+                <div class="d-flex flex-column align-items-end gap-2">
+                    @can('jabatan.create')
+                        <button class="btn btn-primary d-flex align-items-center gap-2 shadow-sm" id="btncreateJabatan">
+                            <i class="ti ti-plus fs-4"></i>
+                            <span>Tambah Jabatan</span>
+                        </button>
+                    @endcan
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb breadcrumb-style1 mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="javascript:void(0);" class="text-muted">Data Master</a>
+                            </li>
+                            <li class="breadcrumb-item active">Jabatan</li>
+                        </ol>
+                    </nav>
+                </div>
             </div>
+        </div>
+    </div>
+@endsection
+
+<div class="row">
+    <div class="col-lg-12 col-sm-12 col-xs-12">
+        <div class="card shadow-sm">
             <div class="card-body">
                 <div class="row">
                     <div class="col-12">

@@ -52,12 +52,18 @@ class JadwalPelajaranController extends Controller
             $query->where('hari', $request->hari);
         }
         
-        // Filter by Semester
-        if ($request->has('semester') && $request->semester != '') {
-            $query->where('semester', $request->semester);
+        // Filter by Semester (Default to Active if not selected)
+        $activeSemester = \App\Models\Semester::where('status', '1')->first();
+        $selectedSemester = $request->semester;
+        if(!$selectedSemester && $activeSemester) {
+            $selectedSemester = $activeSemester->semester;
         }
 
-        $jadwal = $query->with(['unit', 'kelas', 'mapel', 'guru'])->orderBy('hari', 'desc')->orderBy('jam_ke')->get();
+        if ($selectedSemester) {
+            $query->where('semester', $selectedSemester);
+        }
+
+        $jadwal = $query->with(['unit', 'kelas', 'mapel', 'guru', 'tahunAjaran'])->orderBy('hari', 'desc')->orderBy('jam_ke')->get();
 
         $units = Unit::all();
         
@@ -84,7 +90,7 @@ class JadwalPelajaranController extends Controller
              $gurus = Guru::with('karyawan')->where('status_aktif_ajar', 1)->get();
         }
         
-        return view('akademik.jadwal_pelajaran.index', compact('jadwal', 'units', 'kelas', 'gurus', 'activeTa', 'semuaTa', 'selectedKodeTa'));
+        return view('akademik.jadwal_pelajaran.index', compact('jadwal', 'units', 'kelas', 'gurus', 'activeTa', 'semuaTa', 'selectedKodeTa', 'selectedSemester'));
     }
 
     public function create()
