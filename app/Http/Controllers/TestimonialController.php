@@ -11,9 +11,15 @@ class TestimonialController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $testimonials = Testimonial::orderBy('created_at', 'desc')->get();
+        $query = Testimonial::query();
+
+        if ($request->has('nama') && !empty($request->nama)) {
+            $query->where('nama', 'like', '%' . $request->nama . '%');
+        }
+
+        $testimonials = $query->orderBy('created_at', 'desc')->get();
         return view('website.testimonials.index', compact('testimonials'));
     }
 

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\View\Composers\PengaturanUmumComposer;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -37,6 +38,10 @@ class AppServiceProvider extends ServiceProvider
             }
         } catch (\Exception $e) {
             // Silence error if table doesn't exist yet or during migration
+        }
+
+        if (request()->header('x-forwarded-proto') === 'https') {
+            URL::forceScheme('https');
         }
     }
 }

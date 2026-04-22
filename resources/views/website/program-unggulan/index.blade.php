@@ -3,81 +3,143 @@
 
 @section('content')
 @section('navigasi')
-    <span>Program Unggulan</span>
-@endsection
-<div class="row">
-    <div class="col-lg-12 col-sm-12 col-xs-12">
-        <div class="card">
-            <div class="card-header">
-                @can('programunggulan.create')
-                    <a href="{{ route('program-unggulan.create') }}" class="btn btn-primary">
-                        <i class="fa fa-plus me-2"></i> Tambah Program Unggulan
-                    </a>
-                @endcan
+    <div class="card shadow-none bg-transparent border-0 mb-3">
+        <div class="card-body p-0">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="ti ti-star fs-3"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Program Unggulan</h4>
+                        <p class="text-muted mb-0 small">Manajemen data program unggulan pesantren</p>
+                    </div>
+                </div>
+                <div class="d-flex flex-column align-items-end">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb breadcrumb-style1 mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="javascript:void(0);" class="text-muted">
+                                    <i class="ti ti-home-2 me-1"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active">
+                                <i class="ti ti-star me-1"></i> Program Unggulan
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="table-responsive mb-2">
-                            <table class="table table-striped table-hover table-bordered">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th width="5%">No.</th>
-                                        <th width="25%">Nama Program</th>
-                                        <th width="40%">Deskripsi</th>
-                                        <th width="10%">Urutan</th>
-                                        <th width="10%">Dibuat</th>
-                                        <th width="10%">#</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($programUnggulan as $d)
-                                        <tr>
-                                            <td class="text-center">
-                                                {{ $loop->iteration }}
-                                            </td>
-                                            <td>{{ $d->nama_program }}</td>
-                                            <td>
-                                                <div class="text-truncate" style="max-width: 300px;" title="{{ $d->deskripsi }}">
-                                                    {{ $d->deskripsi ?: '-' }}
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="badge bg-primary">{{ $d->urutan }}</span>
-                                            </td>
-                                            <td class="text-center">
-                                                {{ $d->created_at->format('d/m/Y') }}
-                                            </td>
-                                            <td>
-                                                <div class="d-flex">
-                                                    @can('programunggulan.edit')
-                                                        <div>
-                                                            <a href="{{ route('program-unggulan.edit', $d->id) }}" class="me-2">
-                                                                <i class="ti ti-edit text-success"></i>
-                                                            </a>
-                                                        </div>
-                                                    @endcan
+        </div>
+    </div>
+@endsection
 
-                                                    @can('programunggulan.delete')
-                                                        <div>
-                                                            <form method="POST" name="deleteform" class="deleteform"
-                                                                action="{{ route('program-unggulan.destroy', $d->id) }}">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <a href="#" class="delete-confirm ml-1">
-                                                                    <i class="ti ti-trash text-danger"></i>
-                                                                </a>
-                                                            </form>
-                                                        </div>
-                                                    @endcan
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+<div class="row">
+    <div class="col-lg-12">
+        <!-- Actions Section -->
+        <div class="d-flex justify-content-start mb-3">
+            @can('programunggulan.create')
+                <a href="{{ route('program-unggulan.create') }}" class="btn d-flex align-items-center gap-2 shadow-sm text-white"
+                    style="background-color: #064e3b">
+                    <i class="ti ti-plus fs-4"></i>
+                    <span>Tambah Program Unggulan</span>
+                </a>
+            @endcan
+        </div>
+
+        <!-- Filter Section -->
+        <style>
+            .form-filter .form-group {
+                margin-bottom: 0 !important;
+            }
+        </style>
+        <div class="card mb-4 shadow-none border-0 bg-transparent">
+            <div class="card-body p-0">
+                <form action="{{ route('program-unggulan.index') }}" class="form-filter">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-lg-11 col-md-10">
+                            <x-input-with-icon label="" value="{{ Request('nama_program') }}" name="nama_program"
+                                placeholder="Cari Nama Program" icon="ti ti-star" />
+                        </div>
+                        <div class="col-lg-1 col-md-2">
+                            <button type="submit" class="btn btn-primary w-100 p-2 d-flex align-items-center justify-content-center"
+                                style="background-color: #064e3b; border-color: #064e3b">
+                                <i class="ti ti-search fs-5"></i>
+                            </button>
                         </div>
                     </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header d-flex align-items-center gap-2 text-white py-3" style="background-color: #064e3b">
+                <i class="ti ti-star fs-5"></i>
+                <h6 class="card-title mb-0 text-white">Data Program Unggulan</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead style="background-color: #064e3b">
+                            <tr>
+                                <th class="text-white py-3" style="width: 1%;">NO.</th>
+                                <th class="text-white py-3">NAMA PROGRAM</th>
+                                <th class="text-white py-3">DESKRIPSI</th>
+                                <th class="text-white py-3 text-center">URUTAN</th>
+                                <th class="text-white py-3 text-center">DIBUAT</th>
+                                <th class="text-white py-3 text-end" style="width: 80px;">#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($programUnggulan as $d)
+                                <tr>
+                                    <td class="py-2 text-center">{{ $loop->iteration }}</td>
+                                    <td class="py-2 fw-bold text-dark">{{ $d->nama_program }}</td>
+                                    <td class="py-2">
+                                        <div class="small text-muted text-wrap" style="max-width: 400px;">{{ $d->deskripsi ?: '-' }}</div>
+                                    </td>
+                                    <td class="py-2 text-center">
+                                        <span class="badge bg-label-primary">{{ $d->urutan }}</span>
+                                    </td>
+                                    <td class="py-2 text-center small">
+                                        {{ $d->created_at->format('d/m/Y') }}
+                                    </td>
+                                    <td class="py-2 text-end">
+                                        <div class="d-flex justify-content-end gap-1">
+                                            @can('programunggulan.edit')
+                                                <a href="{{ route('program-unggulan.edit', $d->id) }}"
+                                                    class="btn btn-icon btn-label-success border"
+                                                    style="width: 28px; height: 28px;">
+                                                    <i class="ti ti-edit fs-6"></i>
+                                                </a>
+                                            @endcan
+                                            @can('programunggulan.delete')
+                                                <form method="POST" name="deleteform" class="deleteform"
+                                                    action="{{ route('program-unggulan.destroy', $d->id) }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <a href="#" class="btn btn-icon btn-label-danger border delete-confirm"
+                                                        style="width: 28px; height: 28px;">
+                                                        <i class="ti ti-trash fs-6"></i>
+                                                    </a>
+                                                </form>
+                                            @endcan
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center p-5">
+                                        <div class="mb-3">
+                                            <i class="ti ti-star fs-1 opacity-25"></i>
+                                        </div>
+                                        <h5>Belum Ada Program Unggulan</h5>
+                                        <p class="text-muted">Silahkan tambah program unggulan baru.</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

@@ -717,6 +717,8 @@
                         'prestasisiswa.index',
                         'programunggulan.index',
                         'pilarpendidikan.index',
+                        'sebaran-alumni.index',
+                        'gallery.index',
                     ]))
             <li
                 class="menu-item {{ request()->is(['kategori', 'kategori/*', 'post', 'post/*', 'sebaran-alumni', 'sebaran-alumni/*', 'pages', 'pages/*', 'page/*', 'visimisi', 'testimonials', 'testimonials/*', 'prestasisiswa', 'prestasisiswa/*', 'program-unggulan', 'program-unggulan/*', 'pilar-pendidikan', 'pilar-pendidikan/*']) ? 'open' : '' }}">
@@ -740,11 +742,13 @@
                             </a>
                         </li>
                     @endcan
-                    <li class="menu-item {{ request()->is(['sebaran-alumni', 'sebaran-alumni/*']) ? 'active' : '' }}">
-                        <a href="{{ route('sebaran-alumni.index') }}" class="menu-link">
-                            <div>Sebaran Alumni</div>
-                        </a>
-                    </li>
+                    @can('sebaran-alumni.index')
+                        <li class="menu-item {{ request()->is(['sebaran-alumni', 'sebaran-alumni/*']) ? 'active' : '' }}">
+                            <a href="{{ route('sebaran-alumni.index') }}" class="menu-link">
+                                <div>Sebaran Alumni</div>
+                            </a>
+                        </li>
+                    @endcan
                     @can('pages.index')
                         <li class="menu-item {{ request()->is(['pages', 'pages/*']) ? 'active' : '' }}">
                             <a href="{{ route('pages.index') }}" class="menu-link">
@@ -790,11 +794,13 @@
                             </a>
                         </li>
                     @endcan
-                    <li class="menu-item {{ request()->is(['gallery', 'gallery/*']) ? 'active' : '' }}">
-                        <a href="{{ route('gallery.index') }}" class="menu-link">
-                            <div>Galeri Kegiatan</div>
-                        </a>
-                    </li>
+                    @can('gallery.index')
+                        <li class="menu-item {{ request()->is(['gallery', 'gallery/*']) ? 'active' : '' }}">
+                            <a href="{{ route('gallery.index') }}" class="menu-link">
+                                <div>Galeri Kegiatan</div>
+                            </a>
+                        </li>
+                    @endcan
                 </ul>
 
             </li>

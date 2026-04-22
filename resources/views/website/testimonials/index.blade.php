@@ -3,92 +3,155 @@
 
 @section('content')
 @section('navigasi')
-    <span>Testimoni</span>
-@endsection
-<div class="row">
-    <div class="col-lg-12 col-sm-12 col-xs-12">
-        <div class="card">
-            <div class="card-header">
-                @can('testimonials.create')
-                    <a href="{{ route('testimonials.create') }}" class="btn btn-primary">
-                        <i class="fa fa-plus me-2"></i> Tambah Testimoni
-                    </a>
-                @endcan
+    <div class="card shadow-none bg-transparent border-0 mb-3">
+        <div class="card-body p-0">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="ti ti-message-2 fs-3"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Testimoni</h4>
+                        <p class="text-muted mb-0 small">Manajemen testimoni dan ulasan wali santri/alumni</p>
+                    </div>
+                </div>
+                <div class="d-flex flex-column align-items-end">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb breadcrumb-style1 mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="javascript:void(0);" class="text-muted">
+                                    <i class="ti ti-home-2 me-1"></i> Dashboard
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active">
+                                <i class="ti ti-message-2 me-1"></i> Testimoni
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="table-responsive mb-2">
-                            <table class="table table-striped table-hover table-bordered">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th width="5%">No.</th>
-                                        <th width="15%">Foto</th>
-                                        <th width="20%">Nama</th>
-                                        <th width="40%">Testimoni</th>
-                                        <th width="10%">Status</th>
-                                        <th width="10%">#</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($testimonials as $d)
-                                        <tr>
-                                            <td class="text-center">
-                                                {{ $loop->iteration }}
-                                            </td>
-                                            <td class="text-center">
-                                                @if ($d->foto)
-                                                    <img src="{{ asset('storage/testimonials/' . $d->foto) }}" alt="Foto {{ $d->nama }}"
-                                                        class="img-thumbnail" style="max-width: 80px; max-height: 80px;">
-                                                @else
-                                                    <div class="bg-light text-center p-2 rounded">
-                                                        <i class="ti ti-user" style="font-size: 2rem;"></i>
-                                                    </div>
-                                                @endif
-                                            </td>
-                                            <td>{{ $d->nama }}</td>
-                                            <td>
-                                                <div class="text-truncate" style="max-width: 300px;" title="{{ $d->testimoni }}">
-                                                    {{ $d->testimoni }}
-                                                </div>
-                                            </td>
-                                            <td class="text-center">
-                                                @if ($d->status)
-                                                    <span class="badge bg-success">Aktif</span>
-                                                @else
-                                                    <span class="badge bg-danger">Nonaktif</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                <div class="d-flex">
-                                                    @can('testimonials.edit')
-                                                        <div>
-                                                            <a href="{{ route('testimonials.edit', $d->id) }}" class="me-2">
-                                                                <i class="ti ti-edit text-success"></i>
-                                                            </a>
-                                                        </div>
-                                                    @endcan
+        </div>
+    </div>
+@endsection
 
-                                                    @can('testimonials.delete')
-                                                        <div>
-                                                            <form method="POST" name="deleteform" class="deleteform"
-                                                                action="{{ route('testimonials.destroy', $d->id) }}">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <a href="#" class="delete-confirm ml-1">
-                                                                    <i class="ti ti-trash text-danger"></i>
-                                                                </a>
-                                                            </form>
-                                                        </div>
-                                                    @endcan
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+<div class="row">
+    <div class="col-lg-12">
+        <!-- Actions Section -->
+        <div class="d-flex justify-content-start mb-3">
+            @can('testimonials.create')
+                <a href="{{ route('testimonials.create') }}" class="btn d-flex align-items-center gap-2 shadow-sm text-white"
+                    style="background-color: #064e3b">
+                    <i class="ti ti-plus fs-4"></i>
+                    <span>Tambah Testimoni</span>
+                </a>
+            @endcan
+        </div>
+
+        <!-- Filter Section -->
+        <style>
+            .form-filter .form-group {
+                margin-bottom: 0 !important;
+            }
+        </style>
+        <div class="card mb-4 shadow-none border-0 bg-transparent">
+            <div class="card-body p-0">
+                <form action="{{ route('testimonials.index') }}" class="form-filter">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-lg-11 col-md-10">
+                            <x-input-with-icon label="" value="{{ Request('nama') }}" name="nama"
+                                placeholder="Cari Nama" icon="ti ti-user" />
+                        </div>
+                        <div class="col-lg-1 col-md-2">
+                            <button type="submit" class="btn btn-primary w-100 p-2 d-flex align-items-center justify-content-center"
+                                style="background-color: #064e3b; border-color: #064e3b">
+                                <i class="ti ti-search fs-5"></i>
+                            </button>
                         </div>
                     </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header d-flex align-items-center gap-2 text-white py-3" style="background-color: #064e3b">
+                <i class="ti ti-message-2 fs-5"></i>
+                <h6 class="card-title mb-0 text-white">Data Testimoni</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead style="background-color: #064e3b">
+                            <tr>
+                                <th class="text-white py-3" style="width: 1%;">NO.</th>
+                                <th class="text-white py-3 text-center" style="width: 80px;">FOTO</th>
+                                <th class="text-white py-3">NAMA</th>
+                                <th class="text-white py-3">TESTIMONI</th>
+                                <th class="text-white py-3 text-center">STATUS</th>
+                                <th class="text-white py-3 text-end" style="width: 80px;">#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($testimonials as $d)
+                                <tr>
+                                    <td class="py-2 text-center">{{ $loop->iteration }}</td>
+                                    <td class="py-2 text-center">
+                                        <div class="avatar avatar-lg rounded overflow-hidden border bg-white p-1 shadow-sm mx-auto" style="width: 50px; height: 50px;">
+                                            @if ($d->foto && Storage::disk('public')->exists('testimonials/' . $d->foto))
+                                                <img src="{{ asset('storage/testimonials/' . $d->foto) }}" alt="{{ $d->nama }}" style="object-fit: cover; width: 100%; height: 100%;">
+                                            @else
+                                                <div class="bg-label-success d-flex align-items-center justify-content-center h-100 w-100">
+                                                    <i class="ti ti-user fs-3"></i>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="py-2 fw-bold text-dark">{{ $d->nama }}</td>
+                                    <td class="py-2">
+                                        <div class="small text-muted text-wrap" style="max-width: 400px;">{{ $d->testimoni }}</div>
+                                    </td>
+                                    <td class="py-2 text-center">
+                                        @if ($d->status)
+                                            <span class="badge bg-label-success">Aktif</span>
+                                        @else
+                                            <span class="badge bg-label-danger">Nonaktif</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-2 text-end">
+                                        <div class="d-flex justify-content-end gap-1">
+                                            @can('testimonials.edit')
+                                                <a href="{{ route('testimonials.edit', $d->id) }}"
+                                                    class="btn btn-icon btn-label-success border"
+                                                    style="width: 28px; height: 28px;">
+                                                    <i class="ti ti-edit fs-6"></i>
+                                                </a>
+                                            @endcan
+                                            @can('testimonials.delete')
+                                                <form method="POST" name="deleteform" class="deleteform"
+                                                    action="{{ route('testimonials.destroy', $d->id) }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <a href="#" class="btn btn-icon btn-label-danger border delete-confirm"
+                                                        style="width: 28px; height: 28px;">
+                                                        <i class="ti ti-trash fs-6"></i>
+                                                    </a>
+                                                </form>
+                                            @endcan
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center p-5">
+                                        <div class="mb-3">
+                                            <i class="ti ti-message-2 fs-1 opacity-25"></i>
+                                        </div>
+                                        <h5>Belum Ada Testimoni</h5>
+                                        <p class="text-muted">Silahkan tambah testimoni baru.</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

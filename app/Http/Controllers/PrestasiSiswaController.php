@@ -13,10 +13,21 @@ class PrestasiSiswaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $prestasiSiswa = PrestasiSiswa::with(['siswa', 'unit'])->orderBy('created_at', 'desc')->get();
-        return view('website.prestasi-siswa.index', compact('prestasiSiswa'));
+        $query = PrestasiSiswa::with(['siswa', 'unit']);
+
+        if ($request->has('nama_siswa') && !empty($request->nama_siswa)) {
+            $query->where('nama_siswa', 'like', '%' . $request->nama_siswa . '%');
+        }
+
+        if ($request->has('kode_unit') && !empty($request->kode_unit)) {
+            $query->where('kode_unit', $request->kode_unit);
+        }
+
+        $prestasiSiswa = $query->orderBy('created_at', 'desc')->get();
+        $unit = Unit::orderBy('nama_unit', 'asc')->get();
+        return view('website.prestasi-siswa.index', compact('prestasiSiswa', 'unit'));
     }
 
     /**

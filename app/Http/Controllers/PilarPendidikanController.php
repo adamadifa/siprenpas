@@ -10,9 +10,15 @@ class PilarPendidikanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $pilarPendidikan = PilarPendidikan::orderBy('urutan', 'asc')->get();
+        $query = PilarPendidikan::query();
+
+        if ($request->has('nama_pilar') && !empty($request->nama_pilar)) {
+            $query->where('nama_pilar', 'like', '%' . $request->nama_pilar . '%');
+        }
+
+        $pilarPendidikan = $query->orderBy('urutan', 'asc')->get();
         return view('website.pilar-pendidikan.index', compact('pilarPendidikan'));
     }
 

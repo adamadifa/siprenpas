@@ -10,9 +10,15 @@ class ProgramUnggulanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $programUnggulan = ProgramUnggulan::orderBy('urutan', 'asc')->get();
+        $query = ProgramUnggulan::query();
+
+        if ($request->has('nama_program') && !empty($request->nama_program)) {
+            $query->where('nama_program', 'like', '%' . $request->nama_program . '%');
+        }
+
+        $programUnggulan = $query->orderBy('urutan', 'asc')->get();
         return view('website.program-unggulan.index', compact('programUnggulan'));
     }
 
