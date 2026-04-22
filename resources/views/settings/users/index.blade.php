@@ -38,13 +38,11 @@
     <div class="col-lg-12">
         <!-- Actions Section -->
         <div class="d-flex justify-content-start mb-3">
-            @can('users.create')
-                <button class="btn d-flex align-items-center gap-2 shadow-sm text-white" id="btncreateUser"
-                    style="background-color: #064e3b">
-                    <i class="ti ti-plus fs-4"></i>
-                    <span>Tambah User</span>
-                </button>
-            @endcan
+            <button class="btn d-flex align-items-center gap-2 shadow-sm text-white" id="btncreateUser"
+                style="background-color: #064e3b">
+                <i class="ti ti-plus fs-4"></i>
+                <span>Tambah User</span>
+            </button>
         </div>
 
         <!-- Filter Form -->
@@ -106,24 +104,20 @@
                                     <td class="py-2">{{ $d->nama_unit }}</td>
                                     <td class="py-2 text-end">
                                         <div class="d-flex justify-content-end gap-1">
-                                            @can('users.edit')
-                                                <a href="#" class="btn btn-icon btn-label-success border editUser"
-                                                    style="width: 28px; height: 28px;"
-                                                    id="{{ Crypt::encrypt($d->id) }}">
-                                                    <i class="ti ti-edit fs-6"></i>
+                                            <a href="#" class="btn btn-icon btn-label-success border editUser"
+                                                style="width: 28px; height: 28px;"
+                                                id="{{ Crypt::encrypt($d->id) }}">
+                                                <i class="ti ti-edit fs-6"></i>
+                                            </a>
+                                            <form method="POST" name="deleteform" class="deleteform"
+                                                action="{{ route('users.delete', Crypt::encrypt($d->id)) }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <a href="#" class="btn btn-icon btn-label-danger border delete-confirm"
+                                                    style="width: 28px; height: 28px;">
+                                                    <i class="ti ti-trash fs-6"></i>
                                                 </a>
-                                            @endcan
-                                            @can('users.delete')
-                                                <form method="POST" name="deleteform" class="deleteform"
-                                                    action="{{ route('users.delete', Crypt::encrypt($d->id)) }}">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <a href="#" class="btn btn-icon btn-label-danger border delete-confirm"
-                                                        style="width: 28px; height: 28px;">
-                                                        <i class="ti ti-trash fs-6"></i>
-                                                    </a>
-                                                </form>
-                                            @endcan
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
