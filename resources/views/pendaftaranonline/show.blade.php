@@ -32,7 +32,7 @@
     <div class="col-md-12 text-end">
         Nomor Pendaftaran : <span class="fw-bold">{{ $pendaftaran->no_register }}</span>
         <a href="{{ route('pendaftaranonline.cetak', Crypt::encrypt($pendaftaran->no_register)) }}" target="_blank"
-            class="btn btn-primary btn-sm ms-2">
+            class="btn btn-primary btn-sm ms-2 shadow-sm" style="background-color: #064e3b; border-color: #064e3b">
             <i class="ti ti-printer me-1"></i>Cetak PDF
         </a>
     </div>
@@ -44,7 +44,11 @@
     }
 </style>
 <div class="row">
-    <h5 class="m-0">A. DATA PESERTA DIDK</h5>
+    <div class="col-12 mt-3 mb-2">
+        <h6 class="fw-bold mb-0 p-2 text-white rounded-1" style="background-color: #064e3b">
+            <i class="ti ti-user me-2"></i>A. DATA PESERTA DIDIK
+        </h6>
+    </div>
     <div class="col">
         <table class="table table-report" style="width: auto !important; ">
             <tr>
@@ -89,8 +93,12 @@
         </table>
     </div>
 </div>
-<div class="row mt-2">
-    <h5 class="m-0">B. ALAMAT</h5>
+<div class="row mt-3">
+    <div class="col-12 mb-2">
+        <h6 class="fw-bold mb-0 p-2 text-white rounded-1" style="background-color: #064e3b">
+            <i class="ti ti-map-pin me-2"></i>B. ALAMAT
+        </h6>
+    </div>
     <div class="col">
         <table class="table table-report" style="width: auto !important; ">
             <tr>
@@ -127,8 +135,12 @@
         </table>
     </div>
 </div>
-<div class="row mt-2">
-    <h5 class="m-0">C. INFORMASI ORANG TUA</h5>
+<div class="row mt-3">
+    <div class="col-12 mb-2">
+        <h6 class="fw-bold mb-0 p-2 text-white rounded-1" style="background-color: #064e3b">
+            <i class="ti ti-users me-2"></i>C. INFORMASI ORANG TUA
+        </h6>
+    </div>
     <div class="col">
         <table class="table table-report" style="width: auto !important; ">
             <tr>

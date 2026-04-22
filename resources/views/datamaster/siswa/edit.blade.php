@@ -1,99 +1,123 @@
-<form action="{{ route('siswa.update',Crypt::encrypt($siswa->id_siswa)) }}" aria-autocomplete="false" id="formSiswa" method="POST">
+<form action="{{ route('siswa.update', Crypt::encrypt($siswa->id_siswa)) }}" aria-autocomplete="false" id="formSiswa"
+    method="POST">
     @csrf
     @method('PUT')
     <div class="row">
         <div class="col-lg-6 col-md-12 col-sm-12">
             <div class="divider text-start">
-                <div class="divider-text">
-                    <i class="ti ti-user"></i> Data Siswa
+                <div class="divider-text text-success fw-bold">
+                    <i class="ti ti-user me-1"></i> Data Siswa
                 </div>
             </div>
             <x-input-with-icon-label icon="ti ti-barcode" label="NISN" name="nisn" value="{{ $siswa->nisn }}" />
-            <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap" name="nama_lengkap" value="{{ $siswa->nama_lengkap }}" />
+            <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap" name="nama_lengkap"
+                value="{{ $siswa->nama_lengkap }}" required="true" />
             <div class="form-group mb-3">
-                <label for="exampleFormControlInput1" style="font-weight: 600" class="form-label">Jenis Kelamin</label>
+                <label for="jenis_kelamin" style="font-weight: 600" class="form-label">Jenis Kelamin <span
+                        class="text-danger">*</span></label>
                 <select name="jenis_kelamin" id="jenis_kelamin" class="form-select">
-                    <option value="">Jenis Kelamin</option>
-                    <option value="L" {{ $siswa->jenis_kelamin=='L' ? 'selected' : '' }}>Laki - Laki</option>
-                    <option value="P" {{ $siswa->jenis_kelamin=='P' ? 'selected' : '' }}>Perempuan</option>
+                    <option value="">Pilih Jenis Kelamin</option>
+                    <option value="L" {{ $siswa->jenis_kelamin == 'L' ? 'selected' : '' }}>Laki - Laki</option>
+                    <option value="P" {{ $siswa->jenis_kelamin == 'P' ? 'selected' : '' }}>Perempuan</option>
                 </select>
             </div>
-            <x-input-with-icon-label icon="ti ti-map-pin" label="Tempat Lahir" name="tempat_lahir" value="{{ $siswa->tempat_lahir }}" />
-            <x-input-with-icon-label icon="ti ti-calendar" label="Tanggal Lahir" name="tanggal_lahir" value="{{ $siswa->tanggal_lahir }}"/>
+            <x-input-with-icon-label icon="ti ti-map-pin" label="Tempat Lahir" name="tempat_lahir"
+                value="{{ $siswa->tempat_lahir }}" required="true" />
+            <x-input-with-icon-label icon="ti ti-calendar" label="Tanggal Lahir" name="tanggal_lahir"
+                value="{{ $siswa->tanggal_lahir }}" required="true" />
             <div class="row">
                 <div class="col-lg-6 col-md-12 col-sm-12">
-                    <x-input-with-icon-label icon="ti ti-user" label="Anak Ke" name="anak_ke" value="{{ $siswa->anak_ke }}" />
+                    <x-input-with-icon-label icon="ti ti-user" label="Anak Ke" name="anak_ke"
+                        value="{{ $siswa->anak_ke }}" required="true" />
                 </div>
                 <div class="col-lg-6 col-md-12 col-sm-12">
-                    <x-input-with-icon-label icon="ti ti-users" label="Jumlah Saudara" name="jumlah_saudara" value="{{ $siswa->jumlah_saudara }}" />
+                    <x-input-with-icon-label icon="ti ti-users" label="Jumlah Saudara" name="jumlah_saudara"
+                        value="{{ $siswa->jumlah_saudara }}" />
                 </div>
             </div>
-            <x-textarea-label name="alamat" label="Alamat" value="{{ $siswa->alamat }}" />
+            <x-textarea-label name="alamat" label="Alamat" value="{{ $siswa->alamat }}" required="true" />
             <x-select-label label="Provinsi" name="id_province" :data="$provinsi" key="id" textShow="name"
-                select2="select2Provinsi" upperCase="true" selected="{{ $siswa->id_province }}" />
+                select2="select2Provinsi" upperCase="true" selected="{{ $siswa->id_province }}" required="true" />
             <div class="form-group mb-3">
-                <label style="font-weight: 600" class="form-label">Kabupaten / Kota</label>
+                <label style="font-weight: 600" class="form-label">Kabupaten / Kota <span
+                        class="text-danger">*</span></label>
                 <select name="id_regency" id="id_regency" class="select2Regency form-select">
                 </select>
             </div>
             <div class="form-group mb-3">
-                <label style="font-weight: 600" class="form-label">Kecamatan</label>
+                <label style="font-weight: 600" class="form-label">Kecamatan <span class="text-danger">*</span></label>
                 <select name="id_district" id="id_district" class="select2District form-select">
                 </select>
             </div>
             <div class="form-group mb-3">
-                <label style="font-weight: 600" class="form-label">Desa / Kelurahan</label>
+                <label style="font-weight: 600" class="form-label">Desa / Kelurahan <span
+                        class="text-danger">*</span></label>
                 <select name="id_village" id="id_village" class="select2Village form-select">
                 </select>
             </div>
-            <x-input-with-icon-label icon="ti ti-barcode" label="Kode Pos" name="kode_pos" value="{{ $siswa->kode_pos }}" />
+            <x-input-with-icon-label icon="ti ti-barcode" label="Kode Pos" name="kode_pos"
+                value="{{ $siswa->kode_pos }}" required="true" />
         </div>
-        <div class="col-lg-1">
+        <div class="col-lg-1 d-none d-lg-block">
             <div class="divider divider-vertical">
                 <div class="divider-text">
-                    <i class="ti ti-crown"></i>
+                    <i class="ti ti-chevron-right text-muted"></i>
                 </div>
             </div>
         </div>
         <div class="col-lg-5 col-md-12 col-sm-12">
             <div class="divider text-start">
-                <div class="divider-text">
-                    <i class="ti ti-users"></i> Data Orangtua
+                <div class="divider-text text-success fw-bold">
+                    <i class="ti ti-users me-1"></i> Data Orangtua
                 </div>
             </div>
-            <x-input-with-icon-label icon="ti ti-barcode" label="No. KK" name="no_kk" value="{{ $siswa->no_kk }}"/>
-            <x-input-with-icon-label icon="ti ti-credit-card" label="NIK. Ayah" name="nik_ayah" value="{{ $siswa->nik_ayah }}"/>
-            <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap Ayah" name="nama_ayah" value="{{ $siswa->nama_ayah }}"/>
+            <x-input-with-icon-label icon="ti ti-barcode" label="No. KK" name="no_kk"
+                value="{{ $siswa->no_kk }}" required="true" />
+            <x-input-with-icon-label icon="ti ti-credit-card" label="NIK. Ayah" name="nik_ayah"
+                value="{{ $siswa->nik_ayah }}" required="true" />
+            <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap Ayah" name="nama_ayah"
+                value="{{ $siswa->nama_ayah }}" required="true" />
             <div class="form-group mb-3">
-                <label style="font-weight: 600" class="form-label">Pendidikan Ayah</label>
+                <label style="font-weight: 600" class="form-label">Pendidikan Ayah <span
+                        class="text-danger">*</span></label>
                 <select name="pendidikan_ayah" id="pendidikan_ayah" class="form-select">
-                    <option value="">Pendidikan Ayah</option>
+                    <option value="">Pilih Pendidikan Ayah</option>
                     @foreach ($pendidikan as $p)
-                    <option value="{{ $p }}" {{ $siswa->pendidikan_ayah == $p ? 'selected' : '' }}>{{ $p }}</option>
+                        <option value="{{ $p }}" {{ $siswa->pendidikan_ayah == $p ? 'selected' : '' }}>
+                            {{ $p }}</option>
                     @endforeach
                 </select>
             </div>
-            <x-input-with-icon-label icon="ti ti-building-skyscraper" label="Pekerjaan Ayah" name="pekerjaan_ayah" value="{{ $siswa->pekerjaan_ayah }}"/>
+            <x-input-with-icon-label icon="ti ti-building-skyscraper" label="Pekerjaan Ayah" name="pekerjaan_ayah"
+                value="{{ $siswa->pekerjaan_ayah }}" required="true" />
 
+            <div class="my-4"></div>
 
-            <x-input-with-icon-label icon="ti ti-credit-card" label="NIK. Ibu" name="nik_ibu" value="{{ $siswa->nik_ibu }}" />
-            <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap Ibu" name="nama_ibu" value="{{ $siswa->nama_ibu }}"/>
+            <x-input-with-icon-label icon="ti ti-credit-card" label="NIK. Ibu" name="nik_ibu"
+                value="{{ $siswa->nik_ibu }}" required="true" />
+            <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap Ibu" name="nama_ibu"
+                value="{{ $siswa->nama_ibu }}" required="true" />
             <div class="form-group mb-3">
-                <label style="font-weight: 600" class="form-label">Pendidikan Ibu</label>
+                <label style="font-weight: 600" class="form-label">Pendidikan Ibu <span
+                        class="text-danger">*</span></label>
                 <select name="pendidikan_ibu" id="pendidikan_ibu" class="form-select">
-                    <option value="">Pendidikan Ibu</option>
+                    <option value="">Pilih Pendidikan Ibu</option>
                     @foreach ($pendidikan as $p)
-                    <option value="{{ $p }}" {{ $siswa->pendidikan_ibu == $p ? 'selected' : '' }}>{{ $p }}</option>
+                        <option value="{{ $p }}" {{ $siswa->pendidikan_ibu == $p ? 'selected' : '' }}>
+                            {{ $p }}</option>
                     @endforeach
                 </select>
             </div>
-            <x-input-with-icon-label icon="ti ti-building-skyscraper" label="Pekerjaan Ibu" name="pekerjaan_ibu" value="{{ $siswa->pekerjaan_ibu }}" />
+            <x-input-with-icon-label icon="ti ti-building-skyscraper" label="Pekerjaan Ibu" name="pekerjaan_ibu"
+                value="{{ $siswa->pekerjaan_ibu }}" required="true" />
 
-            <x-input-with-icon-label icon="ti ti-phone" label="No. HP Orangtua" name="no_hp_orang_tua" value="{{ $siswa->no_hp_orang_tua }}" />
-            <div class="form-group">
-                <button class="btn btn-primary w-100" type="submit">
-                    <ion-icon name="send-outline" class="me-1"></ion-icon>
-                    Submit
+            <x-input-with-icon-label icon="ti ti-phone" label="No. HP Orangtua" name="no_hp_orang_tua"
+                value="{{ $siswa->no_hp_orang_tua }}" required="true" />
+
+            <div class="form-group mt-4">
+                <button class="btn text-white w-100 py-2" type="submit" style="background-color: #064e3b">
+                    <i class="ti ti-refresh me-1"></i>
+                    Update Data
                 </button>
             </div>
         </div>

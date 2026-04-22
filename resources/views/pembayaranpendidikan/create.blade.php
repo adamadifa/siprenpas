@@ -34,32 +34,62 @@
     </div>
     <div class="row">
         <div class="col">
-            <a href="#" id="btnTambahdetailbayar" class="btn btn-warning w-100"><i
+            <a href="#" id="btnTambahdetailbayar" class="btn text-white w-100" style="background-color: #ff9f43"><i
                     class="ti ti-plus me-1"></i>Tambah</a>
         </div>
     </div>
 
+    <style>
+        .card-merged {
+            border-radius: 12px !important;
+            overflow: hidden !important;
+            border: none !important;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+        }
+        .card-merged .card-header {
+            background-color: #064e3b !important;
+            padding: 0.75rem 1.15rem !important;
+            border-bottom: none !important;
+        }
+        .table-compact {
+            font-size: 0.875rem !important;
+        }
+        .table-compact th, .table-compact td {
+            padding-left: 1.15rem !important;
+            padding-right: 1.15rem !important;
+            padding-top: 0.5rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+    </style>
     <div class="row mt-3">
         <div class="col">
-            <table class="table table-bordered" id="tableDetailbayar">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Jenis Biaya</th>
-                        <th>Jumlah</th>
-                        <th>Keterangan</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="detailbayar"></tbody>
-                <tfoot class="table-dark">
-                    <tr>
-                        <td class="text-end">Total Bayar</td>
-                        <td class="text-end" id="totalbayar"></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tfoot>
-            </table>
+            <div class="card card-merged">
+                <div class="card-header d-flex align-items-center gap-2">
+                    <i class="ti ti-list text-white fs-5"></i>
+                    <h6 class="card-title mb-0 text-white small">Item Pembayaran</h6>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 text-nowrap table-compact" id="tableDetailbayar">
+                        <thead style="background-color: #064e3b">
+                            <tr>
+                                <th class="text-white py-3">Jenis Biaya</th>
+                                <th class="text-white py-3 text-end">Jumlah</th>
+                                <th class="text-white py-3">Keterangan</th>
+                                <th class="text-white py-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailbayar"></tbody>
+                        <tfoot style="background-color: #f8f9fa" class="border-top border-dark">
+                            <tr>
+                                <td class="text-end fw-bold py-3">Total Bayar</td>
+                                <td class="text-end fw-bold py-3 text-success" id="totalbayar"></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row mt-3">
@@ -75,7 +105,7 @@
     </div>
     <div class="row mt-3">
         <div class="col">
-            <button class="btn btn-primary w-100" type="submit" id="btnSimpan"><i
+            <button class="btn text-white w-100" type="submit" id="btnSimpan" style="background-color: #064e3b"><i
                     class="ti ti-send me-1"></i>Simpan</button>
         </div>
     </div>

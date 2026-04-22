@@ -1,35 +1,82 @@
 @extends('layouts.app')
-@section('titlepage', 'Kelas')
+@section('titlepage', 'Data Kelas')
 
 @section('content')
 @section('navigasi')
-    <span>Kelas</span>
-@endsection
-<div class="row">
-    <div class="col-lg-8 col-sm-12 col-xs-12">
-        <div class="card">
-            <div class="card-header">
-                @can('kelas.create')
-                    <a href="#" class="btn btn-primary" id="btnCreate"><i class="fa fa-plus me-2"></i>Tambah Kelas</a>
-                @endcan
+    <div class="card shadow-none bg-transparent border-0 mb-3">
+        <div class="card-body p-0">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="ti ti-layout-grid-add fs-3"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Data Kelas</h4>
+                        <p class="text-muted mb-0 small">Manajemen data kelas dan siswa</p>
+                    </div>
+                </div>
+                <div class="d-flex flex-column align-items-end">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb breadcrumb-style1 mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="javascript:void(0);" class="text-muted">
+                                    <i class="ti ti-database me-1"></i> Data Master
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active">
+                                <i class="ti ti-layout-grid-add me-1"></i> Kelas
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
             </div>
-            <div class="card-body">
-                <form action="{{ route('kelas.index') }}" method="get">
-                    <div class="row">
-                        <div class="col-lg-5 col-sm-12 col-xs-12">
+        </div>
+    </div>
+@endsection
+
+<div class="row">
+    <div class="col-lg-6">
+        <!-- Actions Section -->
+        <div class="d-flex justify-content-start mb-3">
+            @can('kelas.create')
+                <button class="btn d-flex align-items-center gap-2 shadow-sm text-white" id="btnCreate"
+                    style="background-color: #064e3b">
+                    <i class="ti ti-plus fs-4"></i>
+                    <span>Tambah Kelas</span>
+                </button>
+            @endcan
+        </div>
+
+        <!-- Filter Form -->
+        <style>
+            .form-filter .form-group {
+                margin-bottom: 0 !important;
+            }
+        </style>
+        <div class="card mb-4 shadow-none border-0 bg-transparent">
+            <div class="card-body p-0">
+                <form action="{{ route('kelas.index') }}" method="get" class="form-filter">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-lg-3 col-md-6">
+                            <x-input-with-icon label="" value="{{ Request('nama_kelas_search') }}" name="nama_kelas_search"
+                                placeholder="Cari Nama Kelas" icon="ti ti-search" />
+                        </div>
+                        <div class="col-lg-3 col-md-6">
                             <div class="form-group">
-                                <select name="kode_unit_search" id="kode_unit_search" class="form-select">
-                                    <option value="">Pilih Unit</option>
+                                <select name="kode_unit_search" id="kode_unit_search" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
+                                    <option value="">Semua Unit</option>
                                     @foreach ($unit as $d)
-                                        <option value="{{ $d->kode_unit }}">{{ $d->nama_unit }}</option>
+                                        <option value="{{ $d->kode_unit }}" {{ Request('kode_unit_search') == $d->kode_unit ? 'selected' : '' }}>
+                                            {{ $d->nama_unit }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-5 col-sm-12 col-xs-12">
+                        <div class="col-lg-3 col-md-6">
                             <div class="form-group">
-                                <select name="kode_ta" id="kode_ta" class="form-select">
-                                    <option value="">Pilih Tahun Ajaran</option>
+                                <select name="kode_ta" id="kode_ta" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
+                                    <option value="">Tahun Ajaran</option>
                                     @foreach ($tahunajaran as $d)
                                         <option value="{{ $d->kode_ta }}"
                                             {{ (Request::get('kode_ta') == $d->kode_ta ? 'selected' : $kode_ta == $d->kode_ta) ? 'selected' : '' }}>
@@ -39,76 +86,90 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-2 col-sm-12 col-xs-12">
-                            <div class="form-group">
-                                <button class="btn btn-primary" id="btnFilter"><i class="ti ti-search"></i></button>
-                            </div>
+                        <div class="col-lg-2 col-md-6">
+                            <button type="submit" class="btn btn-primary w-100 p-2 d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; border-color: #064e3b">
+                                <i class="ti ti-search fs-5"></i>
+                                <span>Filter</span>
+                            </button>
                         </div>
                     </div>
                 </form>
-                <div class="row">
-                    <div class="col-12">
-                        <div class="table-responsive mb-2">
-                            <table class="table table-striped table-hover table-bordered">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Kode</th>
-                                        <th>Kelas</th>
-                                        <th>Tingkat</th>
-                                        <th>Unit</th>
-                                        <th>Tahun Ajaran</th>
-                                        <th>#</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($kelas as $d)
-                                        <tr>
-                                            <td>{{ $d->kode_kelas }}</td>
-                                            <td>{{ $d->nama_kelas }}</td>
-                                            <td>{{ $d->tingkat }}</td>
-                                            <td>{{ $d->nama_unit }}</td>
-                                            <td>{{ $d->tahun_ajaran }}</td>
-                                            <td>
-                                                <div class="d-flex">
-                                                    @can('kelas.edit')
-                                                        <div>
-                                                            <a href="#" class="me-2 btnEdit"
-                                                                kode_kelas="{{ Crypt::encrypt($d->kode_kelas) }}"
-                                                                kode_unit="{{ $d->kode_unit }}"
-                                                                tingkat="{{ $d->tingkat }}">
-                                                                <i class="ti ti-edit text-success"></i>
-                                                            </a>
-                                                        </div>
-                                                    @endcan
-                                                    @can('kelas.edit')
-                                                        <div>
-                                                            <a href="{{ route('kelas.setkelas', Crypt::encrypt($d->kode_kelas)) }}"
-                                                                class="me-2 btnSetkelas">
-                                                                <i class="ti ti-user-plus text-info"></i>
-                                                            </a>
-                                                        </div>
-                                                    @endcan
-                                                    @can('kelas.delete')
-                                                        <div>
-                                                            <form method="POST" name="deleteform" class="deleteform"
-                                                                action="{{ route('kelas.delete', Crypt::encrypt($d->kode_kelas)) }}">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <a href="#" class="delete-confirm ml-1">
-                                                                    <i class="ti ti-trash text-danger"></i>
-                                                                </a>
-                                                            </form>
-                                                        </div>
-                                                    @endcan
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+            </div>
+        </div>
 
-                    </div>
+        <div class="card shadow-sm border-0">
+            <div class="card-header d-flex align-items-center gap-2 text-white py-3" style="background-color: #064e3b">
+                <i class="ti ti-layout-grid fs-5"></i>
+                <h6 class="card-title mb-0 text-white">Data Kelas</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 text-nowrap">
+                        <thead style="background-color: #064e3b">
+                            <tr>
+                                <th class="text-white py-3">KODE</th>
+                                <th class="text-white py-3">KELAS</th>
+                                <th class="text-white py-3">TINGKAT</th>
+                                <th class="text-white py-3">UNIT</th>
+                                <th class="text-white py-3">TAHUN AJARAN</th>
+                                <th class="text-white py-3 text-end" style="width: 120px;">#</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($kelas as $d)
+                                <tr>
+                                    <td class="py-2"><span class="fw-bold">{{ $d->kode_kelas }}</span></td>
+                                    <td class="py-2">{{ $d->nama_kelas }}</td>
+                                    <td class="py-2 text-center">
+                                        <span class="badge bg-label-info">Tingkat {{ $d->tingkat }}</span>
+                                    </td>
+                                    <td class="py-2">{{ $d->nama_unit }}</td>
+                                    <td class="py-2">{{ $d->tahun_ajaran }}</td>
+                                    <td class="py-2 text-end">
+                                        <div class="d-flex justify-content-end gap-1">
+                                            @can('kelas.edit')
+                                                <a href="#" class="btn btn-icon btn-label-success border btnEdit"
+                                                    style="width: 28px; height: 28px;"
+                                                    kode_kelas="{{ Crypt::encrypt($d->kode_kelas) }}"
+                                                    kode_unit="{{ $d->kode_unit }}"
+                                                    tingkat="{{ $d->tingkat }}">
+                                                    <i class="ti ti-edit fs-6"></i>
+                                                </a>
+                                            @endcan
+                                            @can('kelas.edit')
+                                                <a href="{{ route('kelas.setkelas', Crypt::encrypt($d->kode_kelas)) }}"
+                                                    class="btn btn-icon btn-label-info border btnSetkelas"
+                                                    style="width: 28px; height: 28px;">
+                                                    <i class="ti ti-user-plus fs-6"></i>
+                                                </a>
+                                            @endcan
+                                            @can('kelas.delete')
+                                                <form method="POST" name="deleteform" class="deleteform"
+                                                    action="{{ route('kelas.delete', Crypt::encrypt($d->kode_kelas)) }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <a href="#" class="btn btn-icon btn-label-danger border delete-confirm"
+                                                        style="width: 28px; height: 28px;">
+                                                        <i class="ti ti-trash fs-6"></i>
+                                                    </a>
+                                                </form>
+                                            @endcan
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center p-5">
+                                        <div class="mb-3">
+                                            <i class="ti ti-layout-grid fs-1 opacity-25"></i>
+                                        </div>
+                                        <h5>Belum Ada Data Kelas</h5>
+                                        <p class="text-muted small">Silahkan tambah data baru atau sesuaikan filter pencarian.</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -116,9 +177,8 @@
 </div>
 <x-modal-form id="modal" size="" show="loadmodal" title="" />
 @endsection
-@push('myscript')
-{{-- <script src="{{ asset('assets/js/pages/roles/create.js') }}"></script> --}}
 
+@push('myscript')
 <script>
     // Helper untuk validasi field
     function validateField(id, errorMsg) {
@@ -205,23 +265,19 @@
                     $(document).find("#tingkat").html(respond);
                 }
             });
-
         }
+
         $(document).on('change', '#kode_unit', function() {
             const kode_unit = $(this).val();
             getTingkatByUnit(kode_unit);
         });
 
-
-
         $("#btnCreate").click(function(e) {
             e.preventDefault();
             $('#modal').modal("show");
-            $(".modal-title").text("Tambah Data Kelas " + "{{ $ta_aktif }}");
+            $(".modal-title").text("Tambah Data Kelas " + "{{ $ta_aktif ?? '' }}");
             $("#loadmodal").load("{{ route('kelas.create') }}", function() {
-                // Panggil validasi setelah form selesai dimuat
                 initKelasFormValidation();
-
             });
         });
 
@@ -229,15 +285,33 @@
             e.preventDefault();
             const kode_kelas = $(this).attr('kode_kelas');
             const kode_unit = $(this).attr('kode_unit');
-            //alert(kode_unit);
             const tingkat = $(this).attr('tingkat');
 
             $('#modal').modal("show");
             $(".modal-title").text("Edit Data Kelas");
             $("#loadmodal").load(`/kelas/${kode_kelas}/edit`, function() {
-                // Panggil validasi setelah form selesai dimuat
                 initKelasFormValidation();
                 getTingkatByUnit(kode_unit, tingkat);
+            });
+        });
+
+        // Delete Confirm
+        $(document).on('click', '.delete-confirm', function(e) {
+            e.preventDefault();
+            var form = $(this).closest('form');
+            Swal.fire({
+                title: 'Apakah anda yakin?',
+                text: "Data kelas dan siswa di dalamnya akan terpengaruh!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#064e3b',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
             });
         });
     });

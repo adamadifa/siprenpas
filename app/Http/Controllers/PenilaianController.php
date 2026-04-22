@@ -7,6 +7,9 @@ use App\Models\JadwalPelajaran;
 use App\Models\Kelassiswa;
 use App\Models\NilaiSiswa;
 use App\Models\RencanaPenilaian;
+use App\Models\Semester;
+use App\Models\Tahunajaran;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -269,8 +272,8 @@ class PenilaianController extends Controller
                          // Let's check existing.
                          if($score === '' || $score === null) {
                              NilaiSiswa::where('rencana_penilaian_id', $rencanaId)
-                                ->where('id_siswa', $studentId)
-                                ->delete();
+                                 ->where('id_siswa', $studentId)
+                                 ->delete();
                          }
                     }
                 }
@@ -281,5 +284,48 @@ class PenilaianController extends Controller
             DB::rollBack();
             return Redirect::back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+
+    public function rapor(Request $request)
+    {
+        $activeTa = Tahunajaran::where('status', 1)->first();
+        $semuaTa = Tahunajaran::orderBy('tahun_ajaran', 'desc')->get();
+        
+        $selectedKodeTa = $request->kode_ta;
+        if(!$selectedKodeTa && $activeTa) {
+            $selectedKodeTa = $activeTa->kode_ta;
+        }
+
+        $activeSemester = Semester::where('status', '1')->first();
+        $selectedSemester = $request->semester;
+        if(!$selectedSemester && $activeSemester) {
+            $selectedSemester = $activeSemester->semester;
+        }
+
+        $query = JadwalPelajaran::query();
+        
+        if ($selectedKodeTa) {
+            $query->where('kode_ta', $selectedKodeTa);
+        }
+        
+        if ($selectedSemester) {
+            $query->where('semester', $selectedSemester);
+        }
+
+        // Filter by Unit if needed (optional filter in view)
+        if ($request->has('kode_unit') && $request->kode_unit != '') {
+            $query->where('kode_unit', $request->kode_unit);
+        }
+
+        // Grouping by Unit, Kelas, Mapel, Guru
+        // Select the MIN(id) as the representative id for the link to Penilaian
+        $jadwalGrouped = $query->with(['unit', 'kelas', 'mapel', 'guru', 'tahunAjaran'])
+            ->select('kode_unit', 'kode_kelas', 'mata_pelajaran_id', 'guru_id', 'kode_ta', 'semester', DB::raw('MIN(id) as id'))
+            ->groupBy('kode_unit', 'kode_kelas', 'mata_pelajaran_id', 'guru_id', 'kode_ta', 'semester')
+            ->get();
+
+        $units = Unit::all();
+
+        return view('akademik.rapor.index', compact('jadwalGrouped', 'units', 'activeTa', 'semuaTa', 'selectedKodeTa', 'selectedSemester'));
     }
 }

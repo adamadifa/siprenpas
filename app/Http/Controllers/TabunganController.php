@@ -100,6 +100,9 @@ class TabunganController extends Controller
         $data['saldo_awal'] = $lastdata ? $lastdata->saldo : 0;
 
         $data['tabungan'] = $tabungan;
+        $data['all_tabungan'] = Tabungan::where('no_anggota', $tabungan->no_anggota)
+            ->join('koperasi_jenis_tabungan', 'koperasi_tabungan.kode_tabungan', '=', 'koperasi_jenis_tabungan.kode_tabungan')
+            ->get();
         $data['anggota'] = $anggota;
         return view('koperasi.tabungan.show', $data);
     }

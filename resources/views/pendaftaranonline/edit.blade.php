@@ -131,13 +131,15 @@
 
     {{-- BAGIAN 5: TOMBOL SUBMIT --}}
     <div class="row">
-        <div class="col-12">
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">
-                    <i class="ti ti-device-floppy me-1"></i> Update
+        <div class="col-12 mt-3">
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1 shadow-sm d-flex align-items-center justify-content-center gap-2" 
+                    style="background-color: #064e3b; border-color: #064e3b">
+                    <i class="ti ti-device-floppy fs-4"></i>
+                    <span class="fw-bold">Update Pendaftaran Online</span>
                 </button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="ti ti-x me-1"></i> Batal
+                <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+                    Batal
                 </button>
             </div>
         </div>

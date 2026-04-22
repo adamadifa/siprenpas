@@ -422,7 +422,7 @@
         <!-- Menu Akademik -->
         @if (auth()->check() &&
                 auth()->user()->hasAnyPermission(['presensisiswa.index', 'guru.index', 'jabatanakademik.index', 'matapelajaran.index', 'kelas.index', 'jadwalpelajaran.index']))
-            <li class="menu-item {{ request()->is(['akademik', 'akademik/*', 'presensisiswa', 'presensisiswa/*', 'guru', 'guru/*', 'jabatan-akademik', 'jabatan-akademik/*', 'mata-pelajaran', 'mata-pelajaran/*', 'kelas', 'kelas/*', 'jadwal-pelajaran', 'jadwal-pelajaran/*']) ? 'open' : '' }}">
+            <li class="menu-item {{ request()->is(['akademik', 'akademik/*', 'presensisiswa', 'presensisiswa/*', 'guru', 'guru/*', 'jabatan-akademik', 'jabatan-akademik/*', 'mata-pelajaran', 'mata-pelajaran/*', 'kelas', 'kelas/*', 'jadwal-pelajaran', 'jadwal-pelajaran/*', 'rapor', 'rapor/*', 'penilaian', 'penilaian/*']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-school"></i>
                     <div>Akademik</div>
@@ -477,6 +477,14 @@
                             </a>
                         </li>
                     @endcan
+                    @can('jadwalpelajaran.index')
+                        <li class="menu-item {{ request()->is(['rapor', 'rapor/*', 'penilaian', 'penilaian/*']) ? 'active' : '' }}">
+                            <a href="{{ route('rapor.index') }}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-file-report"></i>
+                                <div>Rapor Siswa</div>
+                            </a>
+                        </li>
+                    @endcan
                 </ul>
             </li>
         @endif
@@ -484,7 +492,7 @@
         @if (auth()->check() &&
                 auth()->user()->hasAnyPermission(['simpanan.index', 'pembiayaan.index', 'tabungan.index']))
             <li
-                class="menu-item {{ request()->is(['simpanan', 'pembiayaan', 'tabungan', 'tabungan/*', 'simpanan/*', 'pembiayaan/*']) ? 'open' : '' }}">
+                class="menu-item {{ request()->is(['simpanan', 'pembiayaan', 'tabungan', 'tabungan/*', 'simpanan/*', 'pembiayaan/*', 'laporankoperasi', 'laporankoperasi/*']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-moneybag"></i>
                     <div>Koperasi</div>
@@ -531,7 +539,7 @@
         @endif
         @if (auth()->check() &&
                 auth()->user()->hasAnyPermission(['pembayaranpdd.index']))
-            <li class="menu-item {{ request()->is(['pembayaranpendidikan']) ? 'open' : '' }}">
+            <li class="menu-item {{ request()->is(['pembayaranpendidikan', 'pembayaranpendidikan/*', 'ledgertransaksi', 'ledgertransaksi/*', 'laporankeuangan', 'laporankeuangan/*']) ? 'open' : '' }}">
 
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-moneybag"></i>
@@ -540,7 +548,7 @@
                 <ul class="menu-sub">
                     @if (auth()->check() &&
                             auth()->user()->hasAnyPermission(['pembayaranpdd.index']))
-                        <li class="menu-item {{ request()->is(['pembayaranpendidikan']) ? 'active' : '' }}">
+                        <li class="menu-item {{ request()->is(['pembayaranpendidikan', 'pembayaranpendidikan/*']) ? 'active' : '' }}">
                             <a href="{{ route('pembayaranpendidikan.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-file-description"></i>
                                 <div>Pembayaran </div>
@@ -549,7 +557,7 @@
                     @endif
                     @if (auth()->check() &&
                             auth()->user()->hasAnyPermission(['ledgertransaksi.index']))
-                        <li class="menu-item {{ request()->is(['ledgertransaksi']) ? 'active' : '' }}">
+                        <li class="menu-item {{ request()->is(['ledgertransaksi', 'ledgertransaksi/*']) ? 'active' : '' }}">
                             <a href="{{ route('ledgertransaksi.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-file-description"></i>
                                 <div>Mutasi Kas dan Bank </div>
@@ -559,7 +567,7 @@
 
                     @if (auth()->check() &&
                             auth()->user()->hasAnyPermission(['pembayaranpdd.index']))
-                        <li class="menu-item {{ request()->is(['laporankeuangan']) ? 'active' : '' }}">
+                        <li class="menu-item {{ request()->is(['laporankeuangan', 'laporankeuangan/*']) ? 'active' : '' }}">
                             <a href="{{ route('lk.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-file-description"></i>
                                 <div>Laporan </div>

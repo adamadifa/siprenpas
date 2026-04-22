@@ -37,7 +37,7 @@
         }
 
         .layout-menu {
-            background: linear-gradient(135deg, #1B5E20 0%, #0A3D0A 100%) !important;
+            background: linear-gradient(135deg, #064e3b 0%, #043a2b 100%) !important;
             position: fixed !important;
             height: 100vh !important;
             overflow-y: auto !important;

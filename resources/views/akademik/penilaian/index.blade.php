@@ -3,13 +3,43 @@
 
 @section('content')
 @section('navigasi')
-    <span>Penilaian Siswa</span>
+    <div class="card shadow-none bg-transparent border-0 mb-3">
+        <div class="card-body p-0">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="ti ti-clipboard-text fs-3"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Penilaian Siswa</h4>
+                        <p class="text-muted mb-0 small">Rekapitulasi dan manajemen nilai akademik siswa</p>
+                    </div>
+                </div>
+                <div class="d-flex flex-column align-items-end">
+                    <nav aria-label="breadcrumb" class="mb-2">
+                        <ol class="breadcrumb breadcrumb-style1 mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="javascript:void(0);" class="text-muted">
+                                    <i class="ti ti-school me-1"></i> Akademik
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active">
+                                <i class="ti ti-clipboard-text me-1"></i> Penilaian
+                            </li>
+                        </ol>
+                    </nav>
+                    <a href="{{ route('jadwal-pelajaran.index') }}" class="btn btn-label-secondary d-flex align-items-center gap-2 shadow-sm">
+                        <i class="ti ti-arrow-left fs-5"></i>
+                        <span>Kembali</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 <div class="row">
-    <div class="col-12 mb-3">
-        <a href="{{ route('jadwal-pelajaran.index') }}" class="btn btn-secondary btn-sm"><i class="ti ti-arrow-left me-1"></i>Kembali</a>
-    </div>
+    {{-- Back button moved to navigasi --}}
 
     <!-- Info Context -->
     <div class="col-12 mb-3">

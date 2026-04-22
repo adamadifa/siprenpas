@@ -1,65 +1,63 @@
-<form action="{{ route('jenispembiayaan.update', ['kode_pembiayaan' => Crypt::encrypt($jenispembiayaan->kode_pembiayaan)]) }}" id="formPembiayaan"
-    method="POST">
+<form action="{{ route('jenispembiayaan.update', ['kode_pembiayaan' => Crypt::encrypt($jenispembiayaan->kode_pembiayaan)]) }}" id="formPembiayaan" method="POST">
     @csrf
     @method('PUT')
-    <x-input-with-icon icon="ti ti-barcode" label="Kode Jenis Pembiayaan" name="kode_pembiayaan" :value="$jenispembiayaan->kode_pembiayaan" />
-    <x-input-with-icon icon="ti ti-file-description" label="Jenis Pembiayaan" name="jenis_pembiayaan" :value="$jenispembiayaan->jenis_pembiayaan" />
-    <x-input-with-icon icon="ti ti-calculator" label="Persentase" name="persentase" :value="$jenispembiayaan->persentase" />
-    <div class="form-group">
-        <button class="btn btn-primary w-100" type="submit" id="btnSimpan">
-            <ion-icon name="send-outline" class="me-1"></ion-icon>
-            Simpan Perubahan
+    <x-input-with-icon-label icon="ti ti-barcode" label="Kode Jenis Pembiayaan" name="kode_pembiayaan" :value="$jenispembiayaan->kode_pembiayaan" required="true" />
+    <x-input-with-icon-label icon="ti ti-file-description" label="Nama Jenis Pembiayaan" name="jenis_pembiayaan" :value="$jenispembiayaan->jenis_pembiayaan" required="true" />
+    <x-input-with-icon-label icon="ti ti-calculator" label="Persentase (%)" name="persentase" :value="$jenispembiayaan->persentase" required="true" />
+    
+    <div class="form-group mt-3">
+        <button class="btn btn-primary w-100 shadow-sm d-flex align-items-center justify-content-center gap-2" type="submit" id="btnSimpan" style="background-color: #064e3b; border-color: #064e3b">
+            <i class="ti ti-device-floppy fs-4"></i>
+            <span class="fw-bold">Update Data Jenis Pembiayaan</span>
         </button>
     </div>
 </form>
+
 <script>
     $(function() {
         $('#kode_pembiayaan').mask('A00');
+        
         $('#formPembiayaan').submit(function(e) {
-            if ($('#kode_pembiayaan').val().length < 3 || $('#kode_pembiayaan').val().length > 3) {
+            let kode = $('#kode_pembiayaan').val();
+            let jenis = $('#jenis_pembiayaan').val();
+            let persentase = $('#persentase').val();
+
+            if (kode == '') {
                 e.preventDefault();
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Kode Jenis Pembiayaan harus terdiri dari 3 karakter!',
-                    didClose: () => {
-                        $('#kode_pembiayaan').focus();
-                    }
-                });
-            } else if ($('#kode_pembiayaan').val() == '') {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'error',
+                    icon: 'warning',
                     title: 'Oops...',
                     text: 'Kode Jenis Pembiayaan harus diisi!',
-                    didClose: () => {
-                        $('#kode_pembiayaan').focus();
-                    }
+                    confirmButtonColor: '#064e3b'
                 });
-            } else if ($('#jenis_pembiayaan').val() == '') {
+            } else if (kode.length != 3) {
                 e.preventDefault();
                 Swal.fire({
-                    icon: 'error',
+                    icon: 'warning',
                     title: 'Oops...',
-                    text: 'Jenis Pembiayaan harus diisi!',
-                    didClose: () => {
-                        $('#jenis_pembiayaan').focus();
-                    }
+                    text: 'Kode Jenis Pembiayaan harus terdiri dari 3 karakter (Contoh: P01)!',
+                    confirmButtonColor: '#064e3b'
                 });
-            } else if ($('#persentase').val() == '') {
+            } else if (jenis == '') {
                 e.preventDefault();
                 Swal.fire({
-                    icon: 'error',
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Nama Jenis Pembiayaan harus diisi!',
+                    confirmButtonColor: '#064e3b'
+                });
+            } else if (persentase == '') {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
                     title: 'Oops...',
                     text: 'Persentase harus diisi!',
-                    didClose: () => {
-                        $('#persentase').focus();
-                    }
+                    confirmButtonColor: '#064e3b'
                 });
             } else {
                 $('#btnSimpan').attr('disabled', 'disabled');
                 $('#btnSimpan').html(
-                    '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Menyimpan...'
+                    '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Update...'
                 );
             }
         });

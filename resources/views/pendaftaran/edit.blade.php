@@ -252,10 +252,10 @@
             <x-select-label label="Penghasilan Orantua" name="kode_penghasilan_ortu" :data="$penghasilan_ortu"
                 key="kode_penghasilan_ortu" textShow="penghasilan" select2="select2Kodepenghasilanortu"
                 upperCase="true" selected="{{ $pendaftaran->kode_penghasilan_ortu }}" />
-            <div class="form-group">
-                <button class="btn btn-primary w-100" type="submit">
-                    <ion-icon name="send-outline" class="me-1"></ion-icon>
-                    Submit
+            <div class="form-group mt-3">
+                <button class="btn btn-primary w-100 shadow-sm d-flex align-items-center justify-content-center gap-2" type="submit" id="btnSimpan" style="background-color: #064e3b; border-color: #064e3b">
+                    <i class="ti ti-device-floppy fs-4"></i>
+                    <span class="fw-bold">Update Pendaftaran</span>
                 </button>
             </div>
         </div>

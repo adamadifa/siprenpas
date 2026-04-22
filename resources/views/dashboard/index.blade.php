@@ -20,45 +20,45 @@
         }
 
         .dashboard-header {
-            background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 50%, #388e3c 100%);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #144725 0%, #1a5e31 100%);
+            border-radius: 1.25rem;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
             color: #fff;
-            box-shadow: 0 8px 24px 0 rgba(27, 94, 32, 0.15);
+            box-shadow: 0 10px 30px 0 rgba(20, 71, 37, 0.2);
             position: relative;
             overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .dashboard-header:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px 0 rgba(27, 94, 32, 0.20);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px 0 rgba(20, 71, 37, 0.3);
         }
 
         .dashboard-header::before {
             content: '';
             position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-            animation: pulse 8s ease-in-out infinite;
+            top: -20%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 1;
         }
 
-        @keyframes pulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 0.5;
-            }
-
-            50% {
-                transform: scale(1.1);
-                opacity: 0.8;
-            }
+        .dashboard-header::after {
+            content: '';
+            position: absolute;
+            bottom: -15%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 152, 0, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 1;
         }
 
         .dashboard-header-content {
@@ -66,7 +66,7 @@
             z-index: 2;
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
         .dashboard-header .avatar-wrapper {
@@ -75,29 +75,32 @@
         }
 
         .dashboard-header .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
+            width: 90px;
+            height: 90px;
+            border-radius: 24px;
             object-fit: cover;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 4px rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
         }
 
         .dashboard-header:hover .avatar {
-            transform: scale(1.05);
+            transform: rotate(3deg) scale(1.05);
+            border-color: rgba(255, 152, 0, 0.5);
         }
 
         .dashboard-header .avatar-status {
             position: absolute;
-            bottom: 4px;
-            right: 4px;
-            width: 20px;
-            height: 20px;
+            bottom: -5px;
+            right: -5px;
+            width: 24px;
+            height: 24px;
             background: #4caf50;
-            border: 3px solid #fff;
+            border: 4px solid #144725;
             border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .dashboard-header .welcome-content {
@@ -105,78 +108,90 @@
         }
 
         .dashboard-header .welcome-greeting {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 0.3rem;
-            font-weight: 500;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .dashboard-header .welcome {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+            font-size: 2.25rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
             color: #fff;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            line-height: 1.2;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
         }
 
         .dashboard-header .desc {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 0.8rem;
-            line-height: 1.5;
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1.5rem;
+            font-weight: 400;
+            max-width: 500px;
         }
 
         .dashboard-header .info-badges {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.75rem;
-            margin-top: 0.5rem;
+            gap: 1rem;
         }
 
         .dashboard-header .info-badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
+            gap: 0.6rem;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            padding: 0.6rem 1.25rem;
+            border-radius: 12px;
             font-size: 0.875rem;
-            font-weight: 500;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .dashboard-header .info-badge:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.15);
             transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .dashboard-header .info-badge i {
-            font-size: 1rem;
+            font-size: 1.1rem;
+            color: #ff9800;
         }
 
         .dashboard-header .datetime-info {
             text-align: right;
             flex-shrink: 0;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 1.25rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .dashboard-header .current-date {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 0.4rem;
             font-weight: 500;
+            font-variant-numeric: tabular-nums;
         }
 
         .dashboard-header .current-time {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
             color: #fff;
-            font-family: 'Courier New', monospace;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            letter-spacing: 1px;
+            font-family: 'Inter', system-ui, sans-serif;
         }
 
         .card.h-100 {
@@ -444,10 +459,27 @@
             </div>
             <div class="welcome-content">
                 <div class="welcome-greeting">
-                    <i class="ti ti-sun me-1"></i>Selamat Datang
+                    @php
+                        $hour = date('H');
+                        $greeting = 'Selamat ';
+                        if ($hour >= 5 && $hour < 11) {
+                            $greeting .= 'Pagi';
+                            $icon = 'ti-sun';
+                        } elseif ($hour >= 11 && $hour < 15) {
+                            $greeting .= 'Siang';
+                            $icon = 'ti-sun';
+                        } elseif ($hour >= 15 && $hour < 18) {
+                            $greeting .= 'Sore';
+                            $icon = 'ti-cloud-sun';
+                        } else {
+                            $greeting .= 'Malam';
+                            $icon = 'ti-moon';
+                        }
+                    @endphp
+                    <i class="ti {{ $icon }} me-1"></i> {{ $greeting }}
                 </div>
                 <div class="welcome">{{ auth()->user()->name }}</div>
-                <div class="desc">Semoga harimu menyenangkan dan produktif!</div>
+                <div class="desc">Selamat datang kembali! Mari kendalikan operasional pesantren dengan lebih efisien hari ini.</div>
                 <div class="info-badges">
                     <div class="info-badge">
                         <i class="ti ti-shield-check"></i>
@@ -455,13 +487,17 @@
                     </div>
                     @if ($pengaturan)
                         <div class="info-badge">
-                            <i class="ti ti-building"></i>
+                            <i class="ti ti-building-community"></i>
                             <span>{{ $pengaturan->nama_sekolah }}</span>
                         </div>
                     @endif
+                    <div class="info-badge">
+                        <i class="ti ti-calendar-event"></i>
+                        <span>{{ date('Y') }} / {{ date('Y') + 1 }}</span>
+                    </div>
                 </div>
             </div>
-            <div class="datetime-info">
+            <div class="datetime-info d-none d-md-block">
                 <div class="current-date" id="currentDate"></div>
                 <div class="current-time" id="currentTime"></div>
             </div>

@@ -19,7 +19,11 @@ class UserController extends Controller
         $query = User::query();
         $query->with('roles');
         $query->leftjoin('unit', 'users.kode_unit', '=', 'unit.kode_unit');
+        if (!empty($request->name)) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
         $users = $query->paginate(20);
+        $users->appends($request->all());
         return view('settings.users.index', compact('users'));
     }
 

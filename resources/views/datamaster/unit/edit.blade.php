@@ -1,34 +1,153 @@
-<form action="{{ route('unit.update', Crypt::encrypt($unit->kode_unit)) }}" id="formeditUnit" method="POST" enctype="multipart/form-data">
+<style>
+    .upload-zone {
+        border: 2px dashed #064e3b;
+        border-radius: 12px;
+        padding: 40px;
+        text-align: center;
+        background-color: #f8faf9;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .upload-zone:hover {
+        background-color: #f0f4f2;
+        border-color: #059669;
+    }
+
+    .upload-zone i {
+        font-size: 3rem;
+        color: #064e3b;
+    }
+
+    .upload-zone p {
+        margin: 0;
+        color: #064e3b;
+        font-weight: 500;
+    }
+
+    .upload-zone .preview-container {
+        display: {{ $unit->logo ? 'block' : 'none' }};
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        z-index: 10;
+        padding: 20px;
+    }
+
+    .upload-zone .preview-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .upload-zone .remove-preview {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 20;
+        background: rgba(239, 68, 68, 0.9);
+        color: white;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+    }
+
+    .upload-zone .remove-preview:hover {
+        transform: scale(1.1);
+        background: #ef4444;
+    }
+</style>
+
+<form action="{{ route('unit.update', Crypt::encrypt($unit->kode_unit)) }}" id="formeditUnit" method="POST"
+    enctype="multipart/form-data">
     @csrf
     @method('PUT')
     <x-input-with-icon-label icon="ti ti-barcode" label="Kode Unit" name="kode_unit" value="{{ $unit->kode_unit }}"
         readonly="true" />
     <x-input-with-icon-label icon="ti ti-file-description" label="Nama Unit" name="nama_unit"
-        value="{{ $unit->nama_unit }}" />
+        value="{{ $unit->nama_unit }}" required="true" />
+
     <div class="form-group mb-3">
-        <label for="logo" class="form-label" style="font-weight: 600">Logo Unit</label>
-        @if ($unit->logo)
-            <div class="mb-2">
-                <img src="{{ asset('storage/' . $unit->logo) }}" alt="Logo Unit" class="img-fluid rounded" style="max-height: 100px;">
-                <p class="text-muted small mt-1">Logo saat ini</p>
+        <label class="form-label" style="font-weight: 600">Logo Unit</label>
+        <label for="logo" class="upload-zone" id="upload-zone">
+            <div class="preview-container" id="preview-container">
+                <div class="remove-preview" id="remove-preview">
+                    <i class="ti ti-x fs-5"></i>
+                </div>
+                <img src="{{ $unit->logo ? asset('storage/' . $unit->logo) : '' }}" alt="Preview" id="preview-img">
             </div>
-        @endif
-        <input class="form-control" type="file" id="logo" name="logo" accept="image/*">
-        <div class="form-text">Format: JPEG, PNG, JPG, GIF, SVG. Maksimal 2MB. Kosongkan jika tidak ingin mengubah.</div>
+            <i class="ti ti-cloud-upload"></i>
+            <div>
+                <p>Klik untuk ganti logo</p>
+                <span class="text-muted small">Format: PNG, JPG, JPEG (Max. 2MB)</span>
+            </div>
+            <input type="file" name="logo" id="logo" class="d-none" accept="image/*"
+                onchange="previewImage(this)">
+        </label>
+        <div class="form-text mt-2">Biarkan kosong jika tidak ingin mengubah logo.</div>
     </div>
+
     <x-textarea-label label="Keterangan" name="keterangan" value="{{ $unit->keterangan }}" />
+
     <div class="form-group mb-3">
-        <label for="status" class="form-label" style="font-weight: 600">Status</label>
+        <label for="status" class="form-label" style="font-weight: 600">Status <span
+                class="text-danger">*</span></label>
         <select name="status" id="status" class="form-select">
             <option value="1" {{ $unit->status == 1 ? 'selected' : '' }}>Show</option>
             <option value="0" {{ $unit->status == 0 ? 'selected' : '' }}>Hide</option>
         </select>
     </div>
+
     <div class="form-group">
-        <button class="btn btn-primary w-100" type="submit">
-            <ion-icon name="send-outline" class="me-1"></ion-icon>
-            Submit
+        <button class="btn text-white w-100 py-2" type="submit" style="background-color: #064e3b">
+            <i class="ti ti-device-floppy me-1"></i>
+            Update Data
         </button>
     </div>
 </form>
+
+<script>
+    function previewImage(input) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            const previewContainer = document.getElementById('preview-container');
+            const previewImg = document.getElementById('preview-img');
+
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewContainer.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    document.getElementById('remove-preview')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const input = document.getElementById('logo');
+        const previewContainer = document.getElementById('preview-container');
+
+        input.value = '';
+        previewContainer.style.display = 'none';
+        // Note: For edit, removing the preview just hides it. 
+        // Logic in controller should handle whether logo is updated or not.
+    });
+</script>
 <script src="{{ asset('assets/js/pages/unit/edit.js') }}"></script>

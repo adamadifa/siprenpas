@@ -31,6 +31,9 @@ class KelasController extends Controller
             ->when($request->kode_unit_search, function ($query) use ($request) {
                 $query->where('kelas.kode_unit', $request->kode_unit_search);
             })
+            ->when($request->nama_kelas_search, function ($query) use ($request) {
+                $query->where('kelas.nama_kelas', 'like', '%' . $request->nama_kelas_search . '%');
+            })
 
             ->get();
 

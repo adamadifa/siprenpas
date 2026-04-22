@@ -3,176 +3,218 @@
 
 @section('content')
 @section('navigasi')
-    <span>Izin Absen</span>
+    <div class="card shadow-none bg-transparent border-0 mb-3">
+        <div class="card-body p-0">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
+                        <i class="ti ti-file-description fs-3"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Data Izin Absen</h4>
+                        <p class="text-muted mb-0 small">Manajemen pengajuan izin absen karyawan</p>
+                    </div>
+                </div>
+                <div class="d-flex flex-column align-items-end">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb breadcrumb-style1 mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="javascript:void(0);" class="text-muted">
+                                    <i class="ti ti-database me-1"></i> MSDM
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active text-dark fw-bold">
+                                <i class="ti ti-file-description me-1"></i> Izin Absen
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('action_button')
+    @can('izinabsen.create')
+        <button class="btn btn-primary d-flex align-items-center gap-2 shadow-sm" id="btnCreate"
+            style="background-color: #064e3b; border-color: #064e3b; border-radius: 10px;">
+            <i class="ti ti-plus fs-4"></i>
+            <span>Tambah Pengajuan</span>
+        </button>
+    @endcan
 @endsection
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12">
-        <div class="nav-align-top nav-tabs-shadow mb-4">
+        <div class="nav-align-top mb-4">
             @include('layouts.navigation.nav_pengajuan_absen')
-            <div class="tab-content">
+             <div class="tab-content p-0 bg-transparent shadow-none border-0">
                 <div class="tab-pane fade active show" id="navs-justified-home" role="tabpanel">
-                    @can('izinabsen.create')
-                        <a href="#" class="btn btn-primary" id="btnCreate"><i class="fa fa-plus me-2"></i>
-                            Tambah Data</a>
-                    @endcan
-                    <div class="row mt-2">
-                        <div class="col-12">
-                            <form action="{{ route('izinabsen.index') }}">
-                                <div class="row">
-                                    <div class="col-lg-6 col-sm-12 col-md-12">
-                                        <x-input-with-icon label="Dari" value="{{ Request('dari') }}" name="dari"
-                                            icon="ti ti-calendar" datepicker="flatpickr-date" />
-                                    </div>
-                                    <div class="col-lg-6 col-sm-12 col-md-12">
-                                        <x-input-with-icon label="Sampai" value="{{ Request('sampai') }}" name="sampai"
-                                            icon="ti ti-calendar" datepicker="flatpickr-date" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="form-group">
-                                            <select name="kode_unit" id="kode_unit" class="form-select">
-                                                <option value=""> Unit</option>
-                                                @foreach ($unit as $d)
-                                                    <option value="{{ $d->kode_unit }}"
-                                                        {{ Request('kode_cabang') == $d->kode_unit ? 'selected' : '' }}>
-                                                        {{ textUpperCase($d->nama_unit) }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+                    <div class="card mb-1 shadow-none border-0 bg-transparent px-0">
+                                <div class="card-body p-0">
+                                    <form action="{{ route('izinabsen.index') }}" class="form-filter">
+                                        <!-- Row 1: Date Period -->
+                                        <div class="row g-2 mb-0">
+                                            <div class="col-lg-6 col-md-6 mb-1">
+                                                <x-input-with-icon label="" value="{{ Request('dari') }}" name="dari"
+                                                    icon="ti ti-calendar" datepicker="flatpickr-date" placeholder="Dari Tanggal" />
+                                            </div>
+                                            <div class="col-lg-6 col-md-6 mb-1">
+                                                <x-input-with-icon label="" value="{{ Request('sampai') }}" name="sampai"
+                                                    icon="ti ti-calendar" datepicker="flatpickr-date" placeholder="Sampai Tanggal" />
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col">
-                                        <div class="form-group">
-                                            <select name="status" id="status" class="form-select">
-                                                <option value="">Semua Status</option>
-                                                <option value="0" {{ Request('status') == '0' ? 'selected' : '' }}>
-                                                    Pending</option>
-                                                <option value="1" {{ Request('status') == '1' ? 'selected' : '' }}>
-                                                    Disetujui</option>
-                                                <option value="2" {{ Request('status') == '2' ? 'selected' : '' }}>
-                                                    Ditolak</option>
-                                            </select>
+                                        <!-- Row 2: Categories, Name & Search -->
+                                        <div class="row g-2 align-items-center mb-0">
+                                            <div class="col-lg-3 col-md-4 mb-1">
+                                                <div class="form-group mb-0">
+                                                    <select name="kode_unit" id="kode_unit" class="form-select">
+                                                        <option value=""> Unit</option>
+                                                        @foreach ($unit as $d)
+                                                            <option value="{{ $d->kode_unit }}"
+                                                                {{ Request('kode_unit') == $d->kode_unit ? 'selected' : '' }}>
+                                                                {{ textUpperCase($d->nama_unit) }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-md-4 mb-1">
+                                                <div class="form-group mb-0">
+                                                    <select name="status" id="status" class="form-select">
+                                                        <option value="">Status</option>
+                                                        <option value="0" {{ Request('status') === '0' ? 'selected' : '' }}>Pending</option>
+                                                        <option value="1" {{ Request('status') == '1' ? 'selected' : '' }}>Disetujui</option>
+                                                        <option value="2" {{ Request('status') == '2' ? 'selected' : '' }}>Ditolak</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 col-md-10 mb-1">
+                                                <x-input-with-icon label="" name="nama_lengkap"
+                                                    value="{{ Request('nama_lengkap') }}" icon="ti ti-user" placeholder="Nama Karyawan..." />
+                                            </div>
+                                            <div class="col-lg-1 col-md-2 mb-1">
+                                                <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center" style="background-color: #064e3b; border-color: #064e3b; height: 38px;">
+                                                    <i class="ti ti-search fs-5"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </form>
                                 </div>
-                                <div class="row">
-                                    <div class="col">
-                                        <x-input-with-icon label="Nama Karyawan" name="nama_lengkap"
-                                            value="{{ Request('nama_lengkap') }}" icon="ti ti-user" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-lg-12 col-md-12 col-sm-12">
-                                        <div class="form-group mb-3">
-                                            <button class="btn btn-primary w-100"><i class="ti ti-search me-1"></i>Cari
-                                                Data</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="table-responsive mb-2">
-                                <table class="table table-striped table-hover table-bordered">
-                                    <thead class="table-dark">
-                                        <tr>
-                                            <th>Kode</th>
-                                            <th>Tanggal</th>
-                                            <th>NPP</th>
-                                            <th>Nama Karyawan</th>
-                                            <th>Jabatan</th>
-                                            <th>Unit</th>
-                                            <th>Lama</th>
-                                            <th class="text-center">Status</th>
-                                            <th>#</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach ($izinabsen as $d)
-                                            <tr>
-                                                <td>{{ $d->kode_izin }}</td>
-                                                <td>{{ $d->tanggal }}</td>
-                                                <td>{{ $d->npp }}</td>
-                                                <td>{{ $d->nama_lengkap }}</td>
-                                                <td>{{ $d->nama_jabatan }}</td>
-                                                <td>{{ $d->nama_unit }}</td>
-                                                <td>
-                                                    @php
-                                                        $lama = hitungHari($d->dari, $d->sampai);
-                                                    @endphp
-                                                    {{ $lama }} Hari
-                                                </td>
-                                                <td class="text-center">
-                                                    @if ($d->status == 0)
-                                                        <i class="ti ti-hourglass-high text-warning"></i>
-                                                    @elseif ($d->status == 1)
-                                                        <i class="ti ti-checks text-success"></i>
-                                                    @elseif ($d->status == 2)
-                                                        <i class="ti ti-square-x text-danger"></i>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex">
-                                                        @can('izinabsen.approve')
-                                                            @if ($d->status == 0)
-                                                                <a href="#" class="btnApprove me-1"
-                                                                    kode_izin="{{ Crypt::encrypt($d->kode_izin) }}">
-                                                                    <i class="ti ti-external-link text-primary"></i>
-                                                                </a>
-                                                            @elseif($d->status == 1)
-                                                                <form method="POST" name="deleteform"
-                                                                    class="deleteform me-1"
-                                                                    action="{{ route('izinabsen.cancelapprove', Crypt::encrypt($d->kode_izin)) }}">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <a href="#" class="cancel-confirm me-1">
-                                                                        <i class="ti ti-circle-minus text-danger"></i>
-                                                                    </a>
-                                                                </form>
-                                                            @endif
-                                                        @endcan
-                                                        @can('izinabsen.edit')
-                                                            @if ($d->status == 0)
-                                                                <a href="#" class="btnEdit me-1"
-                                                                    kode_izin="{{ Crypt::encrypt($d->kode_izin) }}"><i
-                                                                        class="ti ti-edit text-success"></i></a>
-                                                            @endif
-                                                        @endcan
-                                                        @can('izinabsen.index')
-                                                            <a href="#" class="btnShow me-1"
-                                                                kode_izin="{{ Crypt::encrypt($d->kode_izin) }}"><i
-                                                                    class="ti ti-file-description text-info"></i></a>
-                                                        @endcan
-                                                        @can('izinabsen.delete')
-                                                            @if ($d->status == 0)
-                                                                <form method="POST" name="deleteform" class="deleteform"
-                                                                    action="{{ route('izinabsen.delete', Crypt::encrypt($d->kode_izin)) }}">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <a href="#" class="delete-confirm me-1">
-                                                                        <i class="ti ti-trash text-danger"></i>
-                                                                    </a>
-                                                                </form>
-                                                            @endif
-                                                        @endcan
+                            </div>
 
+                            <div class="izinabsen-list">
+                                @forelse ($izinabsen as $d)
+                                    @php
+                                        $lama = hitungHari($d->dari, $d->sampai);
+                                        $statusConfig = [
+                                            '0' => ['bg' => 'rgba(255, 159, 67, 0.12)', 'color' => '#ff9f43', 'label' => 'PENDING', 'icon' => 'hourglass-high'],
+                                            '1' => ['bg' => 'rgba(40, 199, 111, 0.12)', 'color' => '#28c76f', 'label' => 'DISETUJUI', 'icon' => 'checks'],
+                                            '2' => ['bg' => 'rgba(234, 84, 85, 0.12)', 'color' => '#ea5455', 'label' => 'DITOLAK', 'icon' => 'square-x'],
+                                        ];
+                                        $status = $statusConfig[$d->status] ?? $statusConfig['0'];
+                                    @endphp
+                                    <div class="card modern-card shadow-none mb-2">
+                                        <div class="card-body p-3">
+                                            <!-- Row 1: Identity & Actions -->
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <div class="d-flex align-items-center gap-2 overflow-hidden">
+                                                    <div class="avatar-initial-modern">
+                                                        {{ substr($d->nama_lengkap, 0, 1) }}
                                                     </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                                    <div class="overflow-hidden">
+                                                        <h6 class="mb-0 fw-bold text-dark text-truncate" style="font-size: 0.85rem">{{ $d->nama_lengkap }}</h6>
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <span class="text-muted extra-small fw-bold">{{ $d->npp }}</span>
+                                                            <span class="status-badge" style="background: {{ $status['bg'] }}; color: {{ $status['color'] }}">
+                                                                <i class="ti ti-{{ $status['icon'] }} me-1" style="font-size: 0.7rem"></i>{{ $status['label'] }}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-1 ms-2">
+                                                    @can('izinabsen.approve')
+                                                        @if ($d->status == 0)
+                                                            <button class="btn btn-icon btn-sm btn-label-primary btnApprove border-0" 
+                                                                kode_izin="{{ Crypt::encrypt($d->kode_izin) }}" style="width: 28px; height: 28px;">
+                                                                <i class="ti ti-check fs-5"></i>
+                                                            </button>
+                                                        @elseif($d->status == 1)
+                                                            <form method="POST" name="deleteform" class="deleteform m-0"
+                                                                action="{{ route('izinabsen.cancelapprove', Crypt::encrypt($d->kode_izin)) }}">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-icon btn-sm btn-label-danger cancel-confirm border-0" style="width: 28px; height: 28px;">
+                                                                    <i class="ti ti-rotate-clockwise fs-5"></i>
+                                                                </button>
+                                                            </form>
+                                                        @endif
+                                                    @endcan
+                                                    
+                                                    <button class="btn btn-icon btn-sm btn-label-info btnShow border-0" 
+                                                        kode_izin="{{ Crypt::encrypt($d->kode_izin) }}" style="width: 28px; height: 28px;">
+                                                        <i class="ti ti-file-text fs-5"></i>
+                                                    </button>
+
+                                                    @can('izinabsen.edit')
+                                                        @if ($d->status == 0)
+                                                            <button class="btn btn-icon btn-sm btn-label-success btnEdit border-0" 
+                                                                kode_izin="{{ Crypt::encrypt($d->kode_izin) }}" style="width: 28px; height: 28px;">
+                                                                <i class="ti ti-edit fs-5"></i>
+                                                            </button>
+                                                        @endif
+                                                    @endcan
+
+                                                    @can('izinabsen.delete')
+                                                        @if ($d->status == 0)
+                                                            <form method="POST" name="deleteform" class="deleteform m-0"
+                                                                action="{{ route('izinabsen.delete', Crypt::encrypt($d->kode_izin)) }}">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-icon btn-sm btn-label-danger delete-confirm border-0" style="width: 28px; height: 28px;">
+                                                                    <i class="ti ti-trash fs-5"></i>
+                                                                </button>
+                                                            </form>
+                                                        @endif
+                                                    @endcan
+                                                </div>
+                                            </div>
+
+                                            <div class="border-top pt-2 mt-2">
+                                                <div class="row g-2">
+                                                    <div class="col-7">
+                                                        <div class="compact-label">Tanggal Pengajuan</div>
+                                                        <div class="compact-value text-primary">
+                                                            <i class="ti ti-calendar-event me-1"></i>
+                                                            {{ date('d/m/y', strtotime($d->dari)) }} - {{ date('d/m/y', strtotime($d->sampai)) }} 
+                                                            <span class="badge bg-label-info ms-1" style="font-size: 0.6rem">{{ $lama }} Hari</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-5 text-end">
+                                                        <div class="compact-label">Unit & Jabatan</div>
+                                                        <div class="compact-value text-muted text-truncate" title="{{ $d->nama_unit }} / {{ $d->nama_jabatan }}">
+                                                            {{ $d->nama_unit }} / {{ $d->nama_jabatan }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="card shadow-none border-0 text-center p-5 mt-4" style="background: #f8fafc; border-radius: 20px;">
+                                        <img src="{{ asset('assets/img/illustrations/empty.png') }}" width="120" alt="Empty" class="mb-3 mx-auto opacity-50">
+                                        <h5 class="text-muted fw-bold">Belum Ada Pengajuan Izin</h5>
+                                    </div>
+                                @endforelse
                             </div>
-                            <div style="float: right;">
-                                {{ $izinabsen->links() }}
+
+                            <div class="mt-4 d-flex justify-content-between align-items-center bg-white p-3 shadow-none border" style="border-radius: 12px;">
+                                <div class="text-muted extra-small fw-bold">
+                                    Total: <span class="text-dark">{{ $izinabsen->total() }}</span> Data
+                                </div>
+                                <div class="pagination-modern">
+                                    {{ $izinabsen->links() }}
+                                </div>
                             </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

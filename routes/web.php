@@ -712,6 +712,9 @@ Route::middleware('auth')->group(function () {
         // Multi Column Management
         Route::get('/penilaian/manage/{bobot_id}/{kategori}', 'manageNilai')->name('penilaian.manage');
         Route::post('/penilaian/store-multi', 'storeMultiNilai')->name('penilaian.store-multi-nilai');
+
+        // New Rapor Grouped Route
+        Route::get('/rapor', 'rapor')->name('rapor.index');
     });
 
     Route::controller(App\Http\Controllers\JabatanAkademikController::class)->group(function () {

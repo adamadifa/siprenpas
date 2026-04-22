@@ -48,7 +48,11 @@
     }
 </style>
 <div class="row">
-    <h5 class="m-0">A. DATA PESERTA DIDK</h5>
+    <div class="col-12 mt-3 mb-2">
+        <h6 class="fw-bold mb-0 p-2 text-white rounded-1" style="background-color: #064e3b">
+            <i class="ti ti-user me-2"></i>A. DATA PESERTA DIDIK
+        </h6>
+    </div>
 
     <!-- Foto Peserta Didik -->
     @if ($pendaftaran->foto_pendaftaran)
@@ -104,8 +108,12 @@
         </table>
     </div>
 </div>
-<div class="row mt-2">
-    <h5 class="m-0">B. ALAMAT</h5>
+<div class="row mt-3">
+    <div class="col-12 mb-2">
+        <h6 class="fw-bold mb-0 p-2 text-white rounded-1" style="background-color: #064e3b">
+            <i class="ti ti-map-pin me-2"></i>B. ALAMAT
+        </h6>
+    </div>
     <div class="col">
         <table class="table table-report" style="width: auto !important; ">
             <tr>
@@ -142,8 +150,12 @@
         </table>
     </div>
 </div>
-<div class="row mt-2">
-    <h5 class="m-0">C. INFORMASI ORANG TUA</h5>
+<div class="row mt-3">
+    <div class="col-12 mb-2">
+        <h6 class="fw-bold mb-0 p-2 text-white rounded-1" style="background-color: #064e3b">
+            <i class="ti ti-users me-2"></i>C. INFORMASI ORANG TUA
+        </h6>
+    </div>
     <div class="col">
         <table class="table table-report" style="width: auto !important; ">
             <tr>
@@ -206,7 +218,11 @@
 <form action="#" id="uploadDokumen" enctype="multipart/form-data" method="POST">
 
     <div class="row mt-3">
-        <h5 class="m-0 mb-3">D. DOKUMEN PERSYARATAN</h5>
+        <div class="col-12 mb-2">
+            <h6 class="fw-bold mb-0 p-2 text-white rounded-1" style="background-color: #064e3b">
+                <i class="ti ti-file-text me-2"></i>D. DOKUMEN PERSYARATAN
+            </h6>
+        </div>
 
         @csrf
         <input type="hidden" name="no_pendaftaran" value="{{ $pendaftaran->no_pendaftaran }}">

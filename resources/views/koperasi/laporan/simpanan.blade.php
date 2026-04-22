@@ -1,39 +1,48 @@
 <form action="{{ route('laporankoperasi.cetaksimpanan') }}" method="POST" target="_blank" id="formLaporanSimpanan">
     @csrf
-    <div class="form-group mb-3">
-        <select name="kode_simpanan" id="kode_simpanan" class="form-select select2Kodejenissimpanan">
-            <option value="">Semua Jenis Simpanan</option>
-            @foreach ($jenis_simpanan as $d)
-                <option value="{{ $d->kode_simpanan }}">{{ textUpperCase($d->jenis_simpanan) }}</option>
-            @endforeach
-        </select>
-    </div>
-    <div class="form-group mb-3">
-        <select name="no_anggota" id="no_anggota" class="form-select select2Noanggotasimpanan">
-            <option value="">Semua Anggota</option>
-            @foreach ($anggota as $d)
-                <option value="{{ $d->no_anggota }}">{{ textUpperCase($d->nama_lengkap) }}</option>
-            @endforeach
-        </select>
-    </div>
-    <div class="row">
-        <div class="col-lg-6 col-md-12 col-sm-12">
-            <x-input-with-icon icon="ti ti-calendar" label="Dari" name="dari" datepicker="flatpickr-date" />
+    <div class="row g-2">
+        <div class="col-12 mb-1">
+            <div class="form-group">
+                <select name="kode_simpanan" id="kode_simpanan" class="form-select select2Kodejenissimpanan">
+                    <option value="">Semua Jenis Simpanan</option>
+                    @foreach ($jenis_simpanan as $d)
+                        <option value="{{ $d->kode_simpanan }}">{{ textUpperCase($d->jenis_simpanan) }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
-        <div class="col-lg-6 col-md-12 col-sm-12">
-            <x-input-with-icon icon="ti ti-calendar" label="Sampai" name="sampai" datepicker="flatpickr-date" />
+        <div class="col-12 mb-1">
+            <div class="form-group">
+                <select name="no_anggota" id="no_anggota" class="form-select select2Noanggotasimpanan">
+                    <option value="">Semua Anggota</option>
+                    @foreach ($anggota as $d)
+                        <option value="{{ $d->no_anggota }}">{{ textUpperCase($d->nama_lengkap) }}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-lg-10 col-md-12 col-sm-12">
-            <button type="submit" name="submitButton" class="btn btn-primary w-100" id="submitButton">
-                <i class="ti ti-printer me-1"></i> Cetak
-            </button>
+        <div class="col-md-6 col-12 mb-1">
+            <x-input-with-icon icon="ti ti-calendar" label="" name="dari" datepicker="flatpickr-date" placeholder="Dari Tanggal" />
         </div>
-        <div class="col-lg-2 col-md-12 col-sm-12">
-            <button type="submit" name="exportButton" class="btn btn-success w-100" id="exportButton">
-                <i class="ti ti-download"></i>
-            </button>
+        <div class="col-md-6 col-12 mb-1">
+            <x-input-with-icon icon="ti ti-calendar" label="" name="sampai" datepicker="flatpickr-date" placeholder="Sampai Tanggal" />
+        </div>
+        <div class="col-12 mt-2">
+            <div class="row g-2">
+                <div class="col-10">
+                    <button type="submit" name="submitButton" class="btn btn-primary w-100 py-2 shadow-sm d-flex align-items-center justify-content-center gap-2" 
+                        style="background-color: #064e3b !important; border-color: #064e3b !important; color: #fff !important;">
+                        <i class="ti ti-printer fs-5"></i>
+                        <span class="fw-bold">Cetak</span>
+                    </button>
+                </div>
+                <div class="col-2">
+                    <button type="submit" name="exportButton" class="btn btn-label-success w-100 py-2 d-flex align-items-center justify-content-center shadow-sm" style="background-color: #2ecc71 !important; color: #fff !important; border-color: #2ecc71 !important;"
+                        title="Export Excel">
+                        <i class="ti ti-download fs-5"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </form>

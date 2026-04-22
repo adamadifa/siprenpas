@@ -3,43 +3,29 @@
 
 @section('content')
 @section('navigasi')
-    <div class="card shadow-none bg-transparent border-0 mb-4">
+    <div class="card shadow-none bg-transparent border-0 mb-3">
         <div class="card-body p-0">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="avatar avatar-md bg-label-primary rounded-circle">
+                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
                         <i class="ti ti-calendar-event fs-3"></i>
                     </div>
                     <div>
-                        <h4 class="mb-0 fw-bold text-primary">Jadwal Pelajaran</h4>
-                        <p class="text-muted mb-0 small">
-                            @if ($semuaTa->count() > 0)
-                                @php
-                                    $currentTa = $semuaTa->firstWhere('kode_ta', $selectedKodeTa);
-                                @endphp
-                                @if($currentTa)
-                                    <span class="badge bg-label-primary">{{ $currentTa->tahun_ajaran }}</span>
-                                    @if($selectedSemester)
-                                        <span class="badge bg-label-info">Semester {{ $selectedSemester == 1 ? 'Ganjil' : 'Genap' }}</span>
-                                    @endif
-                                @endif
-                            @endif
-                        </p>
+                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Jadwal Pelajaran</h4>
+                        <p class="text-muted mb-0 small">Manajemen waktu dan agenda mata pelajaran</p>
                     </div>
                 </div>
-                <div class="d-flex flex-column align-items-end gap-2">
-                    @can('jadwalpelajaran.create')
-                        <a href="#" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm" id="btnCreate">
-                            <i class="ti ti-plus fs-4"></i>
-                            <span>Tambah Jadwal</span>
-                        </a>
-                    @endcan
+                <div class="d-flex flex-column align-items-end">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb breadcrumb-style1 mb-0">
                             <li class="breadcrumb-item">
-                                <a href="javascript:void(0);" class="text-muted">Akademik</a>
+                                <a href="javascript:void(0);" class="text-muted">
+                                    <i class="ti ti-database me-1"></i> Akademik
+                                </a>
                             </li>
-                            <li class="breadcrumb-item active">Jadwal Pelajaran</li>
+                            <li class="breadcrumb-item active">
+                                <i class="ti ti-calendar-event me-1"></i> Jadwal Pelajaran
+                            </li>
                         </ol>
                     </nav>
                 </div>
@@ -49,7 +35,18 @@
 @endsection
 
 <div class="row">
-    <div class="col-lg-12 col-sm-12 col-xs-12">
+    <div class="col-lg-12">
+        <!-- Actions Section -->
+        <div class="d-flex justify-content-start mb-3">
+            @can('jadwalpelajaran.create')
+                <button class="btn d-flex align-items-center gap-2 shadow-sm text-white" id="btnCreate"
+                    style="background-color: #064e3b">
+                    <i class="ti ti-plus fs-4"></i>
+                    <span>Tambah Jadwal</span>
+                </button>
+            @endcan
+        </div>
+
         <div class="card shadow-sm">
             <div class="card-body">
                 <div class="row">
@@ -106,7 +103,7 @@
                                   </select>
                                </div>
                                  <div class="col-lg-12 col-sm-12 col-md-12 mb-3">
-                                     <button type="submit" class="btn btn-primary w-100"><i class="ti ti-search me-1"></i> Cari</button>
+                                     <button type="submit" class="btn btn-primary w-100" style="background-color: #064e3b; border-color: #064e3b"><i class="ti ti-search me-1"></i> Cari</button>
                                  </div>
                              </div>
                         </form>
@@ -115,7 +112,7 @@
 
                 <div class="row">
                     <div class="col-12">
-                        <div class="row">
+                        <div class="row text-nowrap">
                             @forelse ($jadwal as $item)
                             <div class="col-12">
                                 <div class="card mb-2 border">
@@ -254,29 +251,23 @@
                     }
                 });
             } else {
-                 // If "Semua Unit" selected, maybe reset or keep all? 
-                 // Current logic backend sends all if no unit selected during page load. 
-                 // But here we are client side. Hard to revert to "All" without reloading page or fetching all.
-                 // Simplest UX: Reload page or fetch All.
-                 // Let's reload page to reset filters cleanly or just clear them.
-                 // For now, let's clear them to encourage selection, OR fetch all.
-                 // To avoid complexity, let's just reload the page if they switch back to 'Semua Unit' to get fresh 'All' data
                  window.location.href = "{{ route('jadwal-pelajaran.index') }}";
             }
         });
 
          // Delete Confirmation
-         $('.delete-confirm').click(function(e) {
+         $(document).on('click', '.delete-confirm', function(e) {
             var form = $(this).closest("form");
             e.preventDefault();
             Swal.fire({
-                title: 'Apakah Anda Yakin?',
-                text: "Data yang dihapus tidak dapat dikembalikan!",
+                title: 'Apakah anda yakin?',
+                text: "Data jadwal pelajaran akan dihapus permanen!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
+                confirmButtonColor: '#064e3b',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Hapus!'
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
                     form.submit();
@@ -292,7 +283,7 @@
         });
 
         // Edit
-        $('.btnEdit').on('click', function(e) {
+        $(document).on('click', '.btnEdit', function(e) {
             e.preventDefault();
             let id = $(this).data('id');
             $('#mdlEditJadwal').modal('show');
