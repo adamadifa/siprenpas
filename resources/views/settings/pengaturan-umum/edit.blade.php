@@ -49,6 +49,21 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="session_lifetime" class="form-label">Durasi Login Session (Menit) <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control @error('session_lifetime') is-invalid @enderror" id="session_lifetime"
+                                                name="session_lifetime" value="{{ old('session_lifetime', $pengaturan->session_lifetime ?? 120) }}"
+                                                required min="1">
+                                            <span class="input-group-text">Menit</span>
+                                        </div>
+                                        <div class="form-text">Waktu habis sesi login otomatis (default: 120 menit).</div>
+                                        @error('session_lifetime')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="mb-3">

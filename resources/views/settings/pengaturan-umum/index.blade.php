@@ -110,6 +110,10 @@
                                                 </td>
                                             </tr>
                                         @endif
+                                        <tr>
+                                            <td><strong>Durasi Login Session:</strong></td>
+                                            <td><span class="badge bg-label-primary">{{ $pengaturan->session_lifetime }} Menit</span></td>
+                                        </tr>
                                     </table>
 
                                     <div class="mt-3">

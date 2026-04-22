@@ -26,5 +26,17 @@ class AppServiceProvider extends ServiceProvider
 
         // Share pengaturan umum to all views
         View::composer('*', PengaturanUmumComposer::class);
+
+        // Set session lifetime from database
+        try {
+            if (\Schema::hasTable('pengaturan_umum')) {
+                $pengaturan = \App\Models\PengaturanUmum::first();
+                if ($pengaturan && $pengaturan->session_lifetime) {
+                    config(['session.lifetime' => $pengaturan->session_lifetime]);
+                }
+            }
+        } catch (\Exception $e) {
+            // Silence error if table doesn't exist yet or during migration
+        }
     }
 }

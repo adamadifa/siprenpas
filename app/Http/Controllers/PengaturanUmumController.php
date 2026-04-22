@@ -46,7 +46,8 @@ class PengaturanUmumController extends Controller
             'model_1' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
             'model_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
             'model_3' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
-            'model_4' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096'
+            'model_4' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'session_lifetime' => 'required|integer|min:1'
         ]);
 
         $data = $request->all();
@@ -123,7 +124,8 @@ class PengaturanUmumController extends Controller
             'model_1' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
             'model_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
             'model_3' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
-            'model_4' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096'
+            'model_4' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'session_lifetime' => 'required|integer|min:1'
         ]);
 
         $pengaturan = PengaturanUmum::findOrFail($id);
