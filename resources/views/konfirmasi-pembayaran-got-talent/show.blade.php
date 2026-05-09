@@ -82,12 +82,12 @@
                         <h5 class="mb-3">Bukti Pembayaran</h5>
                         @if ($konfirmasi->bukti_pembayaran)
                             <div class="mb-3">
-                                <a href="{{ asset('storage/' . $konfirmasi->bukti_pembayaran) }}" target="_blank" class="btn btn-info">
+                                <a href="{{ config('app.web_url') . '/storage/' . $konfirmasi->bukti_pembayaran }}" target="_blank" class="btn btn-info">
                                     <i class="ti ti-download me-1"></i>Lihat/Download Bukti Pembayaran
                                 </a>
                             </div>
                             @if (in_array(strtolower(pathinfo($konfirmasi->bukti_pembayaran, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif']))
-                                <img src="{{ asset('storage/' . $konfirmasi->bukti_pembayaran) }}" alt="Bukti Pembayaran" class="img-fluid rounded" style="max-width: 500px;">
+                                <img src="{{ config('app.web_url') . '/storage/' . $konfirmasi->bukti_pembayaran }}" alt="Bukti Pembayaran" class="img-fluid rounded" style="max-width: 500px;">
                             @endif
                         @else
                             <p class="text-muted">Tidak ada bukti pembayaran</p>

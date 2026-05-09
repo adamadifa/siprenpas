@@ -47,6 +47,8 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\PresensiSiswaController;
+use App\Http\Controllers\PresensiMapelController;
+use App\Http\Controllers\MigrasiSiswaController;
 use App\Http\Controllers\PublicQuestionnaireController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProgramkerjaController;
@@ -522,6 +524,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/pembayaranpendidikan/{no_bukti}/showdetailbayar', 'showdetailbayar')->name('pembayaranpendidikan.showdetailbayar')->can('pembayaranpdd.show');
         Route::get('/pembayaranpendidikan/{no_bukti}/cetak', 'cetak')->name('pembayaranpendidikan.cetak')->can('pembayaranpdd.show');
         Route::get('/pembayaranpendidikan/{no_pendaftaran}/prosesnaikkelas', 'prosesnaikkelas')->name('pembayaranpendidikan.prosesnaikkelas')->can('pembayaranpdd.create');
+        Route::get('/pembayaranpendidikan/{no_pendaftaran}/batalkannaikkelas', 'batalkannaikkelas')->name('pembayaranpendidikan.batalkannaikkelas')->can('pembayaranpdd.create');
+        Route::post('/pembayaranpendidikan/bulknaikkelas', 'bulknaikkelas')->name('pembayaranpendidikan.bulknaikkelas')->can('pembayaranpdd.create');
     });
 
     Route::controller(RencanasppController::class)->group(function () {
@@ -699,6 +703,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/jadwal-pelajaran/{id}/edit', 'edit')->name('jadwal-pelajaran.edit')->can('jadwalpelajaran.edit');
         Route::put('/jadwal-pelajaran/{id}/update', 'update')->name('jadwal-pelajaran.update')->can('jadwalpelajaran.update');
         Route::delete('/jadwal-pelajaran/{id}/delete', 'destroy')->name('jadwal-pelajaran.delete')->can('jadwalpelajaran.delete');
+        Route::get('/jadwal-pelajaran/cetak-presensi/{id}', 'cetakPresensi')->name('jadwal-pelajaran.cetak-presensi');
     });
 
     Route::controller(App\Http\Controllers\PenilaianController::class)->group(function () {
@@ -748,6 +753,30 @@ Route::middleware('auth')->group(function () {
         Route::put('/presensisiswa/{id}', 'update')->name('presensisiswa.update')->can('presensisiswa.edit');
         Route::delete('/presensisiswa/{id}', 'destroy')->name('presensisiswa.destroy')->can('presensisiswa.delete');
         Route::post('/presensisiswa/bulk-update', 'bulkUpdate')->name('presensisiswa.bulk-update')->can('presensisiswa.edit');
+    });
+
+    // Route untuk Presensi Mata Pelajaran
+    Route::controller(PresensiMapelController::class)->group(function () {
+        Route::get('/presensi-mapel', 'index')->name('presensi-mapel.index');
+        Route::get('/presensi-mapel/create', 'create')->name('presensi-mapel.create');
+        Route::post('/presensi-mapel/get-jadwal', 'getJadwal')->name('presensi-mapel.get-jadwal');
+        Route::get('/presensi-mapel/{jadwal_id}/{tanggal}/input', 'input')->name('presensi-mapel.input');
+        Route::post('/presensi-mapel/store', 'store')->name('presensi-mapel.store');
+        Route::get('/presensi-mapel/{id}/edit', 'edit')->name('presensi-mapel.edit');
+        Route::post('/presensi-mapel/{id}/update', 'update')->name('presensi-mapel.update');
+        Route::delete('/presensi-mapel/{id}/delete', 'destroy')->name('presensi-mapel.delete');
+    });
+
+    Route::controller(MigrasiSiswaController::class)->group(function () {
+        Route::get('/migrasi-siswa', 'index')->name('migrasi-siswa.index');
+        Route::get('/migrasi-siswa/template', 'downloadTemplate')->name('migrasi-siswa.download-template');
+        Route::get('/migrasi-siswa/template-horizontal', 'downloadTemplateHorizontal')->name('migrasi-siswa.download-template-horizontal');
+        Route::post('/migrasi-siswa/upload', 'upload')->name('migrasi-siswa.upload');
+        Route::post('/migrasi-siswa/upload-horizontal', 'uploadHorizontal')->name('migrasi-siswa.upload-horizontal');
+        Route::get('/migrasi-siswa/preview/{id}', 'preview')->name('migrasi-siswa.preview');
+        Route::post('/migrasi-siswa/proses/{id}', 'proses')->name('migrasi-siswa.proses');
+        Route::get('/migrasi-siswa/riwayat', 'riwayat')->name('migrasi-siswa.riwayat');
+        Route::post('/migrasi-siswa/rollback/{id}', 'rollback')->name('migrasi-siswa.rollback');
     });
 
 

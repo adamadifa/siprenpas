@@ -239,7 +239,7 @@
                 @if ($pembayaran->bukti_pembayaran)
                     <tr>
                         <th>Bukti Pembayaran</th>
-                        <td><a href="{{ asset('storage/' . $pembayaran->bukti_pembayaran) }}" target="_blank">Lihat
+                        <td><a href="{{ config('app.web_url') . '/storage/' . $pembayaran->bukti_pembayaran }}" target="_blank">Lihat
                                 Bukti</a></td>
                     </tr>
                 @endif

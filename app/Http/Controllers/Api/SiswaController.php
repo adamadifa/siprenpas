@@ -75,6 +75,7 @@ class SiswaController extends Controller
         $query->join('pendaftaran', 'siswa_biaya.no_pendaftaran', 'pendaftaran.no_pendaftaran');
         $query->join('unit', 'pendaftaran.kode_unit', 'unit.kode_unit');
         $query->join('konfigurasi_biaya', 'siswa_biaya.kode_biaya', 'konfigurasi_biaya.kode_biaya');
+        $query->where('konfigurasi_biaya.is_pindahan', 0);
         $query->leftjoin('asal_sekolah', 'pendaftaran.kode_asal_sekolah', 'asal_sekolah.kode_asal_sekolah');
         $query->join('konfigurasi_tahun_ajaran', 'konfigurasi_biaya.kode_ta', 'konfigurasi_tahun_ajaran.kode_ta');
         $query->leftJoinSub($kelas_siswa, 'kelas_siswa', function ($join) {

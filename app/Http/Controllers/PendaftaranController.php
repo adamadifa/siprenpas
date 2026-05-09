@@ -82,6 +82,11 @@ class PendaftaranController extends Controller
         $u = new Unit();
         $data['unit'] = $u->getUnit();
         $data['penghasilan_ortu'] = Penghasilanortu::orderBy('kode_penghasilan_ortu')->get();
+
+        $tahun_ajaran_aktif = Tahunajaranppdb::where('status', 1)->first();
+        $data['biaya_pindahan'] = Biaya::where('is_pindahan', 1)
+            ->where('kode_ta', $tahun_ajaran_aktif->kode_ta)
+            ->get();
         return view('pendaftaran.create', $data);
     }
 
@@ -129,7 +134,10 @@ class PendaftaranController extends Controller
             'pendidikan_ibu' => 'required',
             'pekerjaan_ibu' => 'required',
             'no_hp_orang_tua' => 'required',
-            'kode_asal_sekolah' => 'required'
+            'kode_asal_sekolah' => 'required',
+            'jenis_pendaftaran' => 'required',
+            'tingkat_masuk' => 'required_if:jenis_pendaftaran,Pindahan',
+            'kode_biaya_pindahan' => 'required_if:jenis_pendaftaran,Pindahan',
         ]);
 
         $tahun_ajaran = Tahunajaranppdb::where('status', 1)->first();
@@ -148,14 +156,18 @@ class PendaftaranController extends Controller
         $no_pendaftaran = buatkode($last_no_pendaftaran, $format, 3);
         $nis = buatkode($last_nis, $format_nis, 3);
 
+        // Cari Biaya sesuai tingkat masuk
+        $tingkat = $request->jenis_pendaftaran == 'Pindahan' ? $request->tingkat_masuk : 1;
         $biaya = Biaya::where('kode_unit', $request->kode_unit)
             ->where('kode_ta', $tahun_ajaran->kode_ta)
-            ->where('tingkat', 1)
+            ->where('tingkat', $tingkat)
+            ->where('is_pindahan', 0)
             ->first();
 
         if ($biaya == null) {
-            return Redirect::back()->with(messageError('Biaya Belum ditetapkan'));
+            return Redirect::back()->with(messageError('Biaya Tingkat ' . $tingkat . ' Belum ditetapkan'));
         }
+
         DB::beginTransaction();
         try {
             //Simpan Data Siswa
@@ -206,13 +218,24 @@ class PendaftaranController extends Controller
                 'kode_unit' => $request->kode_unit,
                 'kode_ta' => $tahun_ajaran->kode_ta,
                 'id_user' => Auth::user()->id,
+                'jenis_pendaftaran' => $request->jenis_pendaftaran,
+                'tingkat_masuk' => $tingkat,
             ]);
 
-            //Simpan Data Biaya
+            //Simpan Data Biaya Utama (Tingkat Berjalan)
             Biayasiswa::create([
                 'no_pendaftaran' => $no_pendaftaran,
                 'kode_biaya' => $biaya->kode_biaya,
             ]);
+
+            // Jika Pindahan, Simpan juga Biaya Masuk Pindahan
+            if ($request->jenis_pendaftaran == 'Pindahan' && !empty($request->kode_biaya_pindahan)) {
+                Biayasiswa::create([
+                    'no_pendaftaran' => $no_pendaftaran,
+                    'kode_biaya' => $request->kode_biaya_pindahan,
+                ]);
+            }
+
             DB::commit();
             return Redirect::back()->with(messageSuccess('Data Berhasil Di Simpan'));
         } catch (\Exception $e) {

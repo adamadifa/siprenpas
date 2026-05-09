@@ -11,8 +11,34 @@
             <x-input-with-icon icon="ti ti-barcode" label="Auto" name="no_pendaftaran" />
             <x-input-with-icon icon="ti ti-calendar" label="Tanggal Pendaftaran" name="tanggal_pendaftaran"
                 datepicker="flatpickr-date" />
-            <x-select label="Jenjang / Tingkat" name="kode_unit" :data="$unit" key="kode_unit" textShow="nama_unit"
+            <x-select label="Jenjang" name="kode_unit" :data="$unit" key="kode_unit" textShow="nama_unit"
                 select2="select2Kodeunit" upperCase="true" />
+            
+            <div class="form-group mb-3">
+                <label class="form-label" style="font-weight: 600">Jenis Pendaftaran</label>
+                <select name="jenis_pendaftaran" id="jenis_pendaftaran" class="form-select">
+                    <option value="Baru">Baru</option>
+                    <option value="Pindahan">Pindahan</option>
+                </select>
+            </div>
+
+            <div id="pindahan_fields" style="display: none">
+                <div class="form-group mb-3">
+                    <label class="form-label" style="font-weight: 600">Tingkat Masuk</label>
+                    <select name="tingkat_masuk" id="tingkat_masuk" class="form-select">
+                        <option value="">Pilih Tingkat</option>
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="form-label" style="font-weight: 600">Paket Biaya Masuk Pindahan</label>
+                    <select name="kode_biaya_pindahan" id="kode_biaya_pindahan" class="form-select">
+                        <option value="">Pilih Paket Biaya</option>
+                        @foreach ($biaya_pindahan as $bp)
+                            <option value="{{ $bp->kode_biaya }}">{{ $bp->kode_biaya }} - {{ $bp->nama_unit }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row">
@@ -381,6 +407,32 @@
 
         $("#kode_unit").change(function() {
             loadasalsekolah();
+            // Load Tingkat Masuk
+            const kode_unit = $(this).val();
+            $.ajax({
+                type: 'POST',
+                url: '/unit/gettingkatbyunit',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    kode_unit: kode_unit
+                },
+                cache: false,
+                success: function(respond) {
+                    $("#tingkat_masuk").html(respond);
+                }
+            });
+        });
+
+        $("#jenis_pendaftaran").change(function() {
+            if ($(this).val() == "Pindahan") {
+                $("#pindahan_fields").show();
+                $("#tingkat_masuk").attr('required', true);
+                $("#kode_biaya_pindahan").attr('required', true);
+            } else {
+                $("#pindahan_fields").hide();
+                $("#tingkat_masuk").attr('required', false);
+                $("#kode_biaya_pindahan").attr('required', false);
+            }
         });
 
 

@@ -12,4 +12,9 @@ class Kelas extends Model
     protected $primaryKey = 'kode_kelas';
     protected $guarded = [];
     public $incrementing = false;
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class, 'kode_unit', 'kode_unit');
+    }
 }

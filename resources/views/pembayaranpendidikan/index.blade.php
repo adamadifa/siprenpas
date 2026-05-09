@@ -85,15 +85,36 @@
 <div class="row">
     <div class="col-12">
         <div class="card shadow-sm">
-            <div class="card-header d-flex align-items-center gap-2 text-white py-3" style="background-color: #064e3b">
-                <i class="ti ti-list fs-5"></i>
-                <h6 class="card-title mb-0 text-white">Data Siswa & Status Pembayaran</h6>
+            <div class="card-header d-flex align-items-center justify-content-between text-white py-3" style="background-color: #064e3b">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="ti ti-list fs-5"></i>
+                    <h6 class="card-title mb-0 text-white">Data Siswa & Status Pembayaran</h6>
+                </div>
+                @php
+                    $anyCanPromote = false;
+                    foreach ($pendaftaran as $d) {
+                        if ($d->kode_ta != optional($ta_ppdb)->kode_ta && $d->status_naik_kelas != 1) {
+                            $anyCanPromote = true;
+                            break;
+                        }
+                    }
+                @endphp
+                @if ($anyCanPromote)
+                    <button type="button" class="btn btn-sm btn-warning" id="btnBulkNaikKelas">
+                        <i class="ti ti-arrow-up me-1"></i> Naik Kelas Massal
+                    </button>
+                @endif
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0 text-nowrap">
+                    <form action="{{ route('pembayaranpendidikan.bulknaikkelas') }}" method="POST" id="formBulkNaikKelas">
+                        @csrf
+                        <table class="table table-hover mb-0 text-nowrap">
                         <thead style="background-color: #064e3b">
                             <tr>
+                                <th class="text-white py-3">
+                                    <input type="checkbox" class="form-check-input" id="checkAll">
+                                </th>
                                 <th class="text-white py-3">NO.</th>
                                 <th class="text-white py-3">NO. PENDAFTARAN</th>
                                 <th class="text-white py-3">ID SISWA</th>
@@ -110,6 +131,13 @@
                         <tbody>
                             @foreach ($pendaftaran as $d)
                                 <tr>
+                                    <td class="py-1 text-center">
+                                        @if ($d->kode_ta != optional($ta_ppdb)->kode_ta && $d->status_naik_kelas != 1)
+                                            <input type="checkbox" name="no_pendaftaran[]" value="{{ $d->no_pendaftaran }}" class="form-check-input checkItem">
+                                        @elseif($d->status_naik_kelas == 1)
+                                            <i class="ti ti-arrow-up text-success fs-4" data-bs-toggle="tooltip" title="Sudah Naik Kelas"></i>
+                                        @endif
+                                    </td>
                                     <td class="py-1">{{ $loop->iteration + ($pendaftaran->currentPage() - 1) * $pendaftaran->perPage() }}</td>
                                     <td class="py-1">{{ $d->no_pendaftaran }}</td>
                                     <td class="py-1">{{ $d->id_siswa }}</td>
@@ -131,19 +159,29 @@
                                                     <i class="ti ti-moneybag fs-6"></i>
                                                 </a>
                                             @endcan
-                                            @if ($d->kode_ta != $kode_ta)
-                                                <a href="{{ route('pembayaranpendidikan.prosesnaikkelas', Crypt::encrypt($d->no_pendaftaran)) }}"
-                                                    class="btn btn-icon btn-label-warning border"
-                                                    style="width: 28px; height: 28px;">
-                                                    <i class="ti ti-arrow-up fs-6"></i>
-                                                </a>
+                                            @if ($d->kode_ta != optional($ta_ppdb)->kode_ta)
+                                                @if ($d->status_naik_kelas == 1)
+                                                    <a href="{{ route('pembayaranpendidikan.batalkannaikkelas', Crypt::encrypt($d->no_pendaftaran)) }}"
+                                                        class="btn btn-icon btn-label-danger border"
+                                                        style="width: 28px; height: 28px;"
+                                                        onclick="return confirm('Apakah Anda yakin ingin membatalkan kenaikan kelas ini?')">
+                                                        <i class="ti ti-arrow-back-up fs-6"></i>
+                                                    </a>
+                                                @else
+                                                    <a href="{{ route('pembayaranpendidikan.prosesnaikkelas', Crypt::encrypt($d->no_pendaftaran)) }}"
+                                                        class="btn btn-icon btn-label-warning border"
+                                                        style="width: 28px; height: 28px;">
+                                                        <i class="ti ti-arrow-up fs-6"></i>
+                                                    </a>
+                                                @endif
                                             @endif
                                         </div>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
-                    </table>
+                        </table>
+                    </form>
                 </div>
             </div>
             <div class="card-footer px-4 py-3">
@@ -866,6 +904,38 @@
         });
 
         getTingkatByUnit("{{ Request('kode_unit') }}");
+
+        // Bulk Naik Kelas Logic
+        $("#checkAll").click(function() {
+            $(".checkItem").prop('checked', $(this).prop('checked'));
+        });
+
+        $("#btnBulkNaikKelas").click(function() {
+            const checkedCount = $(".checkItem:checked").length;
+            if (checkedCount === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Oops...',
+                    text: 'Silakan pilih siswa terlebih dahulu!',
+                });
+                return false;
+            }
+
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: `Apakah Anda yakin ingin menaikkan ${checkedCount} siswa yang dipilih?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#064e3b',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Proses!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $("#formBulkNaikKelas").submit();
+                }
+            });
+        });
     });
 </script>
 @endpush

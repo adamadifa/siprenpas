@@ -58,7 +58,8 @@ class BiayaController extends Controller
 
         $tahun_ajaran = str_replace("TA", "", $request->kode_ta);
         $kode_asrama = $request->asrama == 1 ? 'AS' : '';
-        $kode_biaya = $request->kode_unit . $request->tingkat . $tahun_ajaran . $kode_asrama;
+        $kode_pindahan = $request->is_pindahan == 1 ? 'P' : '';
+        $kode_biaya = $request->kode_unit . $request->tingkat . $tahun_ajaran . $kode_asrama . $kode_pindahan;
         $kode_jenis_biaya = $request->kode_jenis_biaya;
         $jumlah = $request->jml;
 
@@ -72,7 +73,8 @@ class BiayaController extends Controller
                 'kode_unit' => $request->kode_unit,
                 'tingkat' => $request->tingkat,
                 'kode_ta' => $request->kode_ta,
-                'asrama' => $request->asrama
+                'asrama' => $request->asrama,
+                'is_pindahan' => $request->is_pindahan ? 1 : 0
             ]);
 
             for ($i = 0; $i < count($kode_jenis_biaya); $i++) {
@@ -121,6 +123,10 @@ class BiayaController extends Controller
         }
         DB::beginTransaction();
         try {
+
+            Biaya::where('kode_biaya', $kode_biaya)->update([
+                'is_pindahan' => $request->is_pindahan ? 1 : 0
+            ]);
 
             Detailbiaya::where('kode_biaya', $kode_biaya)->delete();
 

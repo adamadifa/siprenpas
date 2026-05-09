@@ -157,11 +157,17 @@
                                             <!-- Actions -->
                                             <div class="col-lg-2 col-md-12 col-sm-12 text-end">
                                                 <div class="btn-group shadow-sm" role="group">
-                                                    @can('jadwalpelajaran.index') <!-- adjust permission if needed -->
-                                                        <a href="{{ route('penilaian.index', $item->id) }}" class="btn btn-sm btn-outline-primary py-1 px-2 waves-effect" data-bs-toggle="tooltip" title="Penilaian">
-                                                            <i class="ti ti-chart-bar"></i>
-                                                        </a>
-                                                    @endcan
+                                                     @can('jadwalpelajaran.index') <!-- adjust permission if needed -->
+                                                         <a href="{{ route('presensi-mapel.input', [Crypt::encrypt($item->id), date('Y-m-d')]) }}" class="btn btn-sm btn-outline-success py-1 px-2 waves-effect" data-bs-toggle="tooltip" title="Presensi">
+                                                             <i class="ti ti-checklist"></i>
+                                                         </a>
+                                                         <a href="{{ route('jadwal-pelajaran.cetak-presensi', Crypt::encrypt($item->id)) }}" target="_blank" class="btn btn-sm btn-outline-info py-1 px-2 waves-effect" data-bs-toggle="tooltip" title="Cetak Presensi">
+                                                             <i class="ti ti-printer"></i>
+                                                         </a>
+                                                         <a href="{{ route('penilaian.index', $item->id) }}" class="btn btn-sm btn-outline-primary py-1 px-2 waves-effect" data-bs-toggle="tooltip" title="Penilaian">
+                                                             <i class="ti ti-chart-bar"></i>
+                                                         </a>
+                                                     @endcan
                                                     @can('jadwalpelajaran.edit')
                                                         <a href="#" class="btn btn-sm btn-outline-warning btnEdit py-1 px-2 waves-effect" data-id="{{ Crypt::encrypt($item->id) }}" data-bs-toggle="tooltip" title="Edit">
                                                             <i class="ti ti-edit"></i>

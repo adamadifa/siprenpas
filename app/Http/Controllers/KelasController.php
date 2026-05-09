@@ -160,6 +160,7 @@ class KelasController extends Controller
             ->where('konfigurasi_biaya.kode_ta', $kelas->kode_ta)
             ->where('konfigurasi_biaya.tingkat', $kelas->tingkat)
             ->where('pendaftaran.kode_unit', $kelas->kode_unit)
+            ->where('konfigurasi_biaya.is_pindahan', 0)
             ->when(!empty($nama_siswa), function ($query) use ($nama_siswa) {
                 return $query->where('siswa.nama_lengkap', 'like', '%' . $nama_siswa . '%');
             })
@@ -177,6 +178,7 @@ class KelasController extends Controller
         $biaya_siswa = Biayasiswa::where('konfigurasi_biaya.kode_ta', $kelas->kode_ta)
             ->join('pendaftaran', 'siswa_biaya.no_pendaftaran', '=', 'pendaftaran.no_pendaftaran')
             ->join('konfigurasi_biaya', 'siswa_biaya.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
+            ->where('konfigurasi_biaya.is_pindahan', 0)
             ->select('id_siswa', 'nis');
 
 

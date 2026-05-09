@@ -112,6 +112,9 @@
                                     </td>
                                     <td class="py-2 text-center">
                                         <span class="badge bg-label-info">{{ $d->tingkat }}</span>
+                                        @if ($d->is_pindahan)
+                                            <br><span class="badge bg-label-warning small mt-1">Pindahan</span>
+                                        @endif
                                     </td>
                                     <td class="py-2 text-center">
                                         @if ($d->asrama)

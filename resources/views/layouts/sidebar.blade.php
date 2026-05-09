@@ -422,7 +422,7 @@
         <!-- Menu Akademik -->
         @if (auth()->check() &&
                 auth()->user()->hasAnyPermission(['presensisiswa.index', 'guru.index', 'jabatanakademik.index', 'matapelajaran.index', 'kelas.index', 'jadwalpelajaran.index']))
-            <li class="menu-item {{ request()->is(['akademik', 'akademik/*', 'presensisiswa', 'presensisiswa/*', 'guru', 'guru/*', 'jabatan-akademik', 'jabatan-akademik/*', 'mata-pelajaran', 'mata-pelajaran/*', 'kelas', 'kelas/*', 'jadwal-pelajaran', 'jadwal-pelajaran/*', 'rapor', 'rapor/*', 'penilaian', 'penilaian/*']) ? 'open' : '' }}">
+            <li class="menu-item {{ request()->is(['akademik', 'akademik/*', 'presensisiswa', 'presensisiswa/*', 'guru', 'guru/*', 'jabatan-akademik', 'jabatan-akademik/*', 'mata-pelajaran', 'mata-pelajaran/*', 'kelas', 'kelas/*', 'jadwal-pelajaran', 'jadwal-pelajaran/*', 'rapor', 'rapor/*', 'penilaian', 'penilaian/*', 'presensi-mapel', 'presensi-mapel/*']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-school"></i>
                     <div>Akademik</div>
@@ -477,6 +477,12 @@
                             </a>
                         </li>
                     @endcan
+                    <li class="menu-item {{ request()->is(['presensi-mapel', 'presensi-mapel/*']) ? 'active' : '' }}">
+                        <a href="{{ route('presensi-mapel.index') }}" class="menu-link">
+                            <i class="menu-icon tf-icons ti ti-checklist"></i>
+                            <div>Presensi Mata Pelajaran</div>
+                        </a>
+                    </li>
                     @can('jadwalpelajaran.index')
                         <li class="menu-item {{ request()->is(['rapor', 'rapor/*', 'penilaian', 'penilaian/*']) ? 'active' : '' }}">
                             <a href="{{ route('rapor.index') }}" class="menu-link">
@@ -870,6 +876,13 @@
                             <div>Mesin Fingerprint</div>
                         </a>
                     </li>
+                    @can('migrasi-siswa.index')
+                    <li class="menu-item {{ request()->is(['migrasi-siswa', 'migrasi-siswa/*']) ? 'active' : '' }}">
+                        <a href="{{ route('migrasi-siswa.index') }}" class="menu-link">
+                            <div>Migrasi Siswa</div>
+                        </a>
+                    </li>
+                    @endcan
                 </ul>
             @endif
         </li>

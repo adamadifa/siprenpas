@@ -16,6 +16,14 @@
                     <th>Tahun Ajaran</th>
                     <td>{{ $biaya->tahun_ajaran }}</td>
                 </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="is_pindahan" value="1" id="is_pindahan" {{ $biaya->is_pindahan ? 'checked' : '' }}>
+                            <label class="form-check-label" for="is_pindahan"> Apakah Paket Biaya Pindahan? </label>
+                        </div>
+                    </td>
+                </tr>
             </table>
         </div>
     </div>

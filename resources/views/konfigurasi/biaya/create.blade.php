@@ -21,6 +21,10 @@
             @endforeach
         </select>
     </div>
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" name="is_pindahan" value="1" id="is_pindahan">
+        <label class="form-check-label" for="is_pindahan"> Apakah Paket Biaya Pindahan? </label>
+    </div>
     <div class="divider text-start">
         <div class="divider-text">Detail Biaya</div>
     </div>

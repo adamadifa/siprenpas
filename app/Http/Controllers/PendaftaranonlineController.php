@@ -234,85 +234,98 @@ class PendaftaranonlineController extends Controller
         $no_register = Crypt::decrypt($no_register);
         $pendaftaran = Pendaftaranonline::where('no_register', $no_register)->first();
 
-        $tahun_ajaran = Tahunajaranppdb::where('status', 1)->first();
-        $ta_nis = substr($tahun_ajaran->tahun_ajaran, 2, 2) . substr($tahun_ajaran->tahun_ajaran, 7, 2);
-        $ta_pendaftaran = substr($tahun_ajaran->tahun_ajaran, 2, 2);
-        $lastpendaftaran = Pendaftaran::select('no_pendaftaran', 'nis')
-            ->where('kode_ta', $pendaftaran->kode_ta)
-            ->where('kode_unit', $pendaftaran->kode_unit)
-            ->orderBy('no_pendaftaran', 'desc')
-            ->first();
-        $last_no_pendaftaran = $lastpendaftaran != null ? $lastpendaftaran->no_pendaftaran : '';
-        $last_nis = $lastpendaftaran != null ? $lastpendaftaran->nis : '';
-        $format = "REG" . $pendaftaran->kode_unit . $ta_pendaftaran;
-        $format_nis = $ta_nis;
-        $no_pendaftaran = buatkode($last_no_pendaftaran, $format, 3);
-        $nis = buatkode($last_nis, $format_nis, 3);
-
-        $biaya = Biaya::where('kode_unit', $pendaftaran->kode_unit)
-            ->where('kode_ta', $tahun_ajaran->kode_ta)
-            ->where('tingkat', 1)
-            ->first();
-
-        if ($biaya == null) {
-            return Redirect::back()->with(messageError('Biaya Belum ditetapkan'));
-        }
         DB::beginTransaction();
 
         try {
-            $tahun_masuk = config('global.tahun_ppdb');
-            $last_siswa = Siswa::orderby('id_siswa', 'desc')->where('tahun_masuk', $tahun_masuk)->first();
-            $last_id_siswa = $last_siswa != NULL ? $last_siswa->id_siswa : "";
-            $id_siswa = buatkode($last_id_siswa, $tahun_masuk, 3);
+            if ($request->status == 1) {
+                $tahun_ajaran = Tahunajaranppdb::where('status', 1)->first();
+                $ta_nis = substr($tahun_ajaran->tahun_ajaran, 2, 2) . substr($tahun_ajaran->tahun_ajaran, 7, 2);
+                $ta_pendaftaran = substr($tahun_ajaran->tahun_ajaran, 2, 2);
+                $lastpendaftaran = Pendaftaran::select('no_pendaftaran', 'nis')
+                    ->where('kode_ta', $pendaftaran->kode_ta)
+                    ->where('kode_unit', $pendaftaran->kode_unit)
+                    ->orderBy('no_pendaftaran', 'desc')
+                    ->first();
+                $last_no_pendaftaran = $lastpendaftaran != null ? $lastpendaftaran->no_pendaftaran : '';
+                $last_nis = $lastpendaftaran != null ? $lastpendaftaran->nis : '';
+                $format = "REG" . $pendaftaran->kode_unit . $ta_pendaftaran;
+                $format_nis = $ta_nis;
+                $no_pendaftaran = buatkode($last_no_pendaftaran, $format, 3);
+                $nis = buatkode($last_nis, $format_nis, 3);
 
-            Siswa::create([
-                'id_siswa' => $id_siswa,
-                'nisn' => $pendaftaran->nisn,
-                'nama_lengkap' => $pendaftaran->nama_lengkap,
-                'jenis_kelamin' => $pendaftaran->jenis_kelamin,
-                'tempat_lahir' => $pendaftaran->tempat_lahir,
-                'tanggal_lahir' => $pendaftaran->tanggal_lahir,
-                'anak_ke' => $pendaftaran->anak_ke,
-                'jumlah_saudara' => $pendaftaran->jumlah_saudara,
-                'alamat' => $pendaftaran->alamat,
-                'id_province' => $pendaftaran->id_province,
-                'id_regency' => $pendaftaran->id_regency,
-                'id_district' => $pendaftaran->id_district,
-                'id_village' => $pendaftaran->id_village,
-                'kode_pos' => $pendaftaran->kode_pos,
-                'no_kk' => $pendaftaran->no_kk,
-                'nik_ayah' => $pendaftaran->nik_ayah,
-                'nama_ayah' => $pendaftaran->nama_ayah,
-                'pendidikan_ayah' => $pendaftaran->pendidikan_ayah,
-                'pekerjaan_ayah' => $pendaftaran->pekerjaan_ayah,
-                'nik_ibu' => $pendaftaran->nik_ibu,
-                'nama_ibu' => $pendaftaran->nama_ibu,
-                'pendidikan_ibu' => $pendaftaran->pendidikan_ibu,
-                'pekerjaan_ibu' => $pendaftaran->pekerjaan_ibu,
-                'no_hp_orang_tua' => $pendaftaran->no_hp_orang_tua,
-                'tahun_masuk' => $tahun_masuk,
-            ]);
+                $biaya = Biaya::where('kode_unit', $pendaftaran->kode_unit)
+                    ->where('kode_ta', $tahun_ajaran->kode_ta)
+                    ->where('tingkat', 1)
+                    ->first();
 
-            Pendaftaran::create([
-                'no_pendaftaran' => $no_pendaftaran,
-                'tanggal_pendaftaran' => $pendaftaran->tanggal_register,
-                'nis' => $nis,
-                'id_siswa' => $id_siswa,
-                'kode_unit' => $pendaftaran->kode_unit,
-                'kode_ta' => $tahun_ajaran->kode_ta,
-                'id_user' => Auth::user()->id,
-            ]);
+                if ($biaya == null) {
+                    return Redirect::back()->with(messageError('Biaya Belum ditetapkan'));
+                }
 
-            //Simpan Data Biaya
-            Biayasiswa::create([
-                'no_pendaftaran' => $no_pendaftaran,
-                'kode_biaya' => $biaya->kode_biaya,
-            ]);
+                $tahun_masuk = config('global.tahun_ppdb');
+                $last_siswa = Siswa::orderby('id_siswa', 'desc')->where('tahun_masuk', $tahun_masuk)->first();
+                $last_id_siswa = $last_siswa != NULL ? $last_siswa->id_siswa : "";
+                $id_siswa = buatkode($last_id_siswa, $tahun_masuk, 3);
 
-            Pendaftaranonlineregister::create([
-                'no_register' => $pendaftaran->no_register,
-                'no_pendaftaran' => $no_pendaftaran
-            ]);
+                Siswa::create([
+                    'id_siswa' => $id_siswa,
+                    'nisn' => $pendaftaran->nisn,
+                    'nama_lengkap' => $pendaftaran->nama_lengkap,
+                    'jenis_kelamin' => $pendaftaran->jenis_kelamin,
+                    'tempat_lahir' => $pendaftaran->tempat_lahir,
+                    'tanggal_lahir' => $pendaftaran->tanggal_lahir,
+                    'anak_ke' => $pendaftaran->anak_ke,
+                    'jumlah_saudara' => $pendaftaran->jumlah_saudara,
+                    'alamat' => $pendaftaran->alamat,
+                    'id_province' => $pendaftaran->id_province,
+                    'id_regency' => $pendaftaran->id_regency,
+                    'id_district' => $pendaftaran->id_district,
+                    'id_village' => $pendaftaran->id_village,
+                    'kode_pos' => $pendaftaran->kode_pos,
+                    'no_kk' => $pendaftaran->no_kk,
+                    'nik_ayah' => $pendaftaran->nik_ayah,
+                    'nama_ayah' => $pendaftaran->nama_ayah,
+                    'pendidikan_ayah' => $pendaftaran->pendidikan_ayah,
+                    'pekerjaan_ayah' => $pendaftaran->pekerjaan_ayah,
+                    'nik_ibu' => $pendaftaran->nik_ibu,
+                    'nama_ibu' => $pendaftaran->nama_ibu,
+                    'pendidikan_ibu' => $pendaftaran->pendidikan_ibu,
+                    'pekerjaan_ibu' => $pendaftaran->pekerjaan_ibu,
+                    'no_hp_orang_tua' => $pendaftaran->no_hp_orang_tua,
+                    'tahun_masuk' => $tahun_masuk,
+                ]);
+
+                Pendaftaran::create([
+                    'no_pendaftaran' => $no_pendaftaran,
+                    'tanggal_pendaftaran' => $pendaftaran->tanggal_register,
+                    'nis' => $nis,
+                    'id_siswa' => $id_siswa,
+                    'kode_unit' => $pendaftaran->kode_unit,
+                    'kode_ta' => $tahun_ajaran->kode_ta,
+                    'id_user' => Auth::user()->id,
+                ]);
+
+                //Simpan Data Biaya
+                Biayasiswa::create([
+                    'no_pendaftaran' => $no_pendaftaran,
+                    'kode_biaya' => $biaya->kode_biaya,
+                ]);
+
+                Pendaftaranonlineregister::create([
+                    'no_register' => $pendaftaran->no_register,
+                    'no_pendaftaran' => $no_pendaftaran
+                ]);
+
+                // Update Status Bayar
+                Pembayaranpendaftaranonline::where('no_register', $no_register)->update([
+                    'status' => 'approved'
+                ]);
+            } else {
+                // Update Status Bayar Ditolak
+                Pembayaranpendaftaranonline::where('no_register', $no_register)->update([
+                    'status' => 'rejected'
+                ]);
+            }
 
             DB::commit();
             return Redirect::back()->with(messageSuccess('Data Berhasil Di Simpan'));
@@ -387,6 +400,12 @@ class PendaftaranonlineController extends Controller
             $datapendaftaran = $pendaftaran->first();
             $pendaftaran->delete();
             Siswa::where('id_siswa', $datapendaftaran->id_siswa)->delete();
+            
+            // Reset Status Bayar ke Pending
+            Pembayaranpendaftaranonline::where('no_register', $no_register)->update([
+                'status' => 'pending'
+            ]);
+
             DB::commit();
             return Redirect::back()->with(messageSuccess('Data Berhasil Di Batalkan'));
         } catch (\Exception $e) {

@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../webalaminlaravel"
+		},
+		{
+			"path": "../webalaminv2"
+		}
+	],
+	"settings": {}
+}

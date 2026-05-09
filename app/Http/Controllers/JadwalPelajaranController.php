@@ -256,4 +256,35 @@ class JadwalPelajaranController extends Controller
             return Redirect::back()->with(['warning' => 'Data Gagal Dihapus: ' . $e->getMessage()]);
         }
     }
+
+    public function cetakPresensi($id)
+    {
+        $id = Crypt::decrypt($id);
+        $jadwal = JadwalPelajaran::with(['unit', 'kelas', 'mapel', 'guru.karyawan', 'tahunAjaran'])->findOrFail($id);
+
+        // Get students in this class
+        $students = \App\Models\Kelassiswa::with('siswa')
+            ->where('kode_kelas', $jadwal->kode_kelas)
+            ->get()
+            ->sortBy(function($item) {
+                return $item->siswa->nama_lengkap ?? '';
+            });
+
+        // Get attendance records for this schedule
+        $presensi = \App\Models\PresensiMapel::with('details')
+            ->where('jadwal_pelajaran_id', $jadwal->id)
+            ->orderBy('tanggal', 'asc')
+            ->get();
+
+        // Mapping attendance status for easier access in view
+        // Structure: $attMatrix[$siswa_id][$presensi_mapel_id] = status
+        $attMatrix = [];
+        foreach ($presensi as $p) {
+            foreach ($p->details as $d) {
+                $attMatrix[$d->siswa_id][$p->id] = $d->status;
+            }
+        }
+
+        return view('akademik.jadwal_pelajaran.cetak-presensi', compact('jadwal', 'students', 'presensi', 'attMatrix'));
+    }
 }

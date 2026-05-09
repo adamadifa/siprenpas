@@ -13,6 +13,7 @@ use App\Models\Pendaftaran;
 use App\Models\Potonganpendaftaran;
 use App\Models\Siswa;
 use App\Models\Tahunajaran;
+use App\Models\Tahunajaranppdb;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,6 +38,8 @@ class PembayaranpendidikanController extends Controller
                 ->make();
         }
         $data['tahun_ajaran'] = Tahunajaran::where('status', 1)->first();
+        $data['kode_ta'] = $data['tahun_ajaran']->kode_ta ?? null;
+        $data['ta_ppdb'] = Tahunajaranppdb::where('status', 1)->first();
 
         $p = new Pendaftaran();
         $pendaftaran = $p->getPembayaranpendidikan(request: $request)->paginate(30);
@@ -614,7 +617,7 @@ class PembayaranpendidikanController extends Controller
         $p = new Pendaftaran();
         $pendaftaran = $p->getPembayaranpendidikan($no_pendaftaran)->first();
         $nexttingkat = $pendaftaran->tingkat + 1;
-        $ta_aktif = Tahunajaran::where('status', 1)->first();
+        $ta_aktif = Tahunajaranppdb::where('status', 1)->first();
         $unit = Unit::where('kode_unit', $pendaftaran->kode_unit)->first();
         $cekbiayanexttingkat = Biaya::where('kode_unit', $pendaftaran->kode_unit)
             ->where('tingkat', $nexttingkat)
@@ -640,7 +643,92 @@ class PembayaranpendidikanController extends Controller
             return Redirect::back()->with(messageSuccess('Biaya untuk Tingkat' . $nexttingkat . ' Jenjang ' . $unit->nama_unit . ' Tahun Ajaran ' . $ta_aktif->tahun_ajaran . ' berhasil ditambahkan'));
         } catch (\Throwable $th) {
             DB::rollBack();
-            return Redirect::back()->with(messageError($th->getMessage()));
+            return Redirect::back()->with(messageError('Terjadi Kesalahan ' . $th->getMessage()));
+        }
+    }
+
+    public function batalkannaikkelas($no_pendaftaran)
+    {
+        $no_pendaftaran = Crypt::decrypt($no_pendaftaran);
+        $p = new Pendaftaran();
+        $pendaftaran = $p->getPembayaranpendidikan($no_pendaftaran)->first();
+        $nexttingkat = $pendaftaran->tingkat + 1;
+        $ta_aktif = Tahunajaranppdb::where('status', 1)->first();
+
+        $cekbiayanexttingkat = Biaya::where('kode_unit', $pendaftaran->kode_unit)
+            ->where('tingkat', $nexttingkat)
+            ->where('kode_ta', $ta_aktif->kode_ta)->first();
+
+        if ($cekbiayanexttingkat == null) {
+            return Redirect::back()->with(messageError('Biaya untuk Tingkat' . $nexttingkat . ' Tahun Ajaran ' . $ta_aktif->tahun_ajaran . ' tidak ditemukan'));
+        }
+
+        DB::beginTransaction();
+        try {
+            // Hapus record biaya tingkat selanjutnya
+            Biayasiswa::where('no_pendaftaran', $no_pendaftaran)
+                ->where('kode_biaya', $cekbiayanexttingkat->kode_biaya)
+                ->delete();
+
+            // Kembalikan status naik kelas pada record saat ini
+            Biayasiswa::where('no_pendaftaran', $no_pendaftaran)
+                ->where('kode_biaya', $pendaftaran->kode_biaya)
+                ->update([
+                    'status_naik_kelas' => 0,
+                ]);
+
+            DB::commit();
+            return Redirect::back()->with(messageSuccess('Kenaikan kelas berhasil dibatalkan'));
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return Redirect::back()->with(messageError('Terjadi Kesalahan ' . $th->getMessage()));
+        }
+    }
+
+    public function bulknaikkelas(Request $request)
+    {
+        $no_pendaftarans = $request->no_pendaftaran;
+        if (empty($no_pendaftarans)) {
+            return Redirect::back()->with(messageError('Pilih siswa terlebih dahulu'));
+        }
+
+        $ta_aktif = Tahunajaranppdb::where('status', 1)->first();
+        if (!$ta_aktif) {
+            return Redirect::back()->with(messageError('Tahun Ajaran PPDB aktif tidak ditemukan'));
+        }
+
+        DB::beginTransaction();
+        try {
+            foreach ($no_pendaftarans as $no_pendaftaran) {
+                $p = new Pendaftaran();
+                $pendaftaran = $p->getPembayaranpendidikan($no_pendaftaran)->first();
+                if (!$pendaftaran || $pendaftaran->status_naik_kelas == 1) {
+                    continue;
+                }
+
+                $nexttingkat = $pendaftaran->tingkat + 1;
+                $cekbiayanexttingkat = Biaya::where('kode_unit', $pendaftaran->kode_unit)
+                    ->where('tingkat', $nexttingkat)
+                    ->where('kode_ta', $ta_aktif->kode_ta)->first();
+
+                if ($cekbiayanexttingkat) {
+                    Biayasiswa::create([
+                        'no_pendaftaran' => $no_pendaftaran,
+                        'kode_biaya' => $cekbiayanexttingkat->kode_biaya,
+                    ]);
+
+                    Biayasiswa::where('no_pendaftaran', $no_pendaftaran)
+                        ->where('kode_biaya', $pendaftaran->kode_biaya)
+                        ->update([
+                            'status_naik_kelas' => 1,
+                        ]);
+                }
+            }
+            DB::commit();
+            return Redirect::back()->with(messageSuccess('Kenaikan kelas massal berhasil diproses'));
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return Redirect::back()->with(messageError('Terjadi Kesalahan ' . $th->getMessage()));
         }
     }
 }
