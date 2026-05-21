@@ -38,7 +38,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Endpoint API siswa-anak untuk orang tua
 Route::middleware('auth:sanctum')->get('/siswa-anak', [App\Http\Controllers\Api\SiswaController::class, 'anakByNikOrtu']);
 
-Route::apiResource('/presensi', App\Http\Controllers\Api\PresensiController::class);
 
 // AUTH API
 Route::prefix('auth')->group(function () {
@@ -58,6 +57,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/getrencanaspp-by-kodebiaya', [App\Http\Controllers\Api\PendaftaranController::class, 'getRencanasppbyKodeBiaya']);
     Route::get('/gethistoribayar-by-idsiswa', [App\Http\Controllers\Api\PendaftaranController::class, 'getHistoribayarbyIdsiswa']);
     Route::get('/getdetailhistoribayar', [App\Http\Controllers\Api\PendaftaranController::class, 'getDetailHistoribayar']);
+
+    // Notification API Routes
+    Route::post('/push-subscribe', [App\Http\Controllers\Api\NotificationController::class, 'subscribe']);
+    Route::post('/push-unsubscribe', [App\Http\Controllers\Api\NotificationController::class, 'unsubscribe']);
+
+    // Presensi API Routes
+    Route::prefix('presensi')->group(function () {
+        Route::get('/harian', [App\Http\Controllers\Api\PresensiController::class, 'presensiSiswa']);
+        Route::get('/mapel', [App\Http\Controllers\Api\PresensiController::class, 'presensiMapel']);
+    });
 
     // Tabungan Santri API Routes
     Route::prefix('tabungan-santri')->group(function () {

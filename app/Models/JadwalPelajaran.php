@@ -36,4 +36,9 @@ class JadwalPelajaran extends Model
     {
         return $this->belongsTo(Guru::class, 'guru_id');
     }
+
+    public function presensi()
+    {
+        return $this->hasMany(PresensiMapel::class, 'jadwal_pelajaran_id');
+    }
 }

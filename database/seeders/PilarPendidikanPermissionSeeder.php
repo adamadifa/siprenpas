@@ -14,7 +14,7 @@ class PilarPendidikanPermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $permissionGroup = Permission_group::create([
+        $permissionGroup = Permission_group::firstOrCreate([
             'name' => 'Pilar Pendidikan',
         ]);
 
@@ -24,7 +24,7 @@ class PilarPendidikanPermissionSeeder extends Seeder
             'pilarpendidikan.edit',
             'pilarpendidikan.delete',
         ])->map(function ($name) use ($permissionGroup) {
-            return Permission::create([
+            return Permission::firstOrCreate([
                 'name' => $name,
                 'id_permission_group' => $permissionGroup->id,
             ]);

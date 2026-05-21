@@ -37,7 +37,7 @@ class ProgramUnggulanSeeder extends Seeder
         ];
 
         foreach ($programs as $program) {
-            ProgramUnggulan::create($program);
+            ProgramUnggulan::firstOrCreate(['nama_program' => $program['nama_program']], $program);
         }
     }
 }

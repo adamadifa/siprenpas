@@ -22,9 +22,17 @@ class UserController extends Controller
         if (!empty($request->name)) {
             $query->where('name', 'like', '%' . $request->name . '%');
         }
+
+        if (!empty($request->role)) {
+            $query->role($request->role);
+        }
+
         $users = $query->paginate(20);
         $users->appends($request->all());
-        return view('settings.users.index', compact('users'));
+
+        $roles = Role::orderBy('name')->get();
+
+        return view('settings.users.index', compact('users', 'roles'));
     }
 
     public function create()
@@ -85,42 +93,39 @@ class UserController extends Controller
         $user = User::findorFail($id);
 
 
+        $isOrangTua = $request->role === 'orang tua';
+
         $request->validate([
             'name' => 'required',
-            'username' => 'required',
-            'email' => 'required|email',
-            'kode_unit' => 'required',
-            'kode_dept' => 'required',
+            'username' => 'required|unique:users,username,' . $id,
+            'email' => 'required|email|unique:users,email,' . $id,
             'role' => 'required',
-            'kode_jabatan' => 'required'
+            'kode_unit' => $isOrangTua ? 'nullable' : 'required',
+            'kode_dept' => $isOrangTua ? 'nullable' : 'required',
+            'kode_jabatan' => $isOrangTua ? 'nullable' : 'required'
         ]);
 
         try {
+            $data = [
+                'name' => $request->name,
+                'username' => $request->username,
+                'email' => $request->email,
+            ];
 
-            if (isset($request->password)) {
-                User::where('id', $id)->update([
-                    'name' => $request->name,
-                    'username' => $request->username,
-                    'email' => $request->email,
-                    'password' => bcrypt($request->password),
-                    'kode_unit' => $request->kode_unit,
-                    'kode_dept' => $request->kode_dept,
-                    'kode_jabatan' => $request->kode_jabatan
-                ]);
-            } else {
-                User::where('id', $id)->update([
-                    'name' => $request->name,
-                    'username' => $request->username,
-                    'email' => $request->email,
-                    'kode_unit' => $request->kode_unit,
-                    'kode_dept' => $request->kode_dept,
-                    'kode_jabatan' => $request->kode_jabatan
-                ]);
+            if ($request->filled('password')) {
+                $data['password'] = bcrypt($request->password);
             }
 
+            if (!$isOrangTua) {
+                $data['kode_unit'] = $request->kode_unit;
+                $data['kode_dept'] = $request->kode_dept;
+                $data['kode_jabatan'] = $request->kode_jabatan;
+            }
+
+            $user->update($data);
+
             if (isset($request->role)) {
-                $user->syncRoles([]);
-                $user->assignRole($request->role);
+                $user->syncRoles([$request->role]);
             }
 
             return Redirect::back()->with(['success' => 'Data Berhasil Disimpan']);

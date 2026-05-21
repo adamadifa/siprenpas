@@ -15,37 +15,37 @@ class Jamkerjapermissionseeder extends Seeder
      */
     public function run(): void
     {
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Unit'
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jamkerja.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jamkerja.create',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jamkerja.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jamkerja.store',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jamkerja.update',
             'id_permission_group' => $permissiongroup->id
         ]);
 
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jamkerja.delete',
             'id_permission_group' => $permissiongroup->id
         ]);

@@ -14,7 +14,7 @@ class PesertaRoleSeeder extends Seeder
     {
         // Cek jika role sudah ada
         if (!Role::where('name', 'peserta')->exists()) {
-            Role::create(['name' => 'peserta']);
+            Role::firstOrCreate(['name' => 'peserta']);
         }
     }
 }

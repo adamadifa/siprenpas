@@ -15,40 +15,40 @@ class Pendaftaranpermissionseeder extends Seeder
      */
     public function run(): void
     {
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Pendaftaran'
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pendaftaran.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pendaftaran.create',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pendaftaran.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pendaftaran.store',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pendaftaran.update',
             'id_permission_group' => $permissiongroup->id
         ]);
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pendaftaran.show',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pendaftaran.delete',
             'id_permission_group' => $permissiongroup->id
         ]);

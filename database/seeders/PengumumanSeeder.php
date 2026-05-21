@@ -18,7 +18,7 @@ class PengumumanSeeder extends Seeder
         $kategoriKeuangan = KategoriPengumuman::where('nama_kategori', 'Keuangan')->first();
         
         if ($kategoriKeuangan) {
-            Pengumuman::create([
+            Pengumuman::firstOrCreate([
                 'judul' => 'Pembayaran UKT',
                 'isi' => 'Segera lakukan pembayaran UKT semester ganjil.',
                 'tanggal' => '2025-06-26',
@@ -30,7 +30,7 @@ class PengumumanSeeder extends Seeder
         // Tambah beberapa pengumuman contoh lainnya
         $kategoriAkademik = KategoriPengumuman::where('nama_kategori', 'Akademik')->first();
         if ($kategoriAkademik) {
-            Pengumuman::create([
+            Pengumuman::firstOrCreate([
                 'judul' => 'Jadwal Ujian Semester',
                 'isi' => 'Ujian semester akan dilaksanakan pada tanggal 15-20 Juni 2025.',
                 'tanggal' => '2025-06-15',
@@ -41,7 +41,7 @@ class PengumumanSeeder extends Seeder
 
         $kategoriKegiatan = KategoriPengumuman::where('nama_kategori', 'Kegiatan')->first();
         if ($kategoriKegiatan) {
-            Pengumuman::create([
+            Pengumuman::firstOrCreate([
                 'judul' => 'Kegiatan Outbound',
                 'isi' => 'Kegiatan outbound akan dilaksanakan pada tanggal 25 Juni 2025.',
                 'tanggal' => '2025-06-25',

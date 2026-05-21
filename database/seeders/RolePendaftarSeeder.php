@@ -13,6 +13,6 @@ class RolePendaftarSeeder extends Seeder
      */
     public function run(): void
     {
-        $role = Role::create(['name' => 'pendaftar']);
+        $role = Role::firstOrCreate(['name' => 'pendaftar']);
     }
 }

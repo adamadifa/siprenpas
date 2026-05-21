@@ -19,14 +19,22 @@ class PresensiSiswaController extends Controller
      */
     public function index(Request $request)
     {
+        if (!auth()->user()->can('presensisiswa.index') && !auth()->user()->hasRole('guru')) {
+            abort(403, 'Akses ditolak.');
+        }
+
         $tanggal = $request->get('tanggal', date('Y-m-d'));
 
         // Menggunakan query yang sama seperti pembayaranpendidikan
         $ta_aktif = Tahunajaran::where('status', 1)->first();
+        $kode_ta_aktif = $ta_aktif ? $ta_aktif->kode_ta : '';
+        $selectedTa = $request->get('kode_ta', $kode_ta_aktif);
 
         $kelas_siswa = Kelassiswa::join('kelas', 'kelas_siswa.kode_kelas', 'kelas.kode_kelas')
-            ->select('kelas_siswa.id_siswa', 'nama_kelas')
-            ->where('kelas.kode_ta', $ta_aktif->kode_ta);
+            ->select('kelas_siswa.id_siswa', 'nama_kelas', 'kelas_siswa.kode_kelas');
+        if ($selectedTa) {
+            $kelas_siswa->where('kelas.kode_ta', $selectedTa);
+        }
 
         $query = Biayasiswa::query();
         $query->select(
@@ -83,12 +91,32 @@ class PresensiSiswaController extends Controller
 
         if (!empty($request->kode_ta)) {
             $query->where('konfigurasi_biaya.kode_ta', $request->kode_ta);
-        } else {
+        } elseif ($ta_aktif) {
             $query->where('konfigurasi_biaya.kode_ta', $ta_aktif->kode_ta);
         }
 
         if (!empty($request->tingkat)) {
             $query->where('konfigurasi_biaya.tingkat', $request->tingkat);
+        }
+
+        $isGuru = auth()->user()->hasRole('guru');
+        $kelasBinaanUnits = [];
+        if ($isGuru) {
+            $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
+            $guruId = $guruModel ? $guruModel->id : 0;
+            
+            $kelasBinaanQuery = \App\Models\Kelas::where('guru_id', $guruId);
+            if (!empty($request->kode_ta)) {
+                $kelasBinaanQuery->where('kode_ta', $request->kode_ta);
+            } elseif ($ta_aktif) {
+                $kelasBinaanQuery->where('kode_ta', $ta_aktif->kode_ta);
+            }
+            
+            $kelasBinaan = $kelasBinaanQuery->get();
+            $kelasBinaanCodes = $kelasBinaan->pluck('kode_kelas')->toArray();
+            $kelasBinaanUnits = $kelasBinaan->pluck('kode_unit')->unique()->toArray();
+
+            $query->whereIn('kelas_siswa.kode_kelas', $kelasBinaanCodes);
         }
 
         $pendaftaran = $query->paginate(30);
@@ -98,7 +126,11 @@ class PresensiSiswaController extends Controller
         $data['pendaftaran'] = $pendaftaran;
         $data['tanggal'] = $tanggal;
         $data['tahun_ajaran'] = $ta_aktif;
-        $data['unit'] = Unit::all();
+        if ($isGuru) {
+            $data['unit'] = Unit::whereIn('kode_unit', $kelasBinaanUnits)->get();
+        } else {
+            $data['unit'] = Unit::all();
+        }
         $data['tahunajaran'] = Tahunajaran::orderBy('kode_ta')->get();
         $data['jenis_kelamin'] = config('global.jenis_kelamin');
 

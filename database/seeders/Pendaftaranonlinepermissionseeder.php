@@ -15,27 +15,27 @@ class Pendaftaranonlinepermissionseeder extends Seeder
      */
     public function run(): void
     {
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Pendaftaran Online'
         ]);
 
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pendaftaranonline.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pendaftaranonline.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pendaftaranonline.show',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pendaftaranonline.delete',
             'id_permission_group' => $permissiongroup->id
         ]);

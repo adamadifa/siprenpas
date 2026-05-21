@@ -10,6 +10,15 @@ use Illuminate\Support\Facades\Validator;
 
 class PengumumanController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:pengumuman.index', ['only' => ['index']]);
+        $this->middleware('permission:pengumuman.create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:pengumuman.show', ['only' => ['show']]);
+        $this->middleware('permission:pengumuman.edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:pengumuman.destroy', ['only' => ['destroy']]);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -43,7 +52,20 @@ class PengumumanController extends Controller
         ]);
 
         try {
-            Pengumuman::create($request->all());
+            $pengumuman = Pengumuman::create($request->all());
+            
+            // Send Push Notification
+            try {
+                $pushService = new \App\Services\PushNotificationService();
+                $pushService->notifyAll(
+                    "Pengumuman Baru: " . $pengumuman->judul,
+                    \Str::limit(strip_tags($pengumuman->isi), 100),
+                    "/dashboard"
+                );
+            } catch (\Exception $e) {
+                \Log::error("Push notification failed: " . $e->getMessage());
+            }
+
             return redirect()->route('pengumuman.index')->with('success', 'Pengumuman berhasil ditambahkan');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();

@@ -41,7 +41,7 @@ class MisiSeeder extends Seeder
         ];
 
         foreach ($dataMisi as $misi) {
-            Misi::create($misi);
+            Misi::firstOrCreate(['judul' => $misi['judul']], $misi);
         }
     }
 }

@@ -15,37 +15,37 @@ class Unitpermissionseeder extends Seeder
      */
     public function run(): void
     {
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Unit'
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'unit.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'unit.create',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'unit.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'unit.store',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'unit.update',
             'id_permission_group' => $permissiongroup->id
         ]);
 
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'unit.delete',
             'id_permission_group' => $permissiongroup->id
         ]);

@@ -66,6 +66,87 @@ class DashboardController extends Controller
             return view('dashboard.koperasi');
         } else if ($user->hasRole(['admin unit', 'admin tu'])) {
             return view('dashboard.admin_unit');
+        } else if ($user->hasRole('guru')) {
+            $agent = new \Jenssegers\Agent\Agent();
+            $guru = \App\Models\Guru::with('karyawan')->where('npp', $user->npp)->first();
+
+            if ($guru && $agent->isMobile()) {
+                $activeTa = \App\Models\Tahunajaran::where('status', '1')->first();
+                $activeSemester = \App\Models\Semester::where('status', '1')->first();
+                $selectedSemester = $activeSemester ? $activeSemester->semester : '1';
+
+                // Hari ini dalam bahasa Indonesia
+                $hariIni = getHari(date('Y-m-d'));
+
+                // Jadwal mengajar hari ini
+                $jadwalHariIni = collect();
+                if ($activeTa) {
+                    $jadwalHariIni = \App\Models\JadwalPelajaran::with(['mapel', 'kelas'])
+                        ->where('guru_id', $guru->id)
+                        ->where('kode_ta', $activeTa->kode_ta)
+                        ->where('semester', $selectedSemester)
+                        ->where('hari', $hariIni)
+                        ->orderBy('jam_ke')
+                        ->get();
+                }
+
+                // Cek status presensi hari ini per jadwal
+                $jadwalHariIni->each(function ($jadwal) {
+                    $jadwal->sudah_presensi = \App\Models\PresensiMapel::where('jadwal_pelajaran_id', $jadwal->id)
+                        ->where('tanggal', date('Y-m-d'))
+                        ->exists();
+                });
+
+                // Kelas binaan (wali kelas)
+                $listKelasBinaan = collect();
+                $kelasBinaan = null;
+                $totalSiswa = 0;
+                if ($activeTa) {
+                    $listKelasBinaan = \App\Models\Kelas::with('unit')
+                        ->where('guru_id', $guru->id)
+                        ->where('kode_ta', $activeTa->kode_ta)
+                        ->get();
+
+                    $kelasBinaan = $listKelasBinaan->first();
+
+                    if ($listKelasBinaan->isNotEmpty()) {
+                        $kodeKelasList = $listKelasBinaan->pluck('kode_kelas')->toArray();
+                        $totalSiswa = \App\Models\Kelassiswa::whereIn('kode_kelas', $kodeKelasList)->count();
+                    }
+                }
+
+                // Sapaan kontekstual
+                $jam = (int) date('H');
+                if ($jam >= 3 && $jam < 11) {
+                    $sapaan = 'Selamat Pagi';
+                } elseif ($jam >= 11 && $jam < 15) {
+                    $sapaan = 'Selamat Siang';
+                } elseif ($jam >= 15 && $jam < 18) {
+                    $sapaan = 'Selamat Sore';
+                } else {
+                    $sapaan = 'Selamat Malam';
+                }
+
+                return view('dashboard.guru_mobile', compact(
+                    'guru',
+                    'activeTa',
+                    'jadwalHariIni',
+                    'kelasBinaan',
+                    'listKelasBinaan',
+                    'totalSiswa',
+                    'hariIni',
+                    'sapaan'
+                ));
+            }
+
+            // Desktop fallback — gunakan dashboard default
+            $data['departemen'] = Departemen::orderBy('kode_dept')->get();
+            $data['ledger'] = Ledger::orderBy('kode_ledger')->get();
+            $hariini = date('Y-m-d');
+            $namahari = getnamaHari(date('D', strtotime($hariini)));
+            $data['jadwalkerja'] = Karyawan::where('hari_kerja', 'like', '%' . $namahari . '%')->get();
+            $data['unit'] = Unit::orderBy('kode_unit')->get();
+            return view('dashboard.index', $data);
         } else {
             $data['departemen'] = Departemen::orderBy('kode_dept')->get();
             $data['ledger'] = Ledger::orderBy('kode_ledger')->get();

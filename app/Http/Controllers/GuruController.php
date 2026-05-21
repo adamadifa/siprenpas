@@ -17,7 +17,12 @@ class GuruController extends Controller
     public function index(Request $request)
     {
         $query = Guru::query();
-        $query->select('guru.*', 'karyawan.nama_lengkap', 'unit.nama_unit', 'jabatan_akademik.nama_jabatan');
+        $query->select(
+            'guru.*',
+            'karyawan.nama_lengkap',
+            'unit.nama_unit',
+            'jabatan_akademik.nama_jabatan'
+        );
         $query->join('karyawan', 'guru.npp', '=', 'karyawan.npp');
         $query->join('unit', 'guru.kode_unit', '=', 'unit.kode_unit');
         $query->leftJoin('jabatan_akademik', 'guru.kode_jabatan', '=', 'jabatan_akademik.kode_jabatan');
@@ -162,6 +167,57 @@ class GuruController extends Controller
             }
             $guru->delete();
             return Redirect::back()->with(messageSuccess('Data Guru Berhasil Dihapus'));
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError($e->getMessage()));
+        }
+    }
+
+    public function createUser($id)
+    {
+        $id = Crypt::decrypt($id);
+        $guru = Guru::join('karyawan', 'guru.npp', '=', 'karyawan.npp')
+            ->select('guru.*', 'karyawan.nama_lengkap')
+            ->where('guru.id', $id)
+            ->first();
+        
+        return view('akademik.guru.create_user', compact('guru'));
+    }
+
+    public function storeUser(Request $request, $id)
+    {
+        $id = Crypt::decrypt($id);
+        $guru = Guru::findOrFail($id);
+
+        $request->validate([
+            'password' => 'nullable|min:6',
+        ]);
+
+        try {
+            $password = $request->password ?: $guru->npp;
+            $guru->update([
+                'password' => bcrypt($password),
+            ]);
+
+            return Redirect::back()->with(messageSuccess('Password Guru Berhasil Diupdate'));
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError($e->getMessage()));
+        }
+    }
+
+    public function generateUsers()
+    {
+        try {
+            $guruWithoutPassword = Guru::whereNull('password')->get();
+
+            $count = 0;
+            foreach ($guruWithoutPassword as $g) {
+                $g->update([
+                    'password' => bcrypt($g->npp),
+                ]);
+                $count++;
+            }
+
+            return Redirect::back()->with(messageSuccess($count . ' Password Guru Berhasil Digenerate dengan password default sesuai NPP masing-masing'));
         } catch (\Exception $e) {
             return Redirect::back()->with(messageError($e->getMessage()));
         }

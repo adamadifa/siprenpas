@@ -15,37 +15,37 @@ class Siswapermissionseeder extends Seeder
      */
     public function run(): void
     {
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Siswa'
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'siswa.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'siswa.create',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'siswa.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'siswa.store',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'siswa.update',
             'id_permission_group' => $permissiongroup->id
         ]);
 
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'siswa.delete',
             'id_permission_group' => $permissiongroup->id
         ]);

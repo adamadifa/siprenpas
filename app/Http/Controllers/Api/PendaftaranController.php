@@ -75,20 +75,25 @@ class PendaftaranController extends Controller
      */
     public function siswaByIdSiswa(Request $request)
     {
+        $no_pendaftaran = $request->query('no_pendaftaran');
         $id_siswa = $request->query('id_siswa');
-        if (!$id_siswa) {
-            return response()->json(['error' => 'Parameter id_siswa wajib diisi'], 422);
+
+        if (!$no_pendaftaran && !$id_siswa) {
+            return response()->json(['error' => 'Parameter no_pendaftaran atau id_siswa wajib diisi'], 422);
         }
+
         $ta_aktif = Tahunajaran::where('status', 1)->first();
         $kelas_siswa = Kelassiswa::join('kelas', 'kelas_siswa.kode_kelas', 'kelas.kode_kelas')
             ->select('kelas_siswa.id_siswa', 'nama_kelas')
             ->where('kelas.kode_ta', $ta_aktif->kode_ta);
+        
         $query = Biayasiswa::query();
         $query->select(
             'pendaftaran.id_siswa',
             'pendaftaran.no_pendaftaran',
             'tahun_ajaran',
             'pendaftaran.nis',
+            'pendaftaran.foto',
             'kelas_siswa.nama_kelas',
             'konfigurasi_biaya.tingkat',
             'nama_unit',
@@ -104,11 +109,12 @@ class PendaftaranController extends Controller
             $join->on('kelas_siswa.id_siswa', '=', 'pendaftaran.id_siswa');
         });
         $query->where('konfigurasi_biaya.kode_ta', $ta_aktif->kode_ta);
-
-        // Filter berdasarkan id_siswa dari query string
-        $query->where('pendaftaran.id_siswa', $id_siswa);
-
-
+        
+        if ($no_pendaftaran) {
+            $query->where('pendaftaran.no_pendaftaran', $no_pendaftaran);
+        } else {
+            $query->where('pendaftaran.id_siswa', $id_siswa);
+        }
 
         $siswa = Siswa::leftJoinSub($query, 'siswa_biaya', function ($join) {
             $join->on('siswa.id_siswa', '=', 'siswa_biaya.id_siswa');
@@ -122,11 +128,23 @@ class PendaftaranController extends Controller
                 'siswa_biaya.tingkat',
                 'siswa_biaya.nama_unit',
                 'siswa_biaya.logo',
+                'siswa_biaya.foto',
                 'districts.name as nama_kota'
-            )
-            ->where('siswa.id_siswa', $request->id_siswa)
-            ->join('districts', 'siswa.id_district', 'districts.id')
+            );
+
+        if ($no_pendaftaran) {
+            $siswa->where('siswa_biaya.no_pendaftaran', $no_pendaftaran);
+        } else {
+            $siswa->where('siswa.id_siswa', $id_siswa);
+        }
+
+        $siswa = $siswa->join('districts', 'siswa.id_district', 'districts.id')
             ->first();
+
+        if ($siswa && $siswa->foto) {
+            $siswa->foto = asset('storage/photos/pendaftaran/' . $siswa->foto);
+        }
+
         return response()->json($siswa);
     }
 

@@ -15,37 +15,37 @@ class Jenibiayapermissionseeder extends Seeder
      */
     public function run(): void
     {
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Jenis Biaya'
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jenisbiaya.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jenisbiaya.create',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jenisbiaya.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jenisbiaya.store',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jenisbiaya.update',
             'id_permission_group' => $permissiongroup->id
         ]);
 
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jenisbiaya.delete',
             'id_permission_group' => $permissiongroup->id
         ]);

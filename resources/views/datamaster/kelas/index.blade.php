@@ -35,7 +35,7 @@
 @endsection
 
 <div class="row">
-    <div class="col-lg-6">
+    <div class="col-12">
         <!-- Actions Section -->
         <div class="d-flex justify-content-start mb-3">
             @can('kelas.create')
@@ -61,7 +61,7 @@
                             <x-input-with-icon label="" value="{{ Request('nama_kelas_search') }}" name="nama_kelas_search"
                                 placeholder="Cari Nama Kelas" icon="ti ti-search" />
                         </div>
-                        <div class="col-lg-3 col-md-6">
+                        <div class="col-lg-2 col-md-6">
                             <div class="form-group">
                                 <select name="kode_unit_search" id="kode_unit_search" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
                                     <option value="">Semua Unit</option>
@@ -74,6 +74,18 @@
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-6">
+                            <div class="form-group">
+                                <select name="guru_id_search" id="guru_id_search" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
+                                    <option value="">Semua Wali Kelas</option>
+                                    @foreach ($wali_kelas_list as $wkl)
+                                        <option value="{{ $wkl->id }}" {{ Request('guru_id_search') == $wkl->id ? 'selected' : '' }}>
+                                            {{ $wkl->nama_guru }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-6">
                             <div class="form-group">
                                 <select name="kode_ta" id="kode_ta" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
                                     <option value="">Tahun Ajaran</option>
@@ -111,6 +123,7 @@
                                 <th class="text-white py-3">KELAS</th>
                                 <th class="text-white py-3">TINGKAT</th>
                                 <th class="text-white py-3">UNIT</th>
+                                <th class="text-white py-3">WALI KELAS</th>
                                 <th class="text-white py-3">TAHUN AJARAN</th>
                                 <th class="text-white py-3 text-end" style="width: 120px;">#</th>
                             </tr>
@@ -124,6 +137,13 @@
                                         <span class="badge bg-label-info">Tingkat {{ $d->tingkat }}</span>
                                     </td>
                                     <td class="py-2">{{ $d->nama_unit }}</td>
+                                    <td class="py-2">
+                                        @if ($d->waliKelas)
+                                            <span class="fw-bold text-dark">{{ $d->waliKelas->nama_guru }}</span>
+                                        @else
+                                            <span class="text-muted small">Belum Ditentukan</span>
+                                        @endif
+                                    </td>
                                     <td class="py-2">{{ $d->tahun_ajaran }}</td>
                                     <td class="py-2 text-end">
                                         <div class="d-flex justify-content-end gap-1">
@@ -159,7 +179,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center p-5">
+                                    <td colspan="7" class="text-center p-5">
                                         <div class="mb-3">
                                             <i class="ti ti-layout-grid fs-1 opacity-25"></i>
                                         </div>

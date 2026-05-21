@@ -15,40 +15,40 @@ class Karyawanpermissionseeder extends Seeder
      */
     public function run(): void
     {
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Karyawan'
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'karyawan.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'karyawan.create',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'karyawan.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'karyawan.store',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'karyawan.update',
             'id_permission_group' => $permissiongroup->id
         ]);
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'karyawan.show',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'karyawan.delete',
             'id_permission_group' => $permissiongroup->id
         ]);

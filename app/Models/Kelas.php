@@ -17,4 +17,14 @@ class Kelas extends Model
     {
         return $this->belongsTo(Unit::class, 'kode_unit', 'kode_unit');
     }
+
+    public function waliKelas()
+    {
+        return $this->belongsTo(Guru::class, 'guru_id');
+    }
+
+    public function siswa()
+    {
+        return $this->hasMany(Kelassiswa::class, 'kode_kelas', 'kode_kelas');
+    }
 }

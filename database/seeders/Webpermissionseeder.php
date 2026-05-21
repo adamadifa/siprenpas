@@ -15,21 +15,21 @@ class Webpermissionseeder extends Seeder
      */
     public function run(): void
     {
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Kategori'
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'kategori.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'kategori.create',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'kategori.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
@@ -37,27 +37,27 @@ class Webpermissionseeder extends Seeder
 
 
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'kategori.delete',
             'id_permission_group' => $permissiongroup->id
         ]);
 
 
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Post'
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'post.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'post.create',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'post.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
@@ -65,58 +65,58 @@ class Webpermissionseeder extends Seeder
 
 
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'post.delete',
             'id_permission_group' => $permissiongroup->id
         ]);
 
 
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Pages'
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pages.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pages.create',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pages.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
 
 
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pages.delete',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Testimoni'
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'testimonials.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'testimonials.create',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'testimonials.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'testimonials.delete',
             'id_permission_group' => $permissiongroup->id
         ]);

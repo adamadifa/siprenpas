@@ -22,7 +22,7 @@ class KategoriPengumumanSeeder extends Seeder
         ];
 
         foreach ($kategori as $kat) {
-            KategoriPengumuman::create($kat);
+            KategoriPengumuman::firstOrCreate($kat);
         }
     }
 }

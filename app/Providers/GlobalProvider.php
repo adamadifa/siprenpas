@@ -39,8 +39,8 @@ class GlobalProvider extends ServiceProvider
             $notifikasi_ajuan_absen = $notifikasi_izinabsen  + $notifikasi_izinsakit;
             $listbulan = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
             $tahunajaran = Tahunajaran::where('status', 1)->first();
-            $kode_ta = $tahunajaran->kode_ta;
-            $ta_aktif = $tahunajaran->tahun_ajaran;
+            $kode_ta = $tahunajaran ? $tahunajaran->kode_ta : '';
+            $ta_aktif = $tahunajaran ? $tahunajaran->tahun_ajaran : '';
             $sharedData = [
                 'notifikasi_izinabsen' => $notifikasi_izinabsen,
                 'notifikasi_izinsakit' => $notifikasi_izinsakit,

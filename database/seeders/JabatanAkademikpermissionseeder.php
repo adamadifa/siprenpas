@@ -15,31 +15,31 @@ class JabatanAkademikpermissionseeder extends Seeder
      */
     public function run(): void
     {
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Jabatan Akademik'
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jabatanakademik.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jabatanakademik.store',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jabatanakademik.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jabatanakademik.update',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'jabatanakademik.delete',
             'id_permission_group' => $permissiongroup->id
         ]);

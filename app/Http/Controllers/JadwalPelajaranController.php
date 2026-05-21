@@ -16,9 +16,29 @@ class JadwalPelajaranController extends Controller
 {
     public function index(Request $request)
     {
+        if (!auth()->user()->can('jadwalpelajaran.index') && !auth()->user()->hasRole('guru')) {
+            abort(403, 'Akses ditolak.');
+        }
+
         // Get Active Tahun Ajaran
         $activeTa = Tahunajaran::where('status', 1)->first();
-        $semuaTa = Tahunajaran::orderBy('tahun_ajaran', 'desc')->get();
+        
+        $user = auth()->user();
+        $guru = null;
+        if ($user->hasRole('guru')) {
+            $guru = Guru::where('npp', $user->npp)->first();
+        }
+
+        if ($guru) {
+            $semuaTa = Tahunajaran::whereIn('kode_ta', function($q) use ($guru) {
+                $q->select('kode_ta')->from('jadwal_pelajaran')->where('guru_id', $guru->id);
+            })->orderBy('tahun_ajaran', 'desc')->get();
+            if ($semuaTa->isEmpty() && $activeTa) {
+                $semuaTa = collect([$activeTa]);
+            }
+        } else {
+            $semuaTa = Tahunajaran::orderBy('tahun_ajaran', 'desc')->get();
+        }
         
         $query = JadwalPelajaran::query();
         
@@ -43,8 +63,12 @@ class JadwalPelajaranController extends Controller
         }
 
         // Filter by Guru
-        if ($request->has('guru_id') && $request->guru_id != '') {
-            $query->where('guru_id', $request->guru_id);
+        if ($guru) {
+            $query->where('guru_id', $guru->id);
+        } else {
+            if ($request->has('guru_id') && $request->guru_id != '') {
+                $query->where('guru_id', $request->guru_id);
+            }
         }
         
         // Filter by Hari
@@ -65,32 +89,35 @@ class JadwalPelajaranController extends Controller
 
         $jadwal = $query->with(['unit', 'kelas', 'mapel', 'guru', 'tahunAjaran'])->orderBy('hari', 'desc')->orderBy('jam_ke')->get();
 
-        $units = Unit::all();
-        
-        // Dynamic loading for Filters
-        $kelas = [];
-        $gurus = [];
+        if ($guru) {
+            $units = Unit::whereIn('kode_unit', function($q) use ($guru) {
+                $q->select('kode_unit')->from('jadwal_pelajaran')->where('guru_id', $guru->id);
+            })->get();
 
-        if ($request->has('kode_unit') && $request->kode_unit != '') {
-            $kelas = Kelas::where('kode_unit', $request->kode_unit)->orderBy('nama_kelas')->get();
-            $gurus = Guru::with('karyawan')->where('kode_unit', $request->kode_unit)->where('status_aktif_ajar', 1)->get();
+            $kelasQuery = Kelas::whereIn('kode_kelas', function($q) use ($guru) {
+                $q->select('kode_kelas')->from('jadwal_pelajaran')->where('guru_id', $guru->id);
+            });
+            if ($request->has('kode_unit') && $request->kode_unit != '') {
+                $kelasQuery->where('kode_unit', $request->kode_unit);
+            }
+            $kelas = $kelasQuery->orderBy('nama_kelas')->get();
+
+            $gurus = [];
         } else {
-            // Optional: load nothing, or load all. Better load nothing to force unit selection or handle logic in view.
-            // For now, let's keep it empty to encourage Unit selection first, 
-            // OR if you want 'Semua Kelas' to be functional without unit, you'd need all classes.
-            // But user asked for "dependent on unit".
-             $kelas = Kelas::orderBy('nama_kelas')->get(); // Fallback if no unit selected, maybe show all? Or Show None? 
-             // Logic update: User wanted dynamic. If no unit, maybe show all is fine, but UX wise better to be consistent. 
-             // Let's sticking to "Show All" if no Unit selected for filter flexibility, 
-             // BUT if Unit selected, filter them.
-             
-             // Re-reading request: "pada form filter juga sama dong untuk kelas dan guru berdasarkan unit yang dipilih"
-             // This implies dependency. 
-             // Implementation: If unit selected -> Filter. If not -> Show All (default behavior).
-             $gurus = Guru::with('karyawan')->where('status_aktif_ajar', 1)->get();
+            $units = Unit::all();
+            if ($request->has('kode_unit') && $request->kode_unit != '') {
+                $kelas = Kelas::where('kode_unit', $request->kode_unit)->orderBy('nama_kelas')->get();
+                $gurus = Guru::with('karyawan')->where('kode_unit', $request->kode_unit)->where('status_aktif_ajar', 1)->get();
+            } else {
+                $kelas = Kelas::orderBy('nama_kelas')->get();
+                $gurus = Guru::with('karyawan')->where('status_aktif_ajar', 1)->get();
+            }
         }
         
-        return view('akademik.jadwal_pelajaran.index', compact('jadwal', 'units', 'kelas', 'gurus', 'activeTa', 'semuaTa', 'selectedKodeTa', 'selectedSemester'));
+        $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Ahad'];
+        $semesters = [1, 2];
+        
+        return view('akademik.jadwal_pelajaran.index', compact('jadwal', 'units', 'kelas', 'gurus', 'activeTa', 'semuaTa', 'selectedKodeTa', 'selectedSemester', 'days', 'semesters'));
     }
 
     public function create()
@@ -111,6 +138,13 @@ class JadwalPelajaranController extends Controller
 
     public function getDataByUnit(Request $request)
     {
+        if (!auth()->user()->can('jadwalpelajaran.index') && !auth()->user()->hasRole('guru')) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Akses ditolak.'
+            ], 403);
+        }
+
         $kode_unit = $request->kode_unit;
         $activeTa = Tahunajaran::where('status', 1)->first();
 
@@ -121,20 +155,45 @@ class JadwalPelajaranController extends Controller
             ]);
         }
 
-        $kelas = Kelas::where('kode_unit', $kode_unit)
-                      ->where('kode_ta', $activeTa->kode_ta)
-                      ->orderBy('nama_kelas')
-                      ->get();
+        $user = auth()->user();
+        $guru = null;
+        if ($user->hasRole('guru')) {
+            $guru = Guru::where('npp', $user->npp)->first();
+        }
 
-        $mapels = MataPelajaran::where('kode_unit', $kode_unit)
-                               ->where('aktif', 1)
-                               ->orderBy('nama_matpel')
-                               ->get();
+        if ($guru) {
+            $kelas = Kelas::where('kode_unit', $kode_unit)
+                          ->whereIn('kode_kelas', function($q) use ($guru) {
+                              $q->select('kode_kelas')->from('jadwal_pelajaran')->where('guru_id', $guru->id);
+                          })
+                          ->orderBy('nama_kelas')
+                          ->get();
 
-        $gurus = Guru::with('karyawan')
-                     ->where('kode_unit', $kode_unit)
-                     ->where('status_aktif_ajar', 1)
-                     ->get();
+            $mapels = MataPelajaran::where('kode_unit', $kode_unit)
+                                   ->where('aktif', 1)
+                                   ->whereIn('id', function($q) use ($guru) {
+                                       $q->select('mata_pelajaran_id')->from('jadwal_pelajaran')->where('guru_id', $guru->id);
+                                   })
+                                   ->orderBy('nama_matpel')
+                                   ->get();
+
+            $gurus = [];
+        } else {
+            $kelas = Kelas::where('kode_unit', $kode_unit)
+                          ->where('kode_ta', $activeTa->kode_ta)
+                          ->orderBy('nama_kelas')
+                          ->get();
+
+            $mapels = MataPelajaran::where('kode_unit', $kode_unit)
+                                   ->where('aktif', 1)
+                                   ->orderBy('nama_matpel')
+                                   ->get();
+
+            $gurus = Guru::with('karyawan')
+                         ->where('kode_unit', $kode_unit)
+                         ->where('status_aktif_ajar', 1)
+                         ->get();
+        }
 
         return response()->json([
             'status' => 'success',
@@ -261,6 +320,25 @@ class JadwalPelajaranController extends Controller
     {
         $id = Crypt::decrypt($id);
         $jadwal = JadwalPelajaran::with(['unit', 'kelas', 'mapel', 'guru.karyawan', 'tahunAjaran'])->findOrFail($id);
+
+        $user = auth()->user();
+        if (!$user->can('jadwalpelajaran.index') && !$user->hasRole('guru')) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        if ($user->hasRole('guru') && !$user->can('jadwalpelajaran.index')) {
+            $guru = Guru::where('npp', $user->npp)->first();
+            if ($guru) {
+                $isWaliKelas = Kelas::where('kode_kelas', $jadwal->kode_kelas)
+                    ->where('guru_id', $guru->id)
+                    ->exists();
+                if ($jadwal->guru_id !== $guru->id && !$isWaliKelas) {
+                    abort(403, 'Akses ditolak. Anda hanya dapat mencetak presensi kelas bimbingan atau kelas Anda sendiri.');
+                }
+            } else {
+                abort(403, 'Akses ditolak. Data guru tidak ditemukan.');
+            }
+        }
 
         // Get students in this class
         $students = \App\Models\Kelassiswa::with('siswa')

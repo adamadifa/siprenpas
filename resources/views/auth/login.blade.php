@@ -1,189 +1,488 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light-style layout-wide customizer-hide" dir="ltr" data-theme="theme-default">
+
+<html lang="en" class="light-style layout-wide customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="{{ asset('/assets/') }}"
+    data-template="vertical-menu-template-no-customizer">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <link rel="manifest" href="{{ asset('manifest.json') }}">
-    <meta name="theme-color" content="#0d9488">
-    <title>Masuk - {{ $pengaturan && $pengaturan->nama_aplikasi ? $pengaturan->nama_aplikasi : 'SIPRENPAS' }}</title>
+    <meta name="theme-color" content="#4CAF50">
+    <title>Login Basic </title>
+
+    <meta name="description" content="" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('/assets/img/favicon/favicon.ico') }}" />
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-    
-    <!-- AOS (Animate On Scroll) -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    
-    <!-- Scripts and Styles -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    @laravelPWA
+    <!-- Icons -->
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/fonts/fontawesome.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/fonts/tabler-icons.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/fonts/flag-icons.css') }}" />
+
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/css/rtl/core.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/css/rtl/theme-default.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/css/demo.css') }}" />
+
+    <!-- Vendors CSS -->
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/node-waves/node-waves.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/typeahead-js/typeahead.css') }}" />
+    <!-- Vendor -->
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/@form-validation/umd/styles/index.min.css') }}" />
+
+    <!-- Page CSS -->
+    <!-- Page -->
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/page-auth.css') }}" />
+
+    <!-- Helpers -->
+    <script src="{{ asset('/assets/vendor/js/helpers.js') }}"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="{{ asset('/assets/js/config.js') }}"></script>
 
     <style>
-        [x-cloak] { display: none !important; }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-        .animate-shake {
-            animation: shake 0.4s ease-in-out;
-        }
         body {
             font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            width: 100%;
+            position: relative;
+        }
+
+        .login-left {
+            flex: 2.5;
+            background: linear-gradient(135deg, rgba(27, 94, 32, 0.95) 0%, rgba(10, 61, 10, 0.95) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background-image: url('{{ $pengaturan && $pengaturan->background_login ? asset('storage/' . $pengaturan->background_login) : asset('images/bgalamin.png') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            overflow: hidden;
+            min-height: 100vh;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(27, 94, 32, 0.95) 0%, rgba(10, 61, 10, 0.95) 100%);
+            z-index: 1;
+        }
+
+        .login-left-content {
+            position: relative;
+            z-index: 5;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .login-logo {
+            width: 120px;
+            height: 120px;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+            position: relative;
+            z-index: 6;
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        .brand-text {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+            text-shadow:
+                2px 2px 0 #1B5E20,
+                4px 4px 0 rgba(0, 0, 0, 0.2);
+            animation: textShine 3s ease-in-out infinite;
+            -webkit-text-fill-color: white;
+            margin-bottom: 0.3rem;
+            line-height: 1.2;
+        }
+
+        .brand-description {
+            color: white;
+            text-align: center;
+            line-height: 1.4;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            font-style: italic;
+            font-weight: 300;
+        }
+
+        .brand-description p {
+            margin: 0.2rem 0;
+        }
+
+        @keyframes textShine {
+            0% {
+                text-shadow:
+                    2px 2px 0 #1B5E20,
+                    4px 4px 0 rgba(0, 0, 0, 0.2),
+                    0 0 20px rgba(255, 255, 255, 0.5);
+            }
+
+            50% {
+                text-shadow:
+                    2px 2px 0 #1B5E20,
+                    4px 4px 0 rgba(0, 0, 0, 0.2),
+                    0 0 30px rgba(255, 255, 255, 0.8);
+            }
+
+            100% {
+                text-shadow:
+                    2px 2px 0 #1B5E20,
+                    4px 4px 0 rgba(0, 0, 0, 0.2),
+                    0 0 20px rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        @keyframes logoFloat {
+            0% {
+                transform: translateY(0) scale(1);
+                filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+            }
+
+            50% {
+                transform: translateY(-10px) scale(1.05);
+                filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.3));
+            }
+
+            100% {
+                transform: translateY(0) scale(1);
+                filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+            }
+        }
+
+        .login-left-content h1 {
+            font-size: 4.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-left-content p {
+            font-size: 1.5rem;
+            opacity: 0.95;
+            line-height: 1.4;
+            margin-bottom: 0;
+            font-weight: 400;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background-color: #ffffff;
+        }
+
+        .login-form-container {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .welcome-text {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-text h4 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .welcome-text p {
+            color: #666;
+            margin-bottom: 0;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .input-group-text {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1B5E20 0%, #0A3D0A 100%);
+            border: none;
+            padding: 0.8rem;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0A3D0A 0%, #1B5E20 100%);
+        }
+
+        .form-control:focus {
+            border-color: #1B5E20;
+            box-shadow: 0 0 0 0.2rem rgba(27, 94, 32, 0.25);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .divider-text {
+            color: #666;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+
+            .login-left {
+                min-height: 300px;
+            }
+
+            .login-right {
+                padding: 2rem;
+            }
+
+            .login-left-content h1 {
+                font-size: 3rem;
+            }
+
+            .login-left-content p {
+                font-size: 1.2rem;
+            }
         }
     </style>
+    @laravelPWA
 </head>
-<body class="antialiased bg-white overflow-x-hidden">
-    <div class="min-h-[100dvh] bg-white flex flex-col selection:bg-teal-100">
-        
-        <!-- TOP SECTION: Branding (Fixed Height) -->
-        <div class="h-[42vh] bg-gradient-to-br from-teal-900 via-teal-800 to-teal-900 relative flex flex-col items-center justify-center px-6">
-            <!-- Abstract Background Elements -->
-            <div class="absolute top-0 right-0 w-64 h-64 bg-teal-500 rounded-full blur-[80px] opacity-20 -translate-y-1/2 translate-x-1/4"></div>
-            <div class="absolute bottom-0 left-0 w-48 h-48 bg-teal-400 rounded-full blur-[60px] opacity-20 translate-y-1/4 -translate-x-1/4"></div>
-            <div class="absolute inset-0 opacity-[0.03]" style="background-image: url('https://www.transparenttextures.com/patterns/cubes.png');"></div>
 
-            <!-- Logo & Text -->
-            <div class="relative z-10 flex flex-col items-center transform -translate-y-4">
-                <div class="w-20 h-20 bg-white rounded-[24px] shadow-2xl shadow-teal-950/50 flex items-center justify-center p-3.5 mb-5 border border-white/10" data-aos="zoom-in" data-aos-duration="800">
-                    @php
-                        $logoUrl = ($pengaturan && $pengaturan->logo) 
-                            ? asset('storage/' . $pengaturan->logo) 
-                            : asset('assets/img/logo/persisalamin.png');
-                    @endphp
-                    <img src="{{ $logoUrl }}" alt="Logo" class="w-full h-full object-contain">
+<body>
+    <div class="login-container">
+        <!-- Left Side -->
+        <div class="login-left">
+            <div class="login-left-content">
+                @if ($pengaturan && $pengaturan->logo)
+                    <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="Logo" class="login-logo">
+                @else
+                    <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="Logo" class="login-logo">
+                @endif
+                <div class="brand-text">{{ $pengaturan && $pengaturan->nama_aplikasi ? strtoupper($pengaturan->nama_aplikasi) : 'SIPREN' }}</div>
+                <div class="brand-description">
+                    @if ($pengaturan)
+                        <p>{{ $pengaturan->nama_sekolah }}</p>
+                    @else
+                        <p>Sistem Informasi Pesantren Persatuan Islam 80 Al Amin</p>
+                    @endif
                 </div>
-                
-                <h1 class="text-[28px] font-black text-white tracking-tight leading-none mb-1.5 shadow-sm text-center" data-aos="fade-up" data-aos-delay="100">
-                    {{ $pengaturan && $pengaturan->nama_aplikasi ? strtoupper($pengaturan->nama_aplikasi) : 'SIPRENPAS' }}
-                </h1>
-                <p class="text-teal-100/80 text-[10px] font-bold uppercase tracking-[0.25em] text-center" data-aos="fade-up" data-aos-delay="200">
-                    {{ $pengaturan && $pengaturan->nama_sekolah ? $pengaturan->nama_sekolah : 'Pesantren Al Amin' }}
-                </p>
             </div>
         </div>
 
-        <!-- BOTTOM SECTION: Form Drawer (Expands to fill) -->
-        <div class="flex-1 bg-white rounded-t-[40px] -mt-12 relative z-20 px-7 pt-10 pb-8 flex flex-col shadow-[0_-15px_40px_rgba(0,0,0,0.15)]"
-             x-data="{
-                form: { id_user: '', password: '' },
-                errors: {},
-                isFocus: '',
-                validate(field) {
-                    this.errors[field] = '';
-                    if (!this.form[field]) this.errors[field] = 'Kolom ini wajib diisi.';
-                },
-                submit(e) {
-                    this.validate('id_user');
-                    this.validate('password');
-                    if (this.errors.id_user || this.errors.password) e.preventDefault();
-                }
-             }">
-            
-            <!-- Drag Handle Indicator -->
-            <div class="absolute top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-slate-200 rounded-full"></div>
-
-            <div class="mb-8" data-aos="fade-up" data-aos-delay="300">
-                <h2 class="text-2xl font-black text-slate-800">Masuk Akun</h2>
-                <p class="text-[13px] text-slate-400 font-medium mt-1">Silakan masuk untuk melanjutkan</p>
-            </div>
-
-            @if($errors->any())
-                <div class="mb-6 p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-start gap-3 animate-shake">
-                    <i class="ti ti-alert-triangle text-rose-500 text-lg shrink-0 mt-0.5"></i>
-                    <p class="text-[12px] text-rose-700 font-bold leading-relaxed">{{ $errors->first() }}</p>
+        <!-- Right Side -->
+        <div class="login-right">
+            <div class="login-form-container">
+                <!-- Logo -->
+                <div class="app-brand justify-content-center mb-4 mt-2">
+                    @if ($pengaturan && $pengaturan->logo)
+                        <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="" width="120">
+                    @else
+                        <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="" width="120">
+                    @endif
                 </div>
-            @endif
-
-            @if(session('success'))
-                <div class="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-start gap-3">
-                    <i class="ti ti-circle-check text-emerald-500 text-lg shrink-0 mt-0.5"></i>
-                    <p class="text-[12px] text-emerald-700 font-bold leading-relaxed">{{ session('success') }}</p>
+                <!-- /Logo -->
+                <div class="welcome-text">
+                    <h4>Selamat Datang! 👋</h4>
+                    <p>Silahkan login untuk melanjutkan</p>
                 </div>
-            @endif
 
-            <form action="{{ route('login') }}" method="POST" class="space-y-5" @submit="submit" novalidate data-aos="fade-up" data-aos-delay="400">
-                @csrf
-                
-                <!-- Modern Input: Username -->
-                <div class="space-y-1">
-                    <div class="relative group">
-                        <div class="absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300"
-                             :class="errors.id_user ? 'text-rose-500' : (isFocus === 'id_user' ? 'text-teal-600' : 'text-slate-400')">
-                            <i class="ti ti-user text-xl"></i>
-                        </div>
-                        <input type="text" name="id_user" x-model="form.id_user" 
-                            @focus="isFocus = 'id_user'" @blur="isFocus = ''; validate('id_user')"
-                            placeholder="Email atau Username" required
-                            class="w-full bg-slate-50 border rounded-2xl py-4 pl-12 pr-4 text-[14px] font-bold text-slate-800 outline-none transition-all duration-300 focus:bg-white placeholder:text-slate-400 placeholder:font-medium"
-                            :class="errors.id_user ? 'border-rose-500 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10' : 'border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10'">
+                <x-alert-error :messages="$errors->get('id_user')" class="mt-2" />
+
+                <form id="formAuthentication" class="mb-3" action="{{ route('login') }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="id_user" class="form-label">Email atau Username</label>
+                        <input type="text" class="form-control" id="id_user" name="id_user" placeholder="Masukkan email atau username"
+                            autofocus />
                     </div>
-                    <p x-show="errors.id_user" x-cloak x-text="errors.id_user" class="text-rose-500 text-[10px] font-bold ml-1"></p>
-                </div>
-
-                <!-- Modern Input: Password -->
-                <div class="space-y-1">
-                    <div class="relative group">
-                        <div class="absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300"
-                             :class="errors.password ? 'text-rose-500' : (isFocus === 'password' ? 'text-teal-600' : 'text-slate-400')">
-                            <i class="ti ti-lock text-xl"></i>
+                    <div class="mb-3 form-password-toggle">
+                        <div class="d-flex justify-content-between">
+                            <label class="form-label" for="password">Password</label>
+                            <a href="auth-forgot-password-basic.html">
+                                <small>Lupa Password?</small>
+                            </a>
                         </div>
-                        <input type="password" name="password" x-model="form.password" 
-                            @focus="isFocus = 'password'" @blur="isFocus = ''; validate('password')"
-                            placeholder="Kata Sandi" required
-                            class="w-full bg-slate-50 border rounded-2xl py-4 pl-12 pr-4 text-[14px] font-bold text-slate-800 outline-none transition-all duration-300 focus:bg-white placeholder:text-slate-400 placeholder:font-medium"
-                            :class="errors.password ? 'border-rose-500 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10' : 'border-slate-200 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10'">
+                        <div class="input-group input-group-merge">
+                            <input type="password" id="password" class="form-control" name="password"
+                                placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password"
+                                autocomplete="current-password" />
+                            <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
+                        </div>
                     </div>
-                    <p x-show="errors.password" x-cloak x-text="errors.password" class="text-rose-500 text-[10px] font-bold ml-1"></p>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember-me" />
+                            <label class="form-check-label" for="remember-me"> Ingat Saya </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <button class="btn btn-primary d-grid w-100" type="submit">Masuk</button>
+                    </div>
+                </form>
+
+                <div class="divider my-4">
+                    <div class="divider-text">atau</div>
                 </div>
 
-                <div class="flex items-center justify-between px-1 pt-1">
-                    <label class="flex items-center gap-2 cursor-pointer group">
-                        <input type="checkbox" name="remember" class="w-4 h-4 rounded text-teal-600 border-slate-300 focus:ring-teal-500">
-                        <span class="text-xs font-semibold text-slate-500 group-hover:text-slate-700 transition-colors">Ingat Saya</span>
-                    </label>
-                    <a href="#" class="text-xs font-bold text-teal-600 hover:text-teal-700 transition-colors">Lupa Sandi?</a>
-                </div>
-
-                <div class="pt-4">
-                    <button type="submit" 
-                        class="w-full py-4 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 rounded-2xl text-white font-black text-[14px] tracking-wide shadow-lg shadow-teal-600/30 transition-all flex items-center justify-center gap-2">
-                        Masuk
-                        <i class="ti ti-arrow-right text-lg"></i>
-                    </button>
-                </div>
-            </form>
-
-            <!-- Bottom Text -->
-            <div class="mt-auto pt-10 text-center" data-aos="fade-up" data-aos-delay="500">
-                <div class="flex items-center justify-center gap-2 text-slate-400">
-                    <i class="ti ti-headset text-lg"></i>
-                    <span class="text-[11px] font-semibold">Butuh Bantuan? Hubungi Admin</span>
+                <div class="d-flex justify-content-center">
+                    <a href="javascript:;" class="btn btn-icon btn-label-facebook me-3">
+                        <i class="tf-icons fa-brands fa-facebook-f fs-5"></i>
+                    </a>
+                    <a href="javascript:;" class="btn btn-icon btn-label-google-plus me-3">
+                        <i class="tf-icons fa-brands fa-google fs-5"></i>
+                    </a>
+                    <a href="javascript:;" class="btn btn-icon btn-label-twitter">
+                        <i class="tf-icons fa-brands fa-twitter fs-5"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- AOS (Animate On Scroll) -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Core JS -->
+    <script src="{{ asset('/assets/vendor/libs/jquery/jquery.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/libs/popper/popper.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/js/bootstrap.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/libs/node-waves/node-waves.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/libs/hammer/hammer.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/libs/i18n/i18n.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/libs/typeahead-js/typeahead.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/js/menu.js') }}"></script>
+
+    <!-- Vendors JS -->
+    <script src="{{ asset('/assets/vendor/libs/@form-validation/umd/bundle/popular.min.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/libs/@form-validation/umd/plugin-bootstrap5/index.min.js') }}"></script>
+    <script src="{{ asset('/assets/vendor/libs/@form-validation/umd/plugin-auto-focus/index.min.js') }}"></script>
+
+    <!-- Main JS -->
+    <script src="{{ asset('/assets/js/main.js') }}"></script>
+
+    <!-- Page JS -->
+    <script src="{{ asset('/assets/js/pages-auth.js') }}"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            AOS.init({
-                duration: 800,
-                once: true,
-                offset: 50,
-                easing: 'ease-out-cubic'
-            });
+            const container = document.querySelector('.login-left');
+            const techBg = document.createElement('div');
+            techBg.className = 'tech-background';
+            container.appendChild(techBg);
+
+            // Create tech grid
+            const grid = document.createElement('div');
+            grid.className = 'tech-grid';
+            techBg.appendChild(grid);
+
+            // Create polygons
+            const createPolygons = () => {
+                const polygons = [{
+                        points: '50% 0%, 100% 50%, 50% 100%, 0% 50%',
+                        size: 120
+                    }, // Diamond
+                    {
+                        points: '50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%',
+                        size: 150
+                    }, // Hexagon
+                    {
+                        points: '50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%',
+                        size: 180
+                    }, // Pentagon
+                    {
+                        points: '25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%',
+                        size: 200
+                    } // Octagon
+                ];
+
+                polygons.forEach((polygon, i) => {
+                    const element = document.createElement('div');
+                    element.className = 'tech-polygon';
+                    element.style.clipPath = `polygon(${polygon.points})`;
+                    element.style.width = `${polygon.size}px`;
+                    element.style.height = `${polygon.size}px`;
+                    element.style.left = `${Math.random() * 70 + 15}%`;
+                    element.style.top = `${Math.random() * 70 + 15}%`;
+                    element.style.animationDelay = `${i * 0.5}s`;
+                    techBg.appendChild(element);
+                });
+            };
+
+            // Create tech lines
+            const createLines = () => {
+                const numLines = 8;
+                const lines = [];
+
+                for (let i = 0; i < numLines; i++) {
+                    const line = document.createElement('div');
+                    line.className = 'tech-line';
+
+                    const angle = (i * 45) % 360;
+                    const length = 200 + Math.random() * 100;
+
+                    line.style.width = `${length}px`;
+                    line.style.left = `${Math.random() * 80 + 10}%`;
+                    line.style.top = `${Math.random() * 80 + 10}%`;
+                    line.style.transform = `rotate(${angle}deg)`;
+                    line.style.animationDelay = `${i * 0.3}s`;
+
+                    techBg.appendChild(line);
+                    lines.push(line);
+                }
+            };
+
+            createPolygons();
+            createLines();
         });
     </script>
 </body>
+
 </html>

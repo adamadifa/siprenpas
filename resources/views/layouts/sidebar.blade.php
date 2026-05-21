@@ -419,10 +419,25 @@
             </li>
         @endif
 
+        @php
+            $isWaliKelas = false;
+            if (auth()->check() && auth()->user()->hasRole('guru')) {
+                $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
+                if ($guruModel) {
+                    $activeTa = \App\Models\Tahunajaran::where('status', '1')->first();
+                    if ($activeTa) {
+                        $isWaliKelas = \App\Models\Kelas::where('guru_id', $guruModel->id)
+                            ->where('kode_ta', $activeTa->kode_ta)
+                            ->exists();
+                    }
+                }
+            }
+        @endphp
+
         <!-- Menu Akademik -->
         @if (auth()->check() &&
-                auth()->user()->hasAnyPermission(['presensisiswa.index', 'guru.index', 'jabatanakademik.index', 'matapelajaran.index', 'kelas.index', 'jadwalpelajaran.index']))
-            <li class="menu-item {{ request()->is(['akademik', 'akademik/*', 'presensisiswa', 'presensisiswa/*', 'guru', 'guru/*', 'jabatan-akademik', 'jabatan-akademik/*', 'mata-pelajaran', 'mata-pelajaran/*', 'kelas', 'kelas/*', 'jadwal-pelajaran', 'jadwal-pelajaran/*', 'rapor', 'rapor/*', 'penilaian', 'penilaian/*', 'presensi-mapel', 'presensi-mapel/*']) ? 'open' : '' }}">
+                (auth()->user()->hasAnyPermission(['presensisiswa.index', 'guru.index', 'jabatanakademik.index', 'matapelajaran.index', 'kelas.index', 'jadwalpelajaran.index']) || $isWaliKelas || auth()->user()->hasRole('guru')))
+            <li class="menu-item {{ request()->is(['akademik', 'akademik/*', 'presensisiswa', 'presensisiswa/*', 'guru', 'guru/*', 'jabatan-akademik', 'jabatan-akademik/*', 'mata-pelajaran', 'mata-pelajaran/*', 'kelas', 'kelas/*', 'jadwal-pelajaran', 'jadwal-pelajaran/*', 'rapor', 'rapor/*', 'penilaian', 'penilaian/*', 'presensi-mapel', 'presensi-mapel/*', 'wali-kelas', 'wali-kelas/*']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-school"></i>
                     <div>Akademik</div>
@@ -445,7 +460,7 @@
                         </li>
                     @endcan
                     @if (auth()->check() &&
-                            auth()->user()->hasAnyPermission(['presensisiswa.index']))
+                            (auth()->user()->hasAnyPermission(['presensisiswa.index']) || auth()->user()->hasRole('guru')))
                         <li class="menu-item {{ request()->is(['presensisiswa', 'presensisiswa/*']) ? 'active' : '' }}">
                             <a href="{{ route('presensisiswa.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-heart-rate-monitor"></i>
@@ -469,28 +484,36 @@
                             </a>
                         </li>
                     @endcan
-                    @can('jadwalpelajaran.index')
+                    @if (auth()->check() && (auth()->user()->can('jadwalpelajaran.index') || auth()->user()->hasRole('guru')))
                         <li class="menu-item {{ request()->is(['jadwal-pelajaran', 'jadwal-pelajaran/*']) ? 'active' : '' }}">
                             <a href="{{ route('jadwal-pelajaran.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-calendar"></i>
                                 <div>Jadwal Pelajaran</div>
                             </a>
                         </li>
-                    @endcan
+                    @endif
+                    @if ($isWaliKelas)
+                        <li class="menu-item {{ request()->is(['wali-kelas', 'wali-kelas/*']) ? 'active' : '' }}">
+                            <a href="{{ route('wali-kelas.index') }}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-presentation"></i>
+                                <div>Wali Kelas</div>
+                            </a>
+                        </li>
+                    @endif
                     <li class="menu-item {{ request()->is(['presensi-mapel', 'presensi-mapel/*']) ? 'active' : '' }}">
                         <a href="{{ route('presensi-mapel.index') }}" class="menu-link">
                             <i class="menu-icon tf-icons ti ti-checklist"></i>
                             <div>Presensi Mata Pelajaran</div>
                         </a>
                     </li>
-                    @can('jadwalpelajaran.index')
+                    @if (auth()->check() && (auth()->user()->can('jadwalpelajaran.index') || auth()->user()->hasRole('guru')))
                         <li class="menu-item {{ request()->is(['rapor', 'rapor/*', 'penilaian', 'penilaian/*']) ? 'active' : '' }}">
                             <a href="{{ route('rapor.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-file-report"></i>
                                 <div>Rapor Siswa</div>
                             </a>
                         </li>
-                    @endcan
+                    @endif
                 </ul>
             </li>
         @endif
@@ -813,23 +836,35 @@
         @endif
 
         <!-- Menu Pengumuman -->
-        @if (auth()->check())
+        @if (auth()->check() &&
+                auth()->user()->hasAnyPermission(['pengumuman.index', 'kategori-pengumuman.index', 'push-subscriptions.index']))
             <li class="menu-item {{ request()->is(['pengumuman*', 'kategori-pengumuman*']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-speakerphone"></i>
                     <div>Pengumuman</div>
                 </a>
                 <ul class="menu-sub">
-                    <li class="menu-item {{ request()->is(['pengumuman*']) ? 'active' : '' }}">
-                        <a href="{{ route('pengumuman.index') }}" class="menu-link">
-                            <div>Daftar Pengumuman</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ request()->is(['kategori-pengumuman*']) ? 'active' : '' }}">
-                        <a href="{{ route('kategori-pengumuman.index') }}" class="menu-link">
-                            <div>Kategori Pengumuman</div>
-                        </a>
-                    </li>
+                    @can('pengumuman.index')
+                        <li class="menu-item {{ request()->is(['pengumuman*']) ? 'active' : '' }}">
+                            <a href="{{ route('pengumuman.index') }}" class="menu-link">
+                                <div>Daftar Pengumuman</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('kategori-pengumuman.index')
+                        <li class="menu-item {{ request()->is(['kategori-pengumuman*']) ? 'active' : '' }}">
+                            <a href="{{ route('kategori-pengumuman.index') }}" class="menu-link">
+                                <div>Kategori Pengumuman</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('push-subscriptions.index')
+                        <li class="menu-item {{ request()->is(['push-subscriptions*']) ? 'active' : '' }}">
+                            <a href="{{ route('push-subscriptions.index') }}" class="menu-link">
+                                <div>Push Subscription</div>
+                            </a>
+                        </li>
+                    @endcan
                 </ul>
             </li>
         @endif

@@ -14,7 +14,9 @@ class MataPelajaranSeeder extends Seeder
     public function run(): void
     {
         // Bersihkan data lama
-        DB::table('mata_pelajaran')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('mata_pelajaran')->delete();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         $kodeUnit = 'U04';
         $counter = 1;

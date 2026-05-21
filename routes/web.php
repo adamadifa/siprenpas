@@ -74,6 +74,7 @@ use App\Http\Controllers\ProgramUnggulanController;
 use App\Http\Controllers\PilarPendidikanController;
 use App\Http\Controllers\SebaranAlumniController;
 use App\Http\Controllers\VisiMisiController;
+use App\Http\Controllers\PushSubscriptionController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Role;
 
@@ -508,6 +509,12 @@ Route::middleware('auth')->group(function () {
         Route::post('pendaftaranonline/{no_register}/cancel', 'cancel')->name('pendaftaranonline.cancel');
     });
 
+    Route::controller(PushSubscriptionController::class)->group(function () {
+        Route::get('/push-subscriptions', 'index')->name('push-subscriptions.index');
+        Route::get('/push-subscriptions/{pushSubscription}/test', 'test')->name('push-subscriptions.test');
+        Route::delete('/push-subscriptions/{pushSubscription}', 'destroy')->name('push-subscriptions.destroy');
+    });
+
     Route::controller(PembayaranpendidikanController::class)->group(function () {
         Route::get('/pembayaranpendidikan', 'index')->name('pembayaranpendidikan.index')->can('pembayaranpdd.index');
         Route::get('/pembayaranpendidikan/{no_pendaftaran}/show', 'show')->name('pembayaranpendidikan.show')->can('pembayaranpdd.show');
@@ -683,6 +690,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/guru/{id}/edit', 'edit')->name('guru.edit')->can('guru.edit');
         Route::put('/guru/{id}/update', 'update')->name('guru.update')->can('guru.edit');
         Route::delete('/guru/{id}/delete', 'destroy')->name('guru.delete')->can('guru.delete');
+        Route::get('/guru/{id}/create-user', 'createUser')->name('guru.createUser')->can('guru.create');
+        Route::post('/guru/{id}/store-user', 'storeUser')->name('guru.storeUser')->can('guru.create');
+        Route::get('/guru/generate-users', 'generateUsers')->name('guru.generateUsers')->can('guru.create');
     });
 
 
@@ -696,9 +706,9 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(App\Http\Controllers\JadwalPelajaranController::class)->group(function () {
-        Route::get('/jadwal-pelajaran', 'index')->name('jadwal-pelajaran.index')->can('jadwalpelajaran.index');
+        Route::get('/jadwal-pelajaran', 'index')->name('jadwal-pelajaran.index');
         Route::get('/jadwal-pelajaran/create', 'create')->name('jadwal-pelajaran.create')->can('jadwalpelajaran.create');
-        Route::post('/jadwal-pelajaran/get-data-by-unit', 'getDataByUnit')->name('jadwal-pelajaran.get-data-by-unit')->can('jadwalpelajaran.create');
+        Route::post('/jadwal-pelajaran/get-data-by-unit', 'getDataByUnit')->name('jadwal-pelajaran.get-data-by-unit');
         Route::post('/jadwal-pelajaran', 'store')->name('jadwal-pelajaran.store')->can('jadwalpelajaran.store');
         Route::get('/jadwal-pelajaran/{id}/edit', 'edit')->name('jadwal-pelajaran.edit')->can('jadwalpelajaran.edit');
         Route::put('/jadwal-pelajaran/{id}/update', 'update')->name('jadwal-pelajaran.update')->can('jadwalpelajaran.update');
@@ -720,6 +730,11 @@ Route::middleware('auth')->group(function () {
 
         // New Rapor Grouped Route
         Route::get('/rapor', 'rapor')->name('rapor.index');
+    });
+
+    Route::controller(App\Http\Controllers\WaliKelasController::class)->group(function () {
+        Route::get('/wali-kelas', 'index')->name('wali-kelas.index');
+        Route::get('/wali-kelas/detail/{jadwal_id}', 'detailPenilaian')->name('wali-kelas.detail-penilaian');
     });
 
     Route::controller(App\Http\Controllers\JabatanAkademikController::class)->group(function () {
@@ -745,7 +760,7 @@ Route::middleware('auth')->group(function () {
 
     // Route untuk Presensi Siswa
     Route::controller(PresensiSiswaController::class)->group(function () {
-        Route::get('/presensisiswa', 'index')->name('presensisiswa.index')->can('presensisiswa.index');
+        Route::get('/presensisiswa', 'index')->name('presensisiswa.index');
         Route::get('/presensisiswa/create', 'create')->name('presensisiswa.create')->can('presensisiswa.create');
         Route::post('/presensisiswa', 'store')->name('presensisiswa.store')->can('presensisiswa.create');
         Route::get('/presensisiswa/{id}', 'show')->name('presensisiswa.show')->can('presensisiswa.show');

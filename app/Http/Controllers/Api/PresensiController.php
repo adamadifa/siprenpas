@@ -3,156 +3,128 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Jamkerja;
-use App\Models\Karyawan;
-use App\Models\Presensi;
-use App\Models\Setjamkerjabydate;
-use App\Models\Setjamkerjabyday;
+use App\Models\PresensiSiswa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PresensiController extends Controller
 {
-
-
-    public function store()
+    /**
+     * @OA\Get(
+     *     path="/api/presensi-siswa",
+     *     tags={"Presensi"},
+     *     summary="Ambil data presensi harian siswa",
+     *     @OA\Parameter(
+     *         name="no_pendaftaran",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         description="Nomor Pendaftaran Siswa"
+     *     ),
+     *     @OA\Parameter(
+     *         name="bulan",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="integer"),
+     *         description="Bulan (1-12)"
+     *     ),
+     *     @OA\Parameter(
+     *         name="tahun",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="integer"),
+     *         description="Tahun (e.g. 2024)"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Berhasil ambil data presensi",
+     *         @OA\JsonContent(type="object")
+     *     )
+     * )
+     */
+    public function presensiSiswa(Request $request)
     {
-        $original_data  = file_get_contents('php://input');
-        $decoded_data   = json_decode($original_data, true);
-        $encoded_data   = json_encode($decoded_data);
+        $request->validate([
+            'no_pendaftaran' => 'required|string',
+            'bulan' => 'nullable|integer|min:1|max:12',
+            'tahun' => 'nullable|integer',
+        ]);
 
-        $data           = $decoded_data['data'];
-        $pin            = $data['pin'];
-        $status_scan    = $data['status_scan'];
-        $scan           = $data['scan'];
+        $no_pendaftaran = $request->no_pendaftaran;
+        $bulan = $request->bulan ?? date('m');
+        $tahun = $request->tahun ?? date('Y');
 
+        $presensi = PresensiSiswa::where('no_pendaftaran', $no_pendaftaran)
+            ->whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun)
+            ->orderBy('tanggal', 'desc')
+            ->get();
 
+        $rekap = [
+            'h' => $presensi->where('status', 'h')->count(),
+            'i' => $presensi->where('status', 'i')->count(),
+            's' => $presensi->where('status', 's')->count(),
+            'a' => $presensi->where('status', 'a')->count(),
+        ];
 
-        $karyawan       = Karyawan::where('pin', $pin)->first();
+        return response()->json([
+            'success' => true,
+            'data' => $presensi,
+            'rekap' => $rekap,
+            'period' => [
+                'bulan' => $bulan,
+                'tahun' => $tahun
+            ]
+        ]);
+    }
 
-        if ($karyawan == null) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Karyawan Tidak Ditemukan',
-            ]);
-            $nik = "";
-        } else {
-            $nik = $karyawan->nik;
-        }
+    /**
+     * @OA\Get(
+     *     path="/api/presensi-mapel",
+     *     tags={"Presensi"},
+     *     summary="Ambil data presensi per mata pelajaran",
+     *     @OA\Parameter(
+     *         name="id_siswa",
+     *         in="query",
+     *         required=true,
+     *         @OA\Schema(type="string"),
+     *         description="ID Siswa"
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Berhasil ambil data presensi mapel",
+     *         @OA\JsonContent(type="array", @OA\Items(type="object"))
+     *     )
+     * )
+     */
+    public function presensiMapel(Request $request)
+    {
+        $request->validate([
+            'id_siswa' => 'required|string',
+        ]);
 
-        $tanggal_sekarang   = date("Y-m-d", strtotime($scan));
-        $jam_sekarang = date("H:i", strtotime($scan));
-        $tanggal_kemarin = date("Y-m-d", strtotime("-1 days"));
+        $id_siswa = $request->id_siswa;
 
-        $tanggal_besok = date("Y-m-d", strtotime("+1 days"));
+        $presensi = DB::table('presensi_mapel_detail')
+            ->join('presensi_mapel', 'presensi_mapel_detail.presensi_mapel_id', '=', 'presensi_mapel.id')
+            ->join('mata_pelajaran', 'presensi_mapel.mata_pelajaran_id', '=', 'mata_pelajaran.id')
+            ->join('guru', 'presensi_mapel.guru_id', '=', 'guru.id')
+            ->where('presensi_mapel_detail.siswa_id', $id_siswa)
+            ->select(
+                'presensi_mapel_detail.*',
+                'presensi_mapel.tanggal',
+                'presensi_mapel.jam_mulai',
+                'presensi_mapel.jam_selesai',
+                'presensi_mapel.materi',
+                'mata_pelajaran.nama_mata_pelajaran',
+                'guru.nama_lengkap as nama_guru'
+            )
+            ->orderBy('presensi_mapel.tanggal', 'desc')
+            ->get();
 
-        //Cek Presensi Kemarin
-        $presensi_kemarin = Presensi::where('npp', $karyawan->npp)
-            ->join('konfigurasi_jam_kerja', 'presensi.kode_jam_kerja', '=', 'konfigurasi_jam_kerja.kode_jam_kerja')
-            ->where('npp', $karyawan->npp)
-            ->where('tanggal', $tanggal_kemarin)->first();
-
-        $lintas_hari = $presensi_kemarin ? $presensi_kemarin->lintashari : 0;
-
-        //Jika Presensi Kemarin Status Lintas Hari nya 1 Makan Tanggal Presensi Sekarang adalah Tanggal Kemarin
-        $tanggal_presensi = $lintas_hari == 1 ? $tanggal_kemarin : $tanggal_sekarang;
-        $tanggal_pulang = $lintas_hari == 1 ? $tanggal_besok : $tanggal_sekarang;
-
-
-        $namahari = getnamaHari(date('D', strtotime($tanggal_presensi)));
-        //Cek Jam Kerja By Date
-        $jamkerja = Setjamkerjabydate::join('konfigurasi_jam_kerja', 'presensi_jamkerja_bydate.kode_jam_kerja', '=', 'konfigurasi_jam_kerja.kode_jam_kerja')
-            ->where('npp', $karyawan->npp)
-            ->where('tanggal', $tanggal_presensi)
-            ->first();
-
-        //Jika Tidak Memiliki Jam Kerja By Date
-        if ($jamkerja == null) {
-            //Cek Jam Kerja harian / Jam Kerja Khusus / Jam Kerja Per Orangannya
-            $jamkerja = Setjamkerjabyday::join('konfigurasi_jam_kerja', 'presensi_jamkerja_byday.kode_jam_kerja', '=', 'konfigurasi_jam_kerja.kode_jam_kerja')
-                ->where('npp', $karyawan->npp)->where('hari', $namahari)->first();
-
-            // Jika Jam Kerja Harian Kosong
-            if ($jamkerja == null) {
-                $jamkerja = Jamkerja::where('kode_jam_kerja', 'JK01')->first();
-            }
-        }
-
-        //Cek Presensi
-        $presensi = Presensi::where('npp', $karyawan->npp)->where('tanggal', $tanggal_presensi)->first();
-
-        if ($presensi != null && $presensi->status != 'h') {
-            return response()->json([
-                'status' => false,
-                'message' => 'Presensi Sudah Ada',
-            ]);
-        } else if ($jamkerja == null) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Jam Kerja Tidak Ditemukan',
-            ]);
-        }
-
-        $kode_jam_kerja = $jamkerja->kode_jam_kerja;
-        $jam_kerja = Jamkerja::where('kode_jam_kerja', $kode_jam_kerja)->first();
-
-        $jam_presensi = $tanggal_sekarang . " " . $jam_sekarang;
-
-        $jam_masuk = $tanggal_presensi . " " . date('H:i', strtotime($jam_kerja->jam_masuk));
-
-        $presensi_hariini = Presensi::where('npp', $karyawan->npp)
-            ->where('tanggal', $tanggal_presensi)
-            ->first();
-
-        if (in_array($status_scan, [0, 2, 4, 6, 8])) {
-            if ($presensi_hariini && $presensi_hariini->jam_in != null) {
-                return response()->json(['status' => false, 'message' => 'Anda Sudah Absen Masuk Hari Ini', 'notifikasi' => 'notifikasi_sudahabsen'], 400);
-            } else {
-                try {
-                    if ($presensi_hariini != null) {
-                        Presensi::where('id', $presensi_hariini->id)->update([
-                            'jam_in' => $jam_presensi,
-                        ]);
-                    } else {
-                        Presensi::create([
-                            'npp' => $karyawan->npp,
-                            'tanggal' => $tanggal_presensi,
-                            'jam_in' => $jam_presensi,
-                            'jam_out' => null,
-                            'lokasi_out' => null,
-                            'foto_out' => null,
-                            'kode_jam_kerja' => $kode_jam_kerja,
-                            'status' => 'h'
-                        ]);
-                    }
-
-
-                    return response()->json(['status' => true, 'message' => 'Berhasil Absen Masuk', 'notifikasi' => 'notifikasi_absenmasuk'], 200);
-                } catch (\Exception $e) {
-                    return response()->json(['status' => false, 'message' => $e->getMessage()], 400);
-                }
-            }
-        } else {
-            try {
-                if ($presensi_hariini != null) {
-                    Presensi::where('id', $presensi_hariini->id)->update([
-                        'jam_out' => $jam_presensi,
-                    ]);
-                } else {
-                    Presensi::create([
-                        'npp' => $karyawan->npp,
-                        'tanggal' => $tanggal_presensi,
-                        'jam_in' => null,
-                        'jam_out' => $jam_presensi,
-                        'lokasi_in' => null,
-                        'foto_in' => null,
-                        'kode_jam_kerja' => $kode_jam_kerja,
-                        'status' => 'h'
-                    ]);
-                }
-                return response()->json(['status' => true, 'message' => 'Berhasil Absen Pulang', 'notifikasi' => 'notifikasi_absenpulang'], 200);
-            } catch (\Exception $e) {
-                return response()->json(['status' => false, 'message' => $e->getMessage()], 400);
-            }
-        }
+        return response()->json([
+            'success' => true,
+            'data' => $presensi
+        ]);
     }
 }

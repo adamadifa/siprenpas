@@ -7,6 +7,15 @@ use Illuminate\Http\Request;
 
 class KategoriPengumumanController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:kategori-pengumuman.index', ['only' => ['index']]);
+        $this->middleware('permission:kategori-pengumuman.create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:kategori-pengumuman.show', ['only' => ['show']]);
+        $this->middleware('permission:kategori-pengumuman.edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:kategori-pengumuman.destroy', ['only' => ['destroy']]);
+    }
+
     /**
      * Display a listing of the resource.
      */

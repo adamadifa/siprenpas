@@ -9,6 +9,7 @@ use App\Models\Pendaftaran;
 use App\Models\Tahunajaran;
 use App\Models\Unit;
 use App\Models\User;
+use App\Models\Guru;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
@@ -19,6 +20,7 @@ class KelasController extends Controller
     {
         $user = User::where('id', auth()->user()->id)->first();
         $data['kelas'] = Kelas::orderBy('kode_kelas')
+            ->with(['waliKelas.karyawan'])
             ->join('unit', 'kelas.kode_unit', '=', 'unit.kode_unit')
             ->join('konfigurasi_tahun_ajaran', 'kelas.kode_ta', '=', 'konfigurasi_tahun_ajaran.kode_ta')
             ->select('kelas.*', 'unit.nama_unit', 'konfigurasi_tahun_ajaran.tahun_ajaran')
@@ -34,12 +36,23 @@ class KelasController extends Controller
             ->when($request->nama_kelas_search, function ($query) use ($request) {
                 $query->where('kelas.nama_kelas', 'like', '%' . $request->nama_kelas_search . '%');
             })
+            ->when($request->guru_id_search, function ($query) use ($request) {
+                $query->where('kelas.guru_id', $request->guru_id_search);
+            })
 
             ->get();
 
         $u = new Unit();
         $data['unit'] = $u->getUnit();
         $data['tahunajaran'] = Tahunajaran::orderBy('kode_ta')->get();
+        $data['wali_kelas_list'] = Guru::with('karyawan')
+            ->whereIn('id', function($query) {
+                $query->select('guru_id')->from('kelas')->whereNotNull('guru_id');
+            })
+            ->get()
+            ->sortBy(function($g) {
+                return $g->karyawan->nama_lengkap ?? '';
+            });
         return view('datamaster.kelas.index', $data);
     }
 
@@ -50,6 +63,9 @@ class KelasController extends Controller
         $u = new Unit();
         $data['unit'] = $u->getUnit();
         $data['user'] = $user;
+        $data['gurus'] = Guru::with('karyawan')->where('status_aktif_ajar', 1)->get()->sortBy(function($g) {
+            return $g->karyawan->nama_lengkap ?? '';
+        });
         return view('datamaster.kelas.create', $data);
     }
 
@@ -62,8 +78,12 @@ class KelasController extends Controller
             'nama_kelas' => 'required',
             'kode_unit' => 'required',
             'tingkat' => 'required',
+            'guru_id' => 'nullable|exists:guru,id',
         ]);
         $ta_aktif = Tahunajaran::where('status', '1')->first();
+        if (!$ta_aktif) {
+            return Redirect::back()->with(messageError('Tahun ajaran aktif tidak ditemukan.'));
+        }
         $tahun_ajaran = str_replace("TA", "", $ta_aktif->kode_ta);
         $kode_unit = $request->kode_unit;
 
@@ -78,6 +98,7 @@ class KelasController extends Controller
                 'kode_unit' => $kode_unit,
                 'kode_ta' => $ta_aktif->kode_ta,
                 'tingkat' => $request->tingkat,
+                'guru_id' => $request->guru_id,
             ]);
 
             return Redirect::back()->with(messageSuccess('Data Berhasil Disimpan'));
@@ -92,6 +113,9 @@ class KelasController extends Controller
         $u = new Unit();
         $data['unit'] = $u->getUnit();
         $data['kelas'] = Kelas::where('kode_kelas', $kode_kelas)->first();
+        $data['gurus'] = Guru::with('karyawan')->where('status_aktif_ajar', 1)->get()->sortBy(function($g) {
+            return $g->karyawan->nama_lengkap ?? '';
+        });
         return view('datamaster.kelas.edit', $data);
     }
 
@@ -102,12 +126,14 @@ class KelasController extends Controller
             'nama_kelas' => 'required',
             'kode_unit' => 'required',
             'tingkat' => 'required',
+            'guru_id' => 'nullable|exists:guru,id',
         ]);
         try {
             Kelas::where('kode_kelas', $kode_kelas)->update([
                 'nama_kelas' => $request->nama_kelas,
                 'kode_unit' => $request->kode_unit,
                 'tingkat' => $request->tingkat,
+                'guru_id' => $request->guru_id,
             ]);
 
             return Redirect::back()->with(messageSuccess('Data Berhasil Diupdate'));

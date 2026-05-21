@@ -55,6 +55,66 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
+        $id_user = $this->input('id_user');
+        $password = $this->input('password');
+
+        // Tentukan apakah id_user adalah email atau username/NPP
+        $isEmail = filter_var($id_user, FILTER_VALIDATE_EMAIL);
+
+        // Cari guru berdasarkan NPP langsung (jika id_user adalah NPP)
+        // ATAU cari user dengan email tersebut, dapatkan NPP-nya, lalu cari di tabel guru
+        $guru = null;
+        if ($isEmail) {
+            $matchedUser = \App\Models\User::where('email', $id_user)->first();
+            if ($matchedUser && $matchedUser->npp) {
+                $guru = \App\Models\Guru::where('npp', $matchedUser->npp)->first();
+            }
+        } else {
+            $guru = \App\Models\Guru::where('npp', $id_user)->first();
+        }
+
+        if ($guru && \Illuminate\Support\Facades\Hash::check($password, $guru->password)) {
+            // Temukan atau buat user yang sesuai di tabel users
+            $user = \App\Models\User::where('username', $guru->npp)
+                ->orWhere('npp', $guru->npp)
+                ->first();
+
+            if (!$user) {
+                // Jika user tidak ditemukan, buat user baru berdasarkan data karyawan
+                $karyawan = \App\Models\Karyawan::where('npp', $guru->npp)->first();
+                if ($karyawan) {
+                    $user = \App\Models\User::create([
+                        'name' => $karyawan->nama_lengkap,
+                        'kode_unit' => $karyawan->kode_unit ?: $guru->kode_unit,
+                        'username' => $karyawan->npp,
+                        'npp' => $karyawan->npp,
+                        'password' => $guru->password, // Samakan password dengan guru agar konsisten
+                        'email' => strtolower(removeTitik($karyawan->npp)) . '@persisalamin.com',
+                    ]);
+
+                    // Buat link di user_karyawan jika belum ada
+                    \App\Models\Userkaryawan::firstOrCreate([
+                        'npp' => $karyawan->npp,
+                        'id_user' => $user->id
+                    ]);
+                }
+            } else {
+                if (empty($user->npp)) {
+                    $user->update(['npp' => $guru->npp]);
+                }
+            }
+
+            if ($user) {
+                // Pastikan role disinkronkan ke 'guru' agar tidak membawa role lain (karyawan/admin dll)
+                $user->syncRoles(['guru']);
+
+                // Loginkan user tersebut
+                Auth::login($user, $this->boolean('remember'));
+                RateLimiter::clear($this->throttleKey());
+                return;
+            }
+        }
+
         if (!Auth::attempt($this->only($this->id_type, 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 

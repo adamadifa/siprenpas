@@ -15,26 +15,26 @@ class PrestasiSiswaPermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Prestasi Siswa'
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'prestasi-siswa.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'prestasi-siswa.create',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'prestasi-siswa.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'prestasi-siswa.delete',
             'id_permission_group' => $permissiongroup->id
         ]);

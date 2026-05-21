@@ -15,26 +15,26 @@ class Tahunajaranppdbpermissionseeder extends Seeder
      */
     public function run(): void
     {
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Tahun Ajaran PPDB'
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'tahunajaranppdb.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'tahunajaranppdb.create',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'tahunajaranppdb.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'tahunajaranppdb.delete',
             'id_permission_group' => $permissiongroup->id
         ]);

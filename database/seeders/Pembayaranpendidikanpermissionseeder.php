@@ -15,40 +15,40 @@ class Pembayaranpendidikanpermissionseeder extends Seeder
      */
     public function run(): void
     {
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Pembayaran Pendidikan'
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pembayaranpdd.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pembayaranpdd.create',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pembayaranpdd.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pembayaranpdd.store',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pembayaranpdd.update',
             'id_permission_group' => $permissiongroup->id
         ]);
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pembayaranpdd.show',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'pembayaranpdd.delete',
             'id_permission_group' => $permissiongroup->id
         ]);

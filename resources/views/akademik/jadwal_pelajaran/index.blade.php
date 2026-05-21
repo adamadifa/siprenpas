@@ -68,7 +68,7 @@
                                         @endforeach
                                     </select>
                                  </div>
-                                 <div class="col-lg-2 col-sm-12 col-md-12 mb-1">
+                                 <div class="col-lg-{{ auth()->user()->hasRole('guru') ? '3' : '2' }} col-sm-12 col-md-12 mb-1">
                                       <select name="kode_kelas" id="filter_kode_kelas" class="form-select select2">
                                         <option value="">Semua Kelas</option>
                                         @foreach ($kelas as $k)
@@ -76,6 +76,7 @@
                                         @endforeach
                                     </select>
                                  </div>
+                                 @if (!auth()->user()->hasRole('guru'))
                                   <div class="col-lg-3 col-sm-12 col-md-12 mb-1">
                                       <select name="guru_id" id="filter_guru_id" class="form-select select2">
                                         <option value="">Semua Guru</option>
@@ -84,22 +85,21 @@
                                         @endforeach
                                     </select>
                                  </div>
-                                  <div class="col-lg-2 col-sm-12 col-md-12 mb-1">
+                                 @endif
+                                  <div class="col-lg-{{ auth()->user()->hasRole('guru') ? '3' : '2' }} col-sm-12 col-md-12 mb-1">
                                       <select name="hari" id="filter_hari" class="form-select select2">
                                         <option value="">Semua Hari</option>
-                                        @php
-                                            $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Ahad'];
-                                        @endphp
                                         @foreach ($days as $day)
                                             <option value="{{ $day }}" {{ request('hari') == $day ? 'selected' : '' }}>{{ $day }}</option>
                                         @endforeach
                                     </select>
                                  </div>
-                                 <div class="col-lg-2 col-sm-12 col-md-12 mb-1">
+                                 <div class="col-lg-{{ auth()->user()->hasRole('guru') ? '3' : '2' }} col-sm-12 col-md-12 mb-1">
                                     <select name="semester" id="filter_semester" class="form-select select2">
                                       <option value="">Semua Semester</option>
-                                      <option value="1" {{ request('semester') == '1' ? 'selected' : '' }}>Ganjil</option>
-                                      <option value="2" {{ request('semester') == '2' ? 'selected' : '' }}>Genap</option>
+                                      @foreach ($semesters as $sem)
+                                          <option value="{{ $sem }}" {{ request('semester') == $sem ? 'selected' : '' }}>{{ $sem == 1 ? 'Ganjil' : 'Genap' }}</option>
+                                      @endforeach
                                   </select>
                                </div>
                                  <div class="col-lg-12 col-sm-12 col-md-12 mb-3">
@@ -157,7 +157,7 @@
                                             <!-- Actions -->
                                             <div class="col-lg-2 col-md-12 col-sm-12 text-end">
                                                 <div class="btn-group shadow-sm" role="group">
-                                                     @can('jadwalpelajaran.index') <!-- adjust permission if needed -->
+                                                     @if (auth()->check() && (auth()->user()->can('jadwalpelajaran.index') || auth()->user()->hasRole('guru')))
                                                          <a href="{{ route('presensi-mapel.input', [Crypt::encrypt($item->id), date('Y-m-d')]) }}" class="btn btn-sm btn-outline-success py-1 px-2 waves-effect" data-bs-toggle="tooltip" title="Presensi">
                                                              <i class="ti ti-checklist"></i>
                                                          </a>
@@ -167,7 +167,7 @@
                                                          <a href="{{ route('penilaian.index', $item->id) }}" class="btn btn-sm btn-outline-primary py-1 px-2 waves-effect" data-bs-toggle="tooltip" title="Penilaian">
                                                              <i class="ti ti-chart-bar"></i>
                                                          </a>
-                                                     @endcan
+                                                     @endif
                                                     @can('jadwalpelajaran.edit')
                                                         <a href="#" class="btn btn-sm btn-outline-warning btnEdit py-1 px-2 waves-effect" data-id="{{ Crypt::encrypt($item->id) }}" data-bs-toggle="tooltip" title="Edit">
                                                             <i class="ti ti-edit"></i>

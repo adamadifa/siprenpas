@@ -65,7 +65,7 @@ class PrestasiSiswaSeeder extends Seeder
         ];
 
         foreach ($prestasiSiswa as $prestasi) {
-            PrestasiSiswa::create($prestasi);
+            PrestasiSiswa::firstOrCreate(['nama_siswa' => $prestasi['nama_siswa'], 'prestasi' => $prestasi['prestasi']], $prestasi);
         }
     }
 }

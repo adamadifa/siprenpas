@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Siswa;
 use App\Models\Tahunajaran;
+use Illuminate\Support\Facades\DB;
 
 class SiswaController extends Controller
 {
@@ -58,15 +59,20 @@ class SiswaController extends Controller
 
 
         $ta_aktif = Tahunajaran::where('status', 1)->first();
+        $kode_ta_aktif = $ta_aktif ? $ta_aktif->kode_ta : '';
+
         $kelas_siswa = Kelassiswa::join('kelas', 'kelas_siswa.kode_kelas', 'kelas.kode_kelas')
-            ->select('kelas_siswa.id_siswa', 'nama_kelas')
-            ->where('kelas.kode_ta', $ta_aktif->kode_ta);
+            ->select('kelas_siswa.id_siswa', 'nama_kelas');
+        if ($kode_ta_aktif) {
+            $kelas_siswa->where('kelas.kode_ta', $kode_ta_aktif);
+        }
         $query = Biayasiswa::query();
         $query->select(
             'pendaftaran.id_siswa',
             'pendaftaran.no_pendaftaran',
             'tahun_ajaran',
             'pendaftaran.nis',
+            'pendaftaran.foto',
             'kelas_siswa.nama_kelas',
             'konfigurasi_biaya.tingkat',
             'nama_unit',
@@ -81,7 +87,9 @@ class SiswaController extends Controller
         $query->leftJoinSub($kelas_siswa, 'kelas_siswa', function ($join) {
             $join->on('kelas_siswa.id_siswa', '=', 'pendaftaran.id_siswa');
         });
-        $query->where('konfigurasi_biaya.kode_ta', $ta_aktif->kode_ta);
+        if ($ta_aktif) {
+            $query->where('konfigurasi_biaya.kode_ta', $ta_aktif->kode_ta);
+        }
        
 
 
@@ -96,11 +104,24 @@ class SiswaController extends Controller
                 'siswa_biaya.nama_kelas',
                 'siswa_biaya.tingkat',
                 'siswa_biaya.nama_unit',
-                'siswa_biaya.logo'
+                'siswa_biaya.logo',
+                DB::raw('(SELECT foto FROM pendaftaran WHERE pendaftaran.id_siswa = siswa.id_siswa ORDER BY created_at DESC LIMIT 1) as foto_pendaftaran')
             )
             ->where('siswa.nik_ayah', $nik)
-            ->orWhere('siswa.nik_ibu',$nik)
+            ->orWhere('siswa.nik_ibu', $nik)
             ->get();
+
+        // Format foto URL
+        $siswa->transform(function ($item) {
+            // Priority: foto from pendaftaran
+            $foto = $item->foto_pendaftaran ?: $item->foto; 
+            
+            if ($foto) {
+                $item->foto = asset('storage/photos/pendaftaran/' . $foto);
+            }
+            return $item;
+        });
+
         return response()->json($siswa);
     }
 }

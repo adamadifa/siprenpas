@@ -13,32 +13,32 @@ class Penghasilanorangtua extends Seeder
      */
     public function run(): void
     {
-        Penghasilanortu::create([
+        Penghasilanortu::firstOrCreate([
             'kode_penghasilan_ortu' => 'PO01',
             'penghasilan' => '<= 500.000'
         ]);
 
-        Penghasilanortu::create([
+        Penghasilanortu::firstOrCreate([
             'kode_penghasilan_ortu' => 'PO02',
             'penghasilan' => '500.000 - 1.000.000'
         ]);
 
-        Penghasilanortu::create([
+        Penghasilanortu::firstOrCreate([
             'kode_penghasilan_ortu' => 'PO03',
             'penghasilan' => '1.000.000 - 2.000.000'
         ]);
 
-        Penghasilanortu::create([
+        Penghasilanortu::firstOrCreate([
             'kode_penghasilan_ortu' => 'PO04',
             'penghasilan' => '<= 2.000.0000 - 3.000.000'
         ]);
 
-        Penghasilanortu::create([
+        Penghasilanortu::firstOrCreate([
             'kode_penghasilan_ortu' => 'P05',
             'penghasilan' => '3.000.000 - 5.000.000'
         ]);
 
-        Penghasilanortu::create([
+        Penghasilanortu::firstOrCreate([
             'kode_penghasilan_ortu' => 'PO06',
             'penghasilan' => '<= 5000.000'
         ]);

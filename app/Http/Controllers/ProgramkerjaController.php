@@ -47,7 +47,7 @@ class ProgramkerjaController extends Controller
 
         if (!empty($request->kode_ta)) {
             $query->where('program_kerja.kode_ta', $request->kode_ta);
-        } else {
+        } elseif ($ta_aktif) {
             $query->where('program_kerja.kode_ta', $ta_aktif->kode_ta);
         }
 
@@ -128,6 +128,9 @@ class ProgramkerjaController extends Controller
 
 
         $ta_aktif = Tahunajaran::where('status', '1')->first();
+        if (!$ta_aktif) {
+            return Redirect::back()->with(messageError('Tahun ajaran aktif tidak ditemukan.'));
+        }
         $ta = explode("/", $ta_aktif->tahun_ajaran);
         $format = substr($ta[0], 2, 2) . substr($ta[1], 2, 2) . $kode_dept;
         try {
@@ -248,6 +251,9 @@ class ProgramkerjaController extends Controller
         $kode_jabatan = $user->hasRole('super admin') ? $request->kode_jabatan : auth()->user()->kode_jabatan;
         $kode_dept = $user->hasRole('super admin') ? $request->kode_dept : auth()->user()->kode_dept;
         $ta_aktif = Tahunajaran::where('status', 1)->first();
+        if (!$ta_aktif) {
+            return response()->json([]);
+        }
         $qprogramkerja = Programkerja::query();
         // $qprogramkerja->where('program_kerja.kode_jabatan', $kode_jabatan);
         $qprogramkerja->where('program_kerja.kode_dept', $kode_dept);

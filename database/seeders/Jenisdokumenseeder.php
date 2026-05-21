@@ -13,17 +13,17 @@ class Jenisdokumenseeder extends Seeder
      */
     public function run(): void
     {
-        Jenisdokumenpendaftaran::create([
+        Jenisdokumenpendaftaran::firstOrCreate([
             'kode_dokumen' => 'D01',
             'jenis_dokumen' => 'Kartu Keluarga',
         ]);
 
-        Jenisdokumenpendaftaran::create([
+        Jenisdokumenpendaftaran::firstOrCreate([
             'kode_dokumen' => 'D02',
             'jenis_dokumen' => 'Akta Kelahiran',
         ]);
 
-        Jenisdokumenpendaftaran::create([
+        Jenisdokumenpendaftaran::firstOrCreate([
             'kode_dokumen' => 'D03',
             'jenis_dokumen' => 'Ijazah',
         ]);

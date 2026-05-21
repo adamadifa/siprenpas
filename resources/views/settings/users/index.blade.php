@@ -45,7 +45,6 @@
             </button>
         </div>
 
-        <!-- Filter Form -->
         <div class="mb-4">
             <form action="{{ route('users.index') }}">
                 <div class="d-flex gap-2">
@@ -54,6 +53,18 @@
                         <span class="input-group-text bg-white border-0"><i class="ti ti-search text-muted"></i></span>
                         <input type="text" name="name" class="form-control bg-white border-0 ps-2"
                             placeholder="Cari Nama User..." value="{{ Request('name') }}">
+                    </div>
+                    <div class="input-group input-group-merge border shadow-none rounded-2"
+                        style="border-color: #e0e0e0 !important; width: 300px">
+                        <span class="input-group-text bg-white border-0"><i class="ti ti-user-check text-muted"></i></span>
+                        <select name="role" class="form-select bg-white border-0 ps-2">
+                            <option value="">Semua Role</option>
+                            @foreach ($roles as $role)
+                                <option value="{{ $role->name }}" {{ Request('role') == $role->name ? 'selected' : '' }}>
+                                    {{ ucwords($role->name) }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                     <button type="submit" class="btn shadow-none d-flex align-items-center gap-2 text-white px-4"
                         style="background-color: #064e3b">

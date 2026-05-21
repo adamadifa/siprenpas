@@ -14,7 +14,7 @@ class OrangtuaRoleSeeder extends Seeder
     {
         // Cek jika role sudah ada
         if (!Role::where('name', 'orang tua')->exists()) {
-            Role::create(['name' => 'orang tua']);
+            Role::firstOrCreate(['name' => 'orang tua']);
         }
     }
 }

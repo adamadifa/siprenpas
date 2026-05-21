@@ -29,10 +29,16 @@
                         </ol>
                     </nav>
                     @can('guru.create')
-                        <a href="#" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm" id="btnCreateGuru" style="background-color: #064e3b; border-color: #064e3b">
-                            <i class="ti ti-plus fs-5"></i>
-                            <span>Tambah Data Guru</span>
-                        </a>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('guru.generateUsers') }}" class="btn btn-label-success d-flex align-items-center gap-2 shadow-sm">
+                                <i class="ti ti-users-plus fs-5"></i>
+                                <span>Generate Akun User</span>
+                            </a>
+                            <a href="#" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm" id="btnCreateGuru" style="background-color: #064e3b; border-color: #064e3b">
+                                <i class="ti ti-plus fs-5"></i>
+                                <span>Tambah Data Guru</span>
+                            </a>
+                        </div>
                     @endcan
                 </div>
             </div>
@@ -135,6 +141,19 @@
                                             </a>
                                         @endif
                                         @can('guru.edit')
+                                            @if (empty($d->password))
+                                                <a href="#" class="btn btn-icon btn-label-primary border createUserGuru shadow-none" 
+                                                   style="width: 32px; height: 32px;" id="{{ Crypt::encrypt($d->id) }}"
+                                                   data-bs-toggle="tooltip" title="Generate Password Login">
+                                                    <i class="ti ti-key fs-5"></i>
+                                                </a>
+                                            @else
+                                                <a href="#" class="btn btn-icon btn-label-success border createUserGuru shadow-none" 
+                                                   style="width: 32px; height: 32px;" id="{{ Crypt::encrypt($d->id) }}"
+                                                   data-bs-toggle="tooltip" title="Update Password Guru">
+                                                    <i class="ti ti-lock-check fs-5"></i>
+                                                </a>
+                                            @endif
                                             <a href="#" class="btn btn-icon btn-label-warning border editGuru shadow-none" 
                                                style="width: 32px; height: 32px;" id="{{ Crypt::encrypt($d->id) }}"
                                                data-bs-toggle="tooltip" title="Edit Data">
@@ -180,6 +199,7 @@
 
 <x-modal-form id="mdlCreateGuru" size="" show="loadCreateGuru" title="Tambah Data Guru" icon="ti ti-user-plus" />
 <x-modal-form id="mdlEditGuru" size="" show="loadEditGuru" title="Edit Data Guru" icon="ti ti-user-edit" />
+<x-modal-form id="mdlCreateUserGuru" size="" show="loadCreateUserGuru" title="Kelola Password Guru" icon="ti ti-key" />
 
 @endsection
 
@@ -197,6 +217,13 @@
             e.preventDefault();
             $('#mdlEditGuru').modal("show");
             $("#loadEditGuru").load('/guru/' + id + '/edit');
+        });
+
+        $(".createUserGuru").click(function(e) {
+            var id = $(this).attr("id");
+            e.preventDefault();
+            $('#mdlCreateUserGuru').modal("show");
+            $("#loadCreateUserGuru").load('/guru/' + id + '/create-user');
         });
 
         // Initialize tooltips

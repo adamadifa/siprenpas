@@ -46,11 +46,21 @@
     <div class="min-h-[100dvh] bg-white flex flex-col selection:bg-teal-100">
         
         <!-- TOP SECTION: Branding (Fixed Height) -->
-        <div class="h-[42vh] bg-gradient-to-br from-teal-900 via-teal-800 to-teal-900 relative flex flex-col items-center justify-center px-6">
+        <div class="h-[42vh] bg-gradient-to-br from-teal-900 via-teal-800 to-teal-900 relative flex flex-col items-center justify-center px-6 overflow-hidden">
+            <!-- Image Overlay -->
+            <div class="absolute inset-0 z-0">
+                @php
+                    $bgUrl = ($pengaturan && $pengaturan->background_login) 
+                        ? asset('storage/' . $pengaturan->background_login) 
+                        : asset('images/bgalamin.png');
+                @endphp
+                <img src="{{ $bgUrl }}" class="w-full h-full object-cover opacity-20" alt="Background">
+                <div class="absolute inset-0 bg-gradient-to-br from-teal-900/40 via-teal-800/40 to-teal-900/40"></div>
+            </div>
+
             <!-- Abstract Background Elements -->
             <div class="absolute top-0 right-0 w-64 h-64 bg-teal-500 rounded-full blur-[80px] opacity-20 -translate-y-1/2 translate-x-1/4"></div>
             <div class="absolute bottom-0 left-0 w-48 h-48 bg-teal-400 rounded-full blur-[60px] opacity-20 translate-y-1/4 -translate-x-1/4"></div>
-            <div class="absolute inset-0 opacity-[0.03]" style="background-image: url('https://www.transparenttextures.com/patterns/cubes.png');"></div>
 
             <!-- Logo & Text -->
             <div class="relative z-10 flex flex-col items-center transform -translate-y-4">
@@ -63,10 +73,10 @@
                     <img src="{{ $logoUrl }}" alt="Logo" class="w-full h-full object-contain">
                 </div>
                 
-                <h1 class="text-[28px] font-black text-white tracking-tight leading-none mb-1.5 shadow-sm text-center" data-aos="fade-up" data-aos-delay="100">
-                    {{ $pengaturan && $pengaturan->nama_aplikasi ? strtoupper($pengaturan->nama_aplikasi) : 'SIPRENPAS' }}
+                <h1 class="text-2xl font-bold text-white leading-tight mb-1 shadow-sm text-center" data-aos="fade-up" data-aos-delay="100">
+                    {{ $pengaturan && $pengaturan->nama_aplikasi ? $pengaturan->nama_aplikasi : 'Siprenpas' }}
                 </h1>
-                <p class="text-teal-100/80 text-[10px] font-bold uppercase tracking-[0.25em] text-center" data-aos="fade-up" data-aos-delay="200">
+                <p class="text-teal-100/90 text-xs font-medium text-center" data-aos="fade-up" data-aos-delay="200">
                     {{ $pengaturan && $pengaturan->nama_sekolah ? $pengaturan->nama_sekolah : 'Pesantren Al Amin' }}
                 </p>
             </div>
@@ -93,7 +103,7 @@
             <div class="absolute top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-slate-200 rounded-full"></div>
 
             <div class="mb-8" data-aos="fade-up" data-aos-delay="300">
-                <h2 class="text-2xl font-black text-slate-800">Masuk Akun</h2>
+                <h2 class="text-2xl font-bold text-slate-800">Masuk Akun</h2>
                 <p class="text-[13px] text-slate-400 font-medium mt-1">Silakan masuk untuk melanjutkan</p>
             </div>
 
@@ -156,7 +166,7 @@
 
                 <div class="pt-4">
                     <button type="submit" 
-                        class="w-full py-4 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 rounded-2xl text-white font-black text-[14px] tracking-wide shadow-lg shadow-teal-600/30 transition-all flex items-center justify-center gap-2">
+                        class="w-full py-4 bg-teal-600 hover:bg-teal-700 active:bg-teal-800 rounded-2xl text-white font-bold text-[14px] tracking-wide shadow-lg shadow-teal-600/30 transition-all flex items-center justify-center gap-2">
                         Masuk
                         <i class="ti ti-arrow-right text-lg"></i>
                     </button>

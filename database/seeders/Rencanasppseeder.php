@@ -16,37 +16,37 @@ class Rencanasppseeder extends Seeder
     public function run(): void
     {
 
-        $permissiongroup = Permission_group::create([
+        $permissiongroup = Permission_group::firstOrCreate([
             'name' => 'Rencana SPP'
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'rencanaspp.index',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'rencanaspp.create',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'rencanaspp.edit',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'rencanaspp.store',
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'rencanaspp.update',
             'id_permission_group' => $permissiongroup->id
         ]);
 
 
-        Permission::create([
+        Permission::firstOrCreate([
             'name' => 'rencanaspp.delete',
             'id_permission_group' => $permissiongroup->id
         ]);

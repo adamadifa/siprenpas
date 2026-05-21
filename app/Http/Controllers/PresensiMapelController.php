@@ -31,15 +31,39 @@ class PresensiMapelController extends Controller
             $query->where('tanggal', $request->tanggal);
         }
 
+        $isGuru = auth()->user()->hasRole('guru');
+        $guruId = null;
+        if ($isGuru) {
+            $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
+            $guruId = $guruModel ? $guruModel->id : 0;
+            $query->where('guru_id', $guruId);
+        }
+
         $presensi = $query->with(['unit', 'kelas', 'mata_pelajaran', 'guru'])
             ->orderBy('tanggal', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
-        $units = Unit::all();
-        $kelas = [];
-        if ($request->kode_unit) {
-            $kelas = Kelas::where('kode_unit', $request->kode_unit)->get();
+        if ($isGuru) {
+            $guruUnitCodes = JadwalPelajaran::where('guru_id', $guruId)->pluck('kode_unit')->unique()->toArray();
+            $units = Unit::whereIn('kode_unit', $guruUnitCodes)->get();
+            $kelas = [];
+            if ($request->kode_unit) {
+                $guruKelasCodes = JadwalPelajaran::where('guru_id', $guruId)
+                    ->where('kode_unit', $request->kode_unit)
+                    ->pluck('kode_kelas')
+                    ->unique()
+                    ->toArray();
+                $kelas = Kelas::where('kode_unit', $request->kode_unit)
+                    ->whereIn('kode_kelas', $guruKelasCodes)
+                    ->get();
+            }
+        } else {
+            $units = Unit::all();
+            $kelas = [];
+            if ($request->kode_unit) {
+                $kelas = Kelas::where('kode_unit', $request->kode_unit)->get();
+            }
         }
 
         return view('akademik.presensi_mapel.index', compact('presensi', 'units', 'kelas'));
@@ -47,7 +71,15 @@ class PresensiMapelController extends Controller
 
     public function create()
     {
-        $units = Unit::all();
+        $isGuru = auth()->user()->hasRole('guru');
+        if ($isGuru) {
+            $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
+            $guruId = $guruModel ? $guruModel->id : 0;
+            $guruUnitCodes = JadwalPelajaran::where('guru_id', $guruId)->pluck('kode_unit')->unique()->toArray();
+            $units = Unit::whereIn('kode_unit', $guruUnitCodes)->get();
+        } else {
+            $units = Unit::all();
+        }
         return view('akademik.presensi_mapel.create', compact('units'));
     }
 
@@ -66,11 +98,19 @@ class PresensiMapelController extends Controller
         ];
         $hari = $hariIndo[$hari] ?? 'Senin';
 
-        $jadwal = JadwalPelajaran::with(['mapel', 'guru', 'kelas'])
+        $query = JadwalPelajaran::with(['mapel', 'guru', 'kelas'])
             ->where('kode_unit', $request->kode_unit)
             ->where('kode_kelas', $request->kode_kelas)
-            ->where('hari', $hari)
-            ->get()
+            ->where('hari', $hari);
+
+        $isGuru = auth()->user()->hasRole('guru');
+        if ($isGuru) {
+            $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
+            $guruId = $guruModel ? $guruModel->id : 0;
+            $query->where('guru_id', $guruId);
+        }
+
+        $jadwal = $query->get()
             ->map(function($item) {
                 $item->id_encrypted = Crypt::encrypt($item->id);
                 return $item;
@@ -83,6 +123,14 @@ class PresensiMapelController extends Controller
     {
         $jadwal_id = Crypt::decrypt($jadwal_id);
         $jadwal = JadwalPelajaran::with(['mapel', 'guru', 'kelas'])->findOrFail($jadwal_id);
+
+        if (auth()->user()->hasRole('guru')) {
+            $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
+            $guruId = $guruModel ? $guruModel->id : 0;
+            if ($jadwal->guru_id != $guruId) {
+                abort(403, 'Akses ditolak.');
+            }
+        }
 
         // Check if already exists
         $presensi = PresensiMapel::where('jadwal_pelajaran_id', $jadwal_id)
@@ -114,6 +162,14 @@ class PresensiMapelController extends Controller
         ]);
 
         $jadwal = JadwalPelajaran::findOrFail($request->jadwal_pelajaran_id);
+
+        if (auth()->user()->hasRole('guru')) {
+            $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
+            $guruId = $guruModel ? $guruModel->id : 0;
+            if ($jadwal->guru_id != $guruId) {
+                abort(403, 'Akses ditolak.');
+            }
+        }
 
         DB::beginTransaction();
         try {
@@ -155,12 +211,30 @@ class PresensiMapelController extends Controller
         $id = Crypt::decrypt($id);
         $presensi = PresensiMapel::with(['details.siswa', 'mata_pelajaran', 'guru', 'kelas'])->findOrFail($id);
         
+        if (auth()->user()->hasRole('guru')) {
+            $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
+            $guruId = $guruModel ? $guruModel->id : 0;
+            if ($presensi->guru_id != $guruId) {
+                abort(403, 'Akses ditolak.');
+            }
+        }
+
         return view('akademik.presensi_mapel.edit', compact('presensi'));
     }
 
     public function update(Request $request, $id)
     {
         $id = Crypt::decrypt($id);
+        
+        if (auth()->user()->hasRole('guru')) {
+            $presensi = PresensiMapel::findOrFail($id);
+            $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
+            $guruId = $guruModel ? $guruModel->id : 0;
+            if ($presensi->guru_id != $guruId) {
+                abort(403, 'Akses ditolak.');
+            }
+        }
+
         DB::beginTransaction();
         try {
             $presensi = PresensiMapel::findOrFail($id);
@@ -188,6 +262,16 @@ class PresensiMapelController extends Controller
     public function destroy($id)
     {
         $id = Crypt::decrypt($id);
+
+        if (auth()->user()->hasRole('guru')) {
+            $presensi = PresensiMapel::findOrFail($id);
+            $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
+            $guruId = $guruModel ? $guruModel->id : 0;
+            if ($presensi->guru_id != $guruId) {
+                abort(403, 'Akses ditolak.');
+            }
+        }
+
         try {
             PresensiMapel::findOrFail($id)->delete();
             return Redirect::back()->with(['success' => 'Data Berhasil Dihapus']);
