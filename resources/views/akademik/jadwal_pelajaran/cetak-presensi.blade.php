@@ -199,8 +199,10 @@
         <p><strong>{{ $jadwal->guru->nama_guru }}</strong></p>
     </div>
 
+    @if(!isset($isPdf) || !$isPdf)
     <script>
         window.print();
     </script>
+    @endif
 </body>
 </html>

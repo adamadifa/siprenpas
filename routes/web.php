@@ -723,6 +723,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/penilaian/rencana/{id}', 'destroyRencana')->name('penilaian.destroy-rencana');
         Route::get('/penilaian/nilai/{rencana_id}', 'inputNilai')->name('penilaian.input-nilai');
         Route::post('/penilaian/nilai', 'storeNilai')->name('penilaian.store-nilai');
+        Route::post('/penilaian/kirim', 'kirimNilai')->name('penilaian.kirim');
         
         // Multi Column Management
         Route::get('/penilaian/manage/{bobot_id}/{kategori}', 'manageNilai')->name('penilaian.manage');

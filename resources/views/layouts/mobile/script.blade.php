@@ -8,7 +8,8 @@
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 <!-- Owl Carousel -->
-{{-- <script src="{{ asset('') }}assets/js/plugins/owl-carousel/owl.carousel.min.js"></script> --}}
+{{--
+<script src="{{ asset('') }}assets/js/plugins/owl-carousel/owl.carousel.min.js"></script> --}}
 <!-- jQuery Circle Progress -->
 <script src="{{ asset('assets/template/js/plugins/jquery-circle-progress/circle-progress.min.js') }}"></script>
 <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
@@ -47,7 +48,8 @@
     });
 </script>
 
-{{-- <script>
+{{--
+<script>
     toastr.options.showEasing = 'swing';
     toastr.options.hideEasing = 'linear';
     toastr.options.progressBar = true;
@@ -117,34 +119,34 @@
 
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         document.body.classList.add("loaded");
     });
 </script>
 <script>
-    $(document).ready(function() {
-        function adjustZoom() {
-            var width = $(window).width(); // Ambil lebar layar
-            //alert(width);
-            // $('body').css('zoom', '120%');
-            if (width <= 350) { // Misalnya untuk layar kecil (mobile)
-                $('body').css('zoom', '85%'); // Zoom out ke 80%
-            } else if (width <= 768) { // Untuk tablet kecil
-                $('body').css('zoom', '90%');
-            } else {
-                $('body').css('zoom', '100%'); // Normal zoom
-            }
-        }
+    // $(document).ready(function() {
+    //     function adjustZoom() {
+    //         var width = $(window).width(); // Ambil lebar layar
+    //         //alert(width);
+    //         // $('body').css('zoom', '120%');
+    //         if (width <= 350) { // Misalnya untuk layar kecil (mobile)
+    //             $('body').css('zoom', '85%'); // Zoom out ke 80%
+    //         } else if (width <= 768) { // Untuk tablet kecil
+    //             $('body').css('zoom', '90%');
+    //         } else {
+    //             $('body').css('zoom', '100%'); // Normal zoom
+    //         }
+    //     }
 
-        adjustZoom(); // Panggil saat halaman dimuat
+    //     adjustZoom(); // Panggil saat halaman dimuat
 
-        $(window).resize(function() {
-            adjustZoom(); // Panggil lagi saat ukuran layar berubah
-        });
+    //     $(window).resize(function() {
+    //         adjustZoom(); // Panggil lagi saat ukuran layar berubah
+    //     });
 
-    });
+    // });
 
-    $('.cancel-confirm').click(function(event) {
+    $('.cancel-confirm').click(function (event) {
         var form = $(this).closest("form");
         var name = $(this).data("name");
         event.preventDefault();
@@ -166,7 +168,8 @@
         });
     });
 </script>
-{{-- <script>
+{{--
+<script>
     alert('test');
 </script> --}}
 

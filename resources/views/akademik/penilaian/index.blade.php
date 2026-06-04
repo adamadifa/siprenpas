@@ -72,15 +72,17 @@
                         <div class="row">
                             <div class="col-md-5">
                                 <label class="block text-sm font-bold mb-2">Bobot Sumatif (%)</label>
-                                <input type="number" name="bobot_sumatif" class="form-control" value="{{ $bobot->bobot_sumatif }}" min="0" max="100" required>
+                                <input type="number" name="bobot_sumatif" class="form-control" value="{{ $bobot->bobot_sumatif }}" min="0" max="100" required {{ ($bobot->status ?? 'draft') == 'terkirim' ? 'disabled' : '' }}>
                             </div>
                             <div class="col-md-5">
                                 <label class="block text-sm font-bold mb-2">Bobot SAS (%)</label>
-                                <input type="number" name="bobot_sas" class="form-control" value="{{ $bobot->bobot_sas }}" min="0" max="100" required>
+                                <input type="number" name="bobot_sas" class="form-control" value="{{ $bobot->bobot_sas }}" min="0" max="100" required {{ ($bobot->status ?? 'draft') == 'terkirim' ? 'disabled' : '' }}>
                             </div>
-                            <div class="col-md-2 d-flex align-items-end">
-                                <button type="submit" class="btn btn-primary w-100">Simpan</button>
-                            </div>
+                            @if (($bobot->status ?? 'draft') != 'terkirim')
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary w-100">Simpan</button>
+                                </div>
+                            @endif
                         </div>
                     </form>
                 </div>
@@ -97,7 +99,7 @@
                     <i class="ti ti-users me-2"></i>
                     <h6 class="mb-0 fw-bold text-white small text-uppercase" style="letter-spacing: 1px;">Rekap Nilai Siswa</h6>
                 </div>
-                <div>
+                <div class="d-flex align-items-center gap-2">
                      <!-- Management Buttons -->
                     <a href="{{ route('penilaian.manage', ['bobot_id' => $bobot->id, 'kategori' => 'SUMATIF']) }}" class="btn btn-primary btn-sm px-3" style="font-size: 0.75rem;">
                         <i class="ti ti-notebook me-1"></i> Sumatif
@@ -105,10 +107,20 @@
                     <a href="{{ route('penilaian.manage', ['bobot_id' => $bobot->id, 'kategori' => 'SAS']) }}" class="btn btn-info btn-sm px-3" style="font-size: 0.75rem;">
                         <i class="ti ti-file-certificate me-1"></i> SAS
                     </a>
-                    <!-- Kirim Button Placeholder -->
-                     <button class="btn btn-success btn-sm px-3" style="font-size: 0.75rem;" onclick="alert('Fitur Kirim Nilai belum tersedia')">
-                        <i class="ti ti-send me-1"></i> Kirim
-                    </button>
+                    
+                    @if (($bobot->status ?? 'draft') == 'terkirim')
+                        <span class="badge bg-success px-3 py-2 text-uppercase fw-bold" style="font-size: 0.75rem; border-radius: 4px;">
+                            <i class="ti ti-check me-1"></i> Terkirim
+                        </span>
+                    @else
+                        <form action="{{ route('penilaian.kirim') }}" method="POST" id="formKirimPenilaian" class="d-inline">
+                            @csrf
+                            <input type="hidden" name="bobot_id" value="{{ $bobot->id }}">
+                            <button type="button" class="btn btn-success btn-sm px-3" style="font-size: 0.75rem;" onclick="confirmKirim()">
+                                <i class="ti ti-send me-1"></i> Kirim
+                            </button>
+                        </form>
+                    @endif
                 </div>
             </div>
             
@@ -152,5 +164,25 @@
     </div>
 </div>
 
+@push('myscript')
+<script>
+    function confirmKirim() {
+        Swal.fire({
+            title: 'Kirim Nilai?',
+            text: 'Apakah Anda yakin ingin mengirim dan mengunci nilai? Setelah dikirim, nilai untuk kelas dan mata pelajaran ini tidak dapat diubah kembali.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#064e3b',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Kirim!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('formKirimPenilaian').submit();
+            }
+        });
+    }
+</script>
+@endpush
 
 @endsection

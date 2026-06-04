@@ -98,14 +98,14 @@
         <!-- Data List -->
         <div class="row">
             <div class="col-12">
-                <div class="row text-nowrap">
+                <div class="row">
                     @forelse ($jadwalGrouped as $d)
                         <div class="col-12">
                             <div class="card mb-2 border shadow-none transition-all hover-lift">
                                 <div class="card-body p-3">
                                     <div class="row align-items-center">
                                         <!-- Mapel & Icon -->
-                                        <div class="col-lg-3 col-md-6 col-sm-12 border-end">
+                                        <div class="col-lg-2 col-md-6 col-sm-12 border-end">
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar me-3 rounded bg-label-success d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
                                                     <i class="ti ti-books fs-4"></i>
@@ -117,7 +117,7 @@
                                             </div>
                                         </div>
                                         <!-- Kelas & Unit -->
-                                        <div class="col-lg-3 col-md-6 col-sm-12 border-end">
+                                        <div class="col-lg-2 col-md-6 col-sm-12 border-end">
                                             <div class="d-flex flex-column">
                                                 <span class="fw-bold text-dark">Kelas {{ $d->kelas->nama_kelas ?? '-' }}</span>
                                                 <small class="text-muted"><i class="ti ti-building me-1"></i>{{ $d->unit->nama_unit ?? '-' }}</small>
@@ -139,6 +139,15 @@
                                         <div class="col-lg-1 col-md-6 col-sm-12 border-end text-center">
                                             <small class="d-block text-muted">Sem.</small>
                                             <span class="badge bg-label-secondary">{{ $d->semester == 1 ? 'Ganjil' : 'Genap' }}</span>
+                                        </div>
+                                        <!-- Status Penilaian -->
+                                        <div class="col-lg-2 col-md-6 col-sm-12 border-end text-center">
+                                            <small class="d-block text-muted">Status</small>
+                                            @if (($d->status_penilaian ?? 'draft') == 'terkirim')
+                                                <span class="badge bg-label-success"><i class="ti ti-check me-1"></i>Selesai / Terkirim</span>
+                                            @else
+                                                <span class="badge bg-label-warning"><i class="ti ti-clock me-1"></i>Belum Dikirim</span>
+                                            @endif
                                         </div>
                                         <!-- Actions -->
                                         <div class="col-lg-2 col-md-12 col-sm-12 text-end">

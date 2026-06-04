@@ -66,6 +66,11 @@ class PresensiMapelController extends Controller
             }
         }
 
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('akademik.presensi_mapel.index_mobile', compact('presensi', 'units', 'kelas'));
+        }
+
         return view('akademik.presensi_mapel.index', compact('presensi', 'units', 'kelas'));
     }
 
@@ -141,13 +146,19 @@ class PresensiMapelController extends Controller
             return Redirect::route('presensi-mapel.edit', Crypt::encrypt($presensi->id));
         }
 
-        // Get students in this class
+        // Get students in this class ordered alphabetically
         $students = DB::table('kelas_siswa')
             ->join('siswa', 'kelas_siswa.id_siswa', '=', 'siswa.id_siswa')
             ->join('pendaftaran', 'siswa.id_siswa', '=', 'pendaftaran.id_siswa')
             ->where('kelas_siswa.kode_kelas', $jadwal->kode_kelas)
-            ->select('pendaftaran.no_pendaftaran', 'siswa.id_siswa', 'siswa.nama_lengkap')
+            ->select('pendaftaran.no_pendaftaran', 'pendaftaran.foto', 'siswa.id_siswa', 'siswa.nama_lengkap')
+            ->orderBy('siswa.nama_lengkap', 'asc')
             ->get();
+
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('akademik.presensi_mapel.input_mobile', compact('jadwal', 'tanggal', 'students'));
+        }
 
         return view('akademik.presensi_mapel.input', compact('jadwal', 'tanggal', 'students'));
     }
@@ -209,7 +220,12 @@ class PresensiMapelController extends Controller
     public function edit($id)
     {
         $id = Crypt::decrypt($id);
-        $presensi = PresensiMapel::with(['details.siswa', 'mata_pelajaran', 'guru', 'kelas'])->findOrFail($id);
+        $presensi = PresensiMapel::with(['details.siswa.pendaftaran', 'mata_pelajaran', 'guru', 'kelas'])->findOrFail($id);
+        
+        // Sort details alphabetically by student's name
+        $presensi->setRelation('details', $presensi->details->sortBy(function($detail) {
+            return $detail->siswa->nama_lengkap ?? '';
+        }));
         
         if (auth()->user()->hasRole('guru')) {
             $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
@@ -217,6 +233,11 @@ class PresensiMapelController extends Controller
             if ($presensi->guru_id != $guruId) {
                 abort(403, 'Akses ditolak.');
             }
+        }
+
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('akademik.presensi_mapel.edit_mobile', compact('presensi'));
         }
 
         return view('akademik.presensi_mapel.edit', compact('presensi'));

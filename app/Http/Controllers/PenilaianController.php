@@ -50,7 +50,7 @@ class PenilaianController extends Controller
             ->join('siswa', 'kelas_siswa.id_siswa', '=', 'siswa.id_siswa')
             ->leftJoin('pendaftaran', 'siswa.id_siswa', '=', 'pendaftaran.id_siswa')
             ->orderBy('siswa.nama_lengkap')
-            ->select('siswa.id_siswa', 'pendaftaran.nis', 'siswa.nama_lengkap')
+            ->select('siswa.id_siswa', 'pendaftaran.nis', 'siswa.nama_lengkap', 'pendaftaran.foto')
             ->get();
 
         // Fetch grades grouped by student and categorization
@@ -88,6 +88,11 @@ class PenilaianController extends Controller
             return $student;
         });
 
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('akademik.penilaian.index_mobile', compact('jadwal', 'bobot', 'rencanaPenilaian', 'students'));
+        }
+
         return view('akademik.penilaian.index', compact('jadwal', 'bobot', 'rencanaPenilaian', 'students'));
     }
 
@@ -108,6 +113,10 @@ class PenilaianController extends Controller
         }
 
         $bobot = BobotPenilaian::findOrFail($request->id);
+        if ($bobot->status === 'terkirim') {
+            return Redirect::back()->with('error', 'Nilai sudah dikirim dan tidak dapat diubah.');
+        }
+
         $bobot->update([
             'bobot_sumatif' => $request->bobot_sumatif,
             'bobot_sas' => $request->bobot_sas,
@@ -129,6 +138,11 @@ class PenilaianController extends Controller
             return Redirect::back()->withErrors($validator)->withInput();
         }
 
+        $bobot = BobotPenilaian::findOrFail($request->bobot_penilaian_id);
+        if ($bobot->status === 'terkirim') {
+            return Redirect::back()->with('error', 'Nilai sudah dikirim dan tidak dapat diubah.');
+        }
+
         RencanaPenilaian::create([
             'bobot_penilaian_id' => $request->bobot_penilaian_id,
             'nama_penilaian' => $request->nama_penilaian,
@@ -143,7 +157,11 @@ class PenilaianController extends Controller
 
     public function destroyRencana($id)
     {
-        $rencana = RencanaPenilaian::findOrFail($id);
+        $rencana = RencanaPenilaian::with('bobotPenilaian')->findOrFail($id);
+        if ($rencana->bobotPenilaian && $rencana->bobotPenilaian->status === 'terkirim') {
+            return Redirect::back()->with('error', 'Nilai sudah dikirim dan tidak dapat diubah.');
+        }
+
         $rencana->delete();
         return Redirect::back()->with('success', 'Rencana penilaian berhasil dihapus');
     }
@@ -177,6 +195,11 @@ class PenilaianController extends Controller
             'nilai' => 'required|array',
             'nilai.*' => 'nullable|numeric|min:0|max:100',
         ]);
+
+        $rencana = RencanaPenilaian::with('bobotPenilaian')->findOrFail($request->rencana_penilaian_id);
+        if ($rencana->bobotPenilaian && $rencana->bobotPenilaian->status === 'terkirim') {
+            return Redirect::back()->with('error', 'Nilai sudah dikirim dan tidak dapat diubah.');
+        }
 
         DB::beginTransaction();
         try {
@@ -221,7 +244,7 @@ class PenilaianController extends Controller
             ->join('siswa', 'kelas_siswa.id_siswa', '=', 'siswa.id_siswa')
             ->leftJoin('pendaftaran', 'siswa.id_siswa', '=', 'pendaftaran.id_siswa')
             ->orderBy('siswa.nama_lengkap')
-            ->select('siswa.id_siswa', 'pendaftaran.nis', 'siswa.nama_lengkap', 'siswa.jenis_kelamin')
+            ->select('siswa.id_siswa', 'pendaftaran.nis', 'siswa.nama_lengkap', 'siswa.jenis_kelamin', 'pendaftaran.foto')
             ->get();
             
         // Get Grades for all these assessments
@@ -237,6 +260,11 @@ class PenilaianController extends Controller
             }
         }
         
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('akademik.penilaian.manage_nilai_mobile', compact('bobot', 'kategori', 'rencanaPenilaian', 'students', 'mappedGrades'));
+        }
+
         return view('akademik.penilaian.manage_nilai', compact('bobot', 'kategori', 'rencanaPenilaian', 'students', 'mappedGrades'));
     }
     
@@ -247,6 +275,16 @@ class PenilaianController extends Controller
         
         if(!$data || !is_array($data)) {
              return Redirect::back()->with('success', 'Tidak ada data nilai yang disimpan');
+        }
+
+        // Check lock status
+        $firstStudent = reset($data);
+        if ($firstStudent && is_array($firstStudent)) {
+            $firstRencanaId = key($firstStudent);
+            $rencana = RencanaPenilaian::with('bobotPenilaian')->find($firstRencanaId);
+            if ($rencana && $rencana->bobotPenilaian && $rencana->bobotPenilaian->status === 'terkirim') {
+                return Redirect::back()->with('error', 'Nilai sudah dikirim dan tidak dapat diubah.');
+            }
         }
 
         DB::beginTransaction();
@@ -284,6 +322,25 @@ class PenilaianController extends Controller
             DB::rollBack();
             return Redirect::back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+
+    public function kirimNilai(Request $request)
+    {
+        $request->validate([
+            'bobot_id' => 'required|exists:bobot_penilaian,id',
+        ]);
+
+        $bobot = BobotPenilaian::findOrFail($request->bobot_id);
+        
+        if ($bobot->status === 'terkirim') {
+            return Redirect::back()->with('warning', 'Nilai sudah terkirim.');
+        }
+
+        $bobot->update([
+            'status' => 'terkirim'
+        ]);
+
+        return Redirect::back()->with('success', 'Nilai berhasil dikirim dan dikunci.');
     }
 
     public function rapor(Request $request)
@@ -324,7 +381,28 @@ class PenilaianController extends Controller
             ->groupBy('kode_unit', 'kode_kelas', 'mata_pelajaran_id', 'guru_id', 'kode_ta', 'semester')
             ->get();
 
+        // Avoid N+1 query: Fetch bobot_penilaian statuses
+        $bobots = BobotPenilaian::whereIn('kode_kelas', $jadwalGrouped->pluck('kode_kelas'))
+            ->whereIn('mata_pelajaran_id', $jadwalGrouped->pluck('mata_pelajaran_id'))
+            ->where('kode_ta', $selectedKodeTa)
+            ->where('semester', $selectedSemester)
+            ->get()
+            ->keyBy(function ($item) {
+                return $item->kode_kelas . '_' . $item->mata_pelajaran_id;
+            });
+
+        $jadwalGrouped->map(function ($d) use ($bobots) {
+            $key = $d->kode_kelas . '_' . $d->mata_pelajaran_id;
+            $d->status_penilaian = isset($bobots[$key]) ? $bobots[$key]->status : 'draft';
+            return $d;
+        });
+
         $units = Unit::all();
+
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('akademik.rapor.index_mobile', compact('jadwalGrouped', 'units', 'activeTa', 'semuaTa', 'selectedKodeTa', 'selectedSemester'));
+        }
 
         return view('akademik.rapor.index', compact('jadwalGrouped', 'units', 'activeTa', 'semuaTa', 'selectedKodeTa', 'selectedSemester'));
     }

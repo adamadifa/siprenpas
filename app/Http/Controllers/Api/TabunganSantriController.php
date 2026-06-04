@@ -210,6 +210,41 @@ class TabunganSantriController extends Controller
                 return $tabunganData;
             });
 
+            // Ambil 5 transaksi terakhir dari seluruh rekening tabungan milik siswa
+            $noRekeningList = $tabungan->pluck('no_rekening')->toArray();
+            $recentTransactions = collect();
+            if (!empty($noRekeningList)) {
+                $transaksiQuery = DB::table('koperasi_tabungan_transaksi as ktt')
+                    ->leftJoin('users as u', 'ktt.id_petugas', '=', 'u.id')
+                    ->leftJoin('koperasi_tabungan as kt', 'ktt.no_rekening', '=', 'kt.no_rekening')
+                    ->leftJoin('koperasi_jenis_tabungan as kjt', 'kt.kode_tabungan', '=', 'kjt.kode_tabungan')
+                    ->whereIn('ktt.no_rekening', $noRekeningList)
+                    ->select(
+                        'ktt.*',
+                        'u.name as nama_petugas',
+                        'kjt.jenis_tabungan'
+                    )
+                    ->orderBy('ktt.created_at', 'desc')
+                    ->limit(5)
+                    ->get();
+
+                $recentTransactions = $transaksiQuery->map(function ($trans) {
+                    return [
+                        'no_transaksi' => $trans->no_transaksi,
+                        'no_rekening' => $trans->no_rekening,
+                        'tanggal' => $trans->tanggal,
+                        'jenis_transaksi' => $trans->jenis_transaksi,
+                        'jenis_transaksi_text' => $trans->jenis_transaksi == 'S' ? 'Setor' : 'Tarik',
+                        'jumlah' => (int) $trans->jumlah,
+                        'saldo' => (int) $trans->saldo,
+                        'berita' => $trans->berita,
+                        'nama_petugas' => $trans->nama_petugas,
+                        'jenis_tabungan' => $trans->jenis_tabungan,
+                        'created_at' => $trans->created_at
+                    ];
+                });
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Data tabungan santri berhasil diambil',
@@ -222,7 +257,8 @@ class TabunganSantriController extends Controller
                     ],
                     'total_saldo' => (int) $totalSaldo,
                     'jumlah_rekening' => $jumlahRekening,
-                    'tabungan' => $dataTabungan
+                    'tabungan' => $dataTabungan,
+                    'transaksi_terakhir' => $recentTransactions
                 ]
             ], 200);
         } catch (\Exception $e) {

@@ -35,7 +35,6 @@
         }
 
         #guru-dashboard {
-            padding: 0 0 100px 0;
             max-width: 480px;
             margin: 0 auto;
         }
@@ -43,11 +42,18 @@
         /* Header Greeting - SOLID OVERLAY, BG IMAGE FROM SETTINGS, SHARP */
         .guru-header {
             background: var(--primary);
-            border-bottom: 4px solid var(--accent);
-            border-radius: 0 0 20px 20px;
-            padding: 20px;
+            padding: 20px 20px 48px 20px;
             position: relative;
             overflow: hidden;
+        }
+
+        .dashboard-body {
+            background: var(--background);
+            border-radius: 30px 30px 0 0;
+            margin-top: -30px;
+            padding: 12px 0 100px 0;
+            position: relative;
+            z-index: 5;
         }
 
         .guru-header::before {
@@ -56,7 +62,7 @@
             inset: 0;
             background: url('{{ $bgUrl }}') no-repeat center center;
             background-size: cover;
-            opacity: 0.22; /* Subtle background image overlay */
+            opacity: 0.05; /* Subtle background image overlay */
             z-index: 1;
             pointer-events: none;
         }
@@ -152,6 +158,14 @@
             line-height: 1.3;
         }
 
+        .guru-badges-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+            align-items: center;
+        }
+
         .guru-role-badge {
             display: inline-flex;
             align-items: center;
@@ -198,53 +212,59 @@
             justify-content: center;
         }
 
-        .guru-date {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.75rem;
-            margin-top: 12px;
+        /* Homeroom Class Card Slider - Swipeable & Borderless */
+        .homeroom-slider-container {
             display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 500;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            padding: 12px 16px 16px 16px;
+            gap: 12px;
         }
 
-        .guru-date ion-icon {
-            font-size: 14px;
+        .homeroom-slider-container::-webkit-scrollbar {
+            display: none;
         }
 
-        .ta-badge {
-            background: rgba(255, 255, 255, 0.18);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 0.65rem;
-            margin-left: 6px;
+        .homeroom-slider-container {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
-        /* Homeroom Class Card - ONLY DISPLAYED IF WALI KELAS */
-        .homeroom-card {
+        .homeroom-slider-item {
+            flex: 0 0 85%;
+            scroll-snap-align: start;
+            transition: all 0.25s ease;
+        }
+
+        .homeroom-slider-container.single-item .homeroom-slider-item {
+            flex: 0 0 100%;
+        }
+
+        a.homeroom-card {
             background: var(--surface);
-            border: 2px solid var(--border-color);
-            border-radius: 14px;
+            border: none;
+            border-radius: 16px;
             padding: 16px;
-            margin: 16px 16px 0;
             display: flex;
             align-items: center;
             gap: 14px;
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 4px 16px rgba(6, 78, 59, 0.05);
             position: relative;
-            transition: all 0.2s ease;
+            text-decoration: none !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .homeroom-card:active {
-            border-color: var(--primary);
+        a.homeroom-card:active {
+            transform: scale(0.97);
             background: #f8fafc;
         }
 
         .homeroom-icon {
             width: 46px;
             height: 46px;
-            border-radius: 10px;
+            border-radius: 12px;
             background: var(--primary);
             color: #ffffff;
             display: flex;
@@ -262,7 +282,7 @@
         .homeroom-label {
             font-size: 0.65rem;
             font-weight: 700;
-            color: var(--text-muted);
+            color: var(--primary-light);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             display: block;
@@ -280,28 +300,46 @@
         .homeroom-students {
             font-size: 0.75rem;
             font-weight: 600;
-            color: var(--primary-light);
+            color: var(--text-muted);
             display: inline-block;
             margin-top: 2px;
         }
 
         .homeroom-action {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: #f1f5f9;
-            color: var(--text-main);
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: rgba(6, 78, 59, 0.08);
+            color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 16px;
-            text-decoration: none;
             transition: all 0.2s ease;
         }
 
-        .homeroom-card:active .homeroom-action {
+        /* Slider Dots Indicator */
+        .slider-dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            margin-top: -4px;
+            margin-bottom: 16px;
+        }
+
+        .slider-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(6, 78, 59, 0.15);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slider-dot.active {
             background: var(--primary);
-            color: #ffffff;
+            width: 16px;
+            border-radius: 3px;
         }
 
         /* Section Layout */
@@ -338,61 +376,93 @@
             border-radius: 6px;
         }
 
-        /* Timeline / Agenda Style for Schedules */
+        /* Timeline / Agenda Style for Schedules - Connected & Clean */
         .schedule-timeline {
             padding: 0 16px;
+            position: relative;
+        }
+
+        .schedule-timeline::before {
+            content: "";
+            position: absolute;
+            left: 46px; /* Middle of 60px timeline-time + padding 16px */
+            top: 20px;
+            bottom: 20px;
+            width: 2px;
+            background: #e2e8f0;
+            z-index: 0;
         }
 
         .timeline-item {
             display: flex;
             gap: 14px;
-            margin-bottom: 12px;
+            margin-bottom: 20px;
             position: relative;
+            z-index: 1;
+            align-items: flex-start;
         }
 
         .timeline-time {
-            width: 65px;
+            width: 60px;
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: var(--surface);
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            padding: 8px 4px;
+            background: transparent;
+            border: none;
+            padding: 4px 0;
             text-align: center;
+            z-index: 1;
         }
 
         .time-hours {
-            font-size: 0.75rem;
-            font-weight: 700;
+            font-size: 0.95rem;
+            font-weight: 800;
             color: var(--primary);
+            line-height: 1;
         }
 
         .time-period {
-            font-size: 0.58rem;
-            font-weight: 600;
+            font-size: 0.65rem;
+            font-weight: 700;
             color: var(--text-muted);
-            margin-top: 2px;
+            margin-top: 4px;
         }
 
         .timeline-body {
             flex: 1;
             background: var(--surface);
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            padding: 10px 14px;
+            border: none;
+            border-radius: 16px;
+            padding: 16px;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            flex-direction: column;
             gap: 12px;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.2s ease;
+            box-shadow: 0 4px 16px rgba(6, 78, 59, 0.05);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .timeline-body:active {
-            border-color: var(--primary);
+            transform: scale(0.99);
+        }
+
+        .btn-action-presensi {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 10px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action-presensi:active {
+            transform: scale(0.97);
+            opacity: 0.9;
         }
 
         .schedule-subject {
@@ -469,7 +539,7 @@
             margin: 0;
         }
 
-        /* Menu Grid */
+        /* Modern Clean Bordered Menu Grid */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -478,58 +548,86 @@
         }
 
         .menu-item {
-            background: var(--surface);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px 12px;
+            border-radius: 16px;
+            padding: 18px 14px;
             text-align: center;
-            text-decoration: none;
-            transition: all 0.2s ease;
+            text-decoration: none !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: var(--shadow-sm);
+            box-shadow: 0 2px 8px rgba(6, 78, 59, 0.02);
         }
 
         .menu-item:active {
-            border-color: var(--primary);
-            transform: translateY(1px);
+            transform: scale(0.96);
+        }
+
+        /* White Card with Green Border */
+        .menu-item.menu-white {
+            background: var(--surface);
+            border: 1.5px solid var(--primary);
+        }
+
+        .menu-item.menu-white .menu-icon {
+            background: rgba(6, 78, 59, 0.08);
+            color: var(--primary);
+        }
+
+        .menu-item.menu-white .menu-label {
+            color: var(--text-main);
+        }
+
+        .menu-item.menu-white .menu-desc {
+            color: var(--text-muted);
+        }
+
+        /* Featured Green Card */
+        .menu-item.menu-featured-green {
+            background: var(--primary);
+            border: 1.5px solid var(--primary);
+            box-shadow: 0 4px 14px rgba(6, 78, 59, 0.15);
+        }
+
+        .menu-item.menu-featured-green .menu-icon {
+            background: rgba(255, 255, 255, 0.18);
+            color: #ffffff;
+        }
+
+        .menu-item.menu-featured-green .menu-label {
+            color: #ffffff;
+        }
+
+        .menu-item.menu-featured-green .menu-desc {
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .menu-icon {
             width: 44px;
             height: 44px;
-            border-radius: 10px;
-            background: var(--background);
-            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 10px;
-            color: var(--primary);
             font-size: 20px;
             transition: all 0.2s ease;
         }
 
-        .menu-item:hover .menu-icon,
         .menu-item:active .menu-icon {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: #ffffff;
+            transform: scale(0.92);
         }
 
         .menu-label {
             font-size: 0.78rem;
             font-weight: 700;
-            color: var(--text-main);
             display: block;
+            margin-bottom: 2px;
         }
 
         .menu-desc {
             font-size: 0.62rem;
             font-weight: 500;
-            color: var(--text-muted);
-            margin-top: 2px;
             display: block;
         }
 
@@ -602,11 +700,23 @@
             <!-- Profile Info Row (flex layout for clean symmetry) -->
             <div class="guru-header-profile">
                 <div class="profile-left">
-                    <div class="guru-greeting">{{ $sapaan }} 👋</div>
+                    <div class="guru-greeting">{{ $sapaan }}</div>
                     <h2 class="guru-name">{{ $guru->nama_guru }}</h2>
-                    <div class="guru-role-badge">
-                        <ion-icon name="school-outline"></ion-icon>
-                        {{ $guru->unit ? $guru->unit->nama_unit : 'Guru' }}
+                    <div class="guru-badges-row">
+                        <div class="guru-role-badge">
+                            <ion-icon name="school-outline"></ion-icon>
+                            <span>{{ $guru->unit ? $guru->unit->nama_unit : 'Guru' }}</span>
+                        </div>
+                        <div class="guru-role-badge">
+                            <ion-icon name="calendar-outline"></ion-icon>
+                            <span>{{ $hariIni }}, {{ DateToIndo(date('Y-m-d')) }}</span>
+                        </div>
+                        @if($activeTa)
+                            <div class="guru-role-badge">
+                                <ion-icon name="bookmark-outline"></ion-icon>
+                                <span>TA {{ $activeTa->tahun_ajaran }}</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 <div class="profile-right">
@@ -631,34 +741,53 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Date and Academic Year -->
-            <div class="guru-date">
-                <ion-icon name="calendar-outline"></ion-icon>
-                <span>{{ $hariIni }}, {{ DateToIndo(date('Y-m-d')) }}</span>
-                @if($activeTa)
-                    <span class="ta-badge">TA {{ $activeTa->tahun_ajaran }}</span>
-                @endif
-            </div>
         </div>
 
-        {{-- Homeroom Section (Displayed ONLY if Guru is Wali Kelas) --}}
-        @if($kelasBinaan)
-            <div class="homeroom-card">
-                <div class="homeroom-icon">
+        <div class="dashboard-body">
+            {{-- Homeroom Section (Displayed ONLY if Guru is Wali Kelas) --}}
+        @if($listKelasBinaan && $listKelasBinaan->isNotEmpty())
+            <!-- Section Header for Wali Kelas -->
+            <div class="section-header" style="margin-top: 24px; margin-bottom: 0;">
+                <div class="section-title">
                     <ion-icon name="people-outline"></ion-icon>
+                    <span>Kelas Binaan (Wali Kelas)</span>
                 </div>
-                <div class="homeroom-info">
-                    <span class="homeroom-label">Kelas Binaan Anda</span>
-                    <h3 class="homeroom-title">
-                        Kelas {{ $listKelasBinaan->pluck('nama_kelas')->implode(', ') }}
-                    </h3>
-                    <span class="homeroom-students">{{ $totalSiswa }} Siswa Terdaftar</span>
-                </div>
-                <a href="{{ route('wali-kelas.index') }}" class="homeroom-action" title="Halaman Wali Kelas">
-                    <ion-icon name="chevron-forward-outline"></ion-icon>
-                </a>
+                <span class="count-badge">{{ $listKelasBinaan->count() }} Kelas</span>
             </div>
+
+            <!-- Swipeable Slider Container -->
+            <div class="homeroom-slider-container {{ $listKelasBinaan->count() === 1 ? 'single-item' : '' }}">
+                @foreach($listKelasBinaan as $kelas)
+                    <div class="homeroom-slider-item">
+                        <a href="{{ route('wali-kelas.index', ['kode_kelas' => $kelas->kode_kelas]) }}" class="homeroom-card">
+                            <div class="homeroom-icon">
+                                <ion-icon name="school-outline"></ion-icon>
+                            </div>
+                            <div class="homeroom-info">
+                                <span class="homeroom-label">Kelas Binaan</span>
+                                <h3 class="homeroom-title">
+                                    Kelas {{ $kelas->nama_kelas }}
+                                </h3>
+                                <span class="homeroom-students">
+                                    {{ $kelas->siswa()->count() }} Siswa Terdaftar
+                                </span>
+                            </div>
+                            <div class="homeroom-action">
+                                <ion-icon name="chevron-forward-outline"></ion-icon>
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+
+            <!-- Dots Indicator for Slider (only if count > 1) -->
+            @if($listKelasBinaan->count() > 1)
+                <div class="slider-dots">
+                    @foreach($listKelasBinaan as $index => $kelas)
+                        <span class="slider-dot {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}"></span>
+                    @endforeach
+                </div>
+            @endif
         @endif
 
         {{-- Jadwal Hari Ini --}}
@@ -678,23 +807,48 @@
                         <span class="time-period">Jam ke-{{ $jadwal->jam_ke }}</span>
                     </div>
                     <div class="timeline-body">
-                        <div class="schedule-details">
-                            <h4 class="schedule-subject">{{ $jadwal->mapel ? $jadwal->mapel->nama_matpel : 'Mata Pelajaran' }}</h4>
-                            <span class="schedule-class">Kelas {{ $jadwal->kelas ? $jadwal->kelas->nama_kelas : '-' }}</span>
-                        </div>
-                        <div class="schedule-action">
-                            @if($jadwal->sudah_presensi)
-                                <span class="status-badge success">
-                                    <ion-icon name="checkmark-circle-outline"></ion-icon>
-                                    Selesai
+                        <!-- Top Row: Subject Info & Status Badge -->
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+                            <div style="flex: 1; min-width: 0;">
+                                <h4 class="schedule-subject" style="color: var(--text-main); font-weight: 700; margin-bottom: 4px;">
+                                    {{ $jadwal->mapel ? $jadwal->mapel->nama_matpel : 'Mata Pelajaran' }}
+                                </h4>
+                                <span class="schedule-class" style="display: flex; align-items: center; gap: 4px; font-weight: 600; color: var(--text-muted); font-size: 0.72rem;">
+                                    <ion-icon name="business-outline" style="color: var(--primary); font-size: 13px;"></ion-icon>
+                                    Kelas {{ $jadwal->kelas ? $jadwal->kelas->nama_kelas : '-' }}
                                 </span>
-                            @else
-                                <span class="status-badge pending">
-                                    <ion-icon name="time-outline"></ion-icon>
-                                    Belum
-                                </span>
-                            @endif
+                            </div>
+                            <div>
+                                @if($jadwal->sudah_presensi)
+                                    <span class="status-badge success">
+                                        <ion-icon name="checkmark-circle-outline"></ion-icon>
+                                        Selesai
+                                    </span>
+                                @else
+                                    <span class="status-badge pending">
+                                        <ion-icon name="time-outline"></ion-icon>
+                                        Belum
+                                    </span>
+                                @endif
+                            </div>
                         </div>
+
+                        <!-- Action Button for Attendance Input/Edit -->
+                        @if($jadwal->sudah_presensi)
+                            <a href="{{ route('presensi-mapel.input', ['jadwal_id' => Crypt::encrypt($jadwal->id), 'tanggal' => date('Y-m-d')]) }}" 
+                               class="btn-action-presensi" 
+                               style="background: rgba(6, 78, 59, 0.08); color: var(--primary);">
+                                <ion-icon name="create-outline"></ion-icon>
+                                <span>Edit Presensi</span>
+                            </a>
+                        @else
+                            <a href="{{ route('presensi-mapel.input', ['jadwal_id' => Crypt::encrypt($jadwal->id), 'tanggal' => date('Y-m-d')]) }}" 
+                               class="btn-action-presensi" 
+                               style="background: var(--primary); color: #ffffff; box-shadow: 0 4px 10px rgba(6, 78, 59, 0.2);">
+                                <ion-icon name="checkbox-outline"></ion-icon>
+                                <span>Input Presensi</span>
+                            </a>
+                        @endif
                     </div>
                 </div>
             @empty
@@ -715,29 +869,29 @@
         </div>
 
         <div class="menu-grid">
-            <a href="{{ route('jadwal-pelajaran.index') }}" class="menu-item">
+            <a href="{{ route('jadwal-pelajaran.index') }}" class="menu-item menu-white">
                 <div class="menu-icon">
                     <ion-icon name="calendar-outline"></ion-icon>
                 </div>
                 <span class="menu-label">Jadwal Pelajaran</span>
                 <span class="menu-desc">Lihat semua jadwal</span>
             </a>
-            <a href="{{ route('presensi-mapel.index') }}" class="menu-item">
+            <a href="{{ route('presensi-mapel.index') }}" class="menu-item menu-featured-green">
                 <div class="menu-icon">
                     <ion-icon name="checkbox-outline"></ion-icon>
                 </div>
                 <span class="menu-label">Presensi Siswa</span>
                 <span class="menu-desc">Input kehadiran</span>
             </a>
-            <a href="{{ route('jadwal-pelajaran.index') }}" class="menu-item">
+            <a href="/rapor" class="menu-item menu-white">
                 <div class="menu-icon">
-                    <ion-icon name="stats-chart-outline"></ion-icon>
+                    <ion-icon name="document-text-outline"></ion-icon>
                 </div>
-                <span class="menu-label">Penilaian</span>
-                <span class="menu-desc">Kelola nilai siswa</span>
+                <span class="menu-label">Rapor</span>
+                <span class="menu-desc">Kelola rapor siswa</span>
             </a>
             @if($kelasBinaan)
-                <a href="{{ route('wali-kelas.index') }}" class="menu-item">
+                <a href="{{ route('wali-kelas.index') }}" class="menu-item menu-white">
                     <div class="menu-icon">
                         <ion-icon name="people-circle-outline"></ion-icon>
                     </div>
@@ -745,7 +899,7 @@
                     <span class="menu-desc">Monitoring kelas</span>
                 </a>
             @else
-                <a href="{{ route('jadwal-pelajaran.index') }}" class="menu-item">
+                <a href="{{ route('jadwal-pelajaran.index') }}" class="menu-item menu-white">
                     <div class="menu-icon">
                         <ion-icon name="book-outline"></ion-icon>
                     </div>
@@ -753,6 +907,7 @@
                     <span class="menu-desc">Daftar mapel</span>
                 </a>
             @endif
+        </div>
         </div>
     </div>
 
@@ -775,4 +930,30 @@
             <span>Profil</span>
         </a>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.homeroom-slider-container');
+            const dots = document.querySelectorAll('.slider-dots .slider-dot');
+            
+            if (container && dots.length > 0) {
+                container.addEventListener('scroll', function() {
+                    const scrollLeft = container.scrollLeft;
+                    const item = container.querySelector('.homeroom-slider-item');
+                    if (item) {
+                        const itemWidth = item.offsetWidth + 12; // width + gap
+                        const activeIndex = Math.round(scrollLeft / itemWidth);
+                        
+                        dots.forEach((dot, idx) => {
+                            if (idx === activeIndex) {
+                                dot.classList.add('active');
+                            } else {
+                                dot.classList.remove('active');
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    </script>
 @endsection

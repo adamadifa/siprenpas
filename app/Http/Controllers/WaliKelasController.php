@@ -58,7 +58,7 @@ class WaliKelasController extends Controller
             ->join('siswa', 'kelas_siswa.id_siswa', '=', 'siswa.id_siswa')
             ->leftJoin('pendaftaran', 'siswa.id_siswa', '=', 'pendaftaran.id_siswa')
             ->orderBy('siswa.nama_lengkap')
-            ->select('siswa.id_siswa', 'pendaftaran.nis', 'siswa.nama_lengkap', 'siswa.jenis_kelamin', 'siswa.tempat_lahir', 'siswa.tanggal_lahir')
+            ->select('siswa.id_siswa', 'pendaftaran.nis', 'siswa.nama_lengkap', 'siswa.jenis_kelamin', 'siswa.tempat_lahir', 'siswa.tanggal_lahir', 'pendaftaran.foto')
             ->get();
 
         // Get active semester
@@ -115,6 +115,12 @@ class WaliKelasController extends Controller
                         $status = 'Lengkap';
                     }
                 }
+
+                // If grades are already submitted/sent, consider it 100% complete
+                if ($bobot->status === 'terkirim') {
+                    $completionRate = 100;
+                    $status = 'Lengkap';
+                }
             }
 
             return (object) [
@@ -139,6 +145,11 @@ class WaliKelasController extends Controller
             ->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Ahad')")
             ->orderBy('jam_ke')
             ->get();
+
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('akademik.wali_kelas.index_mobile', compact('guruModel', 'activeTa', 'activeSemester', 'kelasBinaan', 'currentKelas', 'students', 'monitoringData', 'presenceSchedules'));
+        }
 
         return view('akademik.wali_kelas.index', compact('guruModel', 'activeTa', 'activeSemester', 'kelasBinaan', 'currentKelas', 'students', 'monitoringData', 'presenceSchedules'));
     }
@@ -225,6 +236,11 @@ class WaliKelasController extends Controller
                 
             return $student;
         });
+
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('akademik.wali_kelas.detail_penilaian_mobile', compact('jadwal', 'bobot', 'rencanaPenilaian', 'students', 'mappedGrades'));
+        }
 
         return view('akademik.wali_kelas.detail_penilaian', compact('jadwal', 'bobot', 'rencanaPenilaian', 'students', 'mappedGrades'));
     }

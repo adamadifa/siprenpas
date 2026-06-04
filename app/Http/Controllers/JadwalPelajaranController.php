@@ -117,6 +117,11 @@ class JadwalPelajaranController extends Controller
         $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Ahad'];
         $semesters = [1, 2];
         
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('akademik.jadwal_pelajaran.index_mobile', compact('jadwal', 'units', 'kelas', 'gurus', 'activeTa', 'semuaTa', 'selectedKodeTa', 'selectedSemester', 'days', 'semesters'));
+        }
+        
         return view('akademik.jadwal_pelajaran.index', compact('jadwal', 'units', 'kelas', 'gurus', 'activeTa', 'semuaTa', 'selectedKodeTa', 'selectedSemester', 'days', 'semesters'));
     }
 
@@ -363,6 +368,13 @@ class JadwalPelajaranController extends Controller
             }
         }
 
-        return view('akademik.jadwal_pelajaran.cetak-presensi', compact('jadwal', 'students', 'presensi', 'attMatrix'));
+        $isPdf = request()->has('pdf');
+        if ($isPdf) {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('akademik.jadwal_pelajaran.cetak-presensi', compact('jadwal', 'students', 'presensi', 'attMatrix', 'isPdf'))
+                ->setPaper('a4', 'landscape');
+            return $pdf->download('Rekap_Presensi_' . str_replace(' ', '_', $jadwal->mapel->nama_matpel) . '_' . $jadwal->kelas->nama_kelas . '.pdf');
+        }
+
+        return view('akademik.jadwal_pelajaran.cetak-presensi', compact('jadwal', 'students', 'presensi', 'attMatrix', 'isPdf'));
     }
 }

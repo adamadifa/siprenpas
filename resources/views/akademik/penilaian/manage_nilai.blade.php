@@ -56,14 +56,24 @@
                         <small class="text-white-50" style="font-size: 0.7rem;">{{ $bobot->mapel->nama_matpel ?? '-' }} | {{ $bobot->kelas->nama_kelas ?? '-' }}</small>
                     </div>
                 </div>
-                <div class="d-flex gap-1">
-                     <button type="button" class="btn btn-primary btn-sm px-3" style="font-size: 0.75rem;" data-bs-toggle="modal" data-bs-target="#mdlAddColumn"><i class="ti ti-plus me-1"></i> Tambah</button>
-                     <button type="button" class="btn btn-success btn-sm px-3" style="font-size: 0.75rem;" onclick="alert('Fitur Upload sedang dikembangkan')"><i class="ti ti-upload me-1"></i> Upload</button>
-                     <button type="button" class="btn btn-warning btn-sm px-3 text-white" style="font-size: 0.75rem;" onclick="alert('Fitur Export sedang dikembangkan')"><i class="ti ti-download me-1"></i> Export</button>
-                </div>
+                @if (($bobot->status ?? 'draft') != 'terkirim')
+                    <div class="d-flex gap-1">
+                         <button type="button" class="btn btn-primary btn-sm px-3" style="font-size: 0.75rem;" data-bs-toggle="modal" data-bs-target="#mdlAddColumn"><i class="ti ti-plus me-1"></i> Tambah</button>
+                         <button type="button" class="btn btn-success btn-sm px-3" style="font-size: 0.75rem;" onclick="alert('Fitur Upload sedang dikembangkan')"><i class="ti ti-upload me-1"></i> Upload</button>
+                         <button type="button" class="btn btn-warning btn-sm px-3 text-white" style="font-size: 0.75rem;" onclick="alert('Fitur Export sedang dikembangkan')"><i class="ti ti-download me-1"></i> Export</button>
+                    </div>
+                @endif
             </div>
 
             <div class="card-body p-0">
+                @if (($bobot->status ?? 'draft') == 'terkirim')
+                    <div class="alert alert-warning m-3 d-flex align-items-center gap-2" role="alert">
+                        <i class="ti ti-lock fs-4"></i>
+                        <div>
+                            <strong>Nilai Terkunci:</strong> Nilai untuk mata pelajaran dan kelas ini telah dikirim ke akademik/walikelas. Anda tidak dapat mengubah data ini lagi.
+                        </div>
+                    </div>
+                @endif
                 <!-- Modern & Unified Search Bar Section -->
                 <div class="p-3 d-flex justify-content-end" style="background-color: #104e30; border-top: 1px solid rgba(255,255,255,0.1);">
                      <div class="position-relative" style="width: 300px;">
@@ -116,7 +126,7 @@
                                                 <input type="number" step="0.01" min="0" max="100" 
                                                     name="nilai[{{ $student->id_siswa }}][{{ $rencana->id }}]" 
                                                     class="form-control form-control-sm border-0 text-center fw-bold {{ $score !== '' ? ($score < 75 ? 'text-danger' : 'text-success') : '' }}" 
-                                                    value="{{ $score }}" placeholder="-">
+                                                    value="{{ $score }}" placeholder="-" {{ ($bobot->status ?? 'draft') == 'terkirim' ? 'disabled' : '' }}>
                                             </td>
                                         @endforeach
                                     </tr>
@@ -129,11 +139,12 @@
                         </table>
                     </div>
                     
-                    <!-- Save Button -->
-                    <div class="p-3 border-top text-end bg-light sticky-bottom shadow-sm">
-                         <small class="text-muted me-3 fst-italic">Pastikan menekan tombol simpan setelah mengubah nilai.</small>
-                        <button type="submit" class="btn btn-success px-4"><i class="ti ti-device-floppy me-1"></i> Simpan Semua Nilai</button>
-                    </div>
+                    @if (($bobot->status ?? 'draft') != 'terkirim')
+                        <div class="p-3 border-top text-end bg-light sticky-bottom shadow-sm">
+                             <small class="text-muted me-3 fst-italic">Pastikan menekan tombol simpan setelah mengubah nilai.</small>
+                            <button type="submit" class="btn btn-success px-4"><i class="ti ti-device-floppy me-1"></i> Simpan Semua Nilai</button>
+                        </div>
+                    @endif
                 </form>
             </div>
         </div>

@@ -17,9 +17,11 @@
                 </div>
                 <div>
                      <a href="{{ route('penilaian.index', $bobot->id) }}" class="btn btn-danger btn-sm text-white"><i class="ti ti-arrow-left me-1"></i> Kembali</a>
-                     <button type="button" class="btn btn-primary btn-sm"><i class="ti ti-plus me-1"></i> Tambah</button>
-                     <button type="button" class="btn btn-success btn-sm"><i class="ti ti-upload me-1"></i> Upload</button>
-                     <button type="button" class="btn btn-warning btn-sm text-white"><i class="ti ti-download me-1"></i> Export</button>
+                     @if (($bobot->status ?? 'draft') != 'terkirim')
+                         <button type="button" class="btn btn-primary btn-sm"><i class="ti ti-plus me-1"></i> Tambah</button>
+                         <button type="button" class="btn btn-success btn-sm"><i class="ti ti-upload me-1"></i> Upload</button>
+                         <button type="button" class="btn btn-warning btn-sm text-white"><i class="ti ti-download me-1"></i> Export</button>
+                     @endif
                 </div>
             </div>
         </div>
@@ -33,6 +35,17 @@
     </div>
 
     <!-- Form Input Nilai -->
+    @if (($bobot->status ?? 'draft') == 'terkirim')
+        <div class="col-12 mb-3">
+            <div class="alert alert-warning d-flex align-items-center gap-2 mb-0" role="alert">
+                <i class="ti ti-lock fs-4"></i>
+                <div>
+                    <strong>Nilai Terkunci:</strong> Nilai untuk mata pelajaran dan kelas ini telah dikirim. Anda tidak dapat melakukan perubahan data.
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="col-12">
         <div class="card">
             <div class="card-body p-0">
@@ -68,7 +81,7 @@
                                             <input type="number" step="0.01" min="0" max="100" 
                                                 name="nilai[{{ $student->id_siswa }}]" 
                                                 class="form-control form-control-sm border-0 text-center fw-bold {{ $nilai !== '' ? ($nilai < 75 ? 'text-danger' : 'text-success') : '' }}" 
-                                                value="{{ $nilai }}" placeholder="-">
+                                                value="{{ $nilai }}" placeholder="-" {{ ($bobot->status ?? 'draft') == 'terkirim' ? 'disabled' : '' }}>
                                         </td>
                                     </tr>
                                 @empty
@@ -80,10 +93,11 @@
                         </table>
                     </div>
                     
-                    <!-- Save Button Floating or Bottom -->
-                    <div class="p-3 border-top text-end bg-light sticky-bottom">
-                        <button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy me-1"></i> Simpan Nilai</button>
-                    </div>
+                    @if (($bobot->status ?? 'draft') != 'terkirim')
+                        <div class="p-3 border-top text-end bg-light sticky-bottom">
+                            <button type="submit" class="btn btn-primary"><i class="ti ti-device-floppy me-1"></i> Simpan Nilai</button>
+                        </div>
+                    @endif
                 </form>
             </div>
         </div>

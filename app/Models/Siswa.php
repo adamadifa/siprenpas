@@ -44,4 +44,12 @@ class Siswa extends Model
     {
         return $this->hasMany(PresensiSiswa::class, 'id_siswa', 'id_siswa');
     }
+
+    /**
+     * Relasi ke pendaftaran untuk mendapatkan foto siswa
+     */
+    public function pendaftaran()
+    {
+        return $this->hasOne(Pendaftaran::class, 'id_siswa', 'id_siswa');
+    }
 }
