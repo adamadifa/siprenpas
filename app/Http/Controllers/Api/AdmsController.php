@@ -226,28 +226,32 @@ class AdmsController extends Controller
         }
 
         // 5. Proses Data Absensi (Ada user_id dan io_time)
-        if (isset($jsonData['user_id']) && isset($jsonData['io_time'])) {
-            if ($mesin) {
-                // Format waktu: 20260326011015 -> 2026-03-26 01:10:15
-                $io_time_str = $jsonData['io_time'];
-                $scan = (strlen($io_time_str) == 14)
-                    ? substr($io_time_str, 0, 4) . '-' . substr($io_time_str, 4, 2) . '-' . substr($io_time_str, 6, 2) . ' ' . substr($io_time_str, 8, 2) . ':' . substr($io_time_str, 10, 2) . ':' . substr($io_time_str, 12, 2)
-                    : date('Y-m-d H:i:s');
+        try {
+            if (isset($jsonData['user_id']) && isset($jsonData['io_time'])) {
+                if ($mesin) {
+                    // Format waktu: 20260326011015 -> 2026-03-26 01:10:15
+                    $io_time_str = $jsonData['io_time'];
+                    $scan = (strlen($io_time_str) == 14)
+                        ? substr($io_time_str, 0, 4) . '-' . substr($io_time_str, 4, 2) . '-' . substr($io_time_str, 6, 2) . ' ' . substr($io_time_str, 8, 2) . ':' . substr($io_time_str, 10, 2) . ':' . substr($io_time_str, 12, 2)
+                        : date('Y-m-d H:i:s');
 
-                $io_mode = $jsonData['io_mode'] ?? 0;
-                $status = ($io_mode >= 16777216) ? ($io_mode / 16777216) - 1 : ($jsonData['status_scan'] ?? 0);
+                    $io_mode = $jsonData['io_mode'] ?? 0;
+                    $status = ($io_mode >= 16777216) ? ($io_mode / 16777216) - 1 : ($jsonData['status_scan'] ?? 0);
 
-                // Eksekusi Simpan Absensi
-                $this->processAttendance($jsonData['user_id'], $scan, $status, $mesin);
+                    // Eksekusi Simpan Absensi
+                    $this->processAttendance($jsonData['user_id'], $scan, $status, $mesin);
 
-                Log::info('ADMS CAPTURE SUCCESS', [
-                    'sn' => $mesin->sn,
-                    'user_id' => $jsonData['user_id'],
-                    'time' => $scan
-                ]);
-            } else {
-                Log::error('ADMS CAPTURE FAILED: No active machine configuration found');
+                    Log::info('ADMS CAPTURE SUCCESS', [
+                        'sn' => $mesin->sn,
+                        'user_id' => $jsonData['user_id'],
+                        'time' => $scan
+                    ]);
+                } else {
+                    Log::error('ADMS CAPTURE FAILED: No active machine configuration found');
+                }
             }
+        } catch (\Exception $e) {
+            Log::error('ADMS CAPTURE ERROR: ' . $e->getMessage());
         }
 
         // 6. Jika ini Heartbeat (fk_info), Log status online
@@ -359,7 +363,7 @@ class AdmsController extends Controller
             ->join('konfigurasi_jam_kerja', 'presensi.kode_jam_kerja', '=', 'konfigurasi_jam_kerja.kode_jam_kerja')
             ->where('presensi.tanggal', $tanggal_kemarin)->first();
 
-        $lintas_hari = $presensi_kemarin ? $presensi_kemarin->lintashari : 0;
+        $lintas_hari = $presensi_kemarin ? $presensi_kemarin->lintas_hari : 0;
 
         // Jika Presensi Kemarin Status Lintas Hari nya 1 Maka Tanggal Presensi Sekarang adalah Tanggal Kemarin
         $tanggal_presensi = $lintas_hari == 1 ? $tanggal_kemarin : $tanggal_sekarang;
