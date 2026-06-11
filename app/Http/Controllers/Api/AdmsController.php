@@ -177,7 +177,10 @@ class AdmsController extends Controller
             $_SERVER['DEV_ID'] ??
             $request->query('sn') ??
             '';
-
+        Log::debug('dev-id-header = ' . $request->header('dev-id'));
+        Log::debug('dev_id-header = ' . $request->header('dev_id'));
+        Log::debug('http_dev_id = ' . $_SERVER['HTTP_DEV_ID']);
+        Log::debug('dev_id = ' . $_SERVER['DEV_ID']);
         Log::debug('devid: ' . $devId);
 
         $rawBody = $request->getContent();
