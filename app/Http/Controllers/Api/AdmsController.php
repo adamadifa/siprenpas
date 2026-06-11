@@ -273,19 +273,25 @@ class AdmsController extends Controller
         $blkLen = $request->header('blk-len') ?? $request->header('blk_len');
 
         // Bypass Laravel/Symfony Response Header Normalization to preserve underscores
+        // header('Content-Type: application/octet-stream; charset=utf-8');
+        // header('response_code: OK');
+        // header('trans_id: ' . $transId);
+        // header('cmd_code: ' . $cmdCode);
+        // header('Connection: close');
+
+        // if ($blkNo !== null) {
+        //     header('blk_no: ' . $blkNo);
+        // }
+        // if ($blkLen !== null) {
+        //     header('blk_len: ' . $blkLen);
+        // }
+
+        // echo "OK";
+        // exit;
+
         header('Content-Type: application/octet-stream; charset=utf-8');
         header('response_code: OK');
-        header('trans_id: ' . $transId);
-        header('cmd_code: ' . $cmdCode);
         header('Connection: close');
-
-        if ($blkNo !== null) {
-            header('blk_no: ' . $blkNo);
-        }
-        if ($blkLen !== null) {
-            header('blk_len: ' . $blkLen);
-        }
-
         echo "OK";
         exit;
     }
