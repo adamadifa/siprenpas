@@ -178,6 +178,8 @@ class AdmsController extends Controller
             $request->query('sn') ??
             '';
 
+        Log::debug('devid: ' . $devId);
+
         $rawBody = $request->getContent();
 
         // 2. Parse JSON dari body
@@ -191,7 +193,7 @@ class AdmsController extends Controller
 
         // 3. Cari Data Mesin di Database
         $mesin = MesinFingerprint::where('sn', $devId)->where('status', 'Aktif')->first();
-        
+
         // Jika tidak ditemukan berdasarkan SN, gunakan mesin aktif pertama sebagai fallback
         if (!$mesin) {
             $mesin = MesinFingerprint::where('status', 'Aktif')->first();
