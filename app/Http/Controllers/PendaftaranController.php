@@ -23,6 +23,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Yajra\DataTables\Facades\DataTables;
+use App\Exports\PendaftaranExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
@@ -71,6 +73,21 @@ class PendaftaranController extends Controller
         $data['tahunajaran'] = Tahunajaranppdb::orderBy('kode_ta')->get();
         $data['rekap_unit'] = $rekap_unit;
         return view('pendaftaran.index', $data);
+    }
+
+    public function export(Request $request)
+    {
+        $p = new Pendaftaran();
+        $pendaftaran = $p->getPendaftaran(request: $request)
+            ->addSelect([
+                'pendaftaran.tanggal_pendaftaran',
+                'pendaftaran.jenis_pendaftaran',
+                'pendaftaran.tingkat_masuk',
+                'asal_sekolah.nama_sekolah as nama_asal_sekolah'
+            ])
+            ->get();
+
+        return Excel::download(new PendaftaranExport($pendaftaran), 'data_pendaftaran.xlsx');
     }
 
     public function create(Request $request)
@@ -442,6 +459,21 @@ class PendaftaranController extends Controller
         $data['qrCode'] = QrCode::size(100)->generate($no_pendaftaran);
         $pdf = FacadePdf::loadView('pendaftaran.cetak', $data)->setPaper('a4', 'portrait');
         return $pdf->stream('pendaftaran_' . $no_pendaftaran . '.pdf');
+    }
+
+    public function cetakIdCard($no_pendaftaran)
+    {
+        $no_pendaftaran = Crypt::decrypt($no_pendaftaran);
+        $mpendaftaran = new Pendaftaran();
+        $data['pendaftaran'] = $mpendaftaran->getPendaftaran($no_pendaftaran)->first();
+
+        if ($data['pendaftaran']->foto_pendaftaran && file_exists(public_path('storage/photos/pendaftaran/' . $data['pendaftaran']->foto_pendaftaran))) {
+            $data['foto'] = asset('storage/photos/pendaftaran/' . $data['pendaftaran']->foto_pendaftaran);
+        } else {
+            $data['foto'] = asset('assets/img/avatars/1.png');
+        }
+
+        return view('pendaftaran.cetak_id_card', $data);
     }
 
 

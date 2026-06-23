@@ -28,7 +28,8 @@ class PengaturanUmum extends Model
         'youtube',
         'instagram',
         'tiktok',
-        'session_lifetime'
+        'session_lifetime',
+        'brosur_utama'
     ];
 
     protected $casts = [

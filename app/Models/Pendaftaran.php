@@ -159,4 +159,9 @@ class Pendaftaran extends Model
 
         return $query;
     }
+
+    public function siswa()
+    {
+        return $this->belongsTo(Siswa::class, 'id_siswa', 'id_siswa');
+    }
 }

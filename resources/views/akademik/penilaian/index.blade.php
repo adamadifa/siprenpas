@@ -112,6 +112,13 @@
                         <span class="badge bg-success px-3 py-2 text-uppercase fw-bold" style="font-size: 0.75rem; border-radius: 4px;">
                             <i class="ti ti-check me-1"></i> Terkirim
                         </span>
+                        <form action="{{ route('penilaian.batal-kirim') }}" method="POST" id="formBatalKirimPenilaian" class="d-inline">
+                            @csrf
+                            <input type="hidden" name="bobot_id" value="{{ $bobot->id }}">
+                            <button type="button" class="btn btn-danger btn-sm px-3" style="font-size: 0.75rem;" onclick="confirmBatalKirim()">
+                                <i class="ti ti-arrow-back me-1"></i> Batal Kirim
+                            </button>
+                        </form>
                     @else
                         <form action="{{ route('penilaian.kirim') }}" method="POST" id="formKirimPenilaian" class="d-inline">
                             @csrf
@@ -179,6 +186,23 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById('formKirimPenilaian').submit();
+            }
+        });
+    }
+
+    function confirmBatalKirim() {
+        Swal.fire({
+            title: 'Batal Kirim Nilai?',
+            text: 'Apakah Anda yakin ingin membatalkan pengiriman nilai ini? Status nilai akan kembali menjadi draft dan dapat diedit kembali.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Batalkan!',
+            cancelButtonText: 'Kembali'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('formBatalKirimPenilaian').submit();
             }
         });
     }

@@ -15,4 +15,9 @@ class Kelassiswa extends Model
     {
         return $this->belongsTo(Siswa::class, 'id_siswa', 'id_siswa');
     }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'kode_kelas', 'kode_kelas');
+    }
 }

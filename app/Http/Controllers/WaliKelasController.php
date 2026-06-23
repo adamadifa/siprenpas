@@ -58,7 +58,7 @@ class WaliKelasController extends Controller
             ->join('siswa', 'kelas_siswa.id_siswa', '=', 'siswa.id_siswa')
             ->leftJoin('pendaftaran', 'siswa.id_siswa', '=', 'pendaftaran.id_siswa')
             ->orderBy('siswa.nama_lengkap')
-            ->select('siswa.id_siswa', 'pendaftaran.nis', 'siswa.nama_lengkap', 'siswa.jenis_kelamin', 'siswa.tempat_lahir', 'siswa.tanggal_lahir', 'pendaftaran.foto')
+            ->select('siswa.id_siswa', 'pendaftaran.nis', 'siswa.nama_lengkap', 'siswa.jenis_kelamin', 'siswa.tempat_lahir', 'siswa.tanggal_lahir', 'pendaftaran.foto', 'pendaftaran.no_pendaftaran')
             ->get();
 
         // Get active semester

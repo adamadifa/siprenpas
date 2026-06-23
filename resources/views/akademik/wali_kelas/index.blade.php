@@ -43,11 +43,16 @@
                 <div class="row g-3 h-100">
                     @if ($kelasBinaan->count() > 1)
                         <div class="col-md-5">
-                            <div class="card h-100 shadow-sm border-0">
+                            <div class="card h-100 shadow-sm border-0" style="border-left: 4px solid #064e3b !important;">
                                 <div class="card-body p-3 d-flex flex-column justify-content-center">
-                                    <label class="form-label fw-bold small mb-1">Pilih Kelas Binaan</label>
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <div class="avatar avatar-xs rounded bg-label-success d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; min-width: 28px;">
+                                            <i class="ti ti-chalkboard fs-6 text-success"></i>
+                                        </div>
+                                        <label class="form-label fw-bold text-dark mb-0 small">Pilih Kelas Binaan</label>
+                                    </div>
                                     <form action="{{ route('wali-kelas.index') }}" method="GET" id="formSelectKelas">
-                                        <select name="kode_kelas" class="form-select form-select-sm" onchange="document.getElementById('formSelectKelas').submit();">
+                                        <select name="kode_kelas" class="form-select border shadow-sm" style="border-color: #cbd5e1 !important; font-weight: 600;" onchange="document.getElementById('formSelectKelas').submit();">
                                             @foreach ($kelasBinaan as $kb)
                                                 <option value="{{ $kb->kode_kelas }}" {{ $currentKelas->kode_kelas == $kb->kode_kelas ? 'selected' : '' }}>
                                                     Kelas {{ $kb->nama_kelas }} ({{ $kb->unit->nama_unit }})
@@ -125,6 +130,11 @@
                 <li class="nav-item">
                     <button type="button" class="nav-link py-3 px-4 fw-bold text-uppercase" role="tab" data-bs-toggle="tab" data-bs-target="#navs-presensi" aria-controls="navs-presensi" aria-selected="false" style="letter-spacing: 0.5px;">
                         <i class="ti ti-calendar-check me-1"></i> Monitoring Presensi
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link py-3 px-4 fw-bold text-uppercase" role="tab" data-bs-toggle="tab" data-bs-target="#navs-cetakraport" aria-controls="navs-cetakraport" aria-selected="false" style="letter-spacing: 0.5px;">
+                        <i class="ti ti-printer me-1"></i> Cetak Rapor
                     </button>
                 </li>
             </ul>
@@ -289,6 +299,57 @@
                                                 <i class="ti ti-calendar fs-1 opacity-25"></i>
                                             </div>
                                             <h5>Belum ada jadwal pelajaran terdaftar di kelas ini untuk semester ini.</h5>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab Panel Cetak Rapor -->
+                <div class="tab-pane fade" id="navs-cetakraport" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 text-nowrap">
+                            <thead style="background-color: #053b2d;">
+                                <tr>
+                                    <th class="text-white py-3 text-center" style="width: 50px;">NO</th>
+                                    <th class="text-white py-3" style="width: 150px;">NIS</th>
+                                    <th class="text-white py-3">NAMA SISWA</th>
+                                    <th class="text-white py-3 text-center" style="width: 80px;">L/P</th>
+                                    <th class="text-white py-3 text-center" style="width: 150px;">AKSI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($students as $index => $student)
+                                    <tr>
+                                        <td class="text-center py-2 fw-semibold text-secondary">{{ $index + 1 }}</td>
+                                        <td class="py-2"><span class="fw-bold text-dark">{{ $student->nis ?? '-' }}</span></td>
+                                        <td class="py-2 fw-bold text-dark">{{ $student->nama_lengkap }}</td>
+                                        <td class="text-center py-2">
+                                            @if(strtoupper($student->jenis_kelamin) == 'L' || strtoupper($student->jenis_kelamin) == 'LAKI-LAKI')
+                                                <span class="badge bg-label-primary px-2">L</span>
+                                            @else
+                                                <span class="badge bg-label-danger px-2">P</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center py-2">
+                                            @if ($student->no_pendaftaran)
+                                                <a href="{{ route('rapor-siswa.preview', Crypt::encrypt($student->no_pendaftaran)) }}" class="btn btn-label-success btn-xs px-2 py-1" style="font-size: 0.75rem;">
+                                                    <i class="ti ti-printer me-1"></i> Cetak Rapor
+                                                </a>
+                                            @else
+                                                <span class="text-muted small">No Pendaftaran Kosong</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center p-5">
+                                            <div class="mb-3 text-muted">
+                                                <i class="ti ti-users fs-1 opacity-25"></i>
+                                            </div>
+                                            <h5>Belum ada siswa terdaftar di kelas ini.</h5>
                                         </td>
                                     </tr>
                                 @endforelse

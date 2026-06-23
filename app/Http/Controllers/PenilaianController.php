@@ -343,6 +343,25 @@ class PenilaianController extends Controller
         return Redirect::back()->with('success', 'Nilai berhasil dikirim dan dikunci.');
     }
 
+    public function batalKirimNilai(Request $request)
+    {
+        $request->validate([
+            'bobot_id' => 'required|exists:bobot_penilaian,id',
+        ]);
+
+        $bobot = BobotPenilaian::findOrFail($request->bobot_id);
+        
+        if ($bobot->status !== 'terkirim') {
+            return Redirect::back()->with('warning', 'Status pengiriman nilai tidak valid atau belum dikirim.');
+        }
+
+        $bobot->update([
+            'status' => 'draft'
+        ]);
+
+        return Redirect::back()->with('success', 'Status pengiriman nilai berhasil dibatalkan. Anda sekarang dapat mengedit nilai kembali.');
+    }
+
     public function rapor(Request $request)
     {
         $activeTa = Tahunajaran::where('status', 1)->first();
@@ -355,8 +374,8 @@ class PenilaianController extends Controller
 
         $activeSemester = Semester::where('status', '1')->first();
         $selectedSemester = $request->semester;
-        if(!$selectedSemester && $activeSemester) {
-            $selectedSemester = $activeSemester->semester;
+        if(!$selectedSemester) {
+            $selectedSemester = $activeSemester ? $activeSemester->semester : '1';
         }
 
         $query = JadwalPelajaran::query();

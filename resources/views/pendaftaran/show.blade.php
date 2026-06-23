@@ -27,10 +27,14 @@
                     </i>
                 </p>
             </div>
-            <div>
+            <div class="d-flex gap-2">
                 <a href="{{ route('pendaftaran.cetakpdf', Crypt::encrypt($pendaftaran->no_pendaftaran)) }}"
                     target="_blank" class="btn btn-danger shadow-sm" style="min-width:120px;">
                     <i class="ti ti-printer"></i> Cetak PDF
+                </a>
+                <a href="{{ route('pendaftaran.cetak-id-card', Crypt::encrypt($pendaftaran->no_pendaftaran)) }}"
+                    target="_blank" class="btn btn-success shadow-sm" style="min-width:120px; background-color: #064e3b; border-color: #064e3b;">
+                    <i class="ti ti-id-badge"></i> Cetak ID Card
                 </a>
             </div>
         </div>

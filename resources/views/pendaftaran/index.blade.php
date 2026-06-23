@@ -68,7 +68,7 @@
         @endif
 
         <!-- Actions Section -->
-        <div class="d-flex justify-content-start mb-3">
+        <div class="d-flex justify-content-start gap-2 mb-3">
             @can('pendaftaran.create')
                 <button class="btn d-flex align-items-center gap-2 shadow-sm text-white" id="btnCreate"
                     style="background-color: #064e3b">
@@ -76,6 +76,10 @@
                     <span>Tambah Pendaftaran</span>
                 </button>
             @endcan
+            <a href="{{ route('pendaftaran.export', request()->all()) }}" class="btn btn-success d-flex align-items-center gap-2 shadow-sm text-white" style="background-color: #1b5e20; border-color: #1b5e20;">
+                <i class="ti ti-file-spreadsheet fs-4"></i>
+                <span>Export Excel</span>
+            </a>
         </div>
 
         <!-- Filter Section -->
@@ -205,6 +209,10 @@
                                                     style="width: 28px; height: 28px;"
                                                     no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}" data-bs-toggle="tooltip" title="Detail Data">
                                                     <i class="ti ti-file-description fs-6"></i>
+                                                </a>
+                                                <a href="{{ route('pendaftaran.cetak-id-card', Crypt::encrypt($d->no_pendaftaran)) }}" target="_blank" class="btn btn-icon btn-label-primary border shadow-none"
+                                                    style="width: 28px; height: 28px;" data-bs-toggle="tooltip" title="Cetak ID Card">
+                                                    <i class="ti ti-id-badge fs-6"></i>
                                                 </a>
                                             @endcan
                                             @can('pendaftaran.delete')

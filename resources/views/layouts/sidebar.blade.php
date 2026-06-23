@@ -421,12 +421,16 @@
 
         @php
             $isWaliKelas = false;
+            $isKoordinator = false;
             if (auth()->check() && auth()->user()->hasRole('guru')) {
                 $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
                 if ($guruModel) {
                     $activeTa = \App\Models\Tahunajaran::where('status', '1')->first();
                     if ($activeTa) {
                         $isWaliKelas = \App\Models\Kelas::where('guru_id', $guruModel->id)
+                            ->where('kode_ta', $activeTa->kode_ta)
+                            ->exists();
+                        $isKoordinator = \App\Models\Ekstrakurikuler::where('guru_id', $guruModel->id)
                             ->where('kode_ta', $activeTa->kode_ta)
                             ->exists();
                     }
@@ -436,8 +440,8 @@
 
         <!-- Menu Akademik -->
         @if (auth()->check() &&
-                (auth()->user()->hasAnyPermission(['presensisiswa.index', 'guru.index', 'jabatanakademik.index', 'matapelajaran.index', 'kelas.index', 'jadwalpelajaran.index']) || $isWaliKelas || auth()->user()->hasRole('guru')))
-            <li class="menu-item {{ request()->is(['akademik', 'akademik/*', 'presensisiswa', 'presensisiswa/*', 'guru', 'guru/*', 'jabatan-akademik', 'jabatan-akademik/*', 'mata-pelajaran', 'mata-pelajaran/*', 'kelas', 'kelas/*', 'jadwal-pelajaran', 'jadwal-pelajaran/*', 'rapor', 'rapor/*', 'penilaian', 'penilaian/*', 'presensi-mapel', 'presensi-mapel/*', 'wali-kelas', 'wali-kelas/*']) ? 'open' : '' }}">
+                (auth()->user()->hasAnyPermission(['presensisiswa.index', 'guru.index', 'jabatanakademik.index', 'matapelajaran.index', 'kelas.index', 'jadwalpelajaran.index']) || $isWaliKelas || $isKoordinator || auth()->user()->hasRole('guru')))
+            <li class="menu-item {{ request()->is(['akademik', 'akademik/*', 'presensisiswa', 'presensisiswa/*', 'guru', 'guru/*', 'jabatan-akademik', 'jabatan-akademik/*', 'mata-pelajaran', 'mata-pelajaran/*', 'kelas', 'kelas/*', 'jadwal-pelajaran', 'jadwal-pelajaran/*', 'rapor', 'rapor/*', 'penilaian', 'penilaian/*', 'presensi-mapel', 'presensi-mapel/*', 'wali-kelas', 'wali-kelas/*', 'rapor-siswa', 'rapor-siswa/*']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-school"></i>
                     <div>Akademik</div>
@@ -510,7 +514,15 @@
                         <li class="menu-item {{ request()->is(['rapor', 'rapor/*', 'penilaian', 'penilaian/*']) ? 'active' : '' }}">
                             <a href="{{ route('rapor.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-file-report"></i>
-                                <div>Rapor Siswa</div>
+                                <div>Penilaian</div>
+                            </a>
+                        </li>
+                    @endif
+                    @if (auth()->check() && (auth()->user()->hasAnyRole(['super admin', 'admin']) || auth()->user()->can('jadwalpelajaran.index') || $isKoordinator || $isWaliKelas))
+                        <li class="menu-item {{ request()->is(['rapor-siswa', 'rapor-siswa/*']) ? 'active' : '' }}">
+                            <a href="{{ route('rapor-siswa.index') }}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-file-analytics"></i>
+                                <div>{{ $isKoordinator && !$isWaliKelas && !auth()->user()->hasAnyRole(['super admin', 'admin']) ? 'Ekstrakurikuler' : 'Rapor Siswa' }}</div>
                             </a>
                         </li>
                     @endif
@@ -750,7 +762,7 @@
                         'gallery.index',
                     ]))
             <li
-                class="menu-item {{ request()->is(['kategori', 'kategori/*', 'post', 'post/*', 'sebaran-alumni', 'sebaran-alumni/*', 'pages', 'pages/*', 'page/*', 'visimisi', 'testimonials', 'testimonials/*', 'prestasisiswa', 'prestasisiswa/*', 'program-unggulan', 'program-unggulan/*', 'pilar-pendidikan', 'pilar-pendidikan/*']) ? 'open' : '' }}">
+                class="menu-item {{ request()->is(['kategori', 'kategori/*', 'post', 'post/*', 'sebaran-alumni', 'sebaran-alumni/*', 'pages', 'pages/*', 'page/*', 'visimisi', 'ppdb-setting', 'ppdb-setting/*', 'testimonials', 'testimonials/*', 'prestasisiswa', 'prestasisiswa/*', 'program-unggulan', 'program-unggulan/*', 'pilar-pendidikan', 'pilar-pendidikan/*']) ? 'open' : '' }}">
 
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-globe"></i>
@@ -793,6 +805,11 @@
                     <li class="menu-item {{ request()->is(['visimisi']) ? 'active' : '' }}">
                         <a href="{{ route('visimisi.index') }}" class="menu-link">
                             <div>Visi & Misi</div>
+                        </a>
+                    </li>
+                    <li class="menu-item {{ request()->is(['ppdb-setting', 'ppdb-setting/*']) ? 'active' : '' }}">
+                        <a href="{{ route('ppdb-setting.index') }}" class="menu-link">
+                            <div>PPDB</div>
                         </a>
                     </li>
                     @can('testimonials.index')

@@ -127,6 +127,13 @@ class DashboardController extends Controller
                     $sapaan = 'Selamat Malam';
                 }
 
+                $isKoordinator = false;
+                if ($activeTa) {
+                    $isKoordinator = \App\Models\Ekstrakurikuler::where('guru_id', $guru->id)
+                        ->where('kode_ta', $activeTa->kode_ta)
+                        ->exists();
+                }
+
                 return view('dashboard.guru_mobile', compact(
                     'guru',
                     'activeTa',
@@ -135,7 +142,8 @@ class DashboardController extends Controller
                     'listKelasBinaan',
                     'totalSiswa',
                     'hariIni',
-                    'sapaan'
+                    'sapaan',
+                    'isKoordinator'
                 ));
             }
 

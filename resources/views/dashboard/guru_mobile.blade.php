@@ -890,6 +890,15 @@
                 <span class="menu-label">Rapor</span>
                 <span class="menu-desc">Kelola rapor siswa</span>
             </a>
+            @if($isKoordinator)
+                <a href="{{ route('rapor-siswa.index') }}" class="menu-item menu-white">
+                    <div class="menu-icon">
+                        <ion-icon name="star-outline"></ion-icon>
+                    </div>
+                    <span class="menu-label">Ekstrakurikuler</span>
+                    <span class="menu-desc">Input nilai ekskul</span>
+                </a>
+            @endif
             @if($kelasBinaan)
                 <a href="{{ route('wali-kelas.index') }}" class="menu-item menu-white">
                     <div class="menu-icon">
@@ -899,13 +908,15 @@
                     <span class="menu-desc">Monitoring kelas</span>
                 </a>
             @else
-                <a href="{{ route('jadwal-pelajaran.index') }}" class="menu-item menu-white">
-                    <div class="menu-icon">
-                        <ion-icon name="book-outline"></ion-icon>
-                    </div>
-                    <span class="menu-label">Mata Pelajaran</span>
-                    <span class="menu-desc">Daftar mapel</span>
-                </a>
+                @if(!$isKoordinator)
+                    <a href="{{ route('jadwal-pelajaran.index') }}" class="menu-item menu-white">
+                        <div class="menu-icon">
+                            <ion-icon name="book-outline"></ion-icon>
+                        </div>
+                        <span class="menu-label">Mata Pelajaran</span>
+                        <span class="menu-desc">Daftar mapel</span>
+                    </a>
+                @endif
             @endif
         </div>
         </div>

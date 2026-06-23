@@ -448,10 +448,18 @@
         <!-- Kirim Button / Status Badge (Mobile) -->
         <div class="mb-3">
             @if (($bobot->status ?? 'draft') == 'terkirim')
-                <div class="w-100 p-2 text-center rounded bg-success text-white fw-bold d-flex align-items-center justify-content-center gap-1" style="font-size: 0.85rem; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);">
+                <div class="w-100 p-2 text-center rounded bg-success text-white fw-bold d-flex align-items-center justify-content-center gap-1 mb-2" style="font-size: 0.85rem; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);">
                     <ion-icon name="checkmark-circle-outline" style="font-size: 18px;"></ion-icon>
                     <span>Status: Terkirim</span>
                 </div>
+                <form action="{{ route('penilaian.batal-kirim') }}" method="POST" id="formBatalKirimPenilaianMobile">
+                    @csrf
+                    <input type="hidden" name="bobot_id" value="{{ $bobot->id }}">
+                    <button type="button" class="btn w-100 p-2 fw-bold text-white btn-action d-flex align-items-center justify-content-center gap-1" style="background-color: #dc3545; border: none; border-radius: 10px; font-size: 0.88rem; box-shadow: 0 4px 14px rgba(220, 53, 69, 0.2);" onclick="confirmBatalKirimMobile()">
+                        <ion-icon name="arrow-back-outline" style="font-size: 16px;"></ion-icon>
+                        <span>Batal Kirim Nilai</span>
+                    </button>
+                </form>
             @else
                 <form action="{{ route('penilaian.kirim') }}" method="POST" id="formKirimPenilaianMobile">
                     @csrf
@@ -553,6 +561,23 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById('formKirimPenilaianMobile').submit();
+            }
+        });
+    }
+
+    function confirmBatalKirimMobile() {
+        Swal.fire({
+            title: 'Batal Kirim Nilai?',
+            text: 'Apakah Anda yakin ingin membatalkan pengiriman nilai ini? Status nilai akan kembali menjadi draft dan dapat diedit kembali.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Batalkan!',
+            cancelButtonText: 'Kembali'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('formBatalKirimPenilaianMobile').submit();
             }
         });
     }

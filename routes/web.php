@@ -74,6 +74,7 @@ use App\Http\Controllers\ProgramUnggulanController;
 use App\Http\Controllers\PilarPendidikanController;
 use App\Http\Controllers\SebaranAlumniController;
 use App\Http\Controllers\VisiMisiController;
+use App\Http\Controllers\PpdbSettingController;
 use App\Http\Controllers\PushSubscriptionController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Role;
@@ -480,7 +481,9 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(PendaftaranController::class)->group(function () {
         Route::get('/pendaftaran/{no_pendaftaran}/cetakpdf', 'cetakpdf')->name('pendaftaran.cetakpdf')->can('pendaftaran.show');
+        Route::get('/pendaftaran/{no_pendaftaran}/cetak-id-card', 'cetakIdCard')->name('pendaftaran.cetak-id-card')->can('pendaftaran.show');
         Route::get('/pendaftaran', 'index')->name('pendaftaran.index')->can('pendaftaran.index');
+        Route::get('/pendaftaran/export', 'export')->name('pendaftaran.export')->can('pendaftaran.index');
         Route::get('/pendaftaran/create', 'create')->name('pendaftaran.create')->can('pendaftaran.create');
         Route::post('/pendaftaran', 'store')->name('pendaftaran.store')->can('pendaftaran.store');
         Route::post('/pendaftaran/uploaddokumen', 'storedokumen')->name('pendaftaran.storedokumen')->can('pendaftaran.store');
@@ -724,6 +727,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/penilaian/nilai/{rencana_id}', 'inputNilai')->name('penilaian.input-nilai');
         Route::post('/penilaian/nilai', 'storeNilai')->name('penilaian.store-nilai');
         Route::post('/penilaian/kirim', 'kirimNilai')->name('penilaian.kirim');
+        Route::post('/penilaian/batal-kirim', 'batalKirimNilai')->name('penilaian.batal-kirim');
         
         // Multi Column Management
         Route::get('/penilaian/manage/{bobot_id}/{kategori}', 'manageNilai')->name('penilaian.manage');
@@ -731,6 +735,25 @@ Route::middleware('auth')->group(function () {
 
         // New Rapor Grouped Route
         Route::get('/rapor', 'rapor')->name('rapor.index');
+    });
+
+    Route::controller(App\Http\Controllers\RaporSiswaController::class)->group(function () {
+        Route::get('/rapor-siswa', 'index')->name('rapor-siswa.index');
+        Route::get('/rapor-siswa/detail/{kode_kelas}', 'show')->name('rapor-siswa.show');
+        Route::get('/rapor-siswa/nilai/{jadwal_id}', 'detailNilai')->name('rapor-siswa.nilai');
+        Route::get('/rapor-siswa/preview/{no_pendaftaran}', 'previewRapor')->name('rapor-siswa.preview');
+        Route::post('/rapor-siswa/cetak-pdf/{no_pendaftaran}', 'cetakRaporPdf')->name('rapor-siswa.pdf');
+
+        // Ekstrakurikuler CRUD
+        Route::post('/rapor-siswa/ekstrakurikuler', 'storeEkskul')->name('rapor-siswa.ekskul.store');
+        Route::put('/rapor-siswa/ekstrakurikuler/{id}', 'updateEkskul')->name('rapor-siswa.ekskul.update');
+        Route::delete('/rapor-siswa/ekstrakurikuler/{id}', 'destroyEkskul')->name('rapor-siswa.ekskul.destroy');
+
+        // Ekstrakurikuler Grading & Student Enrollment
+        Route::get('/rapor-siswa/ekstrakurikuler/{id}/nilai', 'nilaiEkskul')->name('rapor-siswa.ekskul.nilai');
+        Route::post('/rapor-siswa/ekstrakurikuler/{id}/nilai/add-siswa', 'addSiswaToEkskul')->name('rapor-siswa.ekskul.add-siswa');
+        Route::post('/rapor-siswa/ekstrakurikuler/{id}/nilai/save', 'saveNilaiEkskul')->name('rapor-siswa.ekskul.save-nilai');
+        Route::delete('/rapor-siswa/ekstrakurikuler/nilai/{id}', 'removeSiswaFromEkskul')->name('rapor-siswa.ekskul.remove-siswa');
     });
 
     Route::controller(App\Http\Controllers\WaliKelasController::class)->group(function () {
@@ -923,6 +946,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/visimisi/misi', [VisiMisiController::class, 'storeMisi'])->name('visimisi.misi.store');
     Route::put('/visimisi/misi/{id}', [VisiMisiController::class, 'updateMisi'])->name('visimisi.misi.update');
     Route::delete('/visimisi/misi/{id}', [VisiMisiController::class, 'deleteMisi'])->name('visimisi.misi.delete');
+
+    // PPDB Setting
+    Route::controller(PpdbSettingController::class)->group(function () {
+        Route::get('/ppdb-setting', 'index')->name('ppdb-setting.index');
+        Route::post('/ppdb-setting', 'store')->name('ppdb-setting.store');
+    });
 
     // Sebaran Alumni
     Route::resource('sebaran-alumni', SebaranAlumniController::class)->parameters(['sebaran-alumni' => 'sebaranAlumni'])->middleware('auth');
