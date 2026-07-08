@@ -32,7 +32,17 @@ use App\Http\Controllers\Api\PilarPendidikanController;
  * )
  */
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    $user = $request->user();
+    
+    if ($user) {
+        $authController = new \App\Http\Controllers\Api\AuthController();
+        $user->karyawan = $authController->getKaryawanDetails($user);
+    }
+    
+    return response()->json([
+        'success' => true,
+        'data' => $user
+    ]);
 });
 
 // Endpoint API siswa-anak untuk orang tua
@@ -66,7 +76,24 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('presensi')->group(function () {
         Route::get('/harian', [App\Http\Controllers\Api\PresensiController::class, 'presensiSiswa']);
         Route::get('/mapel', [App\Http\Controllers\Api\PresensiController::class, 'presensiMapel']);
+        Route::get('/karyawan/check-status', [App\Http\Controllers\Api\PresensiController::class, 'getCheckinStatus']);
+        Route::post('/karyawan/store', [App\Http\Controllers\Api\PresensiController::class, 'storeEmployeePresensi']);
+        Route::delete('/karyawan/delete', [App\Http\Controllers\Api\PresensiController::class, 'deleteTodayPresensi']);
     });
+
+    // Simpanan Koperasi API Routes
+    Route::get('/simpanan', [App\Http\Controllers\Api\SimpananController::class, 'getSimpananDetails']);
+    Route::get('/simpanan/{kode_simpanan}', [App\Http\Controllers\Api\SimpananController::class, 'getSimpananDetail']);
+    Route::get('/pinjaman', [App\Http\Controllers\Api\PinjamanController::class, 'getPinjamanDetails']);
+    Route::get('/pinjaman/{no_akad}', [App\Http\Controllers\Api\PinjamanController::class, 'getPinjamanDetail']);
+
+    // Checklist Ibadah API Routes
+    Route::get('/ibadah', [App\Http\Controllers\Api\IbadahController::class, 'getIbadah']);
+    Route::post('/ibadah/toggle', [App\Http\Controllers\Api\IbadahController::class, 'toggleIbadah']);
+
+    // Tabungan Karyawan API Routes
+    Route::get('/tabungan-karyawan', [App\Http\Controllers\Api\TabunganKaryawanController::class, 'getTabunganDetails']);
+    Route::get('/tabungan-karyawan/{no_rekening}', [App\Http\Controllers\Api\TabunganKaryawanController::class, 'getTabunganDetail']);
 
     // Tabungan Santri API Routes
     Route::prefix('tabungan-santri')->group(function () {

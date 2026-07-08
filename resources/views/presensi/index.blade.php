@@ -253,6 +253,15 @@
                                             pin="{{ $d->pin }}" tanggal="{{ Request('tanggal') ?? date('Y-m-d') }}" title="Data Mesin" style="width: 38px; height: 38px; border-radius: 14px;">
                                             <i class="ti ti-device-desktop-analytics fs-4"></i>
                                         </button>
+                                        @if($d->id)
+                                            <form action="{{ route('presensi.delete', $d->id) }}" method="POST" class="d-inline formDeletePresensi">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-icon btn-label-danger btnDeletePresensi shadow-xs border-0" title="Hapus Presensi" style="width: 38px; height: 38px; border-radius: 14px;">
+                                                    <i class="ti ti-trash fs-4"></i>
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -348,6 +357,25 @@
             success: function(respond) {
                 console.log(respond);
                 $("#loadmodal").html(respond);
+            }
+        });
+    });
+
+    $(document).on('click', '.btnDeletePresensi', function(e) {
+        e.preventDefault();
+        var form = $(this).closest('form');
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Data presensi ini akan dihapus permanen!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#064e3b',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
             }
         });
     });

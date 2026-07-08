@@ -54,23 +54,37 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
+        $loginInput = $request->input('username') ?? $request->input('email');
+        
         $request->validate([
-            'email' => 'required',
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        if (!$loginInput) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Username, Email, atau NPP wajib diisi',
+            ], 422);
+        }
 
+        // Find user by email, username, or npp
+        $user = User::where('email', $loginInput)
+            ->orWhere('username', $loginInput)
+            ->orWhere('npp', $loginInput)
+            ->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Email atau password salah',
+                'message' => 'Username atau password salah',
             ], 401);
         }
 
         // Create token for API authentication (Laravel Sanctum)
         $token = $user->createToken('mobile-app')->plainTextToken;
+
+        // Load and attach employee details to avoid initial loading delay on frontend
+        $user->karyawan = $this->getKaryawanDetails($user);
 
         return response()->json([
             'success' => true,
@@ -414,5 +428,98 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Password berhasil diubah',
         ]);
+    }
+
+    public function getKaryawanDetails($user)
+    {
+        $npp = $user->npp;
+        
+        if (empty($npp)) {
+            $userKaryawan = \App\Models\Userkaryawan::where('id_user', $user->id)->first();
+            if ($userKaryawan) {
+                $npp = $userKaryawan->npp;
+            }
+        }
+        
+        // Fetch today's attendance records
+        $today = date('Y-m-d');
+        $presensi = null;
+        if ($npp) {
+            $presensi = DB::table('presensi')->where('npp', $npp)->where('tanggal', $today)->first();
+        }
+        
+        $presensiToday = [
+            'jam_in' => $presensi && $presensi->jam_in ? date('H:i', strtotime($presensi->jam_in)) : null,
+            'jam_out' => $presensi && $presensi->jam_out ? date('H:i', strtotime($presensi->jam_out)) : null,
+        ];
+
+        // Fetch monthly attendance summary
+        $month = date('m');
+        $year = date('Y');
+        $rekap = null;
+        if ($npp) {
+            $rekap = DB::table('presensi')
+                ->select(
+                    DB::raw("SUM(IF(status='h',1,0)) as hadir"),
+                    DB::raw("SUM(IF(status='i',1,0)) as izin"),
+                    DB::raw("SUM(IF(status='s',1,0)) as sakit"),
+                    DB::raw("SUM(IF(status='c',1,0)) as cuti")
+                )
+                ->where('npp', $npp)
+                ->whereMonth('tanggal', $month)
+                ->whereYear('tanggal', $year)
+                ->first();
+        }
+
+        $rekapPresensi = [
+            'hadir' => $rekap ? (int) $rekap->hadir : 0,
+            'sakit' => $rekap ? (int) $rekap->sakit : 0,
+            'izin' => $rekap ? (int) $rekap->izin : 0,
+            'cuti' => $rekap ? (int) $rekap->cuti : 0,
+        ];
+        
+        if ($npp) {
+            $karyawan = \App\Models\Karyawan::select(
+                'karyawan.npp',
+                'karyawan.nama_lengkap as nama',
+                'jabatan.nama_jabatan as jabatan',
+                'unit.nama_unit',
+                'karyawan.foto'
+            )
+            ->leftJoin('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+            ->leftJoin('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+            ->where('karyawan.npp', $npp)
+            ->first();
+            
+            if ($karyawan) {
+                return [
+                    'nama' => $karyawan->nama,
+                    'jabatan' => $karyawan->jabatan,
+                    'nama_unit' => $karyawan->nama_unit,
+                    'foto' => $karyawan->foto ? url('/storage/photos/karyawan/' . $karyawan->foto) : null,
+                    'presensi_today' => $presensiToday,
+                    'rekap_presensi' => $rekapPresensi
+                ];
+            }
+        }
+        
+        $jabatanName = null;
+        $unitName = null;
+        
+        if ($user->kode_jabatan) {
+            $jabatanName = DB::table('jabatan')->where('kode_jabatan', $user->kode_jabatan)->value('nama_jabatan');
+        }
+        if ($user->kode_unit) {
+            $unitName = DB::table('unit')->where('kode_unit', $user->kode_unit)->value('nama_unit');
+        }
+        
+        return [
+            'nama' => $user->name,
+            'jabatan' => $jabatanName ?? 'Karyawan',
+            'nama_unit' => $unitName ?? 'Asatidz',
+            'foto' => null,
+            'presensi_today' => $presensiToday,
+            'rekap_presensi' => $rekapPresensi
+        ];
     }
 }

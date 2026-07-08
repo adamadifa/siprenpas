@@ -547,4 +547,28 @@ class PresensiController extends Controller
             }
         }
     }
+
+    public function destroy($id)
+    {
+        try {
+            $presensi = Presensi::find($id);
+            if (!$presensi) {
+                return Redirect::back()->with(messageError('Data presensi tidak ditemukan'));
+            }
+
+            // Hapus file foto jika ada
+            if ($presensi->foto_in) {
+                \Illuminate\Support\Facades\Storage::delete('public/uploads/absensi/' . $presensi->foto_in);
+            }
+            if ($presensi->foto_out) {
+                \Illuminate\Support\Facades\Storage::delete('public/uploads/absensi/' . $presensi->foto_out);
+            }
+
+            $presensi->delete();
+
+            return Redirect::back()->with(messageSuccess('Data presensi berhasil dihapus'));
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError($e->getMessage()));
+        }
+    }
 }

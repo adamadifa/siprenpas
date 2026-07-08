@@ -24,7 +24,13 @@ class UserController extends Controller
         }
 
         if (!empty($request->role)) {
-            $query->role($request->role);
+            if ($request->role === 'lainnya') {
+                $query->whereDoesntHave('roles', function($q) {
+                    $q->where('name', 'karyawan');
+                });
+            } else {
+                $query->role($request->role);
+            }
         }
 
         $users = $query->paginate(20);

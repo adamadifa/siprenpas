@@ -46,7 +46,10 @@
         </div>
 
         <div class="mb-4">
-            <form action="{{ route('users.index') }}">
+            <form action="{{ route('users.index') }}" method="GET">
+                @if(request('role'))
+                    <input type="hidden" name="role" value="{{ request('role') }}">
+                @endif
                 <div class="d-flex gap-2">
                     <div class="input-group input-group-merge border shadow-none rounded-2"
                         style="border-color: #e0e0e0 !important;">
@@ -54,30 +57,49 @@
                         <input type="text" name="name" class="form-control bg-white border-0 ps-2"
                             placeholder="Cari Nama User..." value="{{ Request('name') }}">
                     </div>
-                    <div class="input-group input-group-merge border shadow-none rounded-2"
-                        style="border-color: #e0e0e0 !important; width: 300px">
-                        <span class="input-group-text bg-white border-0"><i class="ti ti-user-check text-muted"></i></span>
-                        <select name="role" class="form-select bg-white border-0 ps-2">
-                            <option value="">Semua Role</option>
-                            @foreach ($roles as $role)
-                                <option value="{{ $role->name }}" {{ Request('role') == $role->name ? 'selected' : '' }}>
-                                    {{ ucwords($role->name) }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
                     <button type="submit" class="btn shadow-none d-flex align-items-center gap-2 text-white px-4"
                         style="background-color: #064e3b">
                         <i class="ti ti-search fs-5"></i> Cari
                     </button>
+                    @if(request('name') || request('role'))
+                        <a href="{{ route('users.index') }}" class="btn btn-label-secondary d-flex align-items-center justify-content-center px-3" data-bs-toggle="tooltip" title="Reset Filter">
+                            <i class="ti ti-refresh fs-5"></i>
+                        </a>
+                    @endif
                 </div>
             </form>
         </div>
 
+        <!-- Card Table -->
         <div class="card shadow-sm">
-            <div class="card-header d-flex align-items-center gap-2 text-white py-3" style="background-color: #064e3b">
-                <i class="ti ti-users fs-5"></i>
-                <h6 class="card-title mb-0 text-white">Data Users</h6>
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-3 text-white py-3" style="background-color: #064e3b">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="ti ti-users fs-5"></i>
+                    <h6 class="card-title mb-0 text-white">Data Users</h6>
+                </div>
+                <ul class="nav nav-pills" role="tablist" style="gap: 5px;">
+                    <li class="nav-item">
+                        <a href="{{ route('users.index', array_merge(request()->query(), ['role' => ''])) }}" 
+                           class="nav-link py-1 px-3 {{ empty(request('role')) ? 'bg-white text-success fw-bold' : 'text-white' }}" 
+                           style="font-size: 0.85rem; {{ empty(request('role')) ? 'color: #064e3b !important; background-color: #fff !important;' : 'border: 1px solid rgba(255,255,255,0.4);' }}">
+                            Semua User
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('users.index', array_merge(request()->query(), ['role' => 'karyawan'])) }}" 
+                           class="nav-link py-1 px-3 {{ request('role') == 'karyawan' ? 'bg-white text-success fw-bold' : 'text-white' }}" 
+                           style="font-size: 0.85rem; {{ request('role') == 'karyawan' ? 'color: #064e3b !important; background-color: #fff !important;' : 'border: 1px solid rgba(255,255,255,0.4);' }}">
+                            Karyawan
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('users.index', array_merge(request()->query(), ['role' => 'lainnya'])) }}" 
+                           class="nav-link py-1 px-3 {{ request('role') == 'lainnya' ? 'bg-white text-success fw-bold' : 'text-white' }}" 
+                           style="font-size: 0.85rem; {{ request('role') == 'lainnya' ? 'color: #064e3b !important; background-color: #fff !important;' : 'border: 1px solid rgba(255,255,255,0.4);' }}">
+                            Lainnya
+                        </a>
+                    </li>
+                </ul>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -96,8 +118,8 @@
                         <tbody>
                             @forelse ($users as $d)
                                 <tr>
-                                    <td class="py-2">{{ $loop->iteration + $users->firstItem() - 1 }}</td>
-                                    <td class="py-2">
+                                    <td class="py-1">{{ $loop->iteration + $users->firstItem() - 1 }}</td>
+                                    <td class="py-1">
                                         <div class="d-flex align-items-center gap-2">
                                             <div class="avatar avatar-xs">
                                                 <span class="avatar-initial rounded-circle bg-label-success">{{ substr($d->name, 0, 1) }}</span>
@@ -105,15 +127,15 @@
                                             <span class="fw-bold">{{ $d->name }}</span>
                                         </div>
                                     </td>
-                                    <td class="py-2">{{ $d->username }}</td>
-                                    <td class="py-2">{{ $d->email }}</td>
-                                    <td class="py-2">
+                                    <td class="py-1">{{ $d->username }}</td>
+                                    <td class="py-1">{{ $d->email }}</td>
+                                    <td class="py-1">
                                         @foreach ($d->roles as $role)
                                             <span class="badge bg-label-info">{{ ucwords($role->name) }}</span>
                                         @endforeach
                                     </td>
-                                    <td class="py-2">{{ $d->nama_unit }}</td>
-                                    <td class="py-2 text-end">
+                                    <td class="py-1">{{ $d->nama_unit }}</td>
+                                    <td class="py-1 text-end">
                                         <div class="d-flex justify-content-end gap-1">
                                             <a href="#" class="btn btn-icon btn-label-success border editUser"
                                                 style="width: 28px; height: 28px;"

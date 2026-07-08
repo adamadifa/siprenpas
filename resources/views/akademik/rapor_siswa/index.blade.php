@@ -107,21 +107,21 @@
             <ul class="nav nav-tabs border-bottom" role="tablist">
                 @if($canViewRaporKelas)
                     <li class="nav-item">
-                        <button type="button" class="nav-link active py-3 px-4 fw-bold text-uppercase" role="tab" data-bs-toggle="tab" data-bs-target="#navs-progress-kelas" aria-controls="navs-progress-kelas" aria-selected="true" style="letter-spacing: 0.5px;">
+                        <button type="button" class="nav-link active py-3 px-4 fw-bold" role="tab" data-bs-toggle="tab" data-bs-target="#navs-progress-kelas" aria-controls="navs-progress-kelas" aria-selected="true" style="letter-spacing: 0.5px;">
                             <i class="ti ti-chart-bar me-1"></i> Monitoring Rapor Kelas
                         </button>
                     </li>
                 @endif
                 @if($canViewEkskul)
                     <li class="nav-item">
-                        <button type="button" class="nav-link {{ !$canViewRaporKelas ? 'active' : '' }} py-3 px-4 fw-bold text-uppercase" role="tab" data-bs-toggle="tab" data-bs-target="#navs-ekskul" aria-controls="navs-ekskul" aria-selected="false" style="letter-spacing: 0.5px;">
+                        <button type="button" class="nav-link {{ !$canViewRaporKelas ? 'active' : '' }} py-3 px-4 fw-bold" role="tab" data-bs-toggle="tab" data-bs-target="#navs-ekskul" aria-controls="navs-ekskul" aria-selected="false" style="letter-spacing: 0.5px;">
                             <i class="ti ti-books me-1"></i> Pengaturan Ekstrakurikuler
                         </button>
                     </li>
                 @endif
             </ul>
 
-            <div class="tab-content p-0 bg-transparent shadow-none border-0 pt-3">
+            <div class="tab-content p-4 bg-white shadow-sm rounded-bottom">
                 @if($canViewRaporKelas)
                     <!-- Tab Panel Progress Kelas -->
                     <div class="tab-pane fade show active" id="navs-progress-kelas" role="tabpanel">
@@ -214,7 +214,7 @@
                         </div>
                         @endif
 
-                        <div class="card shadow-sm border-0">
+                        <div class="card border shadow-none">
                             <div class="card-header d-flex align-items-center gap-2 text-white py-3" style="background-color: #064e3b">
                                 <i class="ti ti-books fs-5"></i>
                                 <h6 class="card-title mb-0 text-white">Pengaturan Ekstrakurikuler</h6>
