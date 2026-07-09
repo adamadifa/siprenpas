@@ -32,14 +32,34 @@ class TabunganKaryawanController extends Controller
             }
             
             $cekanggota = Karyawananggota::where('npp', $npp)->first();
-            if ($cekanggota == null) {
+            $no_anggota = null;
+            if ($cekanggota) {
+                $no_anggota = $cekanggota->no_anggota;
+            } else {
+                $karyawan = DB::table('karyawan')->where('npp', $npp)->first();
+                if ($karyawan) {
+                    $anggota = DB::table('koperasi_anggota')
+                        ->where(function($q) use ($karyawan) {
+                            if (!empty($karyawan->no_ktp)) {
+                                $q->where('nik', $karyawan->no_ktp);
+                            }
+                            if (!empty($karyawan->no_hp)) {
+                                $q->orWhere('no_hp', $karyawan->no_hp);
+                            }
+                        })
+                        ->first();
+                    if ($anggota) {
+                        $no_anggota = $anggota->no_anggota;
+                    }
+                }
+            }
+            
+            if ($no_anggota == null) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Anda belum terdaftar sebagai Anggota Koperasi Tsarwah'
                 ], 404);
             }
-            
-            $no_anggota = $cekanggota->no_anggota;
             
             // Get cooperative tabungan accounts for this member
             $tabungan = DB::table('koperasi_tabungan as kt')
@@ -103,14 +123,34 @@ class TabunganKaryawanController extends Controller
             }
             
             $cekanggota = Karyawananggota::where('npp', $npp)->first();
-            if ($cekanggota == null) {
+            $no_anggota = null;
+            if ($cekanggota) {
+                $no_anggota = $cekanggota->no_anggota;
+            } else {
+                $karyawan = DB::table('karyawan')->where('npp', $npp)->first();
+                if ($karyawan) {
+                    $anggota = DB::table('koperasi_anggota')
+                        ->where(function($q) use ($karyawan) {
+                            if (!empty($karyawan->no_ktp)) {
+                                $q->where('nik', $karyawan->no_ktp);
+                            }
+                            if (!empty($karyawan->no_hp)) {
+                                $q->orWhere('no_hp', $karyawan->no_hp);
+                            }
+                        })
+                        ->first();
+                    if ($anggota) {
+                        $no_anggota = $anggota->no_anggota;
+                    }
+                }
+            }
+            
+            if ($no_anggota == null) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Anda belum terdaftar sebagai Anggota Koperasi Tsarwah'
                 ], 404);
             }
-            
-            $no_anggota = $cekanggota->no_anggota;
             
             $tabungan = DB::table('koperasi_tabungan as kt')
                 ->join('koperasi_jenis_tabungan as kjt', 'kt.kode_tabungan', '=', 'kjt.kode_tabungan')
@@ -126,11 +166,21 @@ class TabunganKaryawanController extends Controller
                 ], 404);
             }
             
-            $mutasi = DB::table('koperasi_tabungan_transaksi as ktt')
-                ->where('ktt.no_rekening', $no_rekening)
-                ->orderBy('ktt.tanggal', 'desc')
-                ->orderBy('ktt.created_at', 'desc')
-                ->get();
+            $query = DB::table('koperasi_tabungan_transaksi as ktt')
+                ->where('ktt.no_rekening', $no_rekening);
+
+            if ($request->has('start_date') && $request->has('end_date') && !empty($request->start_date) && !empty($request->end_date)) {
+                $query->whereBetween('ktt.tanggal', [$request->start_date, $request->end_date]);
+                $mutasi = $query->orderBy('ktt.tanggal', 'desc')
+                    ->orderBy('ktt.created_at', 'desc')
+                    ->get();
+            } else {
+                // Default: Tampilkan 10 transaksi terakhir
+                $mutasi = $query->orderBy('ktt.tanggal', 'desc')
+                    ->orderBy('ktt.created_at', 'desc')
+                    ->limit(10)
+                    ->get();
+            }
                 
             return response()->json([
                 'success' => true,

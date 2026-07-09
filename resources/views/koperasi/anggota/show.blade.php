@@ -226,6 +226,39 @@
                                 <div class="small fw-bold">Belum ada siswa yang terhubung dengan anggota ini.</div>
                             </div>
                         @endif
+
+                        <div class="divider text-start mb-4 mt-4">
+                            <div class="divider-text fw-bold text-primary text-uppercase small">
+                                <i class="ti ti-user-check me-2"></i> Karyawan Terkait
+                            </div>
+                        </div>
+                        @if($anggota->karyawan && $anggota->karyawan->count() > 0)
+                            <div class="table-responsive border rounded-3 overflow-hidden">
+                                <table class="table table-hover mb-0">
+                                    <thead style="background-color: #064e3b">
+                                        <tr>
+                                            <th class="text-white py-2 px-3 small" style="width: 50px;">NO</th>
+                                            <th class="text-white py-2 px-3 small">NPP</th>
+                                            <th class="text-white py-2 px-3 small">NAMA LENGKAP</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($anggota->karyawan as $index => $karyawan)
+                                            <tr>
+                                                <td class="text-center py-2 px-3 small fw-bold">{{ $loop->iteration }}</td>
+                                                <td class="py-2 px-3 small fw-bold text-primary">{{ $karyawan->npp ?? '-' }}</td>
+                                                <td class="py-2 px-3 text-uppercase small fw-bold">{{ $karyawan->nama_lengkap ?? '-' }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="alert alert-info d-flex align-items-center mb-0 p-3 shadow-none border rounded-3">
+                                <i class="ti ti-info-circle me-3 fs-3"></i>
+                                <div class="small fw-bold">Belum ada karyawan yang terhubung dengan anggota ini.</div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

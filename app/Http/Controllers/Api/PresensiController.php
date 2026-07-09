@@ -381,4 +381,38 @@ class PresensiController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
+
+    public function getPresensiHistory(Request $request)
+    {
+        try {
+            $user = $request->user();
+            $userkaryawan = \App\Models\Userkaryawan::where('id_user', $user->id)->first();
+            if (!$userkaryawan) {
+                return response()->json(['success' => false, 'message' => 'Hubungan user karyawan tidak ditemukan'], 400);
+            }
+            
+            $query = \App\Models\Presensi::where('npp', $userkaryawan->npp)
+                ->join('konfigurasi_jam_kerja', 'presensi.kode_jam_kerja', '=', 'konfigurasi_jam_kerja.kode_jam_kerja')
+                ->select('presensi.*', 'konfigurasi_jam_kerja.nama_jam_kerja', 'konfigurasi_jam_kerja.jam_masuk', 'konfigurasi_jam_kerja.jam_pulang');
+
+            // Optional Date Filters
+            if ($request->has('start_date') && $request->has('end_date') && !empty($request->start_date) && !empty($request->end_date)) {
+                $query->whereBetween('tanggal', [$request->start_date, $request->end_date]);
+            } else {
+                // Default: 30 hari terakhir
+                $startDate = date('Y-m-d', strtotime('-30 days'));
+                $endDate = date('Y-m-d');
+                $query->whereBetween('tanggal', [$startDate, $endDate]);
+            }
+
+            $history = $query->orderBy('tanggal', 'desc')->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $history
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
 }

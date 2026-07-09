@@ -32,14 +32,34 @@ class PinjamanController extends Controller
             }
             
             $cekanggota = Karyawananggota::where('npp', $npp)->first();
-            if ($cekanggota == null) {
+            $no_anggota = null;
+            if ($cekanggota) {
+                $no_anggota = $cekanggota->no_anggota;
+            } else {
+                $karyawan = DB::table('karyawan')->where('npp', $npp)->first();
+                if ($karyawan) {
+                    $anggota = DB::table('koperasi_anggota')
+                        ->where(function($q) use ($karyawan) {
+                            if (!empty($karyawan->no_ktp)) {
+                                $q->where('nik', $karyawan->no_ktp);
+                            }
+                            if (!empty($karyawan->no_hp)) {
+                                $q->orWhere('no_hp', $karyawan->no_hp);
+                            }
+                        })
+                        ->first();
+                    if ($anggota) {
+                        $no_anggota = $anggota->no_anggota;
+                    }
+                }
+            }
+            
+            if ($no_anggota == null) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Anda belum terdaftar sebagai Anggota Koperasi Tsarwah'
                 ], 404);
             }
-            
-            $no_anggota = $cekanggota->no_anggota;
             
             // Get all loans (pembiayaan)
             $pembiayaan = Pembiayaan::where('koperasi_pembiayaan.no_anggota', $no_anggota)

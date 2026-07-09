@@ -28,4 +28,20 @@ class Anggota extends Model
     {
         return $this->hasMany(SiswaAnggota::class, 'no_anggota', 'no_anggota');
     }
+
+    /**
+     * Relasi many-to-many ke karyawan melalui tabel pivot karyawan_anggota
+     */
+    public function karyawan()
+    {
+        return $this->belongsToMany(Karyawan::class, 'karyawan_anggota', 'no_anggota', 'npp');
+    }
+
+    /**
+     * Relasi ke tabel pivot karyawan_anggota
+     */
+    public function karyawanAnggota()
+    {
+        return $this->hasMany(Karyawananggota::class, 'no_anggota', 'no_anggota');
+    }
 }

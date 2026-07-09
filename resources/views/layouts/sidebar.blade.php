@@ -278,7 +278,6 @@
                 'jenisbiaya',
                 'departemen',
                 'ledger',
-                'anggota',
                 'jenissimpanan',
                 'jenistabungan',
                 'jenispembiayaan',
@@ -296,7 +295,6 @@
                             'departemen.index',
                             'ledger.index',
                             'siswa.index',
-                            'anggota.index',
                             'jenissimpanan.index',
                             'jenistabungan.index',
                             'jenispembiayaan.index',
@@ -349,13 +347,6 @@
                         <li class="menu-item {{ request()->is(['ledger', 'ledger/*']) ? 'active' : '' }}">
                             <a href="{{ route('ledger.index') }}" class="menu-link">
                                 <div>Ledger</div>
-                            </a>
-                        </li>
-                    @endcan
-                    @can('anggota.index')
-                        <li class="menu-item {{ request()->is(['anggota', 'anggota/*']) ? 'active' : '' }}">
-                            <a href="{{ route('anggota.index') }}" class="menu-link">
-                                <div>Anggota</div>
                             </a>
                         </li>
                     @endcan
@@ -531,14 +522,22 @@
         @endif
 
         @if (auth()->check() &&
-                auth()->user()->hasAnyPermission(['simpanan.index', 'pembiayaan.index', 'tabungan.index']))
+                auth()->user()->hasAnyPermission(['simpanan.index', 'pembiayaan.index', 'tabungan.index', 'anggota.index']))
             <li
-                class="menu-item {{ request()->is(['simpanan', 'pembiayaan', 'tabungan', 'tabungan/*', 'simpanan/*', 'pembiayaan/*', 'laporankoperasi', 'laporankoperasi/*']) ? 'open' : '' }}">
+                class="menu-item {{ request()->is(['anggota', 'anggota/*', 'simpanan', 'pembiayaan', 'tabungan', 'tabungan/*', 'simpanan/*', 'pembiayaan/*', 'laporankoperasi', 'laporankoperasi/*']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-moneybag"></i>
                     <div>Koperasi</div>
                 </a>
                 <ul class="menu-sub">
+                    @can('anggota.index')
+                        <li class="menu-item {{ request()->is(['anggota', 'anggota/*']) ? 'active' : '' }}">
+                            <a href="{{ route('anggota.index') }}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-file-description"></i>
+                                <div>Anggota</div>
+                            </a>
+                        </li>
+                    @endcan
                     @if (auth()->check() &&
                             auth()->user()->hasAnyPermission(['simpanan.index']))
                         <li class="menu-item {{ request()->is(['simpanan', 'simpanan/*']) ? 'active' : '' }}">

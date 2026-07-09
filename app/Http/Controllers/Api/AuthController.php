@@ -430,6 +430,41 @@ class AuthController extends Controller
         ]);
     }
 
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi',
+            'username.required' => 'Username wajib diisi',
+            'username.unique' => 'Username sudah digunakan oleh orang lain',
+            'email.required' => 'Email wajib diisi',
+            'email.email' => 'Format email tidak valid',
+            'email.unique' => 'Email sudah digunakan oleh orang lain',
+        ]);
+
+        User::where('id', $user->id)->update([
+            'name' => $request->name,
+            'username' => $request->username,
+            'email' => $request->email,
+        ]);
+
+        $updatedUser = User::find($user->id);
+        $updatedUser->karyawan = $this->getKaryawanDetails($updatedUser);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profil berhasil diperbarui',
+            'data' => [
+                'user' => $updatedUser
+            ]
+        ]);
+    }
+
     public function getKaryawanDetails($user)
     {
         $npp = $user->npp;

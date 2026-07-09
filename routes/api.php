@@ -55,6 +55,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/register-orangtua', [App\Http\Controllers\Api\AuthController::class, 'registerOrangtua']);
     Route::post('/register-siswa', [App\Http\Controllers\Api\AuthController::class, 'registerSiswa']);
     Route::post('/change-password', [App\Http\Controllers\Api\AuthController::class, 'changePassword'])->middleware('auth:sanctum');
+    Route::post('/update-profile', [App\Http\Controllers\Api\AuthController::class, 'updateProfile'])->middleware('auth:sanctum');
 });
 
 // Group endpoint yang memerlukan autentikasi
@@ -77,8 +78,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/harian', [App\Http\Controllers\Api\PresensiController::class, 'presensiSiswa']);
         Route::get('/mapel', [App\Http\Controllers\Api\PresensiController::class, 'presensiMapel']);
         Route::get('/karyawan/check-status', [App\Http\Controllers\Api\PresensiController::class, 'getCheckinStatus']);
+        Route::get('/karyawan/history', [App\Http\Controllers\Api\PresensiController::class, 'getPresensiHistory']);
         Route::post('/karyawan/store', [App\Http\Controllers\Api\PresensiController::class, 'storeEmployeePresensi']);
         Route::delete('/karyawan/delete', [App\Http\Controllers\Api\PresensiController::class, 'deleteTodayPresensi']);
+    });
+
+    // Izin & Cuti API Routes
+    Route::prefix('izin')->group(function () {
+        Route::get('/history', [App\Http\Controllers\Api\IzinController::class, 'getIzinHistory']);
+        Route::post('/store', [App\Http\Controllers\Api\IzinController::class, 'storeIzin']);
     });
 
     // Simpanan Koperasi API Routes

@@ -9,6 +9,8 @@ use App\Models\District;
 use App\Models\Village;
 use App\Models\Siswa;
 use App\Models\SiswaAnggota;
+use App\Models\Karyawan;
+use App\Models\Karyawananggota;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
@@ -17,7 +19,7 @@ class AnggotaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Anggota::with('siswa');
+        $query = Anggota::with(['siswa', 'karyawan']);
         $query->select('*');
         if (!empty($request->nama_lengkap)) {
             $query->where('nama_lengkap', 'like', "%" . $request->nama_lengkap . "%");
@@ -171,7 +173,7 @@ class AnggotaController extends Controller
     public function show($no_anggota)
     {
         $no_anggota = Crypt::decrypt($no_anggota);
-        $anggota = Anggota::with('siswa')
+        $anggota = Anggota::with(['siswa', 'karyawan'])
             ->where('no_anggota', $no_anggota)
             ->first();
         
@@ -313,8 +315,9 @@ class AnggotaController extends Controller
         try {
             $no_anggota = Crypt::decrypt($id);
 
-            // Hapus relasi siswa_anggota terlebih dahulu
+            // Hapus relasi siswa_anggota & karyawan_anggota terlebih dahulu
             SiswaAnggota::where('no_anggota', $no_anggota)->delete();
+            Karyawananggota::where('no_anggota', $no_anggota)->delete();
 
             // Hapus data anggota
             Anggota::where('no_anggota', $no_anggota)->delete();
@@ -322,6 +325,99 @@ class AnggotaController extends Controller
             return Redirect::back()->with(messageSuccess('Data Berhasil Dihapus'));
         } catch (\Exception $e) {
             return Redirect::back()->with(messageError('Data Gagal Dihapus: ' . $e->getMessage()));
+        }
+    }
+
+    /**
+     * Get daftar karyawan untuk dropdown
+     */
+    public function getKaryawanOptions()
+    {
+        $karyawan = Karyawan::select('npp', 'nama_lengkap')
+            ->orderBy('nama_lengkap')
+            ->get();
+        return response()->json($karyawan);
+    }
+
+    /**
+     * Get karyawan yang sudah terhubung dengan anggota
+     */
+    public function getKaryawanTerhubung($no_anggota)
+    {
+        $no_anggota = Crypt::decrypt($no_anggota);
+        $karyawan = Anggota::with('karyawan')->find($no_anggota);
+        return response()->json($karyawan->karyawan);
+    }
+
+    /**
+     * Hubungkan karyawan dengan anggota
+     */
+    public function hubungkanKaryawan(Request $request)
+    {
+        $request->validate([
+            'no_anggota' => 'required',
+            'npp' => 'required'
+        ]);
+
+        try {
+            $no_anggota = Crypt::decrypt($request->no_anggota);
+
+            // Cek apakah relasi sudah ada
+            $existing = Karyawananggota::where('npp', $request->npp)
+                ->where('no_anggota', $no_anggota)
+                ->first();
+
+            if ($existing) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Karyawan sudah terhubung dengan anggota ini'
+                ]);
+            }
+
+            // Buat relasi baru
+            Karyawananggota::create([
+                'npp' => $request->npp,
+                'no_anggota' => $no_anggota
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Karyawan berhasil dihubungkan'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Hapus hubungan karyawan dengan anggota
+     */
+    public function hapusHubunganKaryawan(Request $request)
+    {
+        $request->validate([
+            'no_anggota' => 'required',
+            'npp' => 'required'
+        ]);
+
+        try {
+            $no_anggota = Crypt::decrypt($request->no_anggota);
+
+            Karyawananggota::where('npp', $request->npp)
+                ->where('no_anggota', $no_anggota)
+                ->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Hubungan berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
         }
     }
 }

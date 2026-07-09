@@ -591,6 +591,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/anggota/get-siswa-terhubung/{no_anggota}', 'getSiswaTerhubung')->name('anggota.get-siswa-terhubung');
         Route::post('/anggota/hubungkan-siswa', 'hubungkanSiswa')->name('anggota.hubungkan-siswa');
         Route::post('/anggota/hapus-hubungan-siswa', 'hapusHubunganSiswa')->name('anggota.hapus-hubungan-siswa');
+
+        // Routes untuk fitur hubungkan karyawan
+        Route::get('/anggota/get-karyawan-options', 'getKaryawanOptions')->name('anggota.get-karyawan-options');
+        Route::get('/anggota/get-karyawan-terhubung/{no_anggota}', 'getKaryawanTerhubung')->name('anggota.get-karyawan-terhubung');
+        Route::post('/anggota/hubungkan-karyawan', 'hubungkanKaryawan')->name('anggota.hubungkan-karyawan');
+        Route::post('/anggota/hapus-hubungan-karyawan', 'hapusHubunganKaryawan')->name('anggota.hapus-hubungan-karyawan');
     });
 
     Route::controller(JenissimpananController::class)->group(function () {
