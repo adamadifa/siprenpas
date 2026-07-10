@@ -155,26 +155,46 @@ class IbadahController extends Controller
                         ]);
                     }
                 } else {
-                    // Create new header
-                    $last_checklist_ibadah = Checklistibadah::orderBy('kode_checklist_ibadah', 'desc')
-                        ->where('tanggal', $tanggal)
-                        ->first();
-                    $last_kode_checklist_ibadah = $last_checklist_ibadah ? $last_checklist_ibadah->kode_checklist_ibadah : '';
-                    $format = date('ymd', strtotime($tanggal));
+                    // Create new header with duplicate exception handling for concurrent requests
+                    try {
+                        $last_checklist_ibadah = Checklistibadah::orderBy('kode_checklist_ibadah', 'desc')
+                            ->where('tanggal', $tanggal)
+                            ->first();
+                        $last_kode_checklist_ibadah = $last_checklist_ibadah ? $last_checklist_ibadah->kode_checklist_ibadah : '';
+                        $format = date('ymd', strtotime($tanggal));
+                        
+                        // Call buatkode helper function
+                        $kode_checklist_ibadah = buatkode($last_kode_checklist_ibadah, $format, 4);
+                        
+                        $checklist_ibadah = Checklistibadah::create([
+                            'kode_checklist_ibadah' => $kode_checklist_ibadah,
+                            'tanggal' => $tanggal,
+                            'npp' => $npp,
+                        ]);
+                    } catch (\Illuminate\Database\QueryException $e) {
+                        if ($e->errorInfo[1] == 1062) {
+                            $checklist_ibadah = Checklistibadah::where('tanggal', $tanggal)
+                                ->where('npp', $npp)
+                                ->first();
+                            $is_first_submit = false; // It was already submitted by the concurrent request
+                        } else {
+                            throw $e;
+                        }
+                    }
                     
-                    // Call buatkode helper function
-                    $kode_checklist_ibadah = buatkode($last_kode_checklist_ibadah, $format, 4);
-                    
-                    $checklist_ibadah = Checklistibadah::create([
-                        'kode_checklist_ibadah' => $kode_checklist_ibadah,
-                        'tanggal' => $tanggal,
-                        'npp' => $npp,
-                    ]);
-                    
-                    Detailchecklistibadah::create([
-                        'kode_checklist_ibadah' => $checklist_ibadah->kode_checklist_ibadah,
-                        'id_kegiatan_ibadah' => $id,
-                    ]);
+                    if ($checklist_ibadah) {
+                        // Check if already exists in detail to prevent duplicate
+                        $exists = Detailchecklistibadah::where('kode_checklist_ibadah', $checklist_ibadah->kode_checklist_ibadah)
+                            ->where('id_kegiatan_ibadah', $id)
+                            ->first();
+                            
+                        if (!$exists) {
+                            Detailchecklistibadah::create([
+                                'kode_checklist_ibadah' => $checklist_ibadah->kode_checklist_ibadah,
+                                'id_kegiatan_ibadah' => $id,
+                            ]);
+                        }
+                    }
                 }
             }
 

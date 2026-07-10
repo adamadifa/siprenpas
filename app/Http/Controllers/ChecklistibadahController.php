@@ -67,21 +67,35 @@ class ChecklistibadahController extends Controller
                     'id_kegiatan_ibadah' => $request->id,
                 ]);
             } else {
-                $last_checklist_ibadah = Checklistibadah::orderBy('kode_checklist_ibadah', 'desc')
-                    ->where('tanggal', $request->tanggal)
-                    ->first();
-                $last_kode_checklist_ibadah = $last_checklist_ibadah ? $last_checklist_ibadah->kode_checklist_ibadah : '';
-                $format = date('ymd');
-                $kode_checklist_ibadah = buatkode($last_kode_checklist_ibadah, $format, 4);
-                $checklist_ibadah = Checklistibadah::create([
-                    'kode_checklist_ibadah' => $kode_checklist_ibadah,
-                    'tanggal' => $request->tanggal,
-                    'npp' => $userkaryawan->npp,
-                ]);
-                Detailchecklistibadah::create([
-                    'kode_checklist_ibadah' => $checklist_ibadah->kode_checklist_ibadah,
-                    'id_kegiatan_ibadah' => $request->id,
-                ]);
+                try {
+                    $last_checklist_ibadah = Checklistibadah::orderBy('kode_checklist_ibadah', 'desc')
+                        ->where('tanggal', $request->tanggal)
+                        ->first();
+                    $last_kode_checklist_ibadah = $last_checklist_ibadah ? $last_checklist_ibadah->kode_checklist_ibadah : '';
+                    $format = date('ymd');
+                    $kode_checklist_ibadah = buatkode($last_kode_checklist_ibadah, $format, 4);
+                    $checklist_ibadah = Checklistibadah::create([
+                        'kode_checklist_ibadah' => $kode_checklist_ibadah,
+                        'tanggal' => $request->tanggal,
+                        'npp' => $userkaryawan->npp,
+                    ]);
+                } catch (\Illuminate\Database\QueryException $e) {
+                    if ($e->errorInfo[1] == 1062) {
+                        $checklist_ibadah = Checklistibadah::where('tanggal', $request->tanggal)
+                            ->where('npp', $userkaryawan->npp)
+                            ->first();
+                        $is_first_submit = false;
+                    } else {
+                        throw $e;
+                    }
+                }
+                
+                if ($checklist_ibadah) {
+                    Detailchecklistibadah::create([
+                        'kode_checklist_ibadah' => $checklist_ibadah->kode_checklist_ibadah,
+                        'id_kegiatan_ibadah' => $request->id,
+                    ]);
+                }
             }
             DB::commit();
 
