@@ -9,6 +9,7 @@ use App\Models\Kegiatanibadah;
 use App\Models\Userkaryawan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class IbadahController extends Controller
 {
@@ -84,6 +85,7 @@ class IbadahController extends Controller
     public function toggleIbadah(Request $request)
     {
         try {
+            Log::info("toggleIbadah API endpoint called");
             $user = $request->user();
             $npp = $user->npp;
             
@@ -118,6 +120,18 @@ class IbadahController extends Controller
             $checklist_ibadah = Checklistibadah::where('tanggal', $tanggal)
                 ->where('npp', $npp)
                 ->first();
+
+            $is_first_submit = false;
+            if ($checked) {
+                if (!$checklist_ibadah) {
+                    $is_first_submit = true;
+                } else {
+                    $detail_count = Detailchecklistibadah::where('kode_checklist_ibadah', $checklist_ibadah->kode_checklist_ibadah)->count();
+                    if ($detail_count === 0) {
+                        $is_first_submit = true;
+                    }
+                }
+            }
 
             if (!$checked) {
                 // UNCHECK: delete from detail
@@ -165,6 +179,12 @@ class IbadahController extends Controller
             }
 
             DB::commit();
+
+            if ($is_first_submit) {
+                // Dispatch WhatsApp Group notification
+                Log::info("DB transaction committed, first submit of the day. Dispatching SendChecklistIbadahJob for date: " . $tanggal);
+                \App\Jobs\SendChecklistIbadahJob::dispatch($tanggal);
+            }
 
             return response()->json([
                 'success' => true,

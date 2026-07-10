@@ -50,6 +50,17 @@ class ChecklistibadahController extends Controller
             $checklist_ibadah = Checklistibadah::where('tanggal', $request->tanggal)
                 ->where('npp', $userkaryawan->npp)
                 ->first();
+
+            $is_first_submit = false;
+            if (!$checklist_ibadah) {
+                $is_first_submit = true;
+            } else {
+                $detail_count = Detailchecklistibadah::where('kode_checklist_ibadah', $checklist_ibadah->kode_checklist_ibadah)->count();
+                if ($detail_count === 0) {
+                    $is_first_submit = true;
+                }
+            }
+
             if ($checklist_ibadah) {
                 Detailchecklistibadah::create([
                     'kode_checklist_ibadah' => $checklist_ibadah->kode_checklist_ibadah,
@@ -73,6 +84,12 @@ class ChecklistibadahController extends Controller
                 ]);
             }
             DB::commit();
+
+            if ($is_first_submit) {
+                // Dispatch WhatsApp Group notification
+                \App\Jobs\SendChecklistIbadahJob::dispatch($request->tanggal);
+            }
+
             return response()->json([
                 'status' => true,
                 'message' => 'Data berhasil disimpan',
@@ -93,6 +110,7 @@ class ChecklistibadahController extends Controller
             Detailchecklistibadah::where('kode_checklist_ibadah', $request->kode)
                 ->where('id_kegiatan_ibadah', $request->id)
                 ->delete();
+
             return response()->json([
                 'status' => true,
                 'message' => 'Data berhasil dihapus',
