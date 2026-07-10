@@ -15,12 +15,12 @@ echo "Testing SendChecklistIbadahJob for date: $tanggal\n";
 
 try {
     // Check if tables have records
-    $karyawanCount = DB::table('karyawan')->count();
-    $checklistCount = DB::table('checklist_ibadah')->count();
-    $detailCount = DB::table('checklist_ibadah_detail')->count();
-    echo "Karyawan count: $karyawanCount\n";
-    echo "Checklist count: $checklistCount\n";
-    echo "Detail count: $detailCount\n";
+    $target = DB::table('checklist_ibadah')->where('kode_checklist_ibadah', '2607100003')->first();
+    if ($target) {
+        echo "Found checklist 2607100003: NPP={$target->npp}, Tanggal={$target->tanggal}\n";
+    } else {
+        echo "Checklist 2607100003 not found in database.\n";
+    }
 
     echo "Last 5 checklist_ibadah entries:\n";
     $lastChecklists = DB::table('checklist_ibadah')->orderBy('tanggal', 'desc')->limit(5)->get();
