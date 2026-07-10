@@ -158,13 +158,14 @@ class IbadahController extends Controller
                     // Create new header with duplicate exception handling for concurrent requests
                     try {
                         $last_checklist_ibadah = Checklistibadah::orderBy('kode_checklist_ibadah', 'desc')
-                            ->where('tanggal', $tanggal)
                             ->first();
-                        $last_kode_checklist_ibadah = $last_checklist_ibadah ? $last_checklist_ibadah->kode_checklist_ibadah : '';
-                        $format = date('ymd', strtotime($tanggal));
-                        
-                        // Call buatkode helper function
-                        $kode_checklist_ibadah = buatkode($last_kode_checklist_ibadah, $format, 4);
+                        $last_kode = $last_checklist_ibadah ? $last_checklist_ibadah->kode_checklist_ibadah : '';
+                        if (empty($last_kode)) {
+                            $format = date('ymd', strtotime($tanggal));
+                            $kode_checklist_ibadah = buatkode('', $format, 4);
+                        } else {
+                            $kode_checklist_ibadah = strval(intval($last_kode) + 1);
+                        }
                         
                         $checklist_ibadah = Checklistibadah::create([
                             'kode_checklist_ibadah' => $kode_checklist_ibadah,
