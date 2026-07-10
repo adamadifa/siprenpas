@@ -55,7 +55,7 @@ class SendChecklistIbadahJob implements ShouldQueue
         $pesan = [
             'api_key' => 'uxlLxWx36Q4KzaPlbFMCsuCRO7MvXn',
             'sender' => '6289670444321',
-            'number' => '120363422816047512@g.us',
+            'number' => '6285223368791-1504701755@g.us',
             'message' => $message
         ];
 
