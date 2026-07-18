@@ -102,10 +102,10 @@ class ChecklistibadahController extends Controller
             }
             DB::commit();
 
-            if ($is_first_submit) {
-                // Dispatch WhatsApp Group notification
-                \App\Jobs\SendChecklistIbadahJob::dispatch($request->tanggal);
-            }
+            // if ($is_first_submit) {
+            //     // Dispatch WhatsApp Group notification
+            //     \App\Jobs\SendChecklistIbadahJob::dispatch($request->tanggal);
+            // }
 
             return response()->json([
                 'status' => true,

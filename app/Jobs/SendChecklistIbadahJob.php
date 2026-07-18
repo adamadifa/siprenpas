@@ -39,6 +39,16 @@ class SendChecklistIbadahJob implements ShouldQueue
             ->distinct()
             ->get();
 
+        // Query recap by Unit
+        $unitRecap = DB::table('checklist_ibadah')
+            ->join('karyawan', 'checklist_ibadah.npp', '=', 'karyawan.npp')
+            ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+            ->where('checklist_ibadah.tanggal', $this->tanggal)
+            ->select('unit.nama_unit', DB::raw('count(distinct checklist_ibadah.npp) as total'))
+            ->groupBy('unit.nama_unit')
+            ->orderBy('unit.nama_unit', 'asc')
+            ->get();
+
         $formattedDate = date('d-m-Y', strtotime($this->tanggal));
 
         if ($users->isEmpty()) {
@@ -50,12 +60,25 @@ class SendChecklistIbadahJob implements ShouldQueue
                 $message .= $i . ". " . $user->nama_lengkap . "\n";
                 $i++;
             }
+
+            // Append unit recap table
+            $message .= "\n*Rekapitulasi per Unit:*\n";
+            $message .= "```\n";
+            $message .= sprintf("%-18s | %s\n", "Unit", "Jumlah");
+            $message .= str_repeat("-", 27) . "\n";
+            foreach ($unitRecap as $recap) {
+                // Limit unit name to 18 chars to prevent wrapping
+                $unitName = strlen($recap->nama_unit) > 18 ? substr($recap->nama_unit, 0, 15) . '...' : $recap->nama_unit;
+                $message .= sprintf("%-18s | %d\n", $unitName, $recap->total);
+            }
+            $message .= "```\n";
         }
 
         $pesan = [
             'api_key' => 'uxlLxWx36Q4KzaPlbFMCsuCRO7MvXn',
             'sender' => '6289670444321',
-            'number' => '6285223368791-1504701755@g.us',
+            // 'number' => '6285223368791-1504701755@g.us',
+            'number' => '6282220804021',
             'message' => $message
         ];
 

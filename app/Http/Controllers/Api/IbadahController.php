@@ -201,11 +201,11 @@ class IbadahController extends Controller
 
             DB::commit();
 
-            if ($is_first_submit) {
-                // Dispatch WhatsApp Group notification
-                Log::info("DB transaction committed, first submit of the day. Dispatching SendChecklistIbadahJob for date: " . $tanggal);
-                \App\Jobs\SendChecklistIbadahJob::dispatch($tanggal);
-            }
+            // if ($is_first_submit) {
+            //     // Dispatch WhatsApp Group notification
+            //     Log::info("DB transaction committed, first submit of the day. Dispatching SendChecklistIbadahJob for date: " . $tanggal);
+            //     \App\Jobs\SendChecklistIbadahJob::dispatch($tanggal);
+            // }
 
             return response()->json([
                 'success' => true,
