@@ -91,13 +91,13 @@
                             $isU06 = auth()->user()->kode_unit == 'U06';
                         @endphp
                         
-                        <div class="{{ $isU06 ? 'col-lg-4' : 'col-lg-6' }} col-md-6">
+                        <div class="{{ $isU06 ? 'col-lg-3' : 'col-lg-4' }} col-md-6">
                             <x-input-with-icon label="" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
                                 placeholder="Cari Nama Siswa" icon="ti ti-search" />
                         </div>
 
                         @if ($isU06)
-                            <div class="col-lg-3 col-md-6">
+                            <div class="col-lg-2 col-md-6">
                                 <div class="form-group">
                                     <select name="kode_unit" id="kode_unit_search" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
                                         <option value="">Semua Unit</option>
@@ -109,6 +109,14 @@
                                 </div>
                             </div>
                         @endif
+
+                        <div class="{{ $isU06 ? 'col-lg-2' : 'col-lg-3' }} col-md-6">
+                            <div class="form-group">
+                                <select name="tingkat" id="tingkat" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
+                                    <option value="">Tingkat</option>
+                                </select>
+                            </div>
+                        </div>
 
                         <div class="col-lg-3 col-md-6">
                             <div class="form-group">
@@ -462,6 +470,34 @@
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         });
+
+        function getTingkatByUnit(kode_unit, selected = '') {
+            selected = "{{ Request('tingkat') }}";
+            $.ajax({
+                type: "POST",
+                url: "{{ route('unit.gettingkatbyunit') }}",
+                cache: false,
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    kode_unit: kode_unit,
+                    selected: selected
+                },
+                success: function(respond) {
+                    $(document).find("#tingkat").html(respond);
+                }
+            });
+        }
+
+        $(document).on('change', '#kode_unit_search', function() {
+            const kode_unit = $(this).val();
+            getTingkatByUnit(kode_unit);
+        });
+
+        @if ($isU06)
+            getTingkatByUnit("{{ Request('kode_unit') }}");
+        @else
+            getTingkatByUnit("{{ auth()->user()->kode_unit }}");
+        @endif
     });
 </script>
 @endpush
