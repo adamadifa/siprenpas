@@ -233,3 +233,49 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Proses Keluar -->
+<div class="modal fade" id="modalProsesKeluar" tabindex="-1" aria-hidden="true" style="z-index: 1100;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Proses Siswa Keluar / Mengundur Diri</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('pembayaranpendidikan.proseskeluar', Crypt::encrypt($pendaftaran->no_pendaftaran)) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Status Siswa Baru</label>
+                        <select name="status_siswa" class="form-select" required>
+                            <option value="3">Mengundurkan Diri</option>
+                            <option value="4">Pindah Sekolah</option>
+                            <option value="5">Dikeluarkan</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tanggal Keluar</label>
+                        <input type="date" name="tanggal_keluar" class="form-control" value="{{ date('Y-m-d') }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Alasan Keluar</label>
+                        <textarea name="alasan_keluar" class="form-control" rows="3" required placeholder="Tuliskan alasan detail siswa keluar..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function() {
+        $('#btnProsesKeluar').click(function(e) {
+            e.preventDefault();
+            $('#modalProsesKeluar').modal('show');
+        });
+    });
+</script>

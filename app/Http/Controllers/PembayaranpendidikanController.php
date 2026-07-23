@@ -619,19 +619,141 @@ class PembayaranpendidikanController extends Controller
         $nexttingkat = $pendaftaran->tingkat + 1;
         $ta_aktif = Tahunajaranppdb::where('status', 1)->first();
         $unit = Unit::where('kode_unit', $pendaftaran->kode_unit)->first();
+
+        // Get all matching costs for next level
         $cekbiayanexttingkat = Biaya::where('kode_unit', $pendaftaran->kode_unit)
             ->where('tingkat', $nexttingkat)
-            ->where('kode_ta', $ta_aktif->kode_ta)->first();
+            ->where('kode_ta', $ta_aktif->kode_ta)
+            ->get();
 
-        if ($cekbiayanexttingkat == null) {
-            return Redirect::back()->with(messageError('Biaya untuk Tingkat' . $nexttingkat . ' Jenjang ' . $unit->nama_unit . ' Tahun Ajaran ' . $ta_aktif->tahun_ajaran . ' tidak ditemukan'));
+        if ($cekbiayanexttingkat->isEmpty()) {
+            return Redirect::back()->with(messageError('Biaya untuk Tingkat ' . $nexttingkat . ' Jenjang ' . $unit->nama_unit . ' Tahun Ajaran ' . $ta_aktif->tahun_ajaran . ' tidak ditemukan'));
         }
+
+        // If only 1 cost option exists, process immediately
+        if ($cekbiayanexttingkat->count() === 1) {
+            DB::beginTransaction();
+            try {
+                Biayasiswa::create([
+                    'no_pendaftaran' => $no_pendaftaran,
+                    'kode_biaya' => $cekbiayanexttingkat->first()->kode_biaya,
+                ]);
+
+                Biayasiswa::where('no_pendaftaran', $no_pendaftaran)
+                    ->where('kode_biaya', $pendaftaran->kode_biaya)
+                    ->update([
+                        'status_naik_kelas' => 1,
+                    ]);
+                DB::commit();
+                return Redirect::back()->with(messageSuccess('Kenaikan kelas ke tingkat ' . $nexttingkat . ' berhasil diproses'));
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                return Redirect::back()->with(messageError('Terjadi Kesalahan: ' . $th->getMessage()));
+            }
+        }
+
+        // Redirect back with warning that multiple costs exist, which shouldn't happen via direct GET link
+        return Redirect::back()->with(messageError('Terdapat lebih dari satu pilihan biaya. Silakan proses dari tombol kenaikan kelas di tabel.'));
+    }
+
+    public function cekbiayanext($no_pendaftaran)
+    {
+        $no_pendaftaran = Crypt::decrypt($no_pendaftaran);
+        $p = new Pendaftaran();
+        $pendaftaran = $p->getPembayaranpendidikan($no_pendaftaran)->first();
+        $nexttingkat = $pendaftaran->tingkat + 1;
+        $ta_aktif = Tahunajaranppdb::where('status', 1)->first();
+
+        if (!$ta_aktif) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tahun Ajaran PPDB aktif tidak ditemukan'
+            ], 404);
+        }
+
+        $biayas = Biaya::where('kode_unit', $pendaftaran->kode_unit)
+            ->where('tingkat', $nexttingkat)
+            ->where('kode_ta', $ta_aktif->kode_ta)
+            ->get();
+
+        if ($biayas->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Konfigurasi biaya untuk Tingkat ' . $nexttingkat . ' tidak ditemukan.'
+            ], 404);
+        }
+
+        // Load details for each biaya
+        $html = '';
+        foreach ($biayas as $biaya) {
+            $details = Detailbiaya::join('jenis_biaya', 'konfigurasi_biaya_detail.kode_jenis_biaya', '=', 'jenis_biaya.kode_jenis_biaya')
+                ->where('konfigurasi_biaya_detail.kode_biaya', $biaya->kode_biaya)
+                ->get();
+            
+            $total = $details->sum('jumlah');
+            $tipe = $biaya->asrama == 1 ? 'Asrama' : 'Reguler/Non-Asrama';
+            $badgeColor = $biaya->asrama == 1 ? 'bg-primary' : 'bg-success';
+
+            $html .= '
+            <div class="col-md-6 mb-3">
+                <div class="card border shadow-none h-100 hover-border-primary">
+                    <div class="card-header d-flex justify-content-between align-items-center bg-light py-2">
+                        <span class="fw-bold text-dark text-uppercase small">' . $biaya->kode_biaya . '</span>
+                        <span class="badge ' . $badgeColor . '">' . $tipe . '</span>
+                    </div>
+                    <div class="card-body p-3 d-flex flex-column justify-content-between">
+                        <div>
+                            <table class="table table-sm table-borderless mb-3 small">
+                                <tbody>';
+            foreach ($details as $det) {
+                $html .= '
+                                    <tr>
+                                        <td>' . $det->jenis_biaya . '</td>
+                                        <td class="text-end fw-bold">Rp ' . formatAngka($det->jumlah) . '</td>
+                                    </tr>';
+            }
+            $html .= '
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="border-top pt-2">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="fw-bold text-dark">Total Biaya:</span>
+                                <span class="fw-bold text-primary fs-5">Rp ' . formatAngka($total) . '</span>
+                            </div>
+                            <button type="button" class="btn btn-primary btn-sm w-100 btnPilihBiayaNaikKelas" data-kode-biaya="' . $biaya->kode_biaya . '">
+                                Pilih & Proses Naik Kelas
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>';
+        }
+
+        return response()->json([
+            'success' => true,
+            'count' => $biayas->count(),
+            'html' => $html,
+            'nama_siswa' => $pendaftaran->nama_lengkap,
+            'tingkat_baru' => $nexttingkat
+        ]);
+    }
+
+    public function simpannaikkelas(Request $request, $no_pendaftaran)
+    {
+        $no_pendaftaran = Crypt::decrypt($no_pendaftaran);
+        $request->validate([
+            'kode_biaya' => 'required|string|exists:konfigurasi_biaya,kode_biaya'
+        ]);
+
+        $p = new Pendaftaran();
+        $pendaftaran = $p->getPembayaranpendidikan($no_pendaftaran)->first();
 
         DB::beginTransaction();
         try {
             Biayasiswa::create([
                 'no_pendaftaran' => $no_pendaftaran,
-                'kode_biaya' => $cekbiayanexttingkat->kode_biaya,
+                'kode_biaya' => $request->kode_biaya,
             ]);
 
             Biayasiswa::where('no_pendaftaran', $no_pendaftaran)
@@ -639,11 +761,18 @@ class PembayaranpendidikanController extends Controller
                 ->update([
                     'status_naik_kelas' => 1,
                 ]);
+
             DB::commit();
-            return Redirect::back()->with(messageSuccess('Biaya untuk Tingkat' . $nexttingkat . ' Jenjang ' . $unit->nama_unit . ' Tahun Ajaran ' . $ta_aktif->tahun_ajaran . ' berhasil ditambahkan'));
+            return response()->json([
+                'success' => true,
+                'message' => 'Proses kenaikan kelas berhasil disimpan'
+            ]);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return Redirect::back()->with(messageError('Terjadi Kesalahan ' . $th->getMessage()));
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi Kesalahan: ' . $th->getMessage()
+            ], 500);
         }
     }
 
@@ -726,6 +855,51 @@ class PembayaranpendidikanController extends Controller
             }
             DB::commit();
             return Redirect::back()->with(messageSuccess('Kenaikan kelas massal berhasil diproses'));
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return Redirect::back()->with(messageError('Terjadi Kesalahan ' . $th->getMessage()));
+        }
+    }
+
+    public function prosesKeluar(Request $request, $no_pendaftaran)
+    {
+        $no_pendaftaran = Crypt::decrypt($no_pendaftaran);
+        $request->validate([
+            'status_siswa' => 'required|in:3,4,5',
+            'tanggal_keluar' => 'required|date',
+            'alasan_keluar' => 'required|string|max:255',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            Pendaftaran::where('no_pendaftaran', $no_pendaftaran)->update([
+                'status_siswa' => $request->status_siswa,
+                'tanggal_keluar' => $request->tanggal_keluar,
+                'alasan_keluar' => $request->alasan_keluar,
+            ]);
+
+            DB::commit();
+            return Redirect::back()->with(messageSuccess('Status siswa berhasil diubah menjadi keluar/nonaktif'));
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return Redirect::back()->with(messageError('Terjadi Kesalahan ' . $th->getMessage()));
+        }
+    }
+
+    public function batalkanKeluar($no_pendaftaran)
+    {
+        $no_pendaftaran = Crypt::decrypt($no_pendaftaran);
+
+        DB::beginTransaction();
+        try {
+            Pendaftaran::where('no_pendaftaran', $no_pendaftaran)->update([
+                'status_siswa' => 1, // Aktif
+                'tanggal_keluar' => null,
+                'alasan_keluar' => null,
+            ]);
+
+            DB::commit();
+            return Redirect::back()->with(messageSuccess('Status keluar siswa berhasil dibatalkan'));
         } catch (\Throwable $th) {
             DB::rollBack();
             return Redirect::back()->with(messageError('Terjadi Kesalahan ' . $th->getMessage()));

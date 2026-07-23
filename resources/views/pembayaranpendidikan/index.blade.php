@@ -11,7 +11,7 @@
                         <i class="ti ti-moneybag fs-3"></i>
                     </div>
                     <div>
-                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Pembayaran Pendidikan</h4>
+                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Pembayaran Pendidikans</h4>
                         <p class="text-muted mb-0 small">Manajemen pembayaran SPP dan biaya lainnya</p>
                     </div>
                 </div>
@@ -125,14 +125,15 @@
                                 <th class="text-white py-3">UNIT</th>
                                 <th class="text-white py-3">TNGKT</th>
                                 <th class="text-white py-3">KELAS</th>
+                                <th class="text-white py-3">STATUS</th>
                                 <th class="text-white py-3 text-end" style="width: 100px;">#</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($pendaftaran as $d)
-                                <tr>
+                                <tr @if(in_array($d->status_siswa, [3, 4, 5])) style="background-color: rgba(234, 84, 85, 0.12) !important;" @endif>
                                     <td class="py-1 text-center">
-                                        @if ($d->kode_ta != optional($ta_ppdb)->kode_ta && $d->status_naik_kelas != 1)
+                                        @if ($d->kode_ta != optional($ta_ppdb)->kode_ta && $d->status_naik_kelas != 1 && $d->status_siswa == 1)
                                             <input type="checkbox" name="no_pendaftaran[]" value="{{ $d->no_pendaftaran }}" class="form-check-input checkItem">
                                         @elseif($d->status_naik_kelas == 1)
                                             <i class="ti ti-arrow-up text-success fs-4" data-bs-toggle="tooltip" title="Sudah Naik Kelas"></i>
@@ -150,6 +151,19 @@
                                     <td class="py-1">{{ $d->nama_unit }}</td>
                                     <td class="py-1">{{ $d->tingkat }}</td>
                                     <td class="py-1">{{ $d->nama_kelas }}</td>
+                                    <td class="py-1">
+                                        @if($d->status_siswa == 1)
+                                            <span class="badge bg-label-success">Aktif</span>
+                                        @elseif($d->status_siswa == 2)
+                                            <span class="badge bg-label-info">Lulus / Naik</span>
+                                        @elseif($d->status_siswa == 3)
+                                            <span class="badge bg-label-danger" data-bs-toggle="tooltip" title="Alasan: {{ $d->alasan_keluar }}">Mengundurkan Diri</span>
+                                        @elseif($d->status_siswa == 4)
+                                            <span class="badge bg-label-danger" data-bs-toggle="tooltip" title="Alasan: {{ $d->alasan_keluar }}">Pindah</span>
+                                        @elseif($d->status_siswa == 5)
+                                            <span class="badge bg-label-danger" data-bs-toggle="tooltip" title="Alasan: {{ $d->alasan_keluar }}">Dikeluarkan</span>
+                                        @endif
+                                    </td>
                                     <td class="py-1 text-end">
                                         <div class="d-flex justify-content-end gap-1">
                                             @can('pembayaranpdd.show')
@@ -168,12 +182,33 @@
                                                         <i class="ti ti-arrow-back-up fs-6"></i>
                                                     </a>
                                                 @else
-                                                    <a href="{{ route('pembayaranpendidikan.prosesnaikkelas', Crypt::encrypt($d->no_pendaftaran)) }}"
-                                                        class="btn btn-icon btn-label-warning border"
-                                                        style="width: 28px; height: 28px;">
+                                                    <a href="#"
+                                                        class="btn btn-icon btn-label-warning border btnNaikKelasTrigger"
+                                                        no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}"
+                                                        style="width: 28px; height: 28px;"
+                                                        data-bs-toggle="tooltip" title="Proses Naik Kelas">
                                                         <i class="ti ti-arrow-up fs-6"></i>
                                                     </a>
                                                 @endif
+                                            @endif
+
+                                            {{-- Tombol Aksi Keluar --}}
+                                            @if($d->status_siswa == 1)
+                                                <a href="#" class="btn btn-icon btn-label-danger border btnProsesKeluarTabel"
+                                                    no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}"
+                                                    style="width: 28px; height: 28px;"
+                                                    data-bs-toggle="tooltip" title="Proses Siswa Keluar">
+                                                    <i class="ti ti-user-x fs-6"></i>
+                                                </a>
+                                            @elseif(in_array($d->status_siswa, [3, 4, 5]))
+                                                <form action="{{ route('pembayaranpendidikan.batalkankeluar', Crypt::encrypt($d->no_pendaftaran)) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan status keluar siswa ini?')">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-icon btn-label-warning border"
+                                                        style="width: 28px; height: 28px;"
+                                                        data-bs-toggle="tooltip" title="Batalkan Keluar">
+                                                        <i class="ti ti-rotate-clockwise fs-6"></i>
+                                                    </button>
+                                                </form>
                                             @endif
                                         </div>
                                     </td>
@@ -199,10 +234,190 @@
 <x-modal-form id="modaleditrencanaspp" size="" show="loadeditrencanaspp" title="" />
 <x-modal-form id="modalpembayaran" size="modal-lg" show="loadmodalpembayaran" title="" />
 <x-modal-form id="modalDetailbayar" size="modal-lg" show="loaddetailbayar" title="" />
+
+<!-- Modal Proses Keluar Tabel -->
+<div class="modal fade" id="modalProsesKeluarTabel" tabindex="-1" aria-hidden="true" style="z-index: 1150;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Proses Siswa Keluar / Mengundur Diri</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="POST" id="formProsesKeluarTabel">
+                @csrf
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Status Siswa Baru <span class="text-danger">*</span></label>
+                        <select name="status_siswa" class="form-select" required>
+                            <option value="3">Mengundurkan Diri</option>
+                            <option value="4">Pindah Sekolah</option>
+                            <option value="5">Dikeluarkan</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tanggal Keluar <span class="text-danger">*</span></label>
+                        <input type="text" name="tanggal_keluar" id="tanggal_keluar" class="form-control flatpickr-date" value="{{ date('Y-m-d') }}" required placeholder="Pilih Tanggal">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Alasan Keluar <span class="text-danger">*</span></label>
+                        <textarea name="alasan_keluar" class="form-control" rows="3" required placeholder="Tuliskan alasan detail siswa keluar..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Pilihan Biaya Naik Kelas -->
+<div class="modal fade" id="modalPilihanBiayaNaikKelas" tabindex="-1" aria-hidden="true" style="z-index: 1160;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white py-3">
+                <h5 class="modal-title text-white">Pilih Konfigurasi Biaya Tingkat Baru</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info py-2 small d-flex align-items-center mb-4">
+                    <i class="ti ti-info-circle fs-4 me-2"></i>
+                    <div>
+                        Siswa <strong id="naik-kelas-nama-siswa">Siswa</strong> akan dinaikkan ke <strong>Tingkat <span id="naik-kelas-tingkat-baru">X</span></strong>. 
+                        Silakan pilih salah satu opsi biaya di bawah untuk melanjutkan.
+                    </div>
+                </div>
+                <div class="row" id="container-pilihan-biaya">
+                    <!-- Cards will be loaded here via Ajax -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 @push('myscript')
 <script>
     $(function() {
+        let currentNaikKelasNoPendaftaran = '';
+
+        // Handle Klik Tombol Naik Kelas (Cek Biaya)
+        $(document).on('click', '.btnNaikKelasTrigger', function(e) {
+            e.preventDefault();
+            var no_pendaftaran = $(this).attr('no_pendaftaran');
+            currentNaikKelasNoPendaftaran = no_pendaftaran;
+
+            Swal.fire({
+                title: 'Loading...',
+                text: 'Memeriksa konfigurasi biaya...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            $.ajax({
+                url: `/pembayaranpendidikan/${no_pendaftaran}/cekbiayanext`,
+                type: 'GET',
+                success: function(response) {
+                    Swal.close();
+                    if (response.success) {
+                        if (response.count === 1) {
+                            // If only 1 biaya exists, ask for simple confirmation and process
+                            Swal.fire({
+                                title: 'Konfirmasi',
+                                text: `Yakin ingin menaikkan ${response.nama_siswa} ke tingkat ${response.tingkat_baru}?`,
+                                icon: 'question',
+                                showCancelButton: true,
+                                confirmButtonColor: '#064e3b',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Ya, Proses!'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    execNaikKelas(no_pendaftaran, response.html); // response.html in this case holds nothing or default, we can trigger simpannaikkelas with the only code
+                                    // Actually, let's extract code_biaya from button in response.html or we can call the original route.
+                                    window.location.href = `/pembayaranpendidikan/${no_pendaftaran}/prosesnaikkelas`;
+                                }
+                            });
+                        } else {
+                            // If multiple biaya exist, show the modal with cards
+                            $('#naik-kelas-nama-siswa').text(response.nama_siswa);
+                            $('#naik-kelas-tingkat-baru').text(response.tingkat_baru);
+                            $('#container-pilihan-biaya').html(response.html);
+                            $('#modalPilihanBiayaNaikKelas').modal('show');
+                        }
+                    }
+                },
+                error: function(xhr) {
+                    Swal.close();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: xhr.responseJSON ? xhr.responseJSON.message : 'Gagal memproses data.'
+                    });
+                }
+            });
+        });
+
+        // Handle Pemilihan Biaya pada Card
+        $(document).on('click', '.btnPilihBiayaNaikKelas', function(e) {
+            e.preventDefault();
+            var kode_biaya = $(this).data('kode-biaya');
+
+            Swal.fire({
+                title: 'Sedang diproses...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            $.ajax({
+                url: `/pembayaranpendidikan/${currentNaikKelasNoPendaftaran}/simpannaikkelas`,
+                type: 'POST',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    kode_biaya: kode_biaya
+                },
+                success: function(response) {
+                    Swal.close();
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: response.message,
+                        }).then(() => {
+                            $('#modalPilihanBiayaNaikKelas').modal('hide');
+                            window.location.reload();
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    Swal.close();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: xhr.responseJSON ? xhr.responseJSON.message : 'Terjadi kesalahan sistem.'
+                    });
+                }
+            });
+        });
+
+        // Initialize flatpickr on date field
+        $(".flatpickr-date").flatpickr({
+            altInput: true,
+            altFormat: "d F Y",
+            dateFormat: "Y-m-d",
+            defaultDate: "today"
+        });
+
+        $(document).on('click', '.btnProsesKeluarTabel', function(e) {
+            e.preventDefault();
+            var no_pendaftaran = $(this).attr('no_pendaftaran');
+            $('#formProsesKeluarTabel').attr('action', `/pembayaranpendidikan/${no_pendaftaran}/proses-keluar`);
+            $('#modalProsesKeluarTabel').modal('show');
+        });
+
         $(document).on('show.bs.modal', '.modal', function() {
             const zIndex = 1090 + 10 * $('.modal:visible').length;
             $(this).css('z-index', zIndex);

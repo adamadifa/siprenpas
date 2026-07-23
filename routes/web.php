@@ -534,8 +534,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/pembayaranpendidikan/{no_bukti}/showdetailbayar', 'showdetailbayar')->name('pembayaranpendidikan.showdetailbayar')->can('pembayaranpdd.show');
         Route::get('/pembayaranpendidikan/{no_bukti}/cetak', 'cetak')->name('pembayaranpendidikan.cetak')->can('pembayaranpdd.show');
         Route::get('/pembayaranpendidikan/{no_pendaftaran}/prosesnaikkelas', 'prosesnaikkelas')->name('pembayaranpendidikan.prosesnaikkelas')->can('pembayaranpdd.create');
+        Route::get('/pembayaranpendidikan/{no_pendaftaran}/cekbiayanext', 'cekbiayanext')->name('pembayaranpendidikan.cekbiayanext')->can('pembayaranpdd.create');
+        Route::post('/pembayaranpendidikan/{no_pendaftaran}/simpannaikkelas', 'simpannaikkelas')->name('pembayaranpendidikan.simpannaikkelas')->can('pembayaranpdd.create');
         Route::get('/pembayaranpendidikan/{no_pendaftaran}/batalkannaikkelas', 'batalkannaikkelas')->name('pembayaranpendidikan.batalkannaikkelas')->can('pembayaranpdd.create');
         Route::post('/pembayaranpendidikan/bulknaikkelas', 'bulknaikkelas')->name('pembayaranpendidikan.bulknaikkelas')->can('pembayaranpdd.create');
+
+        Route::post('/pembayaranpendidikan/{no_pendaftaran}/proses-keluar', 'prosesKeluar')->name('pembayaranpendidikan.proseskeluar')->can('pembayaranpdd.create');
+        Route::post('/pembayaranpendidikan/{no_pendaftaran}/batalkan-keluar', 'batalkanKeluar')->name('pembayaranpendidikan.batalkankeluar')->can('pembayaranpdd.create');
     });
 
     Route::controller(RencanasppController::class)->group(function () {

@@ -14,6 +14,24 @@ class Pendaftaran extends Model
     protected $guarded = [];
     public $incrementing = false;
 
+    // Status Siswa Constants
+    const STATUS_AKTIF = 1;
+    const STATUS_LULUS = 2;
+    const STATUS_MENGUNDURKAN_DIRI = 3;
+    const STATUS_PINDAH = 4;
+    const STATUS_DIKELUARKAN = 5;
+
+    public static function getStatusLabels()
+    {
+        return [
+            self::STATUS_AKTIF => 'Aktif',
+            self::STATUS_LULUS => 'Lulus / Naik Kelas',
+            self::STATUS_MENGUNDURKAN_DIRI => 'Mengundurkan Diri',
+            self::STATUS_PINDAH => 'Pindah Sekolah',
+            self::STATUS_DIKELUARKAN => 'Dikeluarkan',
+        ];
+    }
+
     public function getPendaftaran($no_pendaftaran = null, Request $request = null)
     {
 
@@ -114,7 +132,10 @@ class Pendaftaran extends Model
             'siswa_biaya.kode_biaya',
             'konfigurasi_biaya.tingkat',
             'siswa_biaya.status_naik_kelas',
-            'konfigurasi_biaya.kode_ta'
+            'konfigurasi_biaya.kode_ta',
+            'pendaftaran.status_siswa',
+            'pendaftaran.tanggal_keluar',
+            'pendaftaran.alasan_keluar'
         );
         $query->join('pendaftaran', 'siswa_biaya.no_pendaftaran', 'pendaftaran.no_pendaftaran');
         $query->join('siswa', 'pendaftaran.id_siswa', 'siswa.id_siswa');
