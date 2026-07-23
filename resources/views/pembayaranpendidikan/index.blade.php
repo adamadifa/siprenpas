@@ -106,48 +106,128 @@
                 @endif
             </div>
             <div class="card-body p-0">
+                <style>
+                    .table-sticky {
+                        border-collapse: separate;
+                        border-spacing: 0;
+                    }
+                    .table-sticky tbody tr {
+                        background-color: #ffffff;
+                    }
+                    .table-sticky thead tr {
+                        background-color: #064e3b;
+                    }
+                    .table-sticky thead th {
+                        background-color: #064e3b !important;
+                        color: #fff !important;
+                    }
+                    
+                    /* Explicit solid background-color for sticky columns */
+                    .table-sticky td.sticky-col-left-1,
+                    .table-sticky td.sticky-col-left-2,
+                    .table-sticky td.sticky-col-left-3,
+                    .table-sticky td.sticky-col-left-4,
+                    .table-sticky td.sticky-col-left-5,
+                    .table-sticky td.sticky-col-left-6,
+                    .table-sticky td.sticky-col-right {
+                        background-color: #ffffff !important;
+                    }
+
+                    /* Hover states */
+                    .table-sticky tbody tr:hover td {
+                        background-color: #f8f9fa !important;
+                    }
+
+                    /* Row danger / inactive status states */
+                    .table-sticky tr.row-danger td {
+                        background-color: #fef5f5 !important;
+                    }
+                    .table-sticky tr.row-danger td.sticky-col-left-1,
+                    .table-sticky tr.row-danger td.sticky-col-left-2,
+                    .table-sticky tr.row-danger td.sticky-col-left-3,
+                    .table-sticky tr.row-danger td.sticky-col-left-4,
+                    .table-sticky tr.row-danger td.sticky-col-left-5,
+                    .table-sticky tr.row-danger td.sticky-col-left-6,
+                    .table-sticky tr.row-danger td.sticky-col-right {
+                        background-color: #fef5f5 !important;
+                    }
+
+                    /* Row danger hover states */
+                    .table-sticky tr.row-danger:hover td {
+                        background-color: #fde8e8 !important;
+                    }
+                    
+                    .sticky-col-left-1 { position: sticky; left: 0; z-index: 2; width: 45px; min-width: 45px; max-width: 45px; }
+                    .sticky-col-left-2 { position: sticky; left: 45px; z-index: 2; width: 45px; min-width: 45px; max-width: 45px; }
+                    .sticky-col-left-3 { position: sticky; left: 90px; z-index: 2; width: 140px; min-width: 140px; max-width: 140px; }
+                    .sticky-col-left-4 { position: sticky; left: 230px; z-index: 2; width: 90px; min-width: 90px; max-width: 90px; }
+                    .sticky-col-left-5 { position: sticky; left: 320px; z-index: 2; width: 95px; min-width: 95px; max-width: 95px; }
+                    .sticky-col-left-6 { 
+                        position: sticky; 
+                        left: 415px; 
+                        z-index: 2; 
+                        width: 300px; 
+                        min-width: 300px; 
+                        max-width: 300px; 
+                    }
+                    .sticky-col-right { position: sticky; right: 0; z-index: 2; width: 120px; min-width: 120px; max-width: 120px; border-left: 1px solid #e0e0e0; }
+                    
+                    .table-sticky thead th.sticky-col-left-1,
+                    .table-sticky thead th.sticky-col-left-2,
+                    .table-sticky thead th.sticky-col-left-3,
+                    .table-sticky thead th.sticky-col-left-4,
+                    .table-sticky thead th.sticky-col-left-5,
+                    .table-sticky thead th.sticky-col-left-6,
+                    .table-sticky thead th.sticky-col-right {
+                        z-index: 3;
+                    }
+                </style>
                 <div class="table-responsive">
                     <form action="{{ route('pembayaranpendidikan.bulknaikkelas') }}" method="POST" id="formBulkNaikKelas">
                         @csrf
-                        <table class="table table-hover mb-0 text-nowrap">
+                        <table class="table table-hover mb-0 text-nowrap table-sticky">
                         <thead style="background-color: #064e3b">
                             <tr>
-                                <th class="text-white py-3">
+                                <th class="text-white py-3 sticky-col-left-1">
                                     <input type="checkbox" class="form-check-input" id="checkAll">
                                 </th>
-                                <th class="text-white py-3">NO.</th>
-                                <th class="text-white py-3">NO. PENDAFTARAN</th>
-                                <th class="text-white py-3">ID SISWA</th>
-                                <th class="text-white py-3">NIS</th>
-                                <th class="text-white py-3">NAMA LENGKAP</th>
-                                <th class="text-white py-3">TGL LAHIR</th>
-                                <th class="text-white py-3">JK</th>
+                                <th class="text-white py-3 sticky-col-left-2">NO.</th>
+                                <th class="text-white py-3 sticky-col-left-3">NO. PENDAFTARAN</th>
+                                <th class="text-white py-3 sticky-col-left-4">ID SISWA</th>
+                                <th class="text-white py-3 sticky-col-left-5">NIS</th>
+                                <th class="text-white py-3 sticky-col-left-6">NAMA LENGKAP</th>
+                                <th class="text-white py-3">TIPE BIAYA</th>
                                 <th class="text-white py-3">UNIT</th>
                                 <th class="text-white py-3">TNGKT</th>
                                 <th class="text-white py-3">KELAS</th>
                                 <th class="text-white py-3">STATUS</th>
-                                <th class="text-white py-3 text-end" style="width: 100px;">#</th>
+                                <th class="text-white py-3 text-end sticky-col-right" style="width: 100px;">#</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($pendaftaran as $d)
-                                <tr @if(in_array($d->status_siswa, [3, 4, 5])) style="background-color: rgba(234, 84, 85, 0.12) !important;" @endif>
-                                    <td class="py-1 text-center">
+                                <tr class="@if(in_array($d->status_siswa, [3, 4, 5])) row-danger @endif">
+                                    <td class="py-1 text-center sticky-col-left-1">
                                         @if ($d->kode_ta != optional($ta_ppdb)->kode_ta && $d->status_naik_kelas != 1 && $d->status_siswa == 1)
                                             <input type="checkbox" name="no_pendaftaran[]" value="{{ $d->no_pendaftaran }}" class="form-check-input checkItem">
                                         @elseif($d->status_naik_kelas == 1)
                                             <i class="ti ti-arrow-up text-success fs-4" data-bs-toggle="tooltip" title="Sudah Naik Kelas"></i>
                                         @endif
                                     </td>
-                                    <td class="py-1">{{ $loop->iteration + ($pendaftaran->currentPage() - 1) * $pendaftaran->perPage() }}</td>
-                                    <td class="py-1">{{ $d->no_pendaftaran }}</td>
-                                    <td class="py-1">{{ $d->id_siswa }}</td>
-                                    <td class="py-1">{{ $d->nis }}</td>
-                                    <td class="py-1">
+                                    <td class="py-1 sticky-col-left-2">{{ $loop->iteration + ($pendaftaran->currentPage() - 1) * $pendaftaran->perPage() }}</td>
+                                    <td class="py-1 sticky-col-left-3">{{ $d->no_pendaftaran }}</td>
+                                    <td class="py-1 sticky-col-left-4">{{ $d->id_siswa }}</td>
+                                    <td class="py-1 sticky-col-left-5">{{ $d->nis }}</td>
+                                    <td class="py-1 sticky-col-left-6">
                                         <div class="fw-bold">{{ $d->nama_lengkap }}</div>
                                     </td>
-                                    <td class="py-1">{{ !empty($d->tanggal_lahir) ? DateToIndo($d->tanggal_lahir) : '' }}</td>
-                                    <td class="py-1">{{ !empty($d->jenis_kelamin) ? $jenis_kelamin[$d->jenis_kelamin] : '' }}</td>
+                                    <td class="py-1">
+                                        @if($d->asrama == 1)
+                                            <span class="badge bg-label-primary">Asrama {{ $d->is_pindahan == 1 ? '(Pindahan)' : '' }}</span>
+                                        @else
+                                            <span class="badge bg-label-success">Reguler {{ $d->is_pindahan == 1 ? '(Pindahan)' : '' }}</span>
+                                        @endif
+                                    </td>
                                     <td class="py-1">{{ $d->nama_unit }}</td>
                                     <td class="py-1">{{ $d->tingkat }}</td>
                                     <td class="py-1">{{ $d->nama_kelas }}</td>
@@ -164,7 +244,7 @@
                                             <span class="badge bg-label-danger" data-bs-toggle="tooltip" title="Alasan: {{ $d->alasan_keluar }}">Dikeluarkan</span>
                                         @endif
                                     </td>
-                                    <td class="py-1 text-end">
+                                    <td class="py-1 text-end sticky-col-right">
                                         <div class="d-flex justify-content-end gap-1">
                                             @can('pembayaranpdd.show')
                                                 <a href="#" class="btn btn-icon btn-label-info border btnShow"

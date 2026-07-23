@@ -135,7 +135,9 @@ class Pendaftaran extends Model
             'konfigurasi_biaya.kode_ta',
             'pendaftaran.status_siswa',
             'pendaftaran.tanggal_keluar',
-            'pendaftaran.alasan_keluar'
+            'pendaftaran.alasan_keluar',
+            'konfigurasi_biaya.asrama',
+            'konfigurasi_biaya.is_pindahan'
         );
         $query->join('pendaftaran', 'siswa_biaya.no_pendaftaran', 'pendaftaran.no_pendaftaran');
         $query->join('siswa', 'pendaftaran.id_siswa', 'siswa.id_siswa');
