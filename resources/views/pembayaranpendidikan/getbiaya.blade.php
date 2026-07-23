@@ -20,10 +20,25 @@
     @if ($tahun_ajaran != $b->tahun_ajaran)
         @php
             $tahun_ajaran = $b->tahun_ajaran;
+            $hasPayment = $biaya->where('kode_biaya', $b->kode_biaya)->sum('jmlbayar') > 0;
         @endphp
         <tr style="background-color: #f1f3f4">
             <td colspan="8" class="text-dark fw-bold py-2 px-3 small">
-                <i class="ti ti-calendar-event me-1 text-success"></i> TAHUN AJARAN {{ $b->tahun_ajaran }}
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="ti ti-calendar-event me-1 text-success"></i> TAHUN AJARAN {{ $b->tahun_ajaran }} ({{ $b->kode_biaya }})
+                    </div>
+                    @if (!$hasPayment)
+                        <div>
+                            <a href="#" class="btnEditBiaya btn btn-xs btn-label-warning border shadow-none" 
+                                no_pendaftaran="{{ Crypt::encrypt($pendaftaran->no_pendaftaran) }}" 
+                                kode_biaya="{{ Crypt::encrypt($b->kode_biaya) }}"
+                                title="Ubah Konfigurasi Biaya">
+                                <i class="ti ti-edit me-1"></i> Ubah Biaya
+                            </a>
+                        </div>
+                    @endif
+                </div>
             </td>
         </tr>
     @endif

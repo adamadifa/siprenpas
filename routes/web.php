@@ -541,6 +541,8 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/pembayaranpendidikan/{no_pendaftaran}/proses-keluar', 'prosesKeluar')->name('pembayaranpendidikan.proseskeluar')->can('pembayaranpdd.create');
         Route::post('/pembayaranpendidikan/{no_pendaftaran}/batalkan-keluar', 'batalkanKeluar')->name('pembayaranpendidikan.batalkankeluar')->can('pembayaranpdd.create');
+        Route::get('/pembayaranpendidikan/{no_pendaftaran}/{kode_biaya}/editbiaya', 'editbiaya')->name('pembayaranpendidikan.editbiaya')->can('pembayaranpdd.create');
+        Route::post('/pembayaranpendidikan/updatebiaya', 'updatebiaya')->name('pembayaranpendidikan.updatebiaya')->can('pembayaranpdd.create');
     });
 
     Route::controller(RencanasppController::class)->group(function () {

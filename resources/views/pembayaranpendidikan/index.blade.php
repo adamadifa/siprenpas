@@ -234,6 +234,7 @@
 <x-modal-form id="modaleditrencanaspp" size="" show="loadeditrencanaspp" title="" />
 <x-modal-form id="modalpembayaran" size="modal-lg" show="loadmodalpembayaran" title="" />
 <x-modal-form id="modalDetailbayar" size="modal-lg" show="loaddetailbayar" title="" />
+<x-modal-form id="modaleditbiaya" size="" show="loadeditbiaya" title="" />
 
 <!-- Modal Proses Keluar Tabel -->
 <div class="modal fade" id="modalProsesKeluarTabel" tabindex="-1" aria-hidden="true" style="z-index: 1150;">
@@ -1148,6 +1149,62 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $("#formBulkNaikKelas").submit();
+                }
+            });
+        });
+
+        // Handle click Ubah Biaya
+        $(document).on('click', '.btnEditBiaya', function(e) {
+            e.preventDefault();
+            const no_pendaftaran = $(this).attr('no_pendaftaran');
+            const kode_biaya = $(this).attr('kode_biaya');
+            $("#modaleditbiaya").modal("show");
+            $("#modaleditbiaya").find("#loadeditbiaya").html(loading);
+            $("#modaleditbiaya").find(".modal-title").text("Ubah Konfigurasi Biaya");
+            $("#loadeditbiaya").load(`/pembayaranpendidikan/${no_pendaftaran}/${kode_biaya}/editbiaya`);
+        });
+
+        // Handle submit Form Ubah Biaya
+        $(document).on('submit', '#formEditBiaya', function(e) {
+            e.preventDefault();
+            const data = $(this).serialize();
+            $(this).find('button[type="submit"]').prop('disabled', true);
+            $(this).find('button[type="submit"]').html(
+                '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Loading...'
+            );
+
+            $.ajax({
+                url: "{{ route('pembayaranpendidikan.updatebiaya') }}",
+                type: "POST",
+                data: data,
+                cache: false,
+                success: function(response) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: response.message,
+                    });
+                    $("#modaleditbiaya").modal("hide");
+                    getbiaya(response.no_pendaftaran);
+                    getrencanaspp(response.no_pendaftaran);
+                    gethistoribayar(response.no_pendaftaran);
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        title: "Error!",
+                        text: xhr.responseJSON.message,
+                        icon: "error",
+                        showConfirmButton: true,
+                        didClose: (e) => {
+                            $(document).find('#formEditBiaya').find(
+                                'button[type="submit"]').prop(
+                                'disabled', false);
+                            $(document).find('#formEditBiaya').find(
+                                'button[type="submit"]').html(
+                                'Simpan Perubahan'
+                            );
+                        }
+                    });
                 }
             });
         });

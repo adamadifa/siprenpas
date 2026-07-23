@@ -11,6 +11,7 @@ use App\Models\Historibayarpendidikan;
 use App\Models\Mutasipembayaranpendidikan;
 use App\Models\Pendaftaran;
 use App\Models\Potonganpendaftaran;
+use App\Models\Rencanaspp;
 use App\Models\Siswa;
 use App\Models\Tahunajaran;
 use App\Models\Tahunajaranppdb;
@@ -903,6 +904,79 @@ class PembayaranpendidikanController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             return Redirect::back()->with(messageError('Terjadi Kesalahan ' . $th->getMessage()));
+        }
+    }
+
+    public function editbiaya($no_pendaftaran, $kode_biaya)
+    {
+        $no_pendaftaran = Crypt::decrypt($no_pendaftaran);
+        $kode_biaya = Crypt::decrypt($kode_biaya);
+
+        $p = new Pendaftaran();
+        $pendaftaran = $p->getPembayaranpendidikan($no_pendaftaran)->first();
+        $current_biaya = Biaya::where('kode_biaya', $kode_biaya)->first();
+
+        if (!$current_biaya) {
+            return response()->json(['message' => 'Konfigurasi biaya tidak ditemukan'], 404);
+        }
+
+        $available_biayas = Biaya::where('kode_unit', $current_biaya->kode_unit)
+            ->where('tingkat', $current_biaya->tingkat)
+            ->where('kode_ta', $current_biaya->kode_ta)
+            ->get();
+
+        $data['pendaftaran'] = $pendaftaran;
+        $data['old_kode_biaya'] = $kode_biaya;
+        $data['available_biayas'] = $available_biayas;
+
+        return view('pembayaranpendidikan.editbiaya', $data);
+    }
+
+    public function updatebiaya(Request $request)
+    {
+        $no_pendaftaran = Crypt::decrypt($request->no_pendaftaran);
+        $old_kode_biaya = Crypt::decrypt($request->old_kode_biaya);
+        $new_kode_biaya = $request->new_kode_biaya;
+
+        if ($old_kode_biaya == $new_kode_biaya) {
+            return response()->json(['success' => true, 'message' => 'Konfigurasi biaya tidak berubah', 'no_pendaftaran' => Crypt::encrypt($no_pendaftaran)], 200);
+        }
+
+        $cektransaksi = Detailhistoribayarpendidikan::join('pendidikan_historibayar', 'pendidikan_historibayar_detail.no_bukti', '=', 'pendidikan_historibayar.no_bukti')
+            ->where('no_pendaftaran', $no_pendaftaran)
+            ->where('kode_biaya', $old_kode_biaya)
+            ->count();
+
+        if ($cektransaksi > 0) {
+            return response()->json(['success' => false, 'message' => 'Tidak dapat mengubah konfigurasi biaya karena sudah ada transaksi pembayaran.'], 400);
+        }
+
+        DB::beginTransaction();
+        try {
+            Biayasiswa::where('no_pendaftaran', $no_pendaftaran)
+                ->where('kode_biaya', $old_kode_biaya)
+                ->update(['kode_biaya' => $new_kode_biaya]);
+
+            $spp = Rencanaspp::where('no_pendaftaran', $no_pendaftaran)
+                ->where('kode_biaya', $old_kode_biaya)
+                ->first();
+            if ($spp) {
+                Rencanaspp::where('kode_rencana_spp', $spp->kode_rencana_spp)->delete();
+            }
+
+            Potonganpendaftaran::where('no_pendaftaran', $no_pendaftaran)
+                ->where('kode_biaya', $old_kode_biaya)
+                ->delete();
+
+            Mutasipembayaranpendidikan::where('no_pendaftaran', $no_pendaftaran)
+                ->where('kode_biaya', $old_kode_biaya)
+                ->delete();
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Konfigurasi biaya berhasil diperbarui', 'no_pendaftaran' => Crypt::encrypt($no_pendaftaran)], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Gagal memperbarui konfigurasi biaya: ' . $e->getMessage()], 500);
         }
     }
 }
