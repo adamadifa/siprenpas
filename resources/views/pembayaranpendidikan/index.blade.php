@@ -38,7 +38,7 @@
 <div class="mb-4">
     <form action="{{ route('pembayaranpendidikan.index') }}">
         <div class="row g-2">
-            <div class="col-lg-3 col-md-6 col-12">
+            <div class="col-lg-2 col-md-6 col-12">
                 <x-input-with-icon label="" placeholder="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}"
                     name="nama_lengkap" icon="ti ti-search" />
             </div>
@@ -57,7 +57,14 @@
                     <option value="">Tingkat</option>
                 </select>
             </div>
-            <div class="col-lg-3 col-md-6 col-12">
+            <div class="col-lg-2 col-md-6 col-12">
+                <select name="asrama" id="asrama" class="form-select">
+                    <option value="">Asrama/Reguler</option>
+                    <option value="1" {{ Request('asrama') == '1' ? 'selected' : '' }}>Asrama</option>
+                    <option value="0" {{ Request('asrama') == '0' ? 'selected' : '' }}>Reguler/Non-Asrama</option>
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-6 col-12">
                 <select name="kode_ta" id="kode_ta_search" class="form-select">
                     <option value="">Tahun Ajaran</option>
                     @foreach ($tahunajaran as $d)

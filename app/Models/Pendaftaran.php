@@ -174,6 +174,10 @@ class Pendaftaran extends Model
             if (!empty($request->tingkat)) {
                 $query->where('konfigurasi_biaya.tingkat', $request->tingkat);
             }
+
+            if (isset($request->asrama) && $request->asrama !== '') {
+                $query->where('konfigurasi_biaya.asrama', $request->asrama);
+            }
         }
 
         if (auth()->user()->kode_unit != 'U06') {

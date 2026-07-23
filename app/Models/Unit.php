@@ -32,7 +32,7 @@ class Unit extends Model
     {
         $user = User::where('id', auth()->user()->id)->first();
         if ($user->kode_unit == 'U06') {
-            $unit = Unit::whereNotIn('kode_unit', ['U00', 'U06'])
+            $unit = Unit::whereNotIn('kode_unit', ['U00', 'U06', 'U07'])
                 ->orderBy('kode_unit')
                 ->get();
         } else {
