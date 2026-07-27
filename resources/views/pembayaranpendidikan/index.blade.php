@@ -422,7 +422,6 @@
                                 confirmButtonText: 'Ya, Proses!'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    execNaikKelas(no_pendaftaran, response.html); // response.html in this case holds nothing or default, we can trigger simpannaikkelas with the only code
                                     // Actually, let's extract code_biaya from button in response.html or we can call the original route.
                                     window.location.href = `/pembayaranpendidikan/${no_pendaftaran}/prosesnaikkelas`;
                                 }
