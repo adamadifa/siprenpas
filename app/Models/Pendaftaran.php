@@ -42,30 +42,25 @@ class Pendaftaran extends Model
         $kelas_siswa = Kelassiswa::join('kelas', 'kelas_siswa.kode_kelas', 'kelas.kode_kelas')
             ->select('kelas_siswa.id_siswa', 'nama_kelas')
             ->where('kelas.kode_ta', $target_ta);
-        $query = Biayasiswa::query();
+        $query = Pendaftaran::query();
         $query->select(
             'siswa.*',
             'pendaftaran.no_pendaftaran',
             'pendaftaran.rfid_code',
             'pendaftaran.foto as foto_pendaftaran',
-            'tahun_ajaran',
+            'pendaftaran.kode_ta as tahun_ajaran',
             'villages.name as desa',
-            'nama_unit',
+            'unit.nama_unit',
             'districts.name as kecamatan',
             'provinces.name as provinsi',
             'regencies.name as kota',
-            'logo',
-            'nama_unit',
+            'unit.logo',
             'pendaftaran.nis',
-            'kelas_siswa.nama_kelas',
-            'konfigurasi_biaya.tingkat'
+            'kelas_siswa.nama_kelas'
         );
-        $query->join('pendaftaran', 'siswa_biaya.no_pendaftaran', 'pendaftaran.no_pendaftaran');
         $query->join('siswa', 'pendaftaran.id_siswa', 'siswa.id_siswa');
         $query->join('unit', 'pendaftaran.kode_unit', 'unit.kode_unit');
-        $query->join('konfigurasi_biaya', 'siswa_biaya.kode_biaya', 'konfigurasi_biaya.kode_biaya');
         $query->leftjoin('asal_sekolah', 'pendaftaran.kode_asal_sekolah', 'asal_sekolah.kode_asal_sekolah');
-        $query->join('konfigurasi_tahunajaran_ppdb', 'konfigurasi_biaya.kode_ta', 'konfigurasi_tahunajaran_ppdb.kode_ta');
         $query->leftJoin('villages', 'siswa.id_village', '=', 'villages.id');
         $query->leftJoin('districts', 'siswa.id_district', '=', 'districts.id');
         $query->leftJoin('provinces', 'siswa.id_province', '=', 'provinces.id');
@@ -75,7 +70,7 @@ class Pendaftaran extends Model
         });
         $query->orderBy('siswa.nama_lengkap');
         if (!empty($no_pendaftaran)) {
-            $query->where('siswa_biaya.no_pendaftaran', $no_pendaftaran);
+            $query->where('pendaftaran.no_pendaftaran', $no_pendaftaran);
         } else {
             if (!empty($request->nama_lengkap)) {
                 $query->where('nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
@@ -86,20 +81,15 @@ class Pendaftaran extends Model
             }
 
             if (!empty($request->kode_ta)) {
-                $query->where('konfigurasi_biaya.kode_ta', $request->kode_ta);
+                $query->where('pendaftaran.kode_ta', $request->kode_ta);
             } else {
-                $query->where('konfigurasi_biaya.kode_ta', $ta_aktif->kode_ta);
-            }
-
-            if (!empty($request->tingkat)) {
-                $query->where('konfigurasi_biaya.tingkat', $request->tingkat);
+                $query->where('pendaftaran.kode_ta', $ta_aktif->kode_ta);
             }
         }
 
         if ($user->kode_unit != 'U06') {
             $query->where('pendaftaran.kode_unit', $user->kode_unit);
         }
-
 
         return $query;
     }

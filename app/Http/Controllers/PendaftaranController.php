@@ -54,21 +54,15 @@ class PendaftaranController extends Controller
         $data['pendaftaran'] = $pendaftaran;
 
 
-        $subQuery = DB::table('siswa_biaya')
-            ->join('pendaftaran', 'siswa_biaya.no_pendaftaran', '=', 'pendaftaran.no_pendaftaran')
+        $subQuery = DB::table('pendaftaran')
             ->join('siswa', 'pendaftaran.id_siswa', '=', 'siswa.id_siswa')
-            ->join('konfigurasi_biaya', 'siswa_biaya.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
-            ->select('pendaftaran.kode_unit', 'siswa_biaya.no_pendaftaran');
+            ->select('pendaftaran.kode_unit', 'pendaftaran.no_pendaftaran');
 
         $target_ta = !empty($request->kode_ta) ? $request->kode_ta : $kode_ta;
-        $subQuery->where('konfigurasi_biaya.kode_ta', $target_ta);
+        $subQuery->where('pendaftaran.kode_ta', $target_ta);
 
         if (!empty($request->nama_lengkap)) {
             $subQuery->where('siswa.nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
-        }
-
-        if (!empty($request->tingkat)) {
-            $subQuery->where('konfigurasi_biaya.tingkat', $request->tingkat);
         }
 
         if (!empty($request->kode_unit)) {
