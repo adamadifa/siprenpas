@@ -481,31 +481,33 @@ class PembayaranpendidikanController extends Controller
                         ->orderBy('cicilan_ke', 'desc')
                         ->first();
 
-                    $sisa = $d->jumlah;
-                    $i = $mulaicicilan->cicilan_ke;
+                    if ($mulaicicilan) {
+                        $sisa = $d->jumlah;
+                        $i = $mulaicicilan->cicilan_ke;
 
-                    foreach ($rencana as $d) {
-                        if ($sisa >= $d->realisasi) {
-                            Detailrencanaspp::where('kode_rencana_spp', $mulaicicilan->kode_rencana_spp)
-                                ->where('cicilan_ke', $i)
-                                ->update([
-                                    'realisasi' =>  DB::raw('realisasi -' . $d->realisasi)
-                                ]);
-
-                            $sisa = $sisa - $d->realisasi;
-                        } else {
-                            if ($sisa != 0) {
-
+                        foreach ($rencana as $d) {
+                            if ($sisa >= $d->realisasi) {
                                 Detailrencanaspp::where('kode_rencana_spp', $mulaicicilan->kode_rencana_spp)
                                     ->where('cicilan_ke', $i)
                                     ->update([
-                                        'realisasi' =>  DB::raw('realisasi -' . $sisa)
+                                        'realisasi' =>  DB::raw('realisasi -' . $d->realisasi)
                                     ]);
-                                $sisa = $sisa - $sisa;
-                            }
-                        }
 
-                        $i--;
+                                $sisa = $sisa - $d->realisasi;
+                            } else {
+                                if ($sisa != 0) {
+
+                                    Detailrencanaspp::where('kode_rencana_spp', $mulaicicilan->kode_rencana_spp)
+                                        ->where('cicilan_ke', $i)
+                                        ->update([
+                                            'realisasi' =>  DB::raw('realisasi -' . $sisa)
+                                        ]);
+                                    $sisa = $sisa - $sisa;
+                                }
+                            }
+
+                            $i--;
+                        }
                     }
                 }
             }
