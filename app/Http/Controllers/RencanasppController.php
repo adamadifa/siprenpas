@@ -309,17 +309,108 @@ class RencanasppController extends Controller
         $rencana_spp = Rencanaspp::where('kode_rencana_spp', $request->kode_rencana_spp)->first();
         DB::beginTransaction();
         try {
-            //Hapus Data Sebelumnya
+            // Hapus Data Rencana SPP Sebelumnya
             Detailrencanaspp::where('kode_rencana_spp', $request->kode_rencana_spp)->delete();
-            //Insert Data Baru
+
+            // Reset existing SPP payments to generic values first
+            $nobuktis = Pendaftaran::where('pendaftaran.no_pendaftaran', $rencana_spp->no_pendaftaran)
+                ->join('pendidikan_historibayar', 'pendaftaran.no_pendaftaran', '=', 'pendidikan_historibayar.no_pendaftaran')
+                ->pluck('pendidikan_historibayar.no_bukti');
+
+            Detailhistoribayarpendidikan::whereIn('no_bukti', $nobuktis)
+                ->where('kode_biaya', $rencana_spp->kode_biaya)
+                ->where('kode_jenis_biaya', 'B07')
+                ->update([
+                    'cicilan_ke' => null,
+                    'keterangan' => 'SPP'
+                ]);
+
+            // Insert Data Baru
+            $detail = [];
             for ($i = 0; $i < count($request->bulan); $i++) {
                 $detail[] = [
                     'kode_rencana_spp' => $request->kode_rencana_spp,
                     'bulan' => $bulan[$i],
                     'tahun' => $tahun[$i],
                     'jumlah' => toNumber($jumlah[$i]),
+                    'realisasi' => 0,
+                    'cicilan_ke' => $i + 1
                 ];
             }
+
+            // Fetch existing SPP payments sorted by payment date
+            $existing_payments = Detailhistoribayarpendidikan::join('pendidikan_historibayar', 'pendidikan_historibayar_detail.no_bukti', '=', 'pendidikan_historibayar.no_bukti')
+                ->where('no_pendaftaran', $rencana_spp->no_pendaftaran)
+                ->where('kode_biaya', $rencana_spp->kode_biaya)
+                ->where('kode_jenis_biaya', 'B07')
+                ->select('pendidikan_historibayar_detail.*')
+                ->orderBy('pendidikan_historibayar.tanggal', 'asc')
+                ->orderBy('pendidikan_historibayar_detail.no_bukti', 'asc')
+                ->get();
+
+            $nama_bulan = [
+                '',
+                'Januari',
+                'Februari',
+                'Maret',
+                'April',
+                'Mei',
+                'Juni',
+                'Juli',
+                'Agustus',
+                'September',
+                'Oktober',
+                'November',
+                'Desember'
+            ];
+
+            foreach ($existing_payments as $payment) {
+                $sisa = $payment->jumlah;
+                $cicilans = [];
+                $listbln = [];
+
+                for ($idx = 0; $idx < count($detail); $idx++) {
+                    $sisapercicilan = $detail[$idx]['jumlah'] - $detail[$idx]['realisasi'];
+                    if ($sisapercicilan <= 0) {
+                        continue;
+                    }
+                    if ($sisa <= 0) {
+                        break;
+                    }
+
+                    $bayar = min($sisa, $sisapercicilan);
+                    $detail[$idx]['realisasi'] += $bayar;
+
+                    // Formulate keterangan
+                    if ($bayar == $sisapercicilan) {
+                        // Lunas
+                        $keterangan_bln = $nama_bulan[$detail[$idx]['bulan']];
+                        if (($detail[$idx]['realisasi'] - $bayar) > 0) {
+                            $keterangan_bln .= " (Pelunasan " . formatAngka($sisapercicilan) . ")";
+                        }
+                    } else {
+                        // Sebagian
+                        $keterangan_bln = $nama_bulan[$detail[$idx]['bulan']] . " (Sebagian)";
+                    }
+
+                    $cicilans[] = $detail[$idx]['cicilan_ke'];
+                    $listbln[] = $keterangan_bln;
+
+                    $sisa -= $bayar;
+                }
+
+                // Update the payment record with calculated cicilan_ke and keterangan
+                if (!empty($cicilans)) {
+                    Detailhistoribayarpendidikan::where('no_bukti', $payment->no_bukti)
+                        ->where('kode_biaya', $payment->kode_biaya)
+                        ->where('kode_jenis_biaya', $payment->kode_jenis_biaya)
+                        ->update([
+                            'cicilan_ke' => implode(',', $cicilans),
+                            'keterangan' => 'SPP ' . implode(', ', $listbln)
+                        ]);
+                }
+            }
+
             Detailrencanaspp::insert($detail);
             DB::commit();
             return response()->json([
