@@ -16,12 +16,10 @@
                     target="_blank" title="Cetak Kwitansi">
                     <i class="ti ti-printer fs-6"></i>
                 </a>
-                @if ($loop->iteration == 1)
-                    <a href="#" class="btn btn-icon btn-sm btn-label-danger border shadow-none btnDeletebayar" 
-                        key="{{ Crypt::encrypt($d->no_bukti) }}" title="Hapus Pembayaran">
-                        <i class="ti ti-trash fs-6"></i>
-                    </a>
-                @endif
+                <a href="#" class="btn btn-icon btn-sm btn-label-danger border shadow-none btnDeletebayar" 
+                    key="{{ Crypt::encrypt($d->no_bukti) }}" title="Hapus Pembayaran">
+                    <i class="ti ti-trash fs-6"></i>
+                </a>
             </div>
         </td>
     </tr>
