@@ -54,13 +54,32 @@ class PendaftaranController extends Controller
         $data['pendaftaran'] = $pendaftaran;
 
 
+        $subQuery = DB::table('siswa_biaya')
+            ->join('pendaftaran', 'siswa_biaya.no_pendaftaran', '=', 'pendaftaran.no_pendaftaran')
+            ->join('siswa', 'pendaftaran.id_siswa', '=', 'siswa.id_siswa')
+            ->join('konfigurasi_biaya', 'siswa_biaya.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
+            ->select('pendaftaran.kode_unit', 'siswa_biaya.no_pendaftaran');
+
+        $target_ta = !empty($request->kode_ta) ? $request->kode_ta : $kode_ta;
+        $subQuery->where('konfigurasi_biaya.kode_ta', $target_ta);
+
+        if (!empty($request->nama_lengkap)) {
+            $subQuery->where('siswa.nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
+        }
+
+        if (!empty($request->tingkat)) {
+            $subQuery->where('konfigurasi_biaya.tingkat', $request->tingkat);
+        }
+
+        if (!empty($request->kode_unit)) {
+            $subQuery->where('pendaftaran.kode_unit', $request->kode_unit);
+        }
+
         $rekap_unit = DB::table('unit')
-            ->leftJoin('pendaftaran', function ($join) use ($kode_ta, $request) {
-                $ta_aktif = !empty($request->kode_ta) ? $request->kode_ta : $kode_ta;
-                $join->on('unit.kode_unit', '=', 'pendaftaran.kode_unit')
-                    ->where('pendaftaran.kode_ta', '=', $ta_aktif);
+            ->leftJoinSub($subQuery, 'filtered_pendaftaran', function ($join) {
+                $join->on('unit.kode_unit', '=', 'filtered_pendaftaran.kode_unit');
             })
-            ->select('unit.nama_unit', 'unit.kode_unit', DB::raw('count(pendaftaran.no_pendaftaran) as jumlah'))
+            ->select('unit.nama_unit', 'unit.kode_unit', DB::raw('count(filtered_pendaftaran.no_pendaftaran) as jumlah'))
             ->groupBy('unit.nama_unit', 'unit.kode_unit')
             ->whereNotIn('unit.kode_unit', ['U00', 'U06'])
             ->orderBy('unit.kode_unit')
