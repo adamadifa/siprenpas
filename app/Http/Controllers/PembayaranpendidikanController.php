@@ -355,6 +355,19 @@ class PembayaranpendidikanController extends Controller
             ]);
             for ($i = 0; $i < count($kode_biaya); $i++) {
                 if ($kode_jenis_biaya[$i] == 'B07') {
+                    // Cek apakah rencana SPB sudah dibuat
+                    $sppPlanExists = Detailrencanaspp::join('spp_rencana', 'spp_rencana_detail.kode_rencana_spp', '=', 'spp_rencana.kode_rencana_spp')
+                        ->where('no_pendaftaran', $no_pendaftaran)
+                        ->where('kode_biaya', $kode_biaya[$i])
+                        ->exists();
+
+                    if (!$sppPlanExists) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Gagal: Rencana pembayaran SPP untuk biaya / tahun ajaran ini belum dibuat. Silakan buat rencana pembayaran SPP terlebih dahulu.'
+                        ], 400);
+                    }
+
                     // Ambil semua rencana spp yang belum lunas, urutkan dari bulan terawal
                     $rencana = Detailrencanaspp::join('spp_rencana', 'spp_rencana_detail.kode_rencana_spp', '=', 'spp_rencana.kode_rencana_spp')
                         ->where('no_pendaftaran', $no_pendaftaran)
