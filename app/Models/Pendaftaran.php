@@ -37,10 +37,11 @@ class Pendaftaran extends Model
 
         $user = User::where('id', auth()->user()->id)->first();
         $ta_aktif = Tahunajaranppdb::where('status', 1)->first();
+        $target_ta = (!empty($request) && !empty($request->kode_ta)) ? $request->kode_ta : ($ta_aktif->kode_ta ?? null);
 
         $kelas_siswa = Kelassiswa::join('kelas', 'kelas_siswa.kode_kelas', 'kelas.kode_kelas')
             ->select('kelas_siswa.id_siswa', 'nama_kelas')
-            ->where('kelas.kode_ta', $ta_aktif->kode_ta);
+            ->where('kelas.kode_ta', $target_ta);
         $query = Biayasiswa::query();
         $query->select(
             'siswa.*',
@@ -110,10 +111,11 @@ class Pendaftaran extends Model
     {
 
         $ta_aktif = Tahunajaran::where('status', 1)->first();
+        $target_ta = (!empty($request) && !empty($request->kode_ta)) ? $request->kode_ta : ($ta_aktif->kode_ta ?? null);
 
         $kelas_siswa = Kelassiswa::join('kelas', 'kelas_siswa.kode_kelas', 'kelas.kode_kelas')
             ->select('kelas_siswa.id_siswa', 'nama_kelas')
-            ->where('kelas.kode_ta', $ta_aktif->kode_ta);
+            ->where('kelas.kode_ta', $target_ta);
         $query = Biayasiswa::query();
         $query->select(
             'siswa.*',

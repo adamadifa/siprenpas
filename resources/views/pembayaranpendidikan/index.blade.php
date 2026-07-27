@@ -237,7 +237,13 @@
                                     </td>
                                     <td class="py-1">{{ $d->nama_unit }}</td>
                                     <td class="py-1">{{ $d->tingkat }}</td>
-                                    <td class="py-1">{{ $d->nama_kelas }}</td>
+                                    <td class="py-1">
+                                        @if (!empty($d->nama_kelas))
+                                            {{ $d->nama_kelas }}
+                                        @else
+                                            <span class="badge bg-label-warning">Belum diploting</span>
+                                        @endif
+                                    </td>
                                     <td class="py-1">
                                         @if($d->status_siswa == 1)
                                             <span class="badge bg-label-success">Aktif</span>
