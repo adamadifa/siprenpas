@@ -431,7 +431,7 @@
 
         <!-- Menu Akademik -->
         @if (auth()->check() &&
-                (auth()->user()->hasAnyPermission(['presensisiswa.index', 'guru.index', 'jabatanakademik.index', 'matapelajaran.index', 'kelas.index', 'jadwalpelajaran.index']) || $isWaliKelas || $isKoordinator || auth()->user()->hasRole('guru')))
+                (auth()->user()->hasAnyPermission(['presensisiswa.index', 'guru.index', 'akademiksiswa.index', 'jabatanakademik.index', 'matapelajaran.index', 'kelas.index', 'jadwalpelajaran.index']) || $isWaliKelas || $isKoordinator || auth()->user()->hasRole('guru')))
             <li class="menu-item {{ request()->is(['akademik', 'akademik/*', 'presensisiswa', 'presensisiswa/*', 'guru', 'guru/*', 'jabatan-akademik', 'jabatan-akademik/*', 'mata-pelajaran', 'mata-pelajaran/*', 'kelas', 'kelas/*', 'jadwal-pelajaran', 'jadwal-pelajaran/*', 'rapor', 'rapor/*', 'penilaian', 'penilaian/*', 'presensi-mapel', 'presensi-mapel/*', 'wali-kelas', 'wali-kelas/*', 'rapor-siswa', 'rapor-siswa/*']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-school"></i>
@@ -443,6 +443,14 @@
                             <a href="{{ route('guru.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-users"></i>
                                 <div>Data Guru</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('akademiksiswa.index')
+                        <li class="menu-item {{ request()->is(['akademik/siswa', 'akademik/siswa/*']) ? 'active' : '' }}">
+                            <a href="{{ route('akademiksiswa.index') }}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-users-group"></i>
+                                <div>Data Siswa</div>
                             </a>
                         </li>
                     @endcan

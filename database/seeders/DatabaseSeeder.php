@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
 
         $seeders = [
             Agendakegiatanpermissionseeder::class,
+            AkademikSiswapermissionseeder::class,
             AlAminGotTalentPermissionSeeder::class,
             Anggotapermissionseeder::class,
             Asalsekolahpermissionseeder::class,

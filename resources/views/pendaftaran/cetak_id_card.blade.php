@@ -241,6 +241,104 @@
             font-size: 14px;
         }
 
+        /* ========================================== */
+        /* PORTRAIT ORIENTATION STYLES                */
+        /* ========================================== */
+        .id-card-wrapper.portrait {
+            width: 638px;
+            height: 1012px;
+            transform: scale(0.55);
+        }
+
+        .id-card-wrapper.portrait .header {
+            height: 155px;
+            padding: 10px 15px;
+        }
+
+        .id-card-wrapper.portrait .logo-left,
+        .id-card-wrapper.portrait .logo-right {
+            width: 80px;
+            height: 80px;
+        }
+
+        .id-card-wrapper.portrait .arabic-text {
+            font-size: 18px;
+        }
+
+        .id-card-wrapper.portrait .institution-name {
+            font-size: 21px;
+            margin-top: 2px;
+        }
+
+        .id-card-wrapper.portrait .address-text {
+            font-size: 10px;
+            margin-top: 3px;
+        }
+
+        .id-card-wrapper.portrait .card-body {
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 25px;
+        }
+
+        .id-card-wrapper.portrait .photo-column {
+            width: 100%;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .id-card-wrapper.portrait .student-photo {
+            width: 190px;
+            height: 250px;
+            border-radius: 12px;
+        }
+
+        .id-card-wrapper.portrait .info-column {
+            width: 100%;
+            padding-left: 0;
+            align-items: center;
+        }
+
+        .id-card-wrapper.portrait .card-title {
+            font-size: 26px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .id-card-wrapper.portrait .info-table {
+            width: 100%;
+        }
+
+        .id-card-wrapper.portrait .info-table td {
+            font-size: 17px;
+            padding-bottom: 6px;
+        }
+
+        .id-card-wrapper.portrait .label-cell {
+            width: 100px;
+        }
+
+        .id-card-wrapper.portrait .footer {
+            height: 100px;
+        }
+
+        .id-card-wrapper.portrait .footer-bar {
+            width: 85%;
+            height: 75px;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+            padding: 5px;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        .id-card-wrapper.portrait .footer-decor-left,
+        .id-card-wrapper.portrait .footer-decor-right {
+            width: 130px;
+            height: 50px;
+        }
+
         /* Printing Specific Styles - Map exactly to 85.6mm x 54mm physical card */
         @media print {
             body {
@@ -283,6 +381,69 @@
             .footer-item { font-size: 3.5pt; gap: 0.5mm; }
             .footer-item i { font-size: 4pt; }
             
+            /* PORTRAIT PRINT LAYOUT */
+            .id-card-wrapper.portrait {
+                width: 54mm !important;
+                height: 85.6mm !important;
+            }
+            .id-card-wrapper.portrait .header {
+                height: 14mm;
+                padding: 1mm 2mm;
+            }
+            .id-card-wrapper.portrait .logo-left,
+            .id-card-wrapper.portrait .logo-right {
+                width: 7.5mm;
+                height: 7.5mm;
+            }
+            .id-card-wrapper.portrait .arabic-text { font-size: 5pt; }
+            .id-card-wrapper.portrait .institution-name { font-size: 6.5pt; }
+            .id-card-wrapper.portrait .address-text { font-size: 3pt; }
+            
+            .id-card-wrapper.portrait .card-body {
+                padding: 2mm 3mm;
+            }
+            .id-card-wrapper.portrait .photo-column {
+                margin-bottom: 1.5mm;
+                width: 100%;
+            }
+            .id-card-wrapper.portrait .student-photo {
+                width: 16mm;
+                height: 21mm;
+                border-radius: 1mm;
+            }
+            .id-card-wrapper.portrait .info-column {
+                width: 100%;
+                padding-left: 0;
+            }
+            .id-card-wrapper.portrait .card-title {
+                font-size: 7.5pt;
+                margin-bottom: 1mm;
+            }
+            .id-card-wrapper.portrait .info-table td {
+                font-size: 5.2pt;
+                padding-bottom: 1px;
+            }
+            .id-card-wrapper.portrait .label-cell {
+                width: 8mm;
+            }
+            .id-card-wrapper.portrait .footer {
+                height: 10mm;
+            }
+            .id-card-wrapper.portrait .footer-bar {
+                width: 90%;
+                height: 7mm;
+                flex-direction: column;
+                gap: 0.2mm;
+            }
+            .id-card-wrapper.portrait .footer-item {
+                font-size: 3pt;
+            }
+            .id-card-wrapper.portrait .footer-decor-left,
+            .id-card-wrapper.portrait .footer-decor-right {
+                width: 10mm;
+                height: 5mm;
+            }
+
             .no-print {
                 display: none;
             }
@@ -301,7 +462,7 @@
             color: white;
             border: none;
             padding: 12px 24px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             border-radius: 30px;
             cursor: pointer;
@@ -309,18 +470,24 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            text-decoration: none;
             transition: all 0.2s ease;
         }
 
         .print-btn:hover {
             background-color: #0b5e3a;
             transform: translateY(-2px);
+            color: white;
         }
     </style>
 </head>
 <body>
 
-    <div class="id-card-wrapper">
+    @php
+        $orientation = request('orientation', 'landscape');
+    @endphp
+
+    <div class="id-card-wrapper {{ $orientation }}">
         <!-- Header -->
         <div class="header">
             @if ($pengaturan && $pengaturan->logo)
@@ -330,10 +497,14 @@
             @endif
             <div class="header-text">
                 <span class="arabic-text">معهد الاتحاد الإسلامi ٨٠ الأمين</span>
-                <span class="institution-name">MTS PERSIS SINDANGKASIH</span>
+                <span class="institution-name">{{ strtoupper($pendaftaran->nama_unit) }}</span>
                 <span class="address-text">Jl. Ancol No.27, Sindangkasih, Kec. Sindangkasih, Kabupaten Ciamis, Jawa Barat 46268</span>
             </div>
-            <img src="{{ asset('assets/img/logo/mts.png') }}" alt="Logo Right" class="logo-right">
+            @if (!empty($pendaftaran->logo) && file_exists(public_path('storage/' . $pendaftaran->logo)))
+                <img src="{{ asset('storage/' . $pendaftaran->logo) }}" alt="Logo Right" class="logo-right">
+            @else
+                <img src="{{ asset('assets/img/logo/' . strtolower($pendaftaran->kode_unit) . '.png') }}" alt="Logo Right" class="logo-right">
+            @endif
         </div>
 
         <!-- Body -->
@@ -401,6 +572,16 @@
 
     <!-- Print & Download Button Container -->
     <div class="no-print-container no-print" style="display: flex; gap: 10px;">
+        @if ($orientation == 'portrait')
+            <a href="{{ request()->fullUrlWithQuery(['orientation' => 'landscape']) }}" class="print-btn" style="background-color: #4b5563; color: white;">
+                <i class="fa-solid fa-rotate-left"></i> Mode Landscape
+            </a>
+        @else
+            <a href="{{ request()->fullUrlWithQuery(['orientation' => 'portrait']) }}" class="print-btn" style="background-color: #4b5563; color: white;">
+                <i class="fa-solid fa-rotate-right"></i> Mode Portrait
+            </a>
+        @endif
+        
         <button class="print-btn" onclick="window.print()">
             <i class="fa-solid fa-print"></i> Cetak Kartu
         </button>
@@ -437,7 +618,7 @@
             // Wait brief moment for layout changes to settle
             setTimeout(() => {
                 html2canvas(card, {
-                    scale: 2, // 2x of 1012x638px results in 2024x1276px (Printers require ~300-600 DPI)
+                    scale: 2, // 2x of size results in high resolution (Printers require ~300-600 DPI)
                     useCORS: true,
                     allowTaint: true,
                     backgroundColor: null,

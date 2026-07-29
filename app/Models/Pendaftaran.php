@@ -49,6 +49,7 @@ class Pendaftaran extends Model
             'pendaftaran.rfid_code',
             'pendaftaran.foto as foto_pendaftaran',
             'pendaftaran.kode_ta as tahun_ajaran',
+            'pendaftaran.kode_unit',
             'villages.name as desa',
             'unit.nama_unit',
             'districts.name as kecamatan',

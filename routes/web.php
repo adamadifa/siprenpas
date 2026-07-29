@@ -774,6 +774,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/wali-kelas/detail/{jadwal_id}', 'detailPenilaian')->name('wali-kelas.detail-penilaian');
     });
 
+    Route::controller(App\Http\Controllers\AkademikSiswaController::class)->group(function () {
+        Route::get('/akademik/siswa', 'index')->name('akademiksiswa.index')->can('akademiksiswa.index');
+    });
+
     Route::controller(App\Http\Controllers\JabatanAkademikController::class)->group(function () {
         Route::get('/jabatan-akademik', 'index')->name('jabatan-akademik.index')->can('jabatanakademik.index');
         Route::post('/jabatan-akademik', 'store')->name('jabatan-akademik.store')->can('jabatanakademik.store');
