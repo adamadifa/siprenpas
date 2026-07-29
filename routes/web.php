@@ -778,6 +778,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/akademik/siswa', 'index')->name('akademiksiswa.index')->can('akademiksiswa.index');
     });
 
+    Route::controller(App\Http\Controllers\AsramaSiswaController::class)->group(function () {
+        Route::get('/asrama/siswa', 'index')->name('asramasiswa.index')->can('asramasiswa.index');
+    });
+
     Route::controller(App\Http\Controllers\JabatanAkademikController::class)->group(function () {
         Route::get('/jabatan-akademik', 'index')->name('jabatan-akademik.index')->can('jabatanakademik.index');
         Route::post('/jabatan-akademik', 'store')->name('jabatan-akademik.store')->can('jabatanakademik.store');

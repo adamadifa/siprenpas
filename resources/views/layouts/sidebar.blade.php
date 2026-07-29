@@ -713,6 +713,24 @@
             </li>
         @endif
 
+        <!-- Menu Asrama -->
+        @if (auth()->check() && auth()->user()->hasAnyPermission(['asramasiswa.index']))
+            <li class="menu-item {{ request()->is(['asrama', 'asrama/*']) ? 'open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons ti ti-home-check"></i>
+                    <div>Asrama</div>
+                </a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ request()->is(['asrama/siswa', 'asrama/siswa/*']) ? 'active' : '' }}">
+                        <a href="{{ route('asramasiswa.index') }}" class="menu-link">
+                            <i class="menu-icon tf-icons ti ti-users-group"></i>
+                            <div>Data Siswa</div>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @endif
+
         <!-- Menu Al Amin Got Talent -->
         @if (auth()->check() &&
                 auth()->user()->hasAnyPermission(['perlombaan.index', 'pendaftarangottalent.index', 'jenjangpendidikan.index']))
