@@ -57,7 +57,7 @@ class SendChecklistIbadahJob implements ShouldQueue
             $message = "Daftar SDM Yang sudah Mengisi Checklist Ibadah (" . $formattedDate . "):\n";
             $i = 1;
             foreach ($users as $user) {
-                $message .= $i . ". " . $user->nama_lengkap . "\n";
+                $message .= $i . ". *" . $user->nama_lengkap . "*\n";
                 $i++;
             }
 
