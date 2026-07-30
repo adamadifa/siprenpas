@@ -78,7 +78,7 @@ class SendChecklistIbadahJob implements ShouldQueue
             'api_key' => 'uxlLxWx36Q4KzaPlbFMCsuCRO7MvXn',
             'sender' => '6289670444321',
             // 'number' => '6285223368791-1504701755@g.us',
-            'number' => '6282220804021',
+            'number' => '120363426127060329@g.us',
             'message' => $message
         ];
 
