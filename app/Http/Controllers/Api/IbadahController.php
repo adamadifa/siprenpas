@@ -18,14 +18,14 @@ class IbadahController extends Controller
         try {
             $user = $request->user();
             $npp = $user->npp;
-            
+
             if (empty($npp)) {
                 $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
                 if ($userkaryawan) {
                     $npp = $userkaryawan->npp;
                 }
             }
-            
+
             if (empty($npp)) {
                 return response()->json([
                     'success' => false,
@@ -88,14 +88,14 @@ class IbadahController extends Controller
             Log::info("toggleIbadah API endpoint called");
             $user = $request->user();
             $npp = $user->npp;
-            
+
             if (empty($npp)) {
                 $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
                 if ($userkaryawan) {
                     $npp = $userkaryawan->npp;
                 }
             }
-            
+
             if (empty($npp)) {
                 return response()->json([
                     'success' => false,
@@ -147,7 +147,7 @@ class IbadahController extends Controller
                     $exists = Detailchecklistibadah::where('kode_checklist_ibadah', $checklist_ibadah->kode_checklist_ibadah)
                         ->where('id_kegiatan_ibadah', $id)
                         ->first();
-                        
+
                     if (!$exists) {
                         Detailchecklistibadah::create([
                             'kode_checklist_ibadah' => $checklist_ibadah->kode_checklist_ibadah,
@@ -166,7 +166,7 @@ class IbadahController extends Controller
                         } else {
                             $kode_checklist_ibadah = strval(intval($last_kode) + 1);
                         }
-                        
+
                         $checklist_ibadah = Checklistibadah::create([
                             'kode_checklist_ibadah' => $kode_checklist_ibadah,
                             'tanggal' => $tanggal,
@@ -182,13 +182,13 @@ class IbadahController extends Controller
                             throw $e;
                         }
                     }
-                    
+
                     if ($checklist_ibadah) {
                         // Check if already exists in detail to prevent duplicate
                         $exists = Detailchecklistibadah::where('kode_checklist_ibadah', $checklist_ibadah->kode_checklist_ibadah)
                             ->where('id_kegiatan_ibadah', $id)
                             ->first();
-                            
+
                         if (!$exists) {
                             Detailchecklistibadah::create([
                                 'kode_checklist_ibadah' => $checklist_ibadah->kode_checklist_ibadah,
@@ -201,11 +201,11 @@ class IbadahController extends Controller
 
             DB::commit();
 
-            // if ($is_first_submit) {
-            //     // Dispatch WhatsApp Group notification
-            //     Log::info("DB transaction committed, first submit of the day. Dispatching SendChecklistIbadahJob for date: " . $tanggal);
-            //     \App\Jobs\SendChecklistIbadahJob::dispatch($tanggal);
-            // }
+            if ($is_first_submit) {
+                // Dispatch WhatsApp Group notification
+                Log::info("DB transaction committed, first submit of the day. Dispatching SendChecklistIbadahJob for date: " . $tanggal);
+                \App\Jobs\SendChecklistIbadahJob::dispatch($tanggal);
+            }
 
             return response()->json([
                 'success' => true,
