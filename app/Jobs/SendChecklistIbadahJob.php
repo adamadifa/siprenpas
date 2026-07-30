@@ -15,13 +15,15 @@ class SendChecklistIbadahJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $tanggal;
+    protected $npp;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($tanggal)
+    public function __construct($tanggal, $npp = null)
     {
         $this->tanggal = $tanggal;
+        $this->npp = $npp;
     }
 
     /**
@@ -35,7 +37,7 @@ class SendChecklistIbadahJob implements ShouldQueue
             ->join('checklist_ibadah_detail', 'checklist_ibadah.kode_checklist_ibadah', '=', 'checklist_ibadah_detail.kode_checklist_ibadah')
             ->where('checklist_ibadah.tanggal', $this->tanggal)
             ->orderBy('karyawan.nama_lengkap', 'asc')
-            ->select('karyawan.nama_lengkap')
+            ->select('karyawan.nama_lengkap', 'karyawan.npp')
             ->distinct()
             ->get();
 
@@ -57,7 +59,11 @@ class SendChecklistIbadahJob implements ShouldQueue
             $message = "Daftar SDM Yang sudah Mengisi Checklist Ibadah (" . $formattedDate . "):\n";
             $i = 1;
             foreach ($users as $user) {
-                $message .= $i . ". *" . $user->nama_lengkap . "*\n";
+                if ($this->npp && $user->npp === $this->npp) {
+                    $message .= $i . ". *" . $user->nama_lengkap . "*\n";
+                } else {
+                    $message .= $i . ". " . $user->nama_lengkap . "\n";
+                }
                 $i++;
             }
 
