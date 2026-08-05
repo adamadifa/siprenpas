@@ -38,7 +38,7 @@ class SimpananController extends Controller
                 $no_anggota = $cekanggota->no_anggota;
             } else {
                 $karyawan = DB::table('karyawan')->where('npp', $npp)->first();
-                if ($karyawan) {
+                if ($karyawan && (!empty($karyawan->no_ktp) || !empty($karyawan->no_hp))) {
                     $anggota = DB::table('koperasi_anggota')
                         ->where(function($q) use ($karyawan) {
                             if (!empty($karyawan->no_ktp)) {
@@ -122,7 +122,7 @@ class SimpananController extends Controller
                 $no_anggota = $cekanggota->no_anggota;
             } else {
                 $karyawan = DB::table('karyawan')->where('npp', $npp)->first();
-                if ($karyawan) {
+                if ($karyawan && (!empty($karyawan->no_ktp) || !empty($karyawan->no_hp))) {
                     $anggota = DB::table('koperasi_anggota')
                         ->where(function($q) use ($karyawan) {
                             if (!empty($karyawan->no_ktp)) {
