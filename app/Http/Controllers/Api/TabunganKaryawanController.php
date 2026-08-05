@@ -37,19 +37,30 @@ class TabunganKaryawanController extends Controller
                 $no_anggota = $cekanggota->no_anggota;
             } else {
                 $karyawan = DB::table('karyawan')->where('npp', $npp)->first();
-                if ($karyawan && (!empty($karyawan->no_ktp) || !empty($karyawan->no_hp))) {
-                    $anggota = DB::table('koperasi_anggota')
-                        ->where(function($q) use ($karyawan) {
-                            if (!empty($karyawan->no_ktp)) {
-                                $q->where('nik', $karyawan->no_ktp);
-                            }
-                            if (!empty($karyawan->no_hp)) {
-                                $q->orWhere('no_hp', $karyawan->no_hp);
-                            }
-                        })
-                        ->first();
-                    if ($anggota) {
-                        $no_anggota = $anggota->no_anggota;
+                if ($karyawan) {
+                    $ktp = trim($karyawan->no_ktp ?? '');
+                    $hp = trim($karyawan->no_hp ?? '');
+                    $hasKtp = !empty($ktp) && $ktp !== '-';
+                    $hasHp = !empty($hp) && $hp !== '-';
+                    
+                    if ($hasKtp || $hasHp) {
+                        $anggota = DB::table('koperasi_anggota')
+                            ->where(function($q) use ($ktp, $hp, $hasKtp, $hasHp) {
+                                if ($hasKtp) {
+                                    $q->where('nik', $ktp);
+                                }
+                                if ($hasHp) {
+                                    if ($hasKtp) {
+                                        $q->orWhere('no_hp', $hp);
+                                    } else {
+                                        $q->where('no_hp', $hp);
+                                    }
+                                }
+                            })
+                            ->first();
+                        if ($anggota) {
+                            $no_anggota = $anggota->no_anggota;
+                        }
                     }
                 }
             }
@@ -128,19 +139,30 @@ class TabunganKaryawanController extends Controller
                 $no_anggota = $cekanggota->no_anggota;
             } else {
                 $karyawan = DB::table('karyawan')->where('npp', $npp)->first();
-                if ($karyawan && (!empty($karyawan->no_ktp) || !empty($karyawan->no_hp))) {
-                    $anggota = DB::table('koperasi_anggota')
-                        ->where(function($q) use ($karyawan) {
-                            if (!empty($karyawan->no_ktp)) {
-                                $q->where('nik', $karyawan->no_ktp);
-                            }
-                            if (!empty($karyawan->no_hp)) {
-                                $q->orWhere('no_hp', $karyawan->no_hp);
-                            }
-                        })
-                        ->first();
-                    if ($anggota) {
-                        $no_anggota = $anggota->no_anggota;
+                if ($karyawan) {
+                    $ktp = trim($karyawan->no_ktp ?? '');
+                    $hp = trim($karyawan->no_hp ?? '');
+                    $hasKtp = !empty($ktp) && $ktp !== '-';
+                    $hasHp = !empty($hp) && $hp !== '-';
+                    
+                    if ($hasKtp || $hasHp) {
+                        $anggota = DB::table('koperasi_anggota')
+                            ->where(function($q) use ($ktp, $hp, $hasKtp, $hasHp) {
+                                if ($hasKtp) {
+                                    $q->where('nik', $ktp);
+                                }
+                                if ($hasHp) {
+                                    if ($hasKtp) {
+                                        $q->orWhere('no_hp', $hp);
+                                    } else {
+                                        $q->where('no_hp', $hp);
+                                    }
+                                }
+                            })
+                            ->first();
+                        if ($anggota) {
+                            $no_anggota = $anggota->no_anggota;
+                        }
                     }
                 }
             }
