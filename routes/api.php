@@ -45,6 +45,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     ]);
 });
 
+Route::middleware('auth:sanctum')->get('/guru/dashboard', [App\Http\Controllers\Api\KaryawanController::class, 'getGuruDashboard']);
+Route::middleware('auth:sanctum')->get('/guru/jadwal', [App\Http\Controllers\Api\KaryawanController::class, 'getGuruJadwal']);
+Route::middleware('auth:sanctum')->get('/guru/presensi-mapel/history', [App\Http\Controllers\Api\KaryawanController::class, 'getPresensiMapelHistory']);
+Route::middleware('auth:sanctum')->get('/guru/presensi-mapel/{jadwal_id}/{tanggal?}', [App\Http\Controllers\Api\KaryawanController::class, 'getPresensiMapelInput']);
+Route::middleware('auth:sanctum')->post('/guru/presensi-mapel/store', [App\Http\Controllers\Api\KaryawanController::class, 'storePresensiMapel']);
+
 // Endpoint API siswa-anak untuk orang tua
 Route::middleware('auth:sanctum')->get('/siswa-anak', [App\Http\Controllers\Api\SiswaController::class, 'anakByNikOrtu']);
 

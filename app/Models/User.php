@@ -53,4 +53,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(Post::class);
     }
+
+    public function getNppAttribute()
+    {
+        if (!empty($this->attributes['npp'])) {
+            return $this->attributes['npp'];
+        }
+        $userKaryawan = \App\Models\Userkaryawan::where('id_user', $this->id)->first();
+        if ($userKaryawan) {
+            return $userKaryawan->npp;
+        }
+        return $this->username;
+    }
 }

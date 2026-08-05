@@ -166,6 +166,105 @@ class DashboardController extends Controller
         }
     }
 
+    public function guruDashboard()
+    {
+        $user = auth()->user();
+        $npp = $user->npp;
+        $guru = \App\Models\Guru::with('karyawan')->where('npp', $npp)->first();
+
+        if (!$guru) {
+            return redirect('/dashboard')->with(messageError('Anda tidak terdaftar sebagai guru.'));
+        }
+
+        $activeTa = \App\Models\Tahunajaran::where('status', '1')->first();
+        $activeSemester = \App\Models\Semester::where('status', '1')->first();
+        $selectedSemester = $activeSemester ? $activeSemester->semester : '1';
+
+        $hariIni = getHari(date('Y-m-d'));
+
+        $jadwalHariIni = collect();
+        if ($activeTa) {
+            $jadwalHariIni = \App\Models\JadwalPelajaran::with(['mapel', 'kelas'])
+                ->where('guru_id', $guru->id)
+                ->where('kode_ta', $activeTa->kode_ta)
+                ->where('semester', $selectedSemester)
+                ->where('hari', $hariIni)
+                ->orderBy('jam_ke')
+                ->get();
+        }
+
+        $jadwalHariIni->each(function ($jadwal) {
+            $jadwal->sudah_presensi = \App\Models\PresensiMapel::where('jadwal_pelajaran_id', $jadwal->id)
+                ->where('tanggal', date('Y-m-d'))
+                ->exists();
+        });
+
+        $listKelasBinaan = collect();
+        $kelasBinaan = null;
+        $totalSiswa = 0;
+        if ($activeTa) {
+            $listKelasBinaan = \App\Models\Kelas::with('unit')
+                ->where('guru_id', $guru->id)
+                ->where('kode_ta', $activeTa->kode_ta)
+                ->get();
+
+            $kelasBinaan = $listKelasBinaan->first();
+
+            if ($listKelasBinaan->isNotEmpty()) {
+                $kodeKelasList = $listKelasBinaan->pluck('kode_kelas')->toArray();
+                $totalSiswa = \App\Models\Kelassiswa::whereIn('kode_kelas', $kodeKelasList)->count();
+            }
+        }
+
+        $jam = (int) date('H');
+        if ($jam >= 3 && $jam < 11) {
+            $sapaan = 'Selamat Pagi';
+        } elseif ($jam >= 11 && $jam < 15) {
+            $sapaan = 'Selamat Siang';
+        } elseif ($jam >= 15 && $jam < 18) {
+            $sapaan = 'Selamat Sore';
+        } else {
+            $sapaan = 'Selamat Malam';
+        }
+
+        $isKoordinator = false;
+        if ($activeTa) {
+            $isKoordinator = \App\Models\Ekstrakurikuler::where('guru_id', $guru->id)
+                ->where('kode_ta', $activeTa->kode_ta)
+                ->exists();
+        }
+
+        $pengaturan = \App\Models\Pengaturanumum::first();
+
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('dashboard.guru_mobile', compact(
+                'guru',
+                'activeTa',
+                'jadwalHariIni',
+                'kelasBinaan',
+                'listKelasBinaan',
+                'totalSiswa',
+                'hariIni',
+                'sapaan',
+                'isKoordinator',
+                'pengaturan'
+            ));
+        }
+
+        return view('dashboard.guru', compact(
+            'guru',
+            'activeTa',
+            'jadwalHariIni',
+            'kelasBinaan',
+            'listKelasBinaan',
+            'totalSiswa',
+            'hariIni',
+            'sapaan',
+            'isKoordinator'
+        ));
+    }
+
     public function getrealisasikegiatan(Request $request)
     {
         //Dashboard

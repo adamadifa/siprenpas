@@ -411,19 +411,24 @@
         @endif
 
         @php
+            $isGuru = false;
             $isWaliKelas = false;
             $isKoordinator = false;
-            if (auth()->check() && auth()->user()->hasRole('guru')) {
-                $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
-                if ($guruModel) {
-                    $activeTa = \App\Models\Tahunajaran::where('status', '1')->first();
-                    if ($activeTa) {
-                        $isWaliKelas = \App\Models\Kelas::where('guru_id', $guruModel->id)
-                            ->where('kode_ta', $activeTa->kode_ta)
-                            ->exists();
-                        $isKoordinator = \App\Models\Ekstrakurikuler::where('guru_id', $guruModel->id)
-                            ->where('kode_ta', $activeTa->kode_ta)
-                            ->exists();
+            if (auth()->check()) {
+                $user = auth()->user();
+                $isGuru = $user->hasRole('guru') || \App\Models\Guru::where('npp', $user->npp)->exists();
+                if ($isGuru) {
+                    $guruModel = \App\Models\Guru::where('npp', $user->npp)->first();
+                    if ($guruModel) {
+                        $activeTa = \App\Models\Tahunajaran::where('status', '1')->first();
+                        if ($activeTa) {
+                            $isWaliKelas = \App\Models\Kelas::where('guru_id', $guruModel->id)
+                                ->where('kode_ta', $activeTa->kode_ta)
+                                ->exists();
+                            $isKoordinator = \App\Models\Ekstrakurikuler::where('guru_id', $guruModel->id)
+                                ->where('kode_ta', $activeTa->kode_ta)
+                                ->exists();
+                        }
                     }
                 }
             }
@@ -431,13 +436,21 @@
 
         <!-- Menu Akademik -->
         @if (auth()->check() &&
-                (auth()->user()->hasAnyPermission(['presensisiswa.index', 'guru.index', 'akademiksiswa.index', 'jabatanakademik.index', 'matapelajaran.index', 'kelas.index', 'jadwalpelajaran.index']) || $isWaliKelas || $isKoordinator || auth()->user()->hasRole('guru')))
+                (auth()->user()->hasAnyPermission(['presensisiswa.index', 'guru.index', 'akademiksiswa.index', 'jabatanakademik.index', 'matapelajaran.index', 'kelas.index', 'jadwalpelajaran.index']) || $isWaliKelas || $isKoordinator || $isGuru))
             <li class="menu-item {{ request()->is(['akademik', 'akademik/*', 'presensisiswa', 'presensisiswa/*', 'guru', 'guru/*', 'jabatan-akademik', 'jabatan-akademik/*', 'mata-pelajaran', 'mata-pelajaran/*', 'kelas', 'kelas/*', 'jadwal-pelajaran', 'jadwal-pelajaran/*', 'rapor', 'rapor/*', 'penilaian', 'penilaian/*', 'presensi-mapel', 'presensi-mapel/*', 'wali-kelas', 'wali-kelas/*', 'rapor-siswa', 'rapor-siswa/*']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-school"></i>
                     <div>Akademik</div>
                 </a>
                 <ul class="menu-sub">
+                    @if ($isGuru)
+                        <li class="menu-item {{ request()->is(['dashboard/guru']) ? 'active' : '' }}">
+                            <a href="{{ route('dashboard.guru') }}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-layout-dashboard"></i>
+                                <div>Dashboard Guru</div>
+                            </a>
+                        </li>
+                    @endif
                     @can('guru.index')
                         <li class="menu-item {{ request()->is(['guru', 'guru/*']) ? 'active' : '' }}">
                             <a href="{{ route('guru.index') }}" class="menu-link">
@@ -463,7 +476,7 @@
                         </li>
                     @endcan
                     @if (auth()->check() &&
-                            (auth()->user()->hasAnyPermission(['presensisiswa.index']) || auth()->user()->hasRole('guru')))
+                            (auth()->user()->hasAnyPermission(['presensisiswa.index']) || $isGuru))
                         <li class="menu-item {{ request()->is(['presensisiswa', 'presensisiswa/*']) ? 'active' : '' }}">
                             <a href="{{ route('presensisiswa.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-heart-rate-monitor"></i>
@@ -487,7 +500,7 @@
                             </a>
                         </li>
                     @endcan
-                    @if (auth()->check() && (auth()->user()->can('jadwalpelajaran.index') || auth()->user()->hasRole('guru')))
+                    @if (auth()->check() && (auth()->user()->can('jadwalpelajaran.index') || $isGuru))
                         <li class="menu-item {{ request()->is(['jadwal-pelajaran', 'jadwal-pelajaran/*']) ? 'active' : '' }}">
                             <a href="{{ route('jadwal-pelajaran.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-calendar"></i>
@@ -509,7 +522,7 @@
                             <div>Presensi Mata Pelajaran</div>
                         </a>
                     </li>
-                    @if (auth()->check() && (auth()->user()->can('jadwalpelajaran.index') || auth()->user()->hasRole('guru')))
+                    @if (auth()->check() && (auth()->user()->can('jadwalpelajaran.index') || $isGuru))
                         <li class="menu-item {{ request()->is(['rapor', 'rapor/*', 'penilaian', 'penilaian/*']) ? 'active' : '' }}">
                             <a href="{{ route('rapor.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-file-report"></i>

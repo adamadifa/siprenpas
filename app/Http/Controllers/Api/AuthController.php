@@ -527,13 +527,15 @@ class AuthController extends Controller
             ->first();
             
             if ($karyawan) {
+                $isGuru = DB::table('guru')->where('npp', $npp)->exists();
                 return [
                     'nama' => $karyawan->nama,
                     'jabatan' => $karyawan->jabatan,
                     'nama_unit' => $karyawan->nama_unit,
                     'foto' => $karyawan->foto ? url('/storage/photos/karyawan/' . $karyawan->foto) : null,
                     'presensi_today' => $presensiToday,
-                    'rekap_presensi' => $rekapPresensi
+                    'rekap_presensi' => $rekapPresensi,
+                    'is_guru' => $isGuru
                 ];
             }
         }
@@ -547,6 +549,11 @@ class AuthController extends Controller
         if ($user->kode_unit) {
             $unitName = DB::table('unit')->where('kode_unit', $user->kode_unit)->value('nama_unit');
         }
+
+        $isGuru = false;
+        if ($npp) {
+            $isGuru = DB::table('guru')->where('npp', $npp)->exists();
+        }
         
         return [
             'nama' => $user->name,
@@ -554,7 +561,8 @@ class AuthController extends Controller
             'nama_unit' => $unitName ?? 'Asatidz',
             'foto' => null,
             'presensi_today' => $presensiToday,
-            'rekap_presensi' => $rekapPresensi
+            'rekap_presensi' => $rekapPresensi,
+            'is_guru' => $isGuru
         ];
     }
 }

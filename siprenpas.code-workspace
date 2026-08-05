@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../siportuweb"
+		},
+		{
+			"path": "../siprenpeg"
 		}
 	],
 	"settings": {}

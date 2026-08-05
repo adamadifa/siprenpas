@@ -303,6 +303,44 @@ class KaryawanController extends Controller
         }
     }
 
+    public function resetuser($npp)
+    {
+        $npp = Crypt::decrypt($npp);
+        $userKaryawan = Userkaryawan::where('npp', $npp)->first();
+        if (!$userKaryawan) {
+            return Redirect::back()->with(messageError('User tidak ditemukan'));
+        }
+
+        try {
+            User::where('id', $userKaryawan->id_user)->update([
+                'password' => Hash::make(12345678)
+            ]);
+            return Redirect::back()->with(messageSuccess('Password User Berhasil Direset ke Default (12345678)'));
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError($e->getMessage()));
+        }
+    }
+
+    public function deleteuser($npp)
+    {
+        $npp = Crypt::decrypt($npp);
+        $userKaryawan = Userkaryawan::where('npp', $npp)->first();
+        if (!$userKaryawan) {
+            return Redirect::back()->with(messageError('User tidak ditemukan'));
+        }
+
+        DB::beginTransaction();
+        try {
+            User::where('id', $userKaryawan->id_user)->delete();
+            Userkaryawan::where('npp', $npp)->delete();
+            DB::commit();
+            return Redirect::back()->with(messageSuccess('User Berhasil Dihapus'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with(messageError($e->getMessage()));
+        }
+    }
+
     public function setjamkerja($npp)
     {
         $npp = Crypt::decrypt($npp);

@@ -169,6 +169,11 @@
                                             <div class="d-flex align-items-center gap-2 flex-wrap">
                                                 <span class="text-muted small"><i class="ti ti-id me-1"></i>{{ $d->npp }}</span>
                                                 <span class="badge bg-label-secondary" style="font-size: 0.65rem">{{ $d->nama_unit }}</span>
+                                                @if (!empty($d->id_user))
+                                                    <span class="badge bg-label-success" style="font-size: 0.65rem"><i class="ti ti-shield-check me-1"></i>Has User</span>
+                                                @else
+                                                    <span class="badge bg-label-warning" style="font-size: 0.65rem"><i class="ti ti-shield-x me-1"></i>No User</span>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -230,6 +235,16 @@
                                                 @can('karyawan.show')
                                                     <li><a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('karyawan.show', Crypt::encrypt($d->npp)) }}"><i class="ti ti-file-description text-info"></i> Detail Lengkap</a></li>
                                                 @endcan
+                                                @if (!empty($d->id_user))
+                                                    @can('karyawan.create')
+                                                        <li><a class="dropdown-item d-flex align-items-center gap-2 reset-user-confirm" href="{{ route('karyawan.resetuser', Crypt::encrypt($d->npp)) }}"><i class="ti ti-rotate text-warning"></i> Reset Password User</a></li>
+                                                        <li><a class="dropdown-item d-flex align-items-center gap-2 delete-user-confirm text-danger" href="{{ route('karyawan.deleteuser', Crypt::encrypt($d->npp)) }}"><i class="ti ti-user-x"></i> Hapus Akses User</a></li>
+                                                    @endcan
+                                                @else
+                                                    @can('karyawan.create')
+                                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('karyawan.createuser', Crypt::encrypt($d->npp)) }}"><i class="ti ti-user-plus text-primary"></i> Buat User Default</a></li>
+                                                    @endcan
+                                                @endif
                                                 @can('karyawan.delete')
                                                     <li><hr class="dropdown-divider"></li>
                                                     <li>
@@ -322,6 +337,46 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     form.submit();
+                }
+            });
+        });
+
+        // Reset User Confirm
+        $(document).on('click', ".reset-user-confirm", function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            Swal.fire({
+                title: 'Reset Password User?',
+                text: "Password user akan di-reset kembali ke default (12345678)!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#064e3b',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, reset!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        });
+
+        // Delete User Confirm
+        $(document).on('click', ".delete-user-confirm", function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            Swal.fire({
+                title: 'Hapus Akses User?',
+                text: "Akun login karyawan ini akan dihapus permanen, tetapi data karyawan tetap ada!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
                 }
             });
         });

@@ -115,6 +115,7 @@ Route::get('/api-docs', function () {
 
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index')->middleware(['auth', 'verified']);
+Route::get('/dashboard/guru', [DashboardController::class, 'guruDashboard'])->name('dashboard.guru')->middleware(['auth', 'verified']);
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -200,6 +201,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/karyawa/deletejamkerjabydate', 'deletejamkerjabydate')->name('karyawan.deletejamkerjabydate');
 
         Route::get('/karyawan/{npp}/createuser', 'createuser')->name('karyawan.createuser');
+        Route::get('/karyawan/{npp}/resetuser', 'resetuser')->name('karyawan.resetuser');
+        Route::get('/karyawan/{npp}/deleteuser', 'deleteuser')->name('karyawan.deleteuser');
         Route::get('/karyawan/{npp}/updatestatus', 'updatestatus')->name('karyawan.updatestatus');
         Route::get('/karyawan/get-by-unit', 'getKaryawanByUnit')->name('karyawan.get-by-unit');
     });
