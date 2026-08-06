@@ -50,6 +50,25 @@ Route::middleware('auth:sanctum')->get('/guru/jadwal', [App\Http\Controllers\Api
 Route::middleware('auth:sanctum')->get('/guru/presensi-mapel/history', [App\Http\Controllers\Api\KaryawanController::class, 'getPresensiMapelHistory']);
 Route::middleware('auth:sanctum')->get('/guru/presensi-mapel/{jadwal_id}/{tanggal?}', [App\Http\Controllers\Api\KaryawanController::class, 'getPresensiMapelInput']);
 Route::middleware('auth:sanctum')->post('/guru/presensi-mapel/store', [App\Http\Controllers\Api\KaryawanController::class, 'storePresensiMapel']);
+Route::middleware('auth:sanctum')->get('/guru/jadwal-pelajaran/cetak-presensi/{id}', [\App\Http\Controllers\JadwalPelajaranController::class, 'cetakPresensi']);
+
+// Penilaian API routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/guru/penilaian/{jadwal_id}', [App\Http\Controllers\Api\PenilaianApiController::class, 'index']);
+    Route::post('/guru/penilaian/bobot', [App\Http\Controllers\Api\PenilaianApiController::class, 'storeBobot']);
+    Route::post('/guru/penilaian/rencana', [App\Http\Controllers\Api\PenilaianApiController::class, 'storeRencana']);
+    Route::delete('/guru/penilaian/rencana/{id}', [App\Http\Controllers\Api\PenilaianApiController::class, 'destroyRencana']);
+    Route::get('/guru/penilaian/{bobot_id}/manage/{kategori}', [App\Http\Controllers\Api\PenilaianApiController::class, 'getManageNilai']);
+    Route::post('/guru/penilaian/nilai', [App\Http\Controllers\Api\PenilaianApiController::class, 'storeMultiNilai']);
+    Route::post('/guru/penilaian/kirim', [App\Http\Controllers\Api\PenilaianApiController::class, 'kirimNilai']);
+    Route::post('/guru/penilaian/batal-kirim', [App\Http\Controllers\Api\PenilaianApiController::class, 'batalKirimNilai']);
+});
+
+// Wali Kelas API routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/guru/wali-kelas', [App\Http\Controllers\Api\WaliKelasApiController::class, 'index']);
+    Route::get('/guru/wali-kelas/detail/{jadwal_id}', [App\Http\Controllers\Api\WaliKelasApiController::class, 'detailPenilaian']);
+});
 
 // Endpoint API siswa-anak untuk orang tua
 Route::middleware('auth:sanctum')->get('/siswa-anak', [App\Http\Controllers\Api\SiswaController::class, 'anakByNikOrtu']);

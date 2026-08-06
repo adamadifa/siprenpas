@@ -323,7 +323,14 @@ class JadwalPelajaranController extends Controller
 
     public function cetakPresensi($id)
     {
-        $id = Crypt::decrypt($id);
+        try {
+            $id = Crypt::decrypt($id);
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            // Decrypt failed, check if the ID is numeric (plaintext ID sent from API/mobile client)
+            if (!is_numeric($id)) {
+                abort(404, 'ID tidak valid.');
+            }
+        }
         $jadwal = JadwalPelajaran::with(['unit', 'kelas', 'mapel', 'guru.karyawan', 'tahunAjaran'])->findOrFail($id);
 
         $user = auth()->user();
