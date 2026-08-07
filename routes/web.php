@@ -240,6 +240,8 @@ Route::middleware('auth')->group(function () {
 
         //AJAX REQUEST
         Route::post('/unit/gettingkatbyunit', 'gettingkatbyunit')->name('unit.gettingkatbyunit');
+        Route::post('/unit/getkelasbytingkat', 'getkelasbytingkat')->name('unit.getkelasbytingkat');
+        Route::post('/unit/getgurubyunit', 'getgurubyunit')->name('unit.getgurubyunit');
     });
 
     Route::controller(JenjangPendidikanController::class)->group(function () {

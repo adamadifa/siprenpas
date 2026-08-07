@@ -48,61 +48,69 @@
         </div>
 
         <!-- Filter Form -->
-        <style>
-            .form-filter .form-group {
-                margin-bottom: 0 !important;
-            }
-        </style>
         <div class="card mb-4 shadow-none border-0 bg-transparent">
             <div class="card-body p-0">
                 <form action="{{ route('kelas.index') }}" method="get" class="form-filter">
                     <div class="row g-3 align-items-center">
-                        <div class="col-lg-3 col-md-6">
+                        <div class="col">
                             <x-input-with-icon label="" value="{{ Request('nama_kelas_search') }}" name="nama_kelas_search"
                                 placeholder="Cari Nama Kelas" icon="ti ti-search" />
                         </div>
-                        <div class="col-lg-2 col-md-6">
-                            <div class="form-group">
-                                <select name="kode_unit_search" id="kode_unit_search" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
-                                    <option value="">Semua Unit</option>
-                                    @foreach ($unit as $d)
-                                        <option value="{{ $d->kode_unit }}" {{ Request('kode_unit_search') == $d->kode_unit ? 'selected' : '' }}>
-                                            {{ $d->nama_unit }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                        @if (auth()->user()->kode_unit == 'U06')
+                            <div class="col-md-2 col-12">
+                                <div class="form-group mb-3">
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-school text-muted"></i></span>
+                                        <select name="kode_unit_search" id="kode_unit_search" class="form-select">
+                                            <option value="">Semua Unit</option>
+                                            @foreach ($unit as $d)
+                                                <option value="{{ $d->kode_unit }}" {{ Request('kode_unit_search') == $d->kode_unit ? 'selected' : '' }}>
+                                                    {{ $d->nama_unit }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        <div class="col-md-3 col-12">
+                            <div class="form-group mb-3">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ti ti-user text-muted"></i></span>
+                                    <select name="guru_id_search" id="guru_id_search" class="form-select">
+                                        <option value="">Semua Wali Kelas</option>
+                                        @foreach ($wali_kelas_list as $wkl)
+                                            <option value="{{ $wkl->id }}" {{ Request('guru_id_search') == $wkl->id ? 'selected' : '' }}>
+                                                {{ $wkl->nama_guru }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-6">
-                            <div class="form-group">
-                                <select name="guru_id_search" id="guru_id_search" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
-                                    <option value="">Semua Wali Kelas</option>
-                                    @foreach ($wali_kelas_list as $wkl)
-                                        <option value="{{ $wkl->id }}" {{ Request('guru_id_search') == $wkl->id ? 'selected' : '' }}>
-                                            {{ $wkl->nama_guru }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                        <div class="col-md-2 col-12">
+                            <div class="form-group mb-3">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ti ti-calendar-event text-muted"></i></span>
+                                    <select name="kode_ta" id="kode_ta" class="form-select">
+                                        <option value="">Tahun Ajaran</option>
+                                        @foreach ($tahunajaran as $d)
+                                            <option value="{{ $d->kode_ta }}"
+                                                {{ (Request::get('kode_ta') == $d->kode_ta ? 'selected' : $kode_ta == $d->kode_ta) ? 'selected' : '' }}>
+                                                {{ $d->tahun_ajaran }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-2 col-md-6">
-                            <div class="form-group">
-                                <select name="kode_ta" id="kode_ta" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
-                                    <option value="">Tahun Ajaran</option>
-                                    @foreach ($tahunajaran as $d)
-                                        <option value="{{ $d->kode_ta }}"
-                                            {{ (Request::get('kode_ta') == $d->kode_ta ? 'selected' : $kode_ta == $d->kode_ta) ? 'selected' : '' }}>
-                                            {{ $d->tahun_ajaran }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                        <div class="col-auto">
+                            <div class="form-group mb-3">
+                                <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; border-color: #064e3b; height: 38px;">
+                                    <i class="ti ti-search fs-5"></i>
+                                    <span>Filter</span>
+                                </button>
                             </div>
-                        </div>
-                        <div class="col-lg-2 col-md-6">
-                            <button type="submit" class="btn btn-primary w-100 p-2 d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; border-color: #064e3b">
-                                <i class="ti ti-search fs-5"></i>
-                                <span>Filter</span>
-                            </button>
                         </div>
                     </div>
                 </form>
@@ -287,9 +295,32 @@
             });
         }
 
+        function getGuruByUnit(kode_unit, selected = '') {
+            $.ajax({
+                type: "POST",
+                url: "{{ route('unit.getgurubyunit') }}",
+                cache: false,
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    kode_unit: kode_unit,
+                    selected: selected
+                },
+                success: function(respond) {
+                    $(document).find("#guru_id").html(respond);
+                }
+            });
+        }
+
         $(document).on('change', '#kode_unit', function() {
             const kode_unit = $(this).val();
             getTingkatByUnit(kode_unit);
+            if (kode_unit) {
+                $('#wali_kelas_group').slideDown();
+                getGuruByUnit(kode_unit);
+            } else {
+                $('#wali_kelas_group').slideUp();
+                $('#guru_id').html('<option value="">Pilih Wali Kelas</option>');
+            }
         });
 
         $("#btnCreate").click(function(e) {

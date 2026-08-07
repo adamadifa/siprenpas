@@ -45,50 +45,64 @@
         <div class="card mb-4 shadow-none border-0 bg-transparent">
             <div class="card-body p-0">
                 <form action="{{ route('rapor.index') }}" method="GET" class="form-filter">
-                    <div class="row g-3 align-items-end">
-                        <div class="col-lg-3 col-md-4">
-                            <div class="form-group">
-                                <select name="kode_unit" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
-                                    <option value="">Semua Unit</option>
-                                    @foreach ($units as $u)
-                                        <option value="{{ $u->kode_unit }}" {{ Request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>
-                                            {{ $u->nama_unit }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md col-12">
+                            <div class="form-group mb-3">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ti ti-calendar-event text-muted"></i></span>
+                                    <select name="kode_ta" class="form-select">
+                                        <option value="">Tahun Ajaran</option>
+                                        @foreach ($semuaTa as $ta)
+                                            <option value="{{ $ta->kode_ta }}" {{ $selectedKodeTa == $ta->kode_ta ? 'selected' : '' }}>
+                                                {{ $ta->tahun_ajaran }} {{ $ta->status == 1 ? '(Aktif)' : '' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-4">
-                            <div class="form-group">
-                                <select name="kode_ta" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
-                                    <option value="">Tahun Ajaran</option>
-                                    @foreach ($semuaTa as $ta)
-                                        <option value="{{ $ta->kode_ta }}" {{ $selectedKodeTa == $ta->kode_ta ? 'selected' : '' }}>
-                                            {{ $ta->tahun_ajaran }}
-                                        </option>
-                                    @endforeach
-                                </select>
+
+                        <div class="col-md col-12">
+                            <div class="form-group mb-3">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ti ti-notebook text-muted"></i></span>
+                                    <select name="semester" class="form-select">
+                                        <option value="">Pilih Semester</option>
+                                        <option value="1" {{ $selectedSemester == 1 ? 'selected' : '' }}>Ganjil (1)</option>
+                                        <option value="2" {{ $selectedSemester == 2 ? 'selected' : '' }}>Genap (2)</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-4">
-                            <div class="form-group">
-                                <select name="semester" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
-                                    <option value="">Pilih Semester</option>
-                                    <option value="1" {{ $selectedSemester == 1 ? 'selected' : '' }}>Ganjil (1)</option>
-                                    <option value="2" {{ $selectedSemester == 2 ? 'selected' : '' }}>Genap (2)</option>
-                                </select>
+
+                        @if (auth()->user()->kode_unit == 'U06' && !auth()->user()->hasRole('guru'))
+                            <div class="col-md col-12">
+                                <div class="form-group mb-3">
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-school text-muted"></i></span>
+                                        <select name="kode_unit" class="form-select">
+                                            <option value="">Semua Unit</option>
+                                            @foreach ($units as $u)
+                                                <option value="{{ $u->kode_unit }}" {{ Request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>
+                                                    {{ $u->nama_unit }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-lg-2 col-md-4">
-                            <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; border-color: #064e3b">
-                                <i class="ti ti-filter fs-5"></i>
-                                <span>Filter</span>
-                            </button>
-                        </div>
-                        <div class="col-lg-1 col-md-4">
-                            <a href="{{ route('rapor.index') }}" class="btn btn-label-secondary w-100 p-2 d-flex align-items-center justify-content-center" data-bs-toggle="tooltip" title="Reset Filter">
-                                <i class="ti ti-refresh fs-5"></i>
-                            </a>
+                        @endif
+
+                        <div class="col-auto">
+                            <div class="form-group mb-3 d-flex gap-2">
+                                <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; border-color: #064e3b; height: 38px;">
+                                    <i class="ti ti-filter fs-5"></i>
+                                    <span>Filter</span>
+                                </button>
+                                <a href="{{ route('rapor.index') }}" class="btn btn-label-secondary d-flex align-items-center justify-content-center" style="height: 38px; width: 38px;" data-bs-toggle="tooltip" title="Reset Filter">
+                                    <i class="ti ti-refresh fs-5"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </form>

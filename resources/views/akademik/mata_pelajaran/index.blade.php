@@ -48,46 +48,51 @@
         </div>
 
         <!-- Filter Form -->
-        <style>
-            .form-filter .form-group {
-                margin-bottom: 0 !important;
-            }
-        </style>
         <div class="card mb-4 shadow-none border-0 bg-transparent">
             <div class="card-body p-0">
                 <form action="{{ route('mata-pelajaran.index') }}" method="GET" class="form-filter">
                     <div class="row g-3 align-items-center">
-                        <div class="col-lg-3 col-md-6">
+                        <div class="col">
                             <x-input-with-icon label="" value="{{ Request('nama_matpel') }}" name="nama_matpel"
                                 placeholder="Cari Nama Mapel" icon="ti ti-search" />
                         </div>
-                        <div class="col-lg-3 col-md-3">
-                            <div class="form-group">
-                                <select name="kode_unit" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
-                                    <option value="">Semua Unit</option>
-                                    @foreach ($units as $u)
-                                        <option value="{{ $u->kode_unit }}" {{ Request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>
-                                            {{ $u->nama_unit }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                        @if (auth()->user()->hasRole('super admin'))
+                            <div class="col-md-3 col-12">
+                                <div class="form-group mb-3">
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-school text-muted"></i></span>
+                                        <select name="kode_unit" class="form-select">
+                                            <option value="">Semua Unit</option>
+                                            @foreach ($units as $u)
+                                                <option value="{{ $u->kode_unit }}" {{ Request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>
+                                                    {{ $u->nama_unit }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                        <div class="col-md-3 col-12">
+                            <div class="form-group mb-3">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ti ti-layout-grid text-muted"></i></span>
+                                    <select name="kelompok" class="form-select">
+                                        <option value="">Semua Kelompok</option>
+                                        <option value="A" {{ Request('kelompok') == 'A' ? 'selected' : '' }}>Kelompok A</option>
+                                        <option value="B" {{ Request('kelompok') == 'B' ? 'selected' : '' }}>Kelompok B</option>
+                                        <option value="C" {{ Request('kelompok') == 'C' ? 'selected' : '' }}>Kelompok C</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-3">
-                            <div class="form-group">
-                                <select name="kelompok" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
-                                    <option value="">Semua Kelompok</option>
-                                    <option value="A" {{ Request('kelompok') == 'A' ? 'selected' : '' }}>Kelompok A</option>
-                                    <option value="B" {{ Request('kelompok') == 'B' ? 'selected' : '' }}>Kelompok B</option>
-                                    <option value="C" {{ Request('kelompok') == 'C' ? 'selected' : '' }}>Kelompok C</option>
-                                </select>
+                        <div class="col-auto">
+                            <div class="form-group mb-3">
+                                <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; border-color: #064e3b; height: 38px;">
+                                    <i class="ti ti-search fs-5"></i>
+                                    <span>Filter</span>
+                                </button>
                             </div>
-                        </div>
-                        <div class="col-lg-2 col-md-2">
-                            <button type="submit" class="btn btn-primary w-100 p-2 d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; border-color: #064e3b">
-                                <i class="ti ti-search fs-5"></i>
-                                <span>Filter</span>
-                            </button>
                         </div>
                     </div>
                 </form>

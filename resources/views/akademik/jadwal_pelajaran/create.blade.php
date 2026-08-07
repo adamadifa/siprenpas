@@ -6,9 +6,11 @@
             <div class="mb-2">
                 <label class="form-label fw-bold small">Unit <span class="text-danger">*</span></label>
                 <select name="kode_unit" id="create_kode_unit" class="form-select select2 form-select-sm">
-                    <option value="">Pilih Unit</option>
+                    @if(count($units) > 1)
+                        <option value="">Pilih Unit</option>
+                    @endif
                     @foreach ($units as $unit)
-                        <option value="{{ $unit->kode_unit }}">{{ $unit->nama_unit }}</option>
+                        <option value="{{ $unit->kode_unit }}" {{ count($units) == 1 ? 'selected' : '' }}>{{ $unit->nama_unit }}</option>
                     @endforeach
                 </select>
                  <div class="invalid-feedback">Silahkan Pilih Unit !</div>
@@ -40,7 +42,9 @@
                 <select name="mata_pelajaran_id" id="create_mata_pelajaran_id" class="form-select select2 form-select-sm">
                     <option value="">Pilih Mapel</option>
                     @foreach ($mapels as $mapel)
-                        <option value="{{ $mapel->id }}">{{ $mapel->nama_matpel }} ({{ $mapel->kelompok }})</option>
+                        <option value="{{ $mapel->id }}" data-parent="{{ is_null($mapel->parent_id) ? 'true' : 'false' }}" style="{{ is_null($mapel->parent_id) ? 'font-weight: bold;' : '' }}">
+                            {{ $mapel->nama_matpel }} ({{ $mapel->kelompok }})
+                        </option>
                     @endforeach
                 </select>
                 <div class="invalid-feedback">Silahkan Pilih Mapel !</div>
@@ -80,12 +84,18 @@
              <div class="row">
                 <div class="col-6 mb-2">
                     <label class="form-label fw-bold small">Jam Mulai <span class="text-danger">*</span></label>
-                    <input type="time" class="form-control form-control-sm" name="jam_mulai" id="create_jam_mulai">
+                    <div class="input-group input-group-merge">
+                        <span class="input-group-text"><i class="ti ti-clock text-muted"></i></span>
+                        <input type="text" class="form-control form-control-sm" name="jam_mulai" id="create_jam_mulai" placeholder="07:30">
+                    </div>
                     <div class="invalid-feedback">Masukan Jam Mulai !</div>
                 </div>
                  <div class="col-6 mb-2">
                     <label class="form-label fw-bold small">Jam Selesai <span class="text-danger">*</span></label>
-                    <input type="time" class="form-control form-control-sm" name="jam_selesai" id="create_jam_selesai">
+                    <div class="input-group input-group-merge">
+                        <span class="input-group-text"><i class="ti ti-clock text-muted"></i></span>
+                        <input type="text" class="form-control form-control-sm" name="jam_selesai" id="create_jam_selesai" placeholder="08:30">
+                    </div>
                     <div class="invalid-feedback">Masukan Jam Selesai !</div>
                 </div>
             </div>
@@ -108,9 +118,29 @@
 
 <script>
     $(document).ready(function() {
+        // Apply time masking
+        $("#create_jam_mulai, #create_jam_selesai").mask('00:00');
+
+        function formatMapelOption(state) {
+            if (!state.id) {
+                return state.text;
+            }
+            var element = $(state.element);
+            if (element.data('parent') === true || element.data('parent') === "true") {
+                return $('<strong>' + state.text + '</strong>');
+            }
+            return state.text;
+        }
+
         // Scope select2 initialization to this form only
-        $("#formCreate .select2").select2({
+        $("#formCreate .select2").not("#create_mata_pelajaran_id").select2({
             dropdownParent: $('#mdlCreateJadwal')
+        });
+
+        $("#create_mata_pelajaran_id").select2({
+            dropdownParent: $('#mdlCreateJadwal'),
+            templateResult: formatMapelOption,
+            templateSelection: formatMapelOption
         });
 
         // AJAX Dynamic Loading for Unit -> Kelas & Mapel & Guru
@@ -143,7 +173,10 @@
                             // Populate Mapel
                             var mapelOptions = '<option value="">Pilih Mapel</option>';
                             $.each(data.mapel, function(key, value) {
-                                mapelOptions += '<option value="'+ value.id +'">'+ value.nama_matpel +' ('+ value.kelompok +')</option>';
+                                var isParent = value.parent_id === null;
+                                var boldStyle = isParent ? 'style="font-weight: bold;"' : '';
+                                var parentData = isParent ? 'data-parent="true"' : 'data-parent="false"';
+                                mapelOptions += '<option value="'+ value.id +'" '+ boldStyle +' '+ parentData +'>'+ value.nama_matpel +' ('+ value.kelompok +')</option>';
                             });
                             $("#create_mata_pelajaran_id").html(mapelOptions).prop('disabled', false);
 
@@ -222,5 +255,10 @@
                 e.preventDefault();
             }
         });
+
+        // Trigger change if unit is pre-selected
+        if($("#create_kode_unit").val()) {
+            $("#create_kode_unit").trigger('change');
+        }
     });
 </script>

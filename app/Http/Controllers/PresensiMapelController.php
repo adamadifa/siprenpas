@@ -19,29 +19,45 @@ class PresensiMapelController extends Controller
 {
     public function index(Request $request)
     {
-        $query = PresensiMapel::query();
+        $activeTa = Tahunajaran::where('status', 1)->first();
+        $selectedKodeTa = $request->kode_ta ?: ($activeTa ? $activeTa->kode_ta : null);
+        $semuaTa = Tahunajaran::orderBy('tahun_ajaran', 'desc')->get();
 
-        if ($request->kode_unit) {
-            $query->where('kode_unit', $request->kode_unit);
+        $query = PresensiMapel::query()
+            ->join('kelas', 'presensi_mapel.kode_kelas', '=', 'kelas.kode_kelas')
+            ->select('presensi_mapel.*');
+
+        $user = auth()->user();
+        if ($user->kode_unit != 'U06' && !$user->hasRole('guru')) {
+            $query->where('presensi_mapel.kode_unit', $user->kode_unit);
+        } else {
+            if ($request->kode_unit) {
+                $query->where('presensi_mapel.kode_unit', $request->kode_unit);
+            }
         }
+
+        if ($selectedKodeTa) {
+            $query->where('kelas.kode_ta', $selectedKodeTa);
+        }
+
         if ($request->kode_kelas) {
-            $query->where('kode_kelas', $request->kode_kelas);
+            $query->where('presensi_mapel.kode_kelas', $request->kode_kelas);
         }
         if ($request->tanggal) {
-            $query->where('tanggal', $request->tanggal);
+            $query->where('presensi_mapel.tanggal', $request->tanggal);
         }
 
-        $isGuru = auth()->user()->hasRole('guru');
+        $isGuru = $user->hasRole('guru');
         $guruId = null;
         if ($isGuru) {
-            $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
+            $guruModel = \App\Models\Guru::where('npp', $user->npp)->first();
             $guruId = $guruModel ? $guruModel->id : 0;
-            $query->where('guru_id', $guruId);
+            $query->where('presensi_mapel.guru_id', $guruId);
         }
 
         $presensi = $query->with(['unit', 'kelas', 'mata_pelajaran', 'guru'])
-            ->orderBy('tanggal', 'desc')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('presensi_mapel.tanggal', 'desc')
+            ->orderBy('presensi_mapel.created_at', 'desc')
             ->paginate(20);
 
         if ($isGuru) {
@@ -55,35 +71,50 @@ class PresensiMapelController extends Controller
                     ->unique()
                     ->toArray();
                 $kelas = Kelas::where('kode_unit', $request->kode_unit)
+                    ->where('kode_ta', $selectedKodeTa)
                     ->whereIn('kode_kelas', $guruKelasCodes)
                     ->get();
             }
         } else {
-            $units = Unit::all();
-            $kelas = [];
-            if ($request->kode_unit) {
-                $kelas = Kelas::where('kode_unit', $request->kode_unit)->get();
+            if ($user->kode_unit != 'U06') {
+                $units = Unit::where('kode_unit', $user->kode_unit)->get();
+                $kelas = Kelas::where('kode_unit', $user->kode_unit)
+                    ->where('kode_ta', $selectedKodeTa)
+                    ->get();
+            } else {
+                $units = Unit::all();
+                $kelas = [];
+                if ($request->kode_unit) {
+                    $kelas = Kelas::where('kode_unit', $request->kode_unit)
+                        ->where('kode_ta', $selectedKodeTa)
+                        ->get();
+                }
             }
         }
 
         $agent = new \Jenssegers\Agent\Agent();
         if ($agent->isMobile()) {
-            return view('akademik.presensi_mapel.index_mobile', compact('presensi', 'units', 'kelas'));
+            return view('akademik.presensi_mapel.index_mobile', compact('presensi', 'units', 'kelas', 'semuaTa', 'selectedKodeTa'));
         }
 
-        return view('akademik.presensi_mapel.index', compact('presensi', 'units', 'kelas'));
+        return view('akademik.presensi_mapel.index', compact('presensi', 'units', 'kelas', 'semuaTa', 'selectedKodeTa'));
     }
 
     public function create()
     {
-        $isGuru = auth()->user()->hasRole('guru');
+        $user = auth()->user();
+        $isGuru = $user->hasRole('guru');
         if ($isGuru) {
-            $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
+            $guruModel = \App\Models\Guru::where('npp', $user->npp)->first();
             $guruId = $guruModel ? $guruModel->id : 0;
             $guruUnitCodes = JadwalPelajaran::where('guru_id', $guruId)->pluck('kode_unit')->unique()->toArray();
             $units = Unit::whereIn('kode_unit', $guruUnitCodes)->get();
         } else {
-            $units = Unit::all();
+            if ($user->kode_unit != 'U06') {
+                $units = Unit::where('kode_unit', $user->kode_unit)->get();
+            } else {
+                $units = Unit::all();
+            }
         }
         return view('akademik.presensi_mapel.create', compact('units'));
     }

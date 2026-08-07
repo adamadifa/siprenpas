@@ -22,7 +22,7 @@
         </select>
         <div class="invalid-feedback" id="error-tingkat" style="display:none"></div>
     </div>
-    <div class="form-group mb-3">
+    <div class="form-group mb-3" id="wali_kelas_group" style="display: none;">
         <label class="form-label fw-bold">Wali Kelas (Opsional)</label>
         <select name="guru_id" id="guru_id" class="form-select">
             <option value="">Pilih Wali Kelas</option>

@@ -31,13 +31,12 @@ class GuruController extends Controller
             $query->where('karyawan.nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
         }
 
-        if (!empty($request->kode_unit)) {
-            $query->where('guru.kode_unit', $request->kode_unit);
-        }
-
-        // Filter based on user's authorized unit
-        if (auth()->user()->kode_unit != 'U06') {
-             $query->where('guru.kode_unit', auth()->user()->kode_unit);
+        if (!auth()->user()->hasRole('super admin')) {
+            $query->where('guru.kode_unit', auth()->user()->kode_unit);
+        } else {
+            if (!empty($request->kode_unit)) {
+                $query->where('guru.kode_unit', $request->kode_unit);
+            }
         }
 
         $guru = $query->paginate(15);

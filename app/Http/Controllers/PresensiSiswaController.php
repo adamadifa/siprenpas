@@ -40,6 +40,7 @@ class PresensiSiswaController extends Controller
         $query->select(
             'siswa.*',
             'pendaftaran.no_pendaftaran',
+            'pendaftaran.foto as foto_pendaftaran',
             'tahun_ajaran',
             'villages.name as desa',
             'nama_unit',
@@ -85,8 +86,12 @@ class PresensiSiswaController extends Controller
             $query->where('nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
         }
 
-        if (!empty($request->kode_unit)) {
-            $query->where('pendaftaran.kode_unit', $request->kode_unit);
+        if (!auth()->user()->hasRole('super admin')) {
+            $query->where('pendaftaran.kode_unit', auth()->user()->kode_unit);
+        } else {
+            if (!empty($request->kode_unit)) {
+                $query->where('pendaftaran.kode_unit', $request->kode_unit);
+            }
         }
 
         if (!empty($request->kode_ta)) {
@@ -97,6 +102,10 @@ class PresensiSiswaController extends Controller
 
         if (!empty($request->tingkat)) {
             $query->where('konfigurasi_biaya.tingkat', $request->tingkat);
+        }
+
+        if (!empty($request->kode_kelas)) {
+            $query->where('kelas_siswa.kode_kelas', $request->kode_kelas);
         }
 
         $isGuru = auth()->user()->hasRole('guru');
@@ -128,6 +137,8 @@ class PresensiSiswaController extends Controller
         $data['tahun_ajaran'] = $ta_aktif;
         if ($isGuru) {
             $data['unit'] = Unit::whereIn('kode_unit', $kelasBinaanUnits)->get();
+        } elseif (!auth()->user()->hasRole('super admin')) {
+            $data['unit'] = Unit::where('kode_unit', auth()->user()->kode_unit)->get();
         } else {
             $data['unit'] = Unit::all();
         }

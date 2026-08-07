@@ -58,7 +58,25 @@ class RaporSiswaController extends Controller
             $selectedSemester = $activeSemester ? $activeSemester->semester : '1';
         }
 
-        $units = \App\Models\Unit::all();
+        if ($user->kode_unit != 'U06') {
+            $units = \App\Models\Unit::where('kode_unit', $user->kode_unit)->get();
+        } else {
+            $units = \App\Models\Unit::all();
+        }
+
+        // Get unique tingkat values
+        $tingkatsQuery = Kelas::query();
+        if ($user->kode_unit != 'U06') {
+            $tingkatsQuery->where('kode_unit', $user->kode_unit);
+        } else {
+            if ($request->has('kode_unit') && $request->kode_unit != '') {
+                $tingkatsQuery->where('kode_unit', $request->kode_unit);
+            }
+        }
+        $tingkats = $tingkatsQuery->whereNotNull('tingkat')->distinct()->orderBy('tingkat')->pluck('tingkat');
+
+        $selectedTingkat = $request->tingkat;
+        $selectedKodeKelas = $request->kode_kelas;
 
         // Fetch all classes filtered by unit and ta
         $query = Kelas::with(['unit', 'waliKelas'])
@@ -68,15 +86,44 @@ class RaporSiswaController extends Controller
             $query->where('kode_ta', $selectedKodeTa);
         }
 
-        if ($request->has('kode_unit') && $request->kode_unit != '') {
-            $query->where('kode_unit', $request->kode_unit);
+        if ($user->kode_unit != 'U06') {
+            $query->where('kode_unit', $user->kode_unit);
+        } else {
+            if ($request->has('kode_unit') && $request->kode_unit != '') {
+                $query->where('kode_unit', $request->kode_unit);
+            }
         }
 
-        if (!$user->hasAnyRole(['super admin', 'admin']) && $user->hasRole('guru')) {
+        if ($selectedTingkat) {
+            $query->where('tingkat', $selectedTingkat);
+        }
+
+        if ($selectedKodeKelas) {
+            $query->where('kode_kelas', $selectedKodeKelas);
+        }
+
+        if (!$user->hasAnyRole(['super admin', 'admin', 'admin unit', 'admin tu']) && $user->hasRole('guru')) {
             if ($guruModel) {
                 $query->where('guru_id', $guruModel->id);
             }
         }
+
+        // Get class options for dropdown
+        $kelasDropdownQuery = Kelas::query();
+        if ($selectedKodeTa) {
+            $kelasDropdownQuery->where('kode_ta', $selectedKodeTa);
+        }
+        if ($user->kode_unit != 'U06') {
+            $kelasDropdownQuery->where('kode_unit', $user->kode_unit);
+        } else {
+            if ($request->has('kode_unit') && $request->kode_unit != '') {
+                $kelasDropdownQuery->where('kode_unit', $request->kode_unit);
+            }
+        }
+        if ($selectedTingkat) {
+            $kelasDropdownQuery->where('tingkat', $selectedTingkat);
+        }
+        $kelasDropdown = $kelasDropdownQuery->orderBy('nama_kelas')->get();
 
         $classes = $query->get();
 
@@ -159,10 +206,10 @@ class RaporSiswaController extends Controller
 
         $agent = new \Jenssegers\Agent\Agent();
         if ($agent->isMobile()) {
-            return view('akademik.rapor_siswa.index_mobile', compact('classes', 'activeTa', 'semuaTa', 'selectedKodeTa', 'activeSemester', 'selectedSemester', 'units', 'ekstrakurikuler', 'gurus', 'isWaliKelas', 'isKoordinator'));
+            return view('akademik.rapor_siswa.index_mobile', compact('classes', 'activeTa', 'semuaTa', 'selectedKodeTa', 'activeSemester', 'selectedSemester', 'units', 'ekstrakurikuler', 'gurus', 'isWaliKelas', 'isKoordinator', 'tingkats', 'kelasDropdown', 'selectedTingkat', 'selectedKodeKelas'));
         }
 
-        return view('akademik.rapor_siswa.index', compact('classes', 'activeTa', 'semuaTa', 'selectedKodeTa', 'activeSemester', 'selectedSemester', 'units', 'ekstrakurikuler', 'gurus', 'isWaliKelas', 'isKoordinator'));
+        return view('akademik.rapor_siswa.index', compact('classes', 'activeTa', 'semuaTa', 'selectedKodeTa', 'activeSemester', 'selectedSemester', 'units', 'ekstrakurikuler', 'gurus', 'isWaliKelas', 'isKoordinator', 'tingkats', 'kelasDropdown', 'selectedTingkat', 'selectedKodeKelas'));
     }
 
     public function show($kode_kelas)

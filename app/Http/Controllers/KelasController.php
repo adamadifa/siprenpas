@@ -19,6 +19,13 @@ class KelasController extends Controller
     public function index(Request $request)
     {
         $user = User::where('id', auth()->user()->id)->first();
+        
+        $ta_aktif = Tahunajaran::where('status', '1')->first();
+        $kode_ta = $request->kode_ta ?: ($ta_aktif ? $ta_aktif->kode_ta : null);
+        
+        $data['ta_aktif'] = $ta_aktif ? $ta_aktif->tahun_ajaran : '';
+        $data['kode_ta'] = $kode_ta;
+
         $data['kelas'] = Kelas::orderBy('kode_kelas')
             ->with(['waliKelas.karyawan'])
             ->join('unit', 'kelas.kode_unit', '=', 'unit.kode_unit')
@@ -27,8 +34,8 @@ class KelasController extends Controller
             ->when($user->kode_unit != 'U06', function ($query) use ($user) {
                 $query->where('kelas.kode_unit', $user->kode_unit);
             })
-            ->when($request->kode_ta, function ($query) use ($request) {
-                $query->where('kelas.kode_ta', $request->kode_ta);
+            ->when($kode_ta, function ($query) use ($kode_ta) {
+                $query->where('kelas.kode_ta', $kode_ta);
             })
             ->when($request->kode_unit_search, function ($query) use ($request) {
                 $query->where('kelas.kode_unit', $request->kode_unit_search);
@@ -42,11 +49,20 @@ class KelasController extends Controller
 
             ->get();
 
-        $u = new Unit();
-        $data['unit'] = $u->getUnit();
+        if ($user->kode_unit != 'U06') {
+            $data['unit'] = Unit::where('kode_unit', $user->kode_unit)->get();
+        } else {
+            $u = new Unit();
+            $data['unit'] = $u->getUnit();
+        }
+        
         $data['tahunajaran'] = Tahunajaran::orderBy('kode_ta')->get();
-        $data['wali_kelas_list'] = Guru::with('karyawan')
-            ->whereIn('id', function($query) {
+        
+        $waliQuery = Guru::with('karyawan');
+        if ($user->kode_unit != 'U06') {
+            $waliQuery->where('kode_unit', $user->kode_unit);
+        }
+        $data['wali_kelas_list'] = $waliQuery->whereIn('id', function($query) {
                 $query->select('guru_id')->from('kelas')->whereNotNull('guru_id');
             })
             ->get()
@@ -60,10 +76,19 @@ class KelasController extends Controller
     public function create()
     {
         $user = User::where('id', auth()->user()->id)->first();
-        $u = new Unit();
-        $data['unit'] = $u->getUnit();
+        if ($user->kode_unit != 'U06') {
+            $data['unit'] = Unit::where('kode_unit', $user->kode_unit)->get();
+        } else {
+            $u = new Unit();
+            $data['unit'] = $u->getUnit();
+        }
         $data['user'] = $user;
-        $data['gurus'] = Guru::with('karyawan')->where('status_aktif_ajar', 1)->get()->sortBy(function($g) {
+        
+        $guruQuery = Guru::with('karyawan')->where('status_aktif_ajar', 1);
+        if ($user->kode_unit != 'U06') {
+            $guruQuery->where('kode_unit', $user->kode_unit);
+        }
+        $data['gurus'] = $guruQuery->get()->sortBy(function($g) {
             return $g->karyawan->nama_lengkap ?? '';
         });
         return view('datamaster.kelas.create', $data);
@@ -110,10 +135,20 @@ class KelasController extends Controller
     public function edit($kode_kelas)
     {
         $kode_kelas = Crypt::decrypt($kode_kelas);
-        $u = new Unit();
-        $data['unit'] = $u->getUnit();
+        $user = User::where('id', auth()->user()->id)->first();
+        if ($user->kode_unit != 'U06') {
+            $data['unit'] = Unit::where('kode_unit', $user->kode_unit)->get();
+        } else {
+            $u = new Unit();
+            $data['unit'] = $u->getUnit();
+        }
         $data['kelas'] = Kelas::where('kode_kelas', $kode_kelas)->first();
-        $data['gurus'] = Guru::with('karyawan')->where('status_aktif_ajar', 1)->get()->sortBy(function($g) {
+        
+        $guruQuery = Guru::with('karyawan')->where('status_aktif_ajar', 1);
+        if ($user->kode_unit != 'U06') {
+            $guruQuery->where('kode_unit', $user->kode_unit);
+        }
+        $data['gurus'] = $guruQuery->get()->sortBy(function($g) {
             return $g->karyawan->nama_lengkap ?? '';
         });
         return view('datamaster.kelas.edit', $data);
@@ -182,7 +217,7 @@ class KelasController extends Controller
             ->leftJoinSub($kelas_siswa, 'kelas_siswa', function ($join) {
                 $join->on('siswa.id_siswa', '=', 'kelas_siswa.id_siswa');
             })
-            ->select('siswa.*', 'pendaftaran.nis', 'kelas_siswa.id_siswa as ceksiswa')
+            ->select('siswa.*', 'pendaftaran.nis', 'pendaftaran.foto as foto_pendaftaran', 'kelas_siswa.id_siswa as ceksiswa')
             ->where('konfigurasi_biaya.kode_ta', $kelas->kode_ta)
             ->where('konfigurasi_biaya.tingkat', $kelas->tingkat)
             ->where('pendaftaran.kode_unit', $kelas->kode_unit)
@@ -205,7 +240,7 @@ class KelasController extends Controller
             ->join('pendaftaran', 'siswa_biaya.no_pendaftaran', '=', 'pendaftaran.no_pendaftaran')
             ->join('konfigurasi_biaya', 'siswa_biaya.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
             ->where('konfigurasi_biaya.is_pindahan', 0)
-            ->select('id_siswa', 'nis');
+            ->select('id_siswa', 'nis', 'pendaftaran.foto as foto_pendaftaran');
 
 
         $kelas_siswa = Kelassiswa::where('kode_kelas', $kode_kelas)
@@ -213,7 +248,7 @@ class KelasController extends Controller
             ->leftJoinSub($biaya_siswa, 'biaya_siswa', function ($join) {
                 $join->on('siswa.id_siswa', '=', 'biaya_siswa.id_siswa');
             })
-            ->select('siswa.*', 'biaya_siswa.nis')
+            ->select('siswa.*', 'biaya_siswa.nis', 'biaya_siswa.foto_pendaftaran')
             ->get();
 
 

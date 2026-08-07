@@ -41,7 +41,9 @@
                 <select name="mata_pelajaran_id" id="edit_mata_pelajaran_id" class="form-select select2 form-select-sm">
                     <option value="">Pilih Mapel</option>
                     @foreach ($mapels as $mapel)
-                        <option value="{{ $mapel->id }}" {{ $jadwal->mata_pelajaran_id == $mapel->id ? 'selected' : '' }}>{{ $mapel->nama_matpel }} ({{ $mapel->kelompok }})</option>
+                        <option value="{{ $mapel->id }}" {{ $jadwal->mata_pelajaran_id == $mapel->id ? 'selected' : '' }} data-parent="{{ is_null($mapel->parent_id) ? 'true' : 'false' }}" style="{{ is_null($mapel->parent_id) ? 'font-weight: bold;' : '' }}">
+                            {{ $mapel->nama_matpel }} ({{ $mapel->kelompok }})
+                        </option>
                     @endforeach
                 </select>
                 <div class="invalid-feedback">Silahkan Pilih Mapel !</div>
@@ -81,12 +83,18 @@
              <div class="row">
                 <div class="col-6 mb-2">
                     <label class="form-label fw-bold small">Jam Mulai <span class="text-danger">*</span></label>
-                    <input type="time" class="form-control form-control-sm" name="jam_mulai" id="edit_jam_mulai" value="{{ $jadwal->jam_mulai }}">
+                    <div class="input-group input-group-merge">
+                        <span class="input-group-text"><i class="ti ti-clock text-muted"></i></span>
+                        <input type="text" class="form-control form-control-sm" name="jam_mulai" id="edit_jam_mulai" value="{{ $jadwal->jam_mulai }}">
+                    </div>
                     <div class="invalid-feedback">Masukan Jam Mulai !</div>
                 </div>
                  <div class="col-6 mb-2">
                     <label class="form-label fw-bold small">Jam Selesai <span class="text-danger">*</span></label>
-                    <input type="time" class="form-control form-control-sm" name="jam_selesai" id="edit_jam_selesai" value="{{ $jadwal->jam_selesai }}">
+                    <div class="input-group input-group-merge">
+                        <span class="input-group-text"><i class="ti ti-clock text-muted"></i></span>
+                        <input type="text" class="form-control form-control-sm" name="jam_selesai" id="edit_jam_selesai" value="{{ $jadwal->jam_selesai }}">
+                    </div>
                     <div class="invalid-feedback">Masukan Jam Selesai !</div>
                 </div>
             </div>
@@ -109,9 +117,29 @@
 
 <script>
     $(document).ready(function() {
+        // Apply time masking
+        $("#edit_jam_mulai, #edit_jam_selesai").mask('00:00');
+
+        function formatMapelOption(state) {
+            if (!state.id) {
+                return state.text;
+            }
+            var element = $(state.element);
+            if (element.data('parent') === true || element.data('parent') === "true") {
+                return $('<strong>' + state.text + '</strong>');
+            }
+            return state.text;
+        }
+
         // Scoped Select2 Init
-        $("#formEdit .select2").select2({
+        $("#formEdit .select2").not("#edit_mata_pelajaran_id").select2({
             dropdownParent: $('#mdlEditJadwal')
+        });
+
+        $("#edit_mata_pelajaran_id").select2({
+            dropdownParent: $('#mdlEditJadwal'),
+            templateResult: formatMapelOption,
+            templateSelection: formatMapelOption
         });
 
         // AJAX Dynamic Loading for Unit -> Kelas & Mapel & Guru (Edit Page)
@@ -144,7 +172,10 @@
                             // Populate Mapel
                             var mapelOptions = '<option value="">Pilih Mapel</option>';
                             $.each(data.mapel, function(key, value) {
-                                mapelOptions += '<option value="'+ value.id +'">'+ value.nama_matpel +' ('+ value.kelompok +')</option>';
+                                var isParent = value.parent_id === null;
+                                var boldStyle = isParent ? 'style="font-weight: bold;"' : '';
+                                var parentData = isParent ? 'data-parent="true"' : 'data-parent="false"';
+                                mapelOptions += '<option value="'+ value.id +'" '+ boldStyle +' '+ parentData +'>'+ value.nama_matpel +' ('+ value.kelompok +')</option>';
                             });
                             $("#edit_mata_pelajaran_id").html(mapelOptions).prop('disabled', false);
 

@@ -47,72 +47,112 @@
             @endcan
         </div>
 
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-12">
-                         <form action="{{ route('jadwal-pelajaran.index') }}" method="GET">
-                             <div class="row">
-                                 <div class="col-lg-12 col-sm-12 col-md-12 mb-1">
-                                     <select name="kode_ta" class="form-select select2">
-                                         @foreach ($semuaTa as $ta)
-                                             <option value="{{ $ta->kode_ta }}" {{ $selectedKodeTa == $ta->kode_ta ? 'selected' : '' }}>{{ $ta->tahun_ajaran }} {{ $ta->status == 1 ? '(Aktif)' : '' }}</option>
-                                         @endforeach
-                                     </select>
-                                 </div>
-                                 <div class="col-lg-3 col-sm-12 col-md-12 mb-1">
-                                     <select name="kode_unit" id="filter_kode_unit" class="form-select select2">
-                                        <option value="">Semua Unit</option>
-                                        @foreach ($units as $unit)
-                                            <option value="{{ $unit->kode_unit }}" {{ request('kode_unit') == $unit->kode_unit ? 'selected' : '' }}>{{ $unit->nama_unit }}</option>
+        <!-- Filter Form -->
+        <div class="card mb-4 shadow-none border-0 bg-transparent">
+            <div class="card-body p-0">
+                <form action="{{ route('jadwal-pelajaran.index') }}" method="GET" class="form-filter">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md col-12">
+                            <div class="form-group mb-3">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ti ti-calendar-event text-muted"></i></span>
+                                    <select name="kode_ta" class="form-select">
+                                        @foreach ($semuaTa as $ta)
+                                            <option value="{{ $ta->kode_ta }}" {{ $selectedKodeTa == $ta->kode_ta ? 'selected' : '' }}>{{ $ta->tahun_ajaran }} {{ $ta->status == 1 ? '(Aktif)' : '' }}</option>
                                         @endforeach
                                     </select>
-                                 </div>
-                                 <div class="col-lg-{{ auth()->user()->hasRole('guru') ? '3' : '2' }} col-sm-12 col-md-12 mb-1">
-                                      <select name="kode_kelas" id="filter_kode_kelas" class="form-select select2">
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (auth()->user()->kode_unit == 'U06' && !auth()->user()->hasRole('guru'))
+                            <div class="col-md col-12">
+                                <div class="form-group mb-3">
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-school text-muted"></i></span>
+                                        <select name="kode_unit" id="filter_kode_unit" class="form-select">
+                                            <option value="">Semua Unit</option>
+                                            @foreach ($units as $unit)
+                                                <option value="{{ $unit->kode_unit }}" {{ request('kode_unit') == $unit->kode_unit ? 'selected' : '' }}>{{ $unit->nama_unit }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="col-md col-12">
+                            <div class="form-group mb-3">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ti ti-door-enter text-muted"></i></span>
+                                    <select name="kode_kelas" id="filter_kode_kelas" class="form-select">
                                         <option value="">Semua Kelas</option>
                                         @foreach ($kelas as $k)
                                             <option value="{{ $k->kode_kelas }}" {{ request('kode_kelas') == $k->kode_kelas ? 'selected' : '' }}>{{ $k->nama_kelas }}</option>
                                         @endforeach
                                     </select>
-                                 </div>
-                                 @if (!auth()->user()->hasRole('guru'))
-                                  <div class="col-lg-3 col-sm-12 col-md-12 mb-1">
-                                      <select name="guru_id" id="filter_guru_id" class="form-select select2">
-                                        <option value="">Semua Guru</option>
-                                        @foreach ($gurus as $guru)
-                                            <option value="{{ $guru->id }}" {{ request('guru_id') == $guru->id ? 'selected' : '' }}>{{ $guru->nama_guru }}</option>
-                                        @endforeach
-                                    </select>
-                                 </div>
-                                 @endif
-                                  <div class="col-lg-{{ auth()->user()->hasRole('guru') ? '3' : '2' }} col-sm-12 col-md-12 mb-1">
-                                      <select name="hari" id="filter_hari" class="form-select select2">
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (!auth()->user()->hasRole('guru'))
+                            <div class="col-md col-12">
+                                <div class="form-group mb-3">
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-user text-muted"></i></span>
+                                        <select name="guru_id" id="filter_guru_id" class="form-select">
+                                            <option value="">Semua Guru</option>
+                                            @foreach ($gurus as $guru)
+                                                <option value="{{ $guru->id }}" {{ request('guru_id') == $guru->id ? 'selected' : '' }}>{{ $guru->nama_guru }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="col-md col-12">
+                            <div class="form-group mb-3">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ti ti-calendar text-muted"></i></span>
+                                    <select name="hari" id="filter_hari" class="form-select">
                                         <option value="">Semua Hari</option>
                                         @foreach ($days as $day)
                                             <option value="{{ $day }}" {{ request('hari') == $day ? 'selected' : '' }}>{{ $day }}</option>
                                         @endforeach
                                     </select>
-                                 </div>
-                                 <div class="col-lg-{{ auth()->user()->hasRole('guru') ? '3' : '2' }} col-sm-12 col-md-12 mb-1">
-                                    <select name="semester" id="filter_semester" class="form-select select2">
-                                      <option value="">Semua Semester</option>
-                                      @foreach ($semesters as $sem)
-                                          <option value="{{ $sem }}" {{ request('semester') == $sem ? 'selected' : '' }}>{{ $sem == 1 ? 'Ganjil' : 'Genap' }}</option>
-                                      @endforeach
-                                  </select>
-                               </div>
-                                 <div class="col-lg-12 col-sm-12 col-md-12 mb-3">
-                                     <button type="submit" class="btn btn-primary w-100" style="background-color: #064e3b; border-color: #064e3b"><i class="ti ti-search me-1"></i> Cari</button>
-                                 </div>
-                             </div>
-                        </form>
-                    </div>
-                </div>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="row">
-                    <div class="col-12">
-                        <div class="row text-nowrap">
+                        <div class="col-md col-12">
+                            <div class="form-group mb-3">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ti ti-clock text-muted"></i></span>
+                                    <select name="semester" id="filter_semester" class="form-select">
+                                        <option value="">Semua Semester</option>
+                                        @foreach ($semesters as $sem)
+                                            <option value="{{ $sem }}" {{ request('semester') == $sem ? 'selected' : '' }}>{{ $sem == 1 ? 'Ganjil' : 'Genap' }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-auto">
+                            <div class="form-group mb-3">
+                                <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; border-color: #064e3b; height: 38px;">
+                                    <i class="ti ti-search fs-5"></i>
+                                    <span>Cari</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row text-nowrap">
                             @forelse ($jadwal as $item)
                             <div class="col-12">
                                 <div class="card mb-2 border">
@@ -196,10 +236,6 @@
                             </div>
                             @endforelse
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 

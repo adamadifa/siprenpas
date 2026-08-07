@@ -30,10 +30,10 @@
                     </nav>
                     @can('guru.create')
                         <div class="d-flex gap-2">
-                            <a href="{{ route('guru.generateUsers') }}" class="btn btn-label-success d-flex align-items-center gap-2 shadow-sm">
+                            {{-- <a href="{{ route('guru.generateUsers') }}" class="btn btn-label-success d-flex align-items-center gap-2 shadow-sm">
                                 <i class="ti ti-users-plus fs-5"></i>
                                 <span>Generate Akun User</span>
-                            </a>
+                            </a> --}}
                             <a href="#" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm" id="btnCreateGuru" style="background-color: #064e3b; border-color: #064e3b">
                                 <i class="ti ti-plus fs-5"></i>
                                 <span>Tambah Data Guru</span>
@@ -54,26 +54,43 @@
             <div class="card-body p-0">
                 <form action="{{ route('guru.index') }}">
                     <div class="row g-3 align-items-center">
-                        <div class="col-lg-5 col-md-6">
-                            <x-input-with-icon label="" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
-                                placeholder="Cari Nama Guru" icon="ti ti-search" />
-                        </div>
-                        <div class="col-lg-4 col-md-6">
-                            <div class="form-group mb-3">
-                                <select name="kode_unit" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
-                                    <option value="">Semua Unit</option>
-                                    @foreach ($unit as $u)
-                                        <option value="{{ $u->kode_unit }}" {{ Request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>{{ $u->nama_unit }}</option>
-                                    @endforeach
-                                </select>
+                        @if (auth()->user()->hasRole('super admin'))
+                            <div class="col">
+                                <x-input-with-icon label="" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
+                                    placeholder="Cari Nama Guru" icon="ti ti-search" />
                             </div>
-                        </div>
-                        <div class="col-lg-3 col-md-6">
-                            <button class="btn btn-primary w-100 p-2 d-flex align-items-center justify-content-center gap-2 mb-3" style="background-color: #064e3b; border-color: #064e3b">
-                                <i class="ti ti-search fs-5"></i>
-                                <span>Cari Data</span>
-                            </button>
-                        </div>
+                            <div class="col-md-4 col-12">
+                                <div class="form-group mb-3">
+                                    <select name="kode_unit" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
+                                        <option value="">Semua Unit</option>
+                                        @foreach ($unit as $u)
+                                            <option value="{{ $u->kode_unit }}" {{ Request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>{{ $u->nama_unit }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="form-group mb-3">
+                                    <button class="btn btn-primary d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; border-color: #064e3b; height: 38px;">
+                                        <i class="ti ti-search fs-5"></i>
+                                        <span>Cari Data</span>
+                                    </button>
+                                </div>
+                            </div>
+                        @else
+                            <div class="col">
+                                <x-input-with-icon label="" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
+                                    placeholder="Cari Nama Guru" icon="ti ti-search" />
+                            </div>
+                            <div class="col-auto">
+                                <div class="form-group mb-3">
+                                    <button class="btn btn-primary d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; border-color: #064e3b; height: 38px;">
+                                        <i class="ti ti-search fs-5"></i>
+                                        <span>Cari Data</span>
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </form>
             </div>

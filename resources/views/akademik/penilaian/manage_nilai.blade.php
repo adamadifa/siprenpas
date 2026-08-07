@@ -153,43 +153,111 @@
 
 <!-- Modal Add Column (Rencana) -->
 <div class="modal fade" id="mdlAddColumn" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header text-white" style="background-color: #104e30;">
-                <h5 class="modal-title text-white">Tambah Penilaian {{ ucfirst(strtolower($kategori)) }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+            <div class="modal-header text-white" style="background-color: #064e3b; border-bottom: none; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+                <h5 class="modal-title text-white fw-bold"><i class="ti ti-plus me-1"></i> Tambah Penilaian {{ ucfirst(strtolower($kategori)) }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
              <form action="{{ route('penilaian.store-rencana') }}" method="POST">
                 @csrf
                 <input type="hidden" name="bobot_penilaian_id" value="{{ $bobot->id }}">
                 <input type="hidden" name="kategori_penilaian" value="{{ $kategori }}">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Kode (Singkatan)</label>
-                        <input type="text" name="kode_penilaian" class="form-control" placeholder="{{ $kategori == 'SUMATIF' ? 'PH...' : 'SAS' }}" required>
-                         <small class="text-muted">Contoh: PH1, PH2, UTS, UAS</small>
+                <div class="modal-body px-4 py-3">
+                    
+                    <div class="custom-outline-group mb-4">
+                        <label class="form-label">Kode (Singkatan) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="ti ti-hash fs-5"></i></span>
+                            <input type="text" name="kode_penilaian" class="form-control" placeholder="{{ $kategori == 'SUMATIF' ? 'PH...' : 'SAS' }}" autocomplete="off" required>
+                        </div>
+                        <small class="text-muted ms-2 mt-1 d-block" style="font-size: 0.7rem;">Contoh: PH1, PH2, UTS, UAS</small>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Nama Materi / Keterangan</label>
-                        <input type="text" name="nama_penilaian" class="form-control" placeholder="Contoh: Bab 1 Bilangan Bulat" required>
+
+                    <div class="custom-outline-group mb-4">
+                        <label class="form-label">Nama Materi / Keterangan <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="ti ti-notebook fs-5"></i></span>
+                            <input type="text" name="nama_penilaian" class="form-control" placeholder="Contoh: Bab 1 Bilangan Bulat" autocomplete="off" required>
+                        </div>
                     </div>
-                     <div class="mb-3">
-                        <label class="form-label">Tanggal</label>
-                        <input type="date" name="tanggal_penilaian" class="form-control" value="{{ date('Y-m-d') }}">
+
+                    <div class="custom-outline-group mb-3">
+                        <label class="form-label">Tanggal <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="ti ti-calendar fs-5"></i></span>
+                            <input type="text" name="tanggal_penilaian" class="form-control flatpickr-date" value="{{ date('Y-m-d') }}" placeholder="Pilih Tanggal" required>
+                        </div>
                     </div>
+                    
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                <div class="modal-footer border-top-0 px-4 pb-4">
+                    <button type="button" class="btn btn-label-secondary px-4" data-bs-dismiss="modal" style="border-radius: 12px; height: 42px;">Batal</button>
+                    <button type="submit" class="btn text-white px-4" style="background-color: #064e3b; border-radius: 12px; height: 42px;">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
+<style>
+/* Custom Outline Form Styling matching the reference image */
+.custom-outline-group {
+    position: relative;
+    margin-top: 10px;
+}
+.custom-outline-group .form-label {
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    background: #fff;
+    padding: 0 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    z-index: 10 !important;
+    color: #495057;
+    transition: all 0.2s ease;
+}
+.custom-outline-group .input-group {
+    border: 1.5px solid #ced4da;
+    border-radius: 12px;
+    background: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+.custom-outline-group .input-group:focus-within {
+    border-color: #064e3b;
+    box-shadow: 0 0 0 3px rgba(6, 78, 59, 0.1);
+}
+.custom-outline-group:focus-within .form-label {
+    color: #064e3b;
+}
+.custom-outline-group .input-group-text {
+    background: transparent !important;
+    border: none !important;
+    padding-right: 5px;
+    color: #a1acb8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.custom-outline-group .form-control,
+.custom-outline-group .form-select {
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 12px !important;
+    padding-left: 5px;
+    height: 48px;
+}
+</style>
+
 @push('myscript')
 <script>
     $(document).ready(function(){
+        $(".flatpickr-date").flatpickr({
+            dateFormat: "Y-m-d"
+        });
+
         $("#searchInput").on("keyup", function() {
             var value = $(this).val().toLowerCase();
             $("#nilaiTable tbody tr").filter(function() {

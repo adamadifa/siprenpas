@@ -23,8 +23,14 @@ class MataPelajaranController extends Controller
         }
 
         // Filter by Unit
-        if ($request->has('kode_unit') && $request->kode_unit != '') {
-            $query->where('kode_unit', $request->kode_unit);
+        if (!auth()->user()->hasRole('super admin')) {
+            $query->where('kode_unit', auth()->user()->kode_unit);
+            $units = Unit::where('kode_unit', auth()->user()->kode_unit)->get();
+        } else {
+            if ($request->has('kode_unit') && $request->kode_unit != '') {
+                $query->where('kode_unit', $request->kode_unit);
+            }
+            $units = Unit::all();
         }
 
         // Filter by Nama Mapel
@@ -35,16 +41,23 @@ class MataPelajaranController extends Controller
         $query->orderBy('urutan');
 
         $matapelajaran = $query->get();
-        $units = Unit::all();
 
         return view('akademik.mata_pelajaran.index', compact('matapelajaran', 'units'));
     }
 
     public function create()
     {
-        $units = Unit::all();
+        if (!auth()->user()->hasRole('super admin')) {
+            $units = Unit::where('kode_unit', auth()->user()->kode_unit)->get();
+        } else {
+            $units = Unit::all();
+        }
         // Get all parents for dropdown
-        $parents = MataPelajaran::root()->orderBy('kelompok')->orderBy('nama_matpel')->get();
+        $parentsQuery = MataPelajaran::root()->orderBy('kelompok')->orderBy('nama_matpel');
+        if (!auth()->user()->hasRole('super admin')) {
+            $parentsQuery->where('kode_unit', auth()->user()->kode_unit);
+        }
+        $parents = $parentsQuery->get();
 
         return view('akademik.mata_pelajaran.create', compact('units', 'parents'));
     }
@@ -101,8 +114,18 @@ class MataPelajaranController extends Controller
     {
         $id = Crypt::decrypt($id);
         $matapelajaran = MataPelajaran::findOrFail($id);
-        $units = Unit::all();
-        $parents = MataPelajaran::root()->where('id', '!=', $id)->orderBy('kelompok')->orderBy('nama_matpel')->get();
+        
+        if (!auth()->user()->hasRole('super admin')) {
+            $units = Unit::where('kode_unit', auth()->user()->kode_unit)->get();
+        } else {
+            $units = Unit::all();
+        }
+
+        $parentsQuery = MataPelajaran::root()->where('id', '!=', $id)->orderBy('kelompok')->orderBy('nama_matpel');
+        if (!auth()->user()->hasRole('super admin')) {
+            $parentsQuery->where('kode_unit', auth()->user()->kode_unit);
+        }
+        $parents = $parentsQuery->get();
 
         return view('akademik.mata_pelajaran.edit', compact('matapelajaran', 'units', 'parents'));
     }

@@ -76,173 +76,219 @@
                             $isU06 = auth()->user()->kode_unit == 'U06';
                         @endphp
                         
-                        <div class="{{ $isU06 ? 'col-lg-3' : 'col-lg-4' }} col-md-6">
+                        <div class="col">
                             <x-input-with-icon label="" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
                                 placeholder="Cari Nama Siswa" icon="ti ti-search" />
                         </div>
 
                         @if ($isU06)
-                            <div class="col-lg-2 col-md-6">
-                                <div class="form-group">
-                                    <select name="kode_unit" id="kode_unit_search" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
-                                        <option value="">Semua Unit</option>
-                                        @foreach ($unit as $d)
-                                            <option value="{{ $d->kode_unit }}" {{ Request('kode_unit') == $d->kode_unit ? 'selected' : '' }}>
-                                                {{ $d->nama_unit }}</option>
-                                        @endforeach
-                                    </select>
+                            <div class="col-md-2 col-12">
+                                <div class="form-group mb-3">
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-school text-muted"></i></span>
+                                        <select name="kode_unit" id="kode_unit_search" class="form-select">
+                                            <option value="">Semua Unit</option>
+                                            @foreach ($unit as $d)
+                                                <option value="{{ $d->kode_unit }}" {{ Request('kode_unit') == $d->kode_unit ? 'selected' : '' }}>
+                                                    {{ $d->nama_unit }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         @endif
 
-                        <div class="col-lg-2 col-md-6">
-                            <div class="form-group">
-                                <select name="tingkat" id="tingkat" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
-                                    <option value="">Tingkat</option>
-                                </select>
+                        <div class="col-md-2 col-6">
+                            <div class="form-group mb-3">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ti ti-chart-bar text-muted"></i></span>
+                                    <select name="tingkat" id="tingkat" class="form-select">
+                                        <option value="">Tingkat</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="col-lg-3 col-md-6">
-                            <div class="form-group">
-                                <select name="kode_ta" id="kode_ta_search" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
-                                    <option value="">Pilih Tahun Ajaran</option>
-                                    @foreach ($tahunajaran as $d)
-                                        <option value="{{ $d->kode_ta }}"
-                                            @if(!empty(Request('kode_ta')))
-                                                {{ Request('kode_ta') == $d->kode_ta ? 'selected' : '' }}
-                                            @else
-                                                {{ $d->kode_ta == $tahun_ajaran->kode_ta ? 'selected' : '' }}
-                                            @endif 
-                                        >
-                                            {{ $d->tahun_ajaran }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                        <div class="col-md-2 col-6">
+                            <div class="form-group mb-3">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ti ti-door-enter text-muted"></i></span>
+                                    <select name="kode_kelas" id="kode_kelas_search" class="form-select">
+                                        <option value="">Kelas</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="col-lg-2 col-md-6">
-                            <button class="btn btn-primary w-100 p-2 d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; border-color: #064e3b">
-                                <i class="ti ti-search fs-5"></i>
-                                <span>Cari</span>
-                            </button>
+                        <div class="col-md-2 col-6">
+                            <div class="form-group mb-3">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ti ti-calendar-event text-muted"></i></span>
+                                    <select name="kode_ta" id="kode_ta_search" class="form-select">
+                                        <option value="">Pilih Tahun Ajaran</option>
+                                        @foreach ($tahunajaran as $d)
+                                            <option value="{{ $d->kode_ta }}"
+                                                @if(!empty(Request('kode_ta')))
+                                                    {{ Request('kode_ta') == $d->kode_ta ? 'selected' : '' }}
+                                                @else
+                                                    {{ $d->kode_ta == $tahun_ajaran->kode_ta ? 'selected' : '' }}
+                                                @endif 
+                                            >
+                                                {{ $d->tahun_ajaran }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-auto">
+                            <div class="form-group mb-3">
+                                <button class="btn btn-primary d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; border-color: #064e3b; height: 38px;">
+                                    <i class="ti ti-search fs-5"></i>
+                                    <span>Cari</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Table Data Master -->
-        <div class="card shadow-sm">
-            <div class="card-header d-flex align-items-center gap-2 text-white py-3" style="background-color: #064e3b">
-                <i class="ti ti-layout-grid fs-5"></i>
-                <h6 class="card-title mb-0 text-white">Data Siswa</h6>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead style="background-color: #064e3b">
-                            <tr>
-                                <th class="text-white py-3">NO.</th>
-                                <th class="text-white py-3">FOTO</th>
-                                <th class="text-white py-3">ID SISWA</th>
-                                <th class="text-white py-3">NISN/NIS</th>
-                                <th class="text-white py-3">NAMA LENGKAP</th>
-                                <th class="text-white py-3">J. KELAMIN</th>
-                                <th class="text-white py-3">UNIT</th>
-                                <th class="text-white py-3">TINGKAT</th>
-                                <th class="text-white py-3">KELAS</th>
-                                <th class="text-white py-3 text-end" style="width: 150px;">#</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($pendaftaran as $d)
-                                <tr>
-                                    <td class="py-1">{{ $loop->iteration + $pendaftaran->firstItem() - 1 }}</td>
-                                    <td class="py-1">
+        <!-- Data List (Modern Cards) -->
+        <div class="row g-3">
+            @forelse ($pendaftaran as $d)
+                <div class="col-12">
+                    <div class="card shadow-sm border h-100 overflow-hidden" style="background-color: #ffffff; border-color: #e2e8f0 !important;">
+                        <div class="card-body p-3">
+                            <div class="row align-items-center">
+                                <!-- Photo & Primary Info -->
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <div class="d-flex align-items-center">
+                                        <!-- Nomor Urut -->
+                                        <div class="d-flex align-items-center justify-content-center rounded-circle me-3 fw-bold shadow-sm" style="width: 32px; height: 32px; min-width: 32px; font-size: 0.85rem; background-color: #f0fdf4; color: #064e3b; border: 1px dashed #064e3b;">
+                                            {{ $loop->iteration + $pendaftaran->firstItem() - 1 }}
+                                        </div>
+
                                         @if ($d->foto_pendaftaran && Storage::disk('public')->exists('photos/pendaftaran/' . $d->foto_pendaftaran))
-                                            <div class="avatar avatar-md border rounded overflow-hidden shadow-sm" style="width: 40px; height: 50px;">
+                                            <div class="avatar border rounded overflow-hidden shadow-sm me-3" style="width: 48px; height: 60px; min-width: 48px;">
                                                 <img src="{{ asset('storage/photos/pendaftaran/' . $d->foto_pendaftaran) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
                                             </div>
                                         @else
-                                            <div class="avatar avatar-md d-flex align-items-center justify-content-center bg-label-secondary border rounded shadow-none" style="width: 40px; height: 50px;">
-                                                <i class="ti ti-user fs-4 opacity-50"></i>
+                                            <div class="avatar d-flex align-items-center justify-content-center bg-label-success border rounded shadow-none me-3" style="width: 48px; height: 60px; min-width: 48px;">
+                                                <i class="ti ti-user fs-3 opacity-75" style="color: #064e3b;"></i>
                                             </div>
                                         @endif
-                                    </td>
-                                    <td class="py-1">{{ $d->id_siswa }}</td>
-                                    <td class="py-1">
-                                        <div class="small text-muted">NISN: {{ $d->nisn ?? '-' }}</div>
-                                        <div class="small fw-bold">NIS: {{ $d->nis ?? '-' }}</div>
-                                    </td>
-                                    <td class="py-1">
-                                        <span class="fw-bold text-dark">{{ $d->nama_lengkap }}</span>
-                                        <div class="small text-muted">{{ !empty($d->tanggal_lahir) ? DateToIndo($d->tanggal_lahir) : '-' }}</div>
-                                    </td>
-                                    <td class="py-1">
-                                        @if($d->jenis_kelamin == 'L')
-                                            <span class="badge bg-label-info">Laki-laki</span>
-                                        @else
-                                            <span class="badge bg-label-danger">Perempuan</span>
-                                        @endif
-                                    </td>
-                                    <td class="py-1">{{ $d->nama_unit }}</td>
-                                    <td class="py-1"><span class="badge bg-label-primary">Tingkat {{ $d->tingkat }}</span></td>
-                                    <td class="py-1"><span class="fw-bold text-primary">{{ $d->nama_kelas ?? '-' }}</span></td>
-                                    <td class="py-1 text-end">
-                                        <div class="d-flex justify-content-end gap-1">
-                                            @can('pendaftaran.edit')
-                                                <a href="#" class="btn btn-icon btn-label-success border btnEdit shadow-none"
-                                                    style="width: 28px; height: 28px;"
-                                                    no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}" data-bs-toggle="tooltip" title="Edit Data">
-                                                    <i class="ti ti-edit fs-6"></i>
-                                                </a>
-                                            @endcan
-                                            @can('pendaftaran.show')
-                                                <a href="#" class="btn btn-icon btn-label-info border btnShow shadow-none"
-                                                    style="width: 28px; height: 28px;"
-                                                    no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}" data-bs-toggle="tooltip" title="Detail Data">
-                                                    <i class="ti ti-file-description fs-6"></i>
-                                                </a>
-                                                <a href="{{ route('pendaftaran.cetak-id-card', Crypt::encrypt($d->no_pendaftaran)) }}" target="_blank" class="btn btn-icon btn-label-primary border shadow-none"
-                                                    style="width: 28px; height: 28px;" data-bs-toggle="tooltip" title="Cetak ID Card">
-                                                    <i class="ti ti-id-badge fs-6"></i>
-                                                </a>
-                                            @endcan
-
-                                            @can('pendaftaran.edit')
-                                                <a href="#" class="btn btn-icon btn-label-warning border btnRfid shadow-none"
-                                                    style="width: 28px; height: 28px;"
-                                                    no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}"
-                                                    nama_siswa="{{ $d->nama_lengkap }}" rfid_code="{{ $d->rfid_code ?? '' }}"
-                                                    data-bs-toggle="tooltip" title="{{ $d->rfid_code ? 'Edit RFID' : 'Tambah RFID' }}">
-                                                    <i class="ti ti-id-badge fs-6 {{ $d->rfid_code ? 'text-success' : '' }}"></i>
-                                                </a>
-                                            @endcan
+                                        <div>
+                                            <h6 class="mb-1 fw-bold text-dark" style="font-size: 0.95rem;">{{ $d->nama_lengkap }}</h6>
+                                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                                <span class="badge bg-label-success d-inline-flex align-items-center" style="font-size: 0.65rem;">
+                                                    <i class="ti ti-school me-1" style="font-size: 0.75rem;"></i>{{ $d->nama_unit }}
+                                                </span>
+                                                <span class="badge bg-label-primary d-inline-flex align-items-center" style="font-size: 0.65rem;">
+                                                    <i class="ti ti-chart-bar me-1" style="font-size: 0.75rem;"></i>Tingkat {{ $d->tingkat }}
+                                                </span>
+                                                @if($d->jenis_kelamin == 'L')
+                                                    <span class="badge bg-label-info d-inline-flex align-items-center" style="font-size: 0.65rem;">
+                                                        <i class="ti ti-gender-male me-1" style="font-size: 0.75rem;"></i>Laki-laki
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-label-danger d-inline-flex align-items-center" style="font-size: 0.65rem;">
+                                                        <i class="ti ti-gender-female me-1" style="font-size: 0.75rem;"></i>Perempuan
+                                                    </span>
+                                                @endif
+                                            </div>
                                         </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="10" class="text-center p-5">
-                                        <div class="mb-3">
-                                            <i class="ti ti-users fs-1 opacity-25"></i>
+                                    </div>
+                                </div>
+                                
+                                <!-- Identity & Date of Birth -->
+                                <div class="col-lg-3 col-md-6 col-sm-12 border-start-lg ps-lg-4 mt-3 mt-md-0">
+                                    <div class="d-flex flex-column gap-1">
+                                        <div class="text-muted small">ID / TTL</div>
+                                        <span class="fw-bold text-dark d-inline-flex align-items-center gap-1" style="font-size: 0.85rem;">
+                                            <i class="ti ti-fingerprint text-success" style="font-size: 1rem;"></i> {{ $d->id_siswa }}
+                                        </span>
+                                        <span class="text-muted small d-inline-flex align-items-center gap-1">
+                                            <i class="ti ti-cake text-warning" style="font-size: 0.85rem;"></i> {{ !empty($d->tanggal_lahir) ? DateToIndo($d->tanggal_lahir) : '-' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- NIS/NISN & Kelas -->
+                                <div class="col-lg-3 col-md-6 col-sm-12 border-start-lg ps-lg-4 mt-3 mt-lg-0">
+                                    <div class="row">
+                                        <div class="col-6 d-flex flex-column gap-1">
+                                            <div class="text-muted small">Nomor Induk</div>
+                                            <div class="small text-dark d-flex align-items-center gap-1" style="font-size: 0.8rem;">
+                                                <i class="ti ti-id text-muted" style="font-size: 0.85rem;"></i>NISN: <span class="fw-bold">{{ $d->nisn ?? '-' }}</span>
+                                            </div>
+                                            <div class="small text-dark d-flex align-items-center gap-1" style="font-size: 0.8rem;">
+                                                <i class="ti ti-hash text-muted" style="font-size: 0.85rem;"></i>NIS: <span class="fw-bold">{{ $d->nis ?? '-' }}</span>
+                                            </div>
                                         </div>
-                                        <h5>Belum Ada Data Siswa</h5>
-                                        <p class="text-muted small">Silahkan sesuaikan filter.</p>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-                <div class="px-4 py-3 border-top">
-                    <div style="float: right;">
-                        {{ $pendaftaran->links() }}
+                                        <div class="col-6 border-start ps-3">
+                                            <div class="text-muted small">Kelas</div>
+                                            <span class="badge bg-success text-white px-3 py-1 mt-1 d-inline-flex align-items-center gap-1" style="background-color: #064e3b !important; font-size: 0.75rem;">
+                                                <i class="ti ti-door-enter" style="font-size: 0.85rem;"></i> {{ $d->nama_kelas ?? 'Belum Set' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Actions -->
+                                <div class="col-lg-2 col-md-6 col-sm-12 text-end mt-3 mt-lg-0">
+                                    <div class="d-flex justify-content-end gap-1">
+                                        @can('pendaftaran.edit')
+                                            <a href="#" class="btn btn-icon btn-label-success border btnEdit shadow-none"
+                                                style="width: 32px; height: 32px;"
+                                                no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}" data-bs-toggle="tooltip" title="Edit Data">
+                                                <i class="ti ti-edit fs-5"></i>
+                                            </a>
+                                        @endcan
+                                        @can('pendaftaran.show')
+                                            <a href="#" class="btn btn-icon btn-label-info border btnShow shadow-none"
+                                                style="width: 32px; height: 32px;"
+                                                no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}" data-bs-toggle="tooltip" title="Detail Data">
+                                                <i class="ti ti-file-description fs-5"></i>
+                                            </a>
+                                            <a href="{{ route('pendaftaran.cetak-id-card', Crypt::encrypt($d->no_pendaftaran)) }}" target="_blank" class="btn btn-icon btn-label-primary border shadow-none"
+                                                style="width: 32px; height: 32px;" data-bs-toggle="tooltip" title="Cetak ID Card">
+                                                <i class="ti ti-id-badge fs-5"></i>
+                                            </a>
+                                        @endcan
+                                        @can('pendaftaran.edit')
+                                            <a href="#" class="btn btn-icon btn-label-warning border btnRfid shadow-none"
+                                                style="width: 32px; height: 32px;"
+                                                no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}"
+                                                nama_siswa="{{ $d->nama_lengkap }}" rfid_code="{{ $d->rfid_code ?? '' }}"
+                                                data-bs-toggle="tooltip" title="{{ $d->rfid_code ? 'Edit RFID' : 'Tambah RFID' }}">
+                                                <i class="ti ti-id-badge fs-5 {{ $d->rfid_code ? 'text-success' : '' }}"></i>
+                                            </a>
+                                        @endcan
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @empty
+                <div class="col-12">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body text-center p-5">
+                            <div class="mb-3">
+                                <i class="ti ti-users fs-1 opacity-25" style="color: #064e3b;"></i>
+                            </div>
+                            <h5>Belum Ada Data Siswa</h5>
+                            <p class="text-muted small mb-0">Silahkan sesuaikan filter pencarian Anda.</p>
+                        </div>
+                    </div>
+                </div>
+            @endforelse
+        </div>
+
+        <div class="d-flex justify-content-end mt-4 mb-5">
+            {{ $pendaftaran->links() }}
         </div>
 
     </div>
@@ -413,15 +459,51 @@
             });
         }
 
+        function getKelasByTingkat(kode_unit, tingkat, kode_ta, selected = '') {
+            selected = "{{ Request('kode_kelas') }}";
+            $.ajax({
+                type: "POST",
+                url: "{{ route('unit.getkelasbytingkat') }}",
+                cache: false,
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    kode_unit: kode_unit,
+                    tingkat: tingkat,
+                    kode_ta: kode_ta,
+                    selected: selected
+                },
+                success: function(respond) {
+                    $(document).find("#kode_kelas_search").html(respond);
+                }
+            });
+        }
+
         $(document).on('change', '#kode_unit_search', function() {
             const kode_unit = $(this).val();
             getTingkatByUnit(kode_unit);
+            getKelasByTingkat(kode_unit, '', $('#kode_ta_search').val());
+        });
+
+        $(document).on('change', '#tingkat', function() {
+            const tingkat = $(this).val();
+            const kode_unit = $('#kode_unit_search').length ? $('#kode_unit_search').val() : "{{ auth()->user()->kode_unit }}";
+            const kode_ta = $('#kode_ta_search').val();
+            getKelasByTingkat(kode_unit, tingkat, kode_ta);
+        });
+
+        $(document).on('change', '#kode_ta_search', function() {
+            const kode_ta = $(this).val();
+            const kode_unit = $('#kode_unit_search').length ? $('#kode_unit_search').val() : "{{ auth()->user()->kode_unit }}";
+            const tingkat = $('#tingkat').val();
+            getKelasByTingkat(kode_unit, tingkat, kode_ta);
         });
 
         @if ($isU06)
             getTingkatByUnit("{{ Request('kode_unit') }}");
+            getKelasByTingkat("{{ Request('kode_unit') }}", "{{ Request('tingkat') }}", "{{ Request('kode_ta') ?: ($tahun_ajaran->kode_ta ?? '') }}");
         @else
             getTingkatByUnit("{{ auth()->user()->kode_unit }}");
+            getKelasByTingkat("{{ auth()->user()->kode_unit }}", "{{ Request('tingkat') }}", "{{ Request('kode_ta') ?: ($tahun_ajaran->kode_ta ?? '') }}");
         @endif
     });
 </script>

@@ -53,8 +53,12 @@ class JadwalPelajaranController extends Controller
         }
 
         // Filter by Unit
-        if ($request->has('kode_unit') && $request->kode_unit != '') {
-            $query->where('kode_unit', $request->kode_unit);
+        if ($user->kode_unit != 'U06') {
+            $query->where('kode_unit', $user->kode_unit);
+        } else {
+            if ($request->has('kode_unit') && $request->kode_unit != '') {
+                $query->where('kode_unit', $request->kode_unit);
+            }
         }
 
         // Filter by Kelas
@@ -104,13 +108,19 @@ class JadwalPelajaranController extends Controller
 
             $gurus = [];
         } else {
-            $units = Unit::all();
-            if ($request->has('kode_unit') && $request->kode_unit != '') {
-                $kelas = Kelas::where('kode_unit', $request->kode_unit)->orderBy('nama_kelas')->get();
-                $gurus = Guru::with('karyawan')->where('kode_unit', $request->kode_unit)->where('status_aktif_ajar', 1)->get();
+            if ($user->kode_unit != 'U06') {
+                $units = Unit::where('kode_unit', $user->kode_unit)->get();
+                $kelas = Kelas::where('kode_unit', $user->kode_unit)->orderBy('nama_kelas')->get();
+                $gurus = Guru::with('karyawan')->where('kode_unit', $user->kode_unit)->where('status_aktif_ajar', 1)->get();
             } else {
-                $kelas = Kelas::orderBy('nama_kelas')->get();
-                $gurus = Guru::with('karyawan')->where('status_aktif_ajar', 1)->get();
+                $units = Unit::all();
+                if ($request->has('kode_unit') && $request->kode_unit != '') {
+                    $kelas = Kelas::where('kode_unit', $request->kode_unit)->orderBy('nama_kelas')->get();
+                    $gurus = Guru::with('karyawan')->where('kode_unit', $request->kode_unit)->where('status_aktif_ajar', 1)->get();
+                } else {
+                    $kelas = Kelas::orderBy('nama_kelas')->get();
+                    $gurus = Guru::with('karyawan')->where('status_aktif_ajar', 1)->get();
+                }
             }
         }
         
@@ -132,11 +142,29 @@ class JadwalPelajaranController extends Controller
             return '<div class="alert alert-danger">Tidak ada Tahun Ajaran Aktif!</div>';
         }
 
-        $units = Unit::all();
-        // Initially empty, waiting for User to select Unit
-        $kelas = []; 
-        $mapels = [];
-        $gurus = []; // Initially empty
+        $user = auth()->user();
+        if ($user->kode_unit != 'U06') {
+            $units = Unit::where('kode_unit', $user->kode_unit)->get();
+            $kelas = Kelas::where('kode_unit', $user->kode_unit)
+                          ->where('kode_ta', $activeTa->kode_ta)
+                          ->orderBy('nama_kelas')
+                          ->get();
+
+            $mapels = MataPelajaran::where('kode_unit', $user->kode_unit)
+                                   ->where('aktif', 1)
+                                   ->orderBy('nama_matpel')
+                                   ->get();
+
+            $gurus = Guru::with('karyawan')
+                         ->where('kode_unit', $user->kode_unit)
+                         ->where('status_aktif_ajar', 1)
+                         ->get();
+        } else {
+            $units = Unit::all();
+            $kelas = []; 
+            $mapels = [];
+            $gurus = [];
+        }
         
         return view('akademik.jadwal_pelajaran.create', compact('units', 'kelas', 'mapels', 'gurus', 'activeTa'));
     }
@@ -152,8 +180,9 @@ class JadwalPelajaranController extends Controller
 
         $kode_unit = $request->kode_unit;
         $activeTa = Tahunajaran::where('status', 1)->first();
+        $selectedKodeTa = $request->kode_ta ?: ($activeTa ? $activeTa->kode_ta : null);
 
-        if (!$activeTa || !$kode_unit) {
+        if (!$selectedKodeTa || !$kode_unit) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Invalid Request or No Active TA'
@@ -168,6 +197,7 @@ class JadwalPelajaranController extends Controller
 
         if ($guru) {
             $kelas = Kelas::where('kode_unit', $kode_unit)
+                          ->where('kode_ta', $selectedKodeTa)
                           ->whereIn('kode_kelas', function($q) use ($guru) {
                               $q->select('kode_kelas')->from('jadwal_pelajaran')->where('guru_id', $guru->id);
                           })
@@ -185,7 +215,7 @@ class JadwalPelajaranController extends Controller
             $gurus = [];
         } else {
             $kelas = Kelas::where('kode_unit', $kode_unit)
-                          ->where('kode_ta', $activeTa->kode_ta)
+                          ->where('kode_ta', $selectedKodeTa)
                           ->orderBy('nama_kelas')
                           ->get();
 
@@ -230,8 +260,8 @@ class JadwalPelajaranController extends Controller
             }
 
             JadwalPelajaran::create([
-                'kode_unit' => $request->kode_unit,
                 'kode_ta' => $activeTa->kode_ta,
+                'kode_unit' => $request->kode_unit,
                 'kode_kelas' => $request->kode_kelas,
                 'mata_pelajaran_id' => $request->mata_pelajaran_id,
                 'guru_id' => $request->guru_id,
@@ -254,7 +284,13 @@ class JadwalPelajaranController extends Controller
         $jadwal = JadwalPelajaran::findOrFail($id);
         $activeTa = Tahunajaran::where('status', 1)->first();
         
-        $units = Unit::all();
+        $user = auth()->user();
+        if ($user->kode_unit != 'U06') {
+            $units = Unit::where('kode_unit', $user->kode_unit)->get();
+        } else {
+            $units = Unit::all();
+        }
+        
         // Load kelas match Unit and TA of the jadwal
         $kelas = Kelas::where('kode_unit', $jadwal->kode_unit)
                       ->where('kode_ta', $jadwal->kode_ta)

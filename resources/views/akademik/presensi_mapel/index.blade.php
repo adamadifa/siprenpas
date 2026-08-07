@@ -45,41 +45,77 @@
             </button>
         </div>
 
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <form action="{{ route('presensi-mapel.index') }}" method="GET">
-                    <div class="row g-2">
-                        <div class="col-lg-3 col-md-6 col-sm-12">
-                            <select name="kode_unit" id="kode_unit" class="form-select select2">
-                                <option value="">Semua Unit</option>
-                                @foreach ($units as $u)
-                                    <option value="{{ $u->kode_unit }}" {{ Request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>
-                                        {{ $u->nama_unit }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-sm-12">
-                            <select name="kode_kelas" id="kode_kelas" class="form-select select2">
-                                <option value="">Semua Kelas</option>
-                                @foreach ($kelas as $k)
-                                    <option value="{{ $k->kode_kelas }}" {{ Request('kode_kelas') == $k->kode_kelas ? 'selected' : '' }}>
-                                        {{ $k->nama_kelas }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-lg-4 col-md-6 col-sm-12">
-                            <div class="input-group input-group-merge border shadow-none rounded-2" style="border-color: #ced4da !important;">
-                                <span class="input-group-text bg-white border-0"><i class="ti ti-calendar text-muted"></i></span>
-                                <input type="text" name="tanggal" class="form-control bg-white border-0 ps-2 flatpickr-date"
-                                    value="{{ Request('tanggal') }}" placeholder="Pilih Tanggal">
+        <!-- Filter Form -->
+        <div class="card mb-4 shadow-none border-0 bg-transparent">
+            <div class="card-body p-0">
+                <form action="{{ route('presensi-mapel.index') }}" method="GET" class="form-filter">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md col-12">
+                            <div class="form-group mb-3">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ti ti-calendar-event text-muted"></i></span>
+                                    <select name="kode_ta" id="kode_ta" class="form-select">
+                                        @foreach ($semuaTa as $ta)
+                                            <option value="{{ $ta->kode_ta }}" {{ $selectedKodeTa == $ta->kode_ta ? 'selected' : '' }}>
+                                                {{ $ta->tahun_ajaran }} {{ $ta->status == 1 ? '(Aktif)' : '' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-lg-2 col-md-6 col-sm-12">
-                            <button type="submit" class="btn btn-primary w-100 shadow-none" style="background-color: #064e3b; border-color: #064e3b">
-                                <i class="ti ti-search me-1"></i> Cari
-                            </button>
+
+                        @if (auth()->user()->kode_unit == 'U06' && !auth()->user()->hasRole('guru'))
+                            <div class="col-md col-12">
+                                <div class="form-group mb-3">
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-school text-muted"></i></span>
+                                        <select name="kode_unit" id="kode_unit" class="form-select">
+                                            <option value="">Semua Unit</option>
+                                            @foreach ($units as $u)
+                                                <option value="{{ $u->kode_unit }}" {{ Request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>
+                                                    {{ $u->nama_unit }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="col-md col-12">
+                            <div class="form-group mb-3">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ti ti-door-enter text-muted"></i></span>
+                                    <select name="kode_kelas" id="kode_kelas" class="form-select">
+                                        <option value="">Semua Kelas</option>
+                                        @foreach ($kelas as $k)
+                                            <option value="{{ $k->kode_kelas }}" {{ Request('kode_kelas') == $k->kode_kelas ? 'selected' : '' }}>
+                                                {{ $k->nama_kelas }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md col-12">
+                            <div class="form-group mb-3">
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text"><i class="ti ti-calendar text-muted"></i></span>
+                                    <input type="text" name="tanggal" class="form-control flatpickr-date"
+                                        value="{{ Request('tanggal') }}" placeholder="Pilih Tanggal">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-auto">
+                            <div class="form-group mb-3">
+                                <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; border-color: #064e3b; height: 38px;">
+                                    <i class="ti ti-search fs-5"></i>
+                                    <span>Cari</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -177,25 +213,34 @@
             $('#loadInputPresensi').load("{{ route('presensi-mapel.create') }}");
         });
 
-        $('#kode_unit').change(function() {
-            var kode_unit = $(this).val();
+        function updateKelas() {
+            var kode_unit = $('#kode_unit').val();
+            var kode_ta = $('#kode_ta').val();
+            if (!$('#kode_unit').length) {
+                kode_unit = "{{ auth()->user()->kode_unit }}";
+            }
             if (kode_unit) {
                 $.ajax({
                     url: "{{ route('jadwal-pelajaran.get-data-by-unit') }}",
                     type: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",
-                        kode_unit: kode_unit
+                        kode_unit: kode_unit,
+                        kode_ta: kode_ta
                     },
                     success: function(res) {
                         var opt = '<option value="">Semua Kelas</option>';
                         res.kelas.forEach(function(item) {
-                            opt += `<option value="${item.kode_kelas}">${item.nama_kelas}</option>`;
+                            opt += `<option value="${item.kode_kelas}" ${"{{ Request('kode_kelas') }}" == item.kode_kelas ? 'selected' : ''}>${item.nama_kelas}</option>`;
                         });
                         $('#kode_kelas').html(opt);
                     }
                 });
             }
+        }
+
+        $('#kode_unit, #kode_ta').change(function() {
+            updateKelas();
         });
 
         $('.delete-confirm').click(function(e) {

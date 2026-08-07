@@ -79,6 +79,10 @@ class AkademikSiswaController extends Controller
             $query->where('konfigurasi_biaya.tingkat', $request->tingkat);
         }
 
+        if (!empty($request->kode_kelas)) {
+            $query->where('kelas_siswa.kode_kelas', $request->kode_kelas);
+        }
+
         if ($user->kode_unit != 'U06') {
             $query->where('pendaftaran.kode_unit', $user->kode_unit);
         }

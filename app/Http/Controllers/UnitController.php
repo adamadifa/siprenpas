@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Unit;
+use App\Models\Kelas;
+use App\Models\Guru;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
@@ -155,6 +157,52 @@ class UnitController extends Controller
         echo "<option value=''>Tingkat</option>";
         for ($i = 1; $i <= $jml_tingkat; $i++) {
             echo "<option value='$i'" . ($selected == $i ? 'selected' : '') . ">$i</option>";
+        }
+    }
+
+    public function getkelasbytingkat(Request $request)
+    {
+        $kode_unit = $request->kode_unit;
+        $tingkat = $request->tingkat;
+        $kode_ta = $request->kode_ta;
+        $selected = $request->selected;
+
+        $query = Kelas::query();
+        if (!empty($kode_unit)) {
+            $query->where('kode_unit', $kode_unit);
+        }
+        if (!empty($tingkat)) {
+            $query->where('tingkat', $tingkat);
+        }
+        if (!empty($kode_ta)) {
+            $query->where('kode_ta', $kode_ta);
+        }
+        
+        $kelas = $query->orderBy('nama_kelas')->get();
+
+        echo "<option value=''>Kelas</option>";
+        foreach ($kelas as $k) {
+            echo "<option value='{$k->kode_kelas}'" . ($selected == $k->kode_kelas ? 'selected' : '') . ">{$k->nama_kelas}</option>";
+        }
+    }
+
+    public function getgurubyunit(Request $request)
+    {
+        $kode_unit = $request->kode_unit;
+        $selected = $request->selected;
+
+        $query = Guru::with('karyawan')->where('status_aktif_ajar', 1);
+        if (!empty($kode_unit)) {
+            $query->where('kode_unit', $kode_unit);
+        }
+        $gurus = $query->get()->sortBy(function($g) {
+            return $g->karyawan->nama_lengkap ?? '';
+        });
+
+        echo "<option value=''>Pilih Wali Kelas</option>";
+        foreach ($gurus as $g) {
+            $nama = $g->karyawan->nama_lengkap ?? $g->nama_guru;
+            echo "<option value='{$g->id}'" . ($selected == $g->id ? 'selected' : '') . ">{$nama}</option>";
         }
     }
 }

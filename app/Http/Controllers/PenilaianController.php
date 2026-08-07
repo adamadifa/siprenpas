@@ -378,7 +378,24 @@ class PenilaianController extends Controller
             $selectedSemester = $activeSemester ? $activeSemester->semester : '1';
         }
 
+        $user = auth()->user();
+        $isGuru = $user->hasRole('guru');
+
         $query = JadwalPelajaran::query();
+
+        if ($user->kode_unit != 'U06' && !$isGuru) {
+            $query->where('kode_unit', $user->kode_unit);
+        } else {
+            if ($request->has('kode_unit') && $request->kode_unit != '') {
+                $query->where('kode_unit', $request->kode_unit);
+            }
+        }
+
+        if ($isGuru) {
+            $guruModel = \App\Models\Guru::where('npp', $user->npp)->first();
+            $guruId = $guruModel ? $guruModel->id : 0;
+            $query->where('guru_id', $guruId);
+        }
         
         if ($selectedKodeTa) {
             $query->where('kode_ta', $selectedKodeTa);
@@ -386,11 +403,6 @@ class PenilaianController extends Controller
         
         if ($selectedSemester) {
             $query->where('semester', $selectedSemester);
-        }
-
-        // Filter by Unit if needed (optional filter in view)
-        if ($request->has('kode_unit') && $request->kode_unit != '') {
-            $query->where('kode_unit', $request->kode_unit);
         }
 
         // Grouping by Unit, Kelas, Mapel, Guru
@@ -416,7 +428,11 @@ class PenilaianController extends Controller
             return $d;
         });
 
-        $units = Unit::all();
+        if ($user->kode_unit != 'U06' && !$isGuru) {
+            $units = Unit::where('kode_unit', $user->kode_unit)->get();
+        } else {
+            $units = Unit::all();
+        }
 
         $agent = new \Jenssegers\Agent\Agent();
         if ($agent->isMobile()) {
