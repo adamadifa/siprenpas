@@ -127,15 +127,17 @@ Route::middleware('auth')->group(function () {
         Route::post('/dashboard/getrealisasikegiatan', 'getrealisasikegiatan')->name('dashboard.getrealisasikegiatan');
         Route::post('/dashboard/getagendakegiatan', 'getagendakegiatan')->name('dashboard.getagendakegiatan');
     });
-    Route::controller(RoleController::class)->group(function () {
-        Route::get('/roles', 'index')->name('roles.index');
-        Route::get('/roles/create', 'create')->name('roles.create');
-        Route::post('/roles', 'store')->name('roles.store');
-        Route::get('/roles/{id}/edit', 'edit')->name('roles.edit');
-        Route::put('/roles/{id}/update', 'update')->name('roles.update');
-        Route::delete('/roles/{id}/delete', 'destroy')->name('roles.delete');
-        Route::get('/roles/{id}/createrolepermission', 'createrolepermission')->name('roles.createrolepermission');
-        Route::post('/roles/{id}/storerolepermission', 'storerolepermission')->name('roles.storerolepermission');
+    Route::middleware('role:super admin')->group(function () {
+        Route::controller(RoleController::class)->group(function () {
+            Route::get('/roles', 'index')->name('roles.index');
+            Route::get('/roles/create', 'create')->name('roles.create');
+            Route::post('/roles', 'store')->name('roles.store');
+            Route::get('/roles/{id}/edit', 'edit')->name('roles.edit');
+            Route::put('/roles/{id}/update', 'update')->name('roles.update');
+            Route::delete('/roles/{id}/delete', 'destroy')->name('roles.delete');
+            Route::get('/roles/{id}/createrolepermission', 'createrolepermission')->name('roles.createrolepermission');
+            Route::post('/roles/{id}/storerolepermission', 'storerolepermission')->name('roles.storerolepermission');
+        });
     });
 
 
@@ -158,16 +160,18 @@ Route::middleware('auth')->group(function () {
         Route::delete('/permissions/{id}/delete', 'destroy')->name('permissions.delete');
     });
 
-    Route::controller(UserController::class)->group(function () {
-        Route::get('/users', 'index')->name('users.index');
-        Route::get('/users/create', 'create')->name('users.create');
-        Route::post('/users', 'store')->name('users.store');
-        Route::get('/users/{id}/edit', 'edit')->name('users.edit');
-        Route::put('/users/{id}/update', 'update')->name('users.update');
-        Route::delete('/users/{id}/delete', 'destroy')->name('users.delete');
+    Route::middleware('role:super admin')->group(function () {
+        Route::controller(UserController::class)->group(function () {
+            Route::get('/users', 'index')->name('users.index');
+            Route::get('/users/create', 'create')->name('users.create');
+            Route::post('/users', 'store')->name('users.store');
+            Route::get('/users/{id}/edit', 'edit')->name('users.edit');
+            Route::put('/users/{id}/update', 'update')->name('users.update');
+            Route::delete('/users/{id}/delete', 'destroy')->name('users.delete');
 
-        Route::get('/users/{id}/editpassword', 'editpassword')->name('users.editpassword');
-        Route::put('/users/{id}/updatepassword', 'updatepassword')->name('users.updatepassword');
+            Route::get('/users/{id}/editpassword', 'editpassword')->name('users.editpassword');
+            Route::put('/users/{id}/updatepassword', 'updatepassword')->name('users.updatepassword');
+        });
     });
 
     // Pengaturan Umum
