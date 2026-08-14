@@ -184,7 +184,7 @@
                     </div>
                     <div class="mb-0">
                         <input type="file" class="form-control @error('logo') is-invalid @enderror" name="logo" accept="image/*">
-                        <div class="form-text mt-2 small">Format: PNG, JPG (Maks 2MB).</div>
+                        <div class="form-text mt-2 small">Format: PNG, JPG, WEBP (Maks 2MB).</div>
                     </div>
                 </div>
             </div>
@@ -207,7 +207,7 @@
                     </div>
                     <div class="mb-0">
                         <input type="file" class="form-control @error('background_login') is-invalid @enderror" name="background_login" accept="image/*">
-                        <div class="form-text mt-2 small">Format: JPG (Maks 4MB).</div>
+                        <div class="form-text mt-2 small">Format: JPG, WEBP (Maks 4MB).</div>
                     </div>
                 </div>
             </div>

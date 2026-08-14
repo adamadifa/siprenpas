@@ -124,6 +124,21 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/ibadah', [App\Http\Controllers\Api\IbadahController::class, 'getIbadah']);
     Route::post('/ibadah/toggle', [App\Http\Controllers\Api\IbadahController::class, 'toggleIbadah']);
 
+    // Realisasi Kegiatan API Routes
+    Route::prefix('realisasi-kegiatan')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\RealisasikegiatanController::class, 'index']);
+        Route::get('/options', [App\Http\Controllers\Api\RealisasikegiatanController::class, 'getFormOptions']);
+        Route::post('/', [App\Http\Controllers\Api\RealisasikegiatanController::class, 'store']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\RealisasikegiatanController::class, 'destroy']);
+    });
+
+    // Agenda Kegiatan API Routes
+    Route::prefix('agenda-kegiatan')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\AgendakegiatanController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\AgendakegiatanController::class, 'store']);
+        Route::delete('/{id}', [App\Http\Controllers\Api\AgendakegiatanController::class, 'destroy']);
+    });
+
     // Tabungan Karyawan API Routes
     Route::get('/tabungan-karyawan', [App\Http\Controllers\Api\TabunganKaryawanController::class, 'getTabunganDetails']);
     Route::get('/tabungan-karyawan/{no_rekening}', [App\Http\Controllers\Api\TabunganKaryawanController::class, 'getTabunganDetail']);

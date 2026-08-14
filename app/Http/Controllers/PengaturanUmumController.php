@@ -41,12 +41,12 @@ class PengaturanUmumController extends Controller
             'youtube' => 'nullable|url|max:255',
             'instagram' => 'nullable|url|max:255',
             'tiktok' => 'nullable|url|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'background_login' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
-            'model_1' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
-            'model_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
-            'model_3' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
-            'model_4' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'background_login' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+            'model_1' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+            'model_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+            'model_3' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+            'model_4' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
             'session_lifetime' => 'required|integer|min:1'
         ]);
 
@@ -119,12 +119,12 @@ class PengaturanUmumController extends Controller
             'youtube' => 'nullable|url|max:255',
             'instagram' => 'nullable|url|max:255',
             'tiktok' => 'nullable|url|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'background_login' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
-            'model_1' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
-            'model_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
-            'model_3' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
-            'model_4' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'background_login' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+            'model_1' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+            'model_2' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+            'model_3' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
+            'model_4' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
             'session_lifetime' => 'required|integer|min:1'
         ]);
 

@@ -48,66 +48,69 @@
         </div>
 
         <!-- Filter Section -->
-        <style>
-            .form-filter .form-group {
-                margin-bottom: 0 !important;
-            }
-        </style>
+        @php
+            $isPrivileged = $user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris']);
+        @endphp
         <div class="card mb-4 shadow-none border-0 bg-transparent">
             <div class="card-body p-0">
                 <form action="{{ route('realisasikegiatan.index') }}" class="form-filter" id="myForm">
                     <div class="row g-3 align-items-center">
-                        <div class="col-lg-2 col-md-6">
-                            <div class="form-group">
-                                <input type="text" name="dari" id="dari" class="form-control border-0 shadow-sm border flatpickr-date"
-                                    placeholder="Dari" value="{{ Request('dari') }}" style="border-color: #e0e0e0 !important;">
-                            </div>
+                        <div class="col-lg col-md-6 col-12">
+                            <x-input-with-icon label="" placeholder="Dari Tanggal" name="dari" id="dari" value="{{ Request('dari') }}" datepicker="flatpickr-date" icon="ti ti-calendar" />
                         </div>
-                        <div class="col-lg-2 col-md-6">
-                            <div class="form-group">
-                                <input type="text" name="sampai" id="sampai" class="form-control border-0 shadow-sm border flatpickr-date"
-                                    placeholder="Sampai" value="{{ Request('sampai') }}" style="border-color: #e0e0e0 !important;">
-                            </div>
+                        <div class="col-lg col-md-6 col-12">
+                            <x-input-with-icon label="" placeholder="Sampai Tanggal" name="sampai" id="sampai" value="{{ Request('sampai') }}" datepicker="flatpickr-date" icon="ti ti-calendar" />
                         </div>
-                        @if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris']))
-                            <div class="col-lg-2 col-md-6">
-                                <div class="form-group">
-                                    <select name="kode_jabatan" id="kode_jabatan" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
-                                        <option value="">Semua Jabatan</option>
-                                        @foreach ($jabatan as $d)
-                                            <option value="{{ $d->kode_jabatan }}"
-                                                {{ Request('kode_jabatan') == $d->kode_jabatan ? 'selected' : '' }}>
-                                                {{ strtoUpper($d->nama_jabatan) }}</option>
-                                        @endforeach
-                                    </select>
+                        @if ($isPrivileged)
+                            <div class="col-lg col-md-6 col-12">
+                                <div class="form-group mb-3">
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-briefcase text-muted"></i></span>
+                                        <select name="kode_jabatan" id="kode_jabatan" class="form-select">
+                                            <option value="">Semua Jabatan</option>
+                                            @foreach ($jabatan as $d)
+                                                <option value="{{ $d->kode_jabatan }}"
+                                                    {{ Request('kode_jabatan') == $d->kode_jabatan ? 'selected' : '' }}>
+                                                    {{ strtoUpper($d->nama_jabatan) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-lg-2 col-md-6">
-                                <div class="form-group">
-                                    <select name="kode_dept" id="kode_dept" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
-                                        <option value="">Semua Departemen</option>
-                                        @foreach ($departemen as $d)
-                                            <option value="{{ $d->kode_dept }}" {{ Request('kode_dept') == $d->kode_dept ? 'selected' : '' }}>
-                                                {{ strtoUpper($d->nama_dept) }}</option>
-                                        @endforeach
-                                    </select>
+                            <div class="col-lg col-md-6 col-12">
+                                <div class="form-group mb-3">
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-building text-muted"></i></span>
+                                        <select name="kode_dept" id="kode_dept" class="form-select">
+                                            <option value="">Semua Departemen</option>
+                                            @foreach ($departemen as $d)
+                                                <option value="{{ $d->kode_dept }}" {{ Request('kode_dept') == $d->kode_dept ? 'selected' : '' }}>
+                                                    {{ strtoUpper($d->nama_dept) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         @endif
-                        <div class="col-lg-1 col-md-3">
-                            <button type="submit" class="btn btn-primary w-100 p-2 d-flex align-items-center justify-content-center"
-                                style="background-color: #064e3b; border-color: #064e3b">
-                                <i class="ti ti-search fs-5"></i>
-                            </button>
+                        <div class="col-auto">
+                            <div class="form-group mb-3">
+                                <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center gap-2"
+                                    style="background-color: #064e3b; border-color: #064e3b; height: 38px; padding-left: 20px; padding-right: 20px;">
+                                    <i class="ti ti-search fs-5"></i>
+                                    <span>Cari</span>
+                                </button>
+                            </div>
                         </div>
-                        <div class="col-lg-2 col-md-12">
-                            <div class="d-flex gap-2">
-                                <button type="submit" name="cetak" value="1" id="cetakButton" class="btn btn-warning shadow-sm border-0 flex-grow-1 p-2">
-                                    <i class="ti ti-printer fs-5"></i>
-                                </button>
-                                <button type="submit" name="cetak_pdf" value="1" id="cetakPdfButton" class="btn btn-danger shadow-sm border-0 flex-grow-1 p-2">
-                                    <i class="ti ti-file-type-pdf fs-5"></i>
-                                </button>
+                        <div class="col-auto">
+                            <div class="form-group mb-3">
+                                <div class="d-flex gap-2" style="height: 38px;">
+                                    <button type="submit" name="cetak" value="1" id="cetakButton" class="btn btn-warning shadow-sm border-0 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                                        <i class="ti ti-printer fs-5"></i>
+                                    </button>
+                                    <button type="submit" name="cetak_pdf" value="1" id="cetakPdfButton" class="btn btn-danger shadow-sm border-0 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                                        <i class="ti ti-file-type-pdf fs-5"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -115,82 +118,124 @@
             </div>
         </div>
 
-        <div class="card shadow-sm">
-            <div class="card-header d-flex align-items-center gap-2 text-white py-3" style="background-color: #064e3b">
-                <i class="ti ti-activity fs-5"></i>
-                <h6 class="card-title mb-0 text-white">Data Realisasi Kegiatan</h6>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead style="background-color: #064e3b">
-                            <tr>
-                                <th class="text-white py-3" style="width: 1%;">NO.</th>
-                                <th class="text-white py-3" style="width: 10%;">TANGGAL</th>
-                                <th class="text-white py-3">KEGIATAN & URAIAN</th>
-                                <th class="text-white py-3">JOBDESK & PROGKER</th>
-                                <th class="text-white py-3" style="width: 1%;">DEPT</th>
-                                <th class="text-white py-3" style="width: 1%;">USER</th>
-                                <th class="text-white py-3 text-end" style="width: 80px;">#</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($realisasikegiatan as $d)
-                                <tr>
-                                    <td class="py-2">{{ $loop->iteration }}</td>
-                                    <td class="py-2 text-nowrap">{{ date('d-m-Y', strtotime($d->tanggal)) }}</td>
-                                    <td class="py-2">
-                                        <div class="fw-bold text-dark mb-1">{{ removeHtmltag($d->nama_kegiatan) }}</div>
-                                        <div class="small text-muted" style="min-width: 250px;">{{ removeHtmltag($d->uraian_kegiatan) }}</div>
-                                    </td>
-                                    <td class="py-2">
-                                        <div class="small mb-1"><i class="ti ti-briefcase me-1 opacity-50"></i>{{ removeHtmltag($d->jobdesk) }}</div>
-                                        <div class="small text-primary"><i class="ti ti-notebook me-1 opacity-50"></i>{{ $d->program_kerja }}</div>
-                                    </td>
-                                    <td class="py-2 text-center">
-                                        <span class="badge bg-label-success">{{ $d->kode_dept }}</span>
-                                    </td>
-                                    <td class="py-2 text-nowrap small">{{ formatNama1($d->name) }}</td>
-                                    <td class="py-2 text-end">
-                                        <div class="d-flex justify-content-end gap-1">
-                                            @can('realkegiatan.edit')
-                                                <a href="#" class="btn btn-icon btn-label-success border btnEdit"
-                                                    style="width: 28px; height: 28px;"
-                                                    id="{{ Crypt::encrypt($d->id) }}">
-                                                    <i class="ti ti-edit fs-6"></i>
+        <style>
+            @media (min-width: 768px) {
+                .border-end-md {
+                    border-right: 1px solid #eef2f6 !important;
+                }
+            }
+            .text-truncate-2 {
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            .card-realisasi {
+                transition: all 0.2s ease-in-out;
+            }
+            .card-realisasi:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 .5rem 1rem rgba(0,0,0,.08) !important;
+            }
+        </style>
+
+        <div class="d-flex flex-column gap-3 mb-4">
+            @forelse ($realisasikegiatan as $d)
+                <div class="card border-0 border-start border-success border-4 shadow-sm card-realisasi">
+                    <div class="card-body p-3">
+                        <div class="row align-items-center g-3">
+                            <!-- Left Column: Date & User -->
+                            <div class="col-12 col-md-2 border-end-md">
+                                <div class="d-flex flex-column">
+                                    <span class="text-muted small fw-medium mb-1"><i class="ti ti-calendar me-1 text-success"></i>Tanggal</span>
+                                    <span class="fw-bold text-dark mb-2">{{ date('d-m-Y', strtotime($d->tanggal)) }}</span>
+                                    <span class="text-muted small fw-medium mb-1"><i class="ti ti-user me-1 text-success"></i>Oleh</span>
+                                    <span class="text-dark small text-truncate" title="{{ $d->name }}">{{ $d->name }}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Middle-Left Column: Kegiatan & Uraian -->
+                            <div class="col-12 col-md-4 border-end-md">
+                                <div class="pe-md-3">
+                                    <span class="badge bg-label-success mb-2">Kegiatan</span>
+                                    <h6 class="fw-bold text-dark mb-1">{{ removeHtmltag($d->nama_kegiatan) }}</h6>
+                                    <p class="text-muted small mb-0 text-truncate-2">
+                                        {{ removeHtmltag($d->uraian_kegiatan) }}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Middle-Right Column: Jobdesk & Progker -->
+                            <div class="col-12 col-md-3 border-end-md">
+                                <div class="pe-md-3">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="ti ti-briefcase me-2 text-muted"></i>
+                                        <div>
+                                            <span class="text-muted small d-block">Jobdesk</span>
+                                            <span class="small fw-semibold text-dark">{{ removeHtmltag($d->jobdesk) }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <i class="ti ti-notebook me-2 text-primary"></i>
+                                        <div>
+                                            <span class="text-muted small d-block">Program Kerja</span>
+                                            <span class="small fw-semibold text-primary">{{ $d->program_kerja }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Dept & Action -->
+                            <div class="col-12 col-md-3">
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                    <div>
+                                        <span class="text-muted small d-block mb-1">Departemen</span>
+                                        <span class="badge bg-success bg-opacity-10 text-success px-2 py-1">{{ $d->kode_dept }}</span>
+                                    </div>
+                                    
+                                    <div class="d-flex gap-1 align-items-center">
+                                        @can('realkegiatan.edit')
+                                            <a href="#" class="btn btn-icon btn-label-success border btnEdit"
+                                                style="width: 32px; height: 32px;"
+                                                id="{{ Crypt::encrypt($d->id) }}"
+                                                data-bs-toggle="tooltip" title="Edit">
+                                                <i class="ti ti-edit fs-5"></i>
+                                            </a>
+                                        @endcan
+                                        @can('realkegiatan.delete')
+                                            <form method="POST" name="deleteform" class="deleteform m-0"
+                                                action="{{ route('realisasikegiatan.delete', Crypt::encrypt($d->id)) }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <a href="#" class="btn btn-icon btn-label-danger border delete-confirm"
+                                                    style="width: 32px; height: 32px;"
+                                                    data-bs-toggle="tooltip" title="Hapus">
+                                                    <i class="ti ti-trash fs-5"></i>
                                                 </a>
-                                            @endcan
-                                            @can('realkegiatan.delete')
-                                                <form method="POST" name="deleteform" class="deleteform"
-                                                    action="{{ route('realisasikegiatan.delete', Crypt::encrypt($d->id)) }}">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <a href="#" class="btn btn-icon btn-label-danger border delete-confirm"
-                                                        style="width: 28px; height: 28px;">
-                                                        <i class="ti ti-trash fs-6"></i>
-                                                    </a>
-                                                </form>
-                                            @endcan
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="text-center p-5">
-                                        <div class="mb-3">
-                                            <i class="ti ti-activity fs-1 opacity-25"></i>
-                                        </div>
-                                        <h5>Belum Ada Realisasi Kegiatan</h5>
-                                        <p class="text-muted">Silahkan tambah realisasi baru atau sesuaikan filter pencarian.</p>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                                            </form>
+                                        @endcan
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="p-3">
-                    {{ $realisasikegiatan->links() }}
+            @empty
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center p-5">
+                        <div class="mb-3">
+                            <i class="ti ti-activity fs-1 text-muted opacity-50"></i>
+                        </div>
+                        <h5 class="fw-bold">Belum Ada Realisasi Kegiatan</h5>
+                        <p class="text-muted mb-0">Silahkan tambah realisasi baru atau sesuaikan filter pencarian.</p>
+                    </div>
                 </div>
+            @endforelse
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body p-3">
+                {{ $realisasikegiatan->links() }}
             </div>
         </div>
     </div>
