@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\PengaturanUmum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Encoders\WebpEncoder;
 
 class PengaturanUmumController extends Controller
 {
@@ -55,17 +58,15 @@ class PengaturanUmumController extends Controller
         // Handle logo upload
         if ($request->hasFile('logo')) {
             $logo = $request->file('logo');
-            $logoName = time() . '.' . $logo->getClientOriginalExtension();
-            $logo->storeAs('public/logos', $logoName);
-            $data['logo'] = 'logos/' . $logoName;
+            $logoName = time() . '.webp';
+            $data['logo'] = $this->storeAsWebp($logo, 'logos', $logoName);
         }
 
         // Handle background login upload
         if ($request->hasFile('background_login')) {
             $bg = $request->file('background_login');
-            $bgName = 'bg_' . time() . '.' . $bg->getClientOriginalExtension();
-            $bg->storeAs('public/backgrounds', $bgName);
-            $data['background_login'] = 'backgrounds/' . $bgName;
+            $bgName = 'bg_' . time() . '.webp';
+            $data['background_login'] = $this->storeAsWebp($bg, 'backgrounds', $bgName);
         }
 
         // Handle model uploads
@@ -73,9 +74,8 @@ class PengaturanUmumController extends Controller
             $fieldName = 'model_' . $i;
             if ($request->hasFile($fieldName)) {
                 $model = $request->file($fieldName);
-                $modelName = 'model_' . $i . '_' . time() . '.' . $model->getClientOriginalExtension();
-                $model->storeAs('public/models', $modelName);
-                $data[$fieldName] = 'models/' . $modelName;
+                $modelName = 'model_' . $i . '_' . time() . '.webp';
+                $data[$fieldName] = $this->storeAsWebp($model, 'models', $modelName);
             }
         }
 
@@ -139,9 +139,8 @@ class PengaturanUmumController extends Controller
             }
 
             $logo = $request->file('logo');
-            $logoName = time() . '.' . $logo->getClientOriginalExtension();
-            $logo->storeAs('public/logos', $logoName);
-            $data['logo'] = 'logos/' . $logoName;
+            $logoName = time() . '.webp';
+            $data['logo'] = $this->storeAsWebp($logo, 'logos', $logoName);
         }
 
         // Handle background login upload
@@ -150,9 +149,8 @@ class PengaturanUmumController extends Controller
                 Storage::delete('public/' . $pengaturan->background_login);
             }
             $bg = $request->file('background_login');
-            $bgName = 'bg_' . time() . '.' . $bg->getClientOriginalExtension();
-            $bg->storeAs('public/backgrounds', $bgName);
-            $data['background_login'] = 'backgrounds/' . $bgName;
+            $bgName = 'bg_' . time() . '.webp';
+            $data['background_login'] = $this->storeAsWebp($bg, 'backgrounds', $bgName);
         }
 
         // Handle model uploads
@@ -160,15 +158,13 @@ class PengaturanUmumController extends Controller
             $fieldName = 'model_' . $i;
             if ($request->hasFile($fieldName)) {
                 // Delete old model if exists
-                $oldModelField = 'model_' . $i;
-                if ($pengaturan->$oldModelField && Storage::exists('public/' . $pengaturan->$oldModelField)) {
-                    Storage::delete('public/' . $pengaturan->$oldModelField);
+                if ($pengaturan->$fieldName && Storage::exists('public/' . $pengaturan->$fieldName)) {
+                    Storage::delete('public/' . $pengaturan->$fieldName);
                 }
 
                 $model = $request->file($fieldName);
-                $modelName = 'model_' . $i . '_' . time() . '.' . $model->getClientOriginalExtension();
-                $model->storeAs('public/models', $modelName);
-                $data[$fieldName] = 'models/' . $modelName;
+                $modelName = 'model_' . $i . '_' . time() . '.webp';
+                $data[$fieldName] = $this->storeAsWebp($model, 'models', $modelName);
             }
         }
 
@@ -207,5 +203,20 @@ class PengaturanUmumController extends Controller
 
         return redirect()->route('pengaturan-umum.index')
             ->with('success', 'Pengaturan umum berhasil dihapus!');
+    }
+
+    /**
+     * Convert and compress an uploaded image to WebP, then store it.
+     */
+    private function storeAsWebp($file, $folder, $filename)
+    {
+        $imageManager = new ImageManager(new Driver());
+        $img = $imageManager->read($file->getRealPath());
+        $encoded = $img->encode(new WebpEncoder(quality: 80));
+
+        $path = $folder . '/' . $filename;
+        Storage::put('public/' . $path, (string) $encoded);
+
+        return $path;
     }
 }
