@@ -101,4 +101,19 @@ class SebaranAlumniController extends Controller
         $sebaranAlumni->delete();
         return Redirect::back()->with(messageSuccess('Data Berhasil Dihapus'));
     }
+
+    /**
+     * Convert and compress an uploaded image to WebP, then store it.
+     */
+    private function storeAsWebp($file, $folder, $filename)
+    {
+        $imageManager = new ImageManager(new Driver());
+        $img = $imageManager->read($file->getRealPath());
+        $encoded = $img->encode(new WebpEncoder(quality: 80));
+
+        $path = $folder . '/' . $filename;
+        Storage::put('public/' . $path, (string) $encoded);
+
+        return $path;
+    }
 }
