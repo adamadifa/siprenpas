@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Encoders\WebpEncoder;
 
 class UnitController extends Controller
 {
@@ -41,7 +44,7 @@ class UnitController extends Controller
         $request->validate([
             'kode_unit' => 'required|max:3|min:3|unique:unit,kode_unit',
             'nama_unit' => 'required',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
             'status' => 'required|in:0,1'
         ]);
 
@@ -56,9 +59,8 @@ class UnitController extends Controller
             // Handle logo upload
             if ($request->hasFile('logo')) {
                 $logo = $request->file('logo');
-                $logoName = 'unit_' . $request->kode_unit . '_' . time() . '.' . $logo->getClientOriginalExtension();
-                $logo->storeAs('public/unit_logos', $logoName);
-                $data['logo'] = 'unit_logos/' . $logoName;
+                $logoName = 'unit_' . $request->kode_unit . '_' . time() . '.webp';
+                $data['logo'] = $this->storeAsWebp($logo, 'unit_logos', $logoName);
             }
 
             Unit::create($data);
@@ -96,7 +98,7 @@ class UnitController extends Controller
         $kode_unit = Crypt::decrypt($kode_unit);
         $request->validate([
             'nama_unit' => 'required',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
             'status' => 'required|in:0,1'
         ]);
         try {
@@ -115,9 +117,8 @@ class UnitController extends Controller
                 }
 
                 $logo = $request->file('logo');
-                $logoName = 'unit_' . $kode_unit . '_' . time() . '.' . $logo->getClientOriginalExtension();
-                $logo->storeAs('public/unit_logos', $logoName);
-                $data['logo'] = 'unit_logos/' . $logoName;
+                $logoName = 'unit_' . $kode_unit . '_' . time() . '.webp';
+                $data['logo'] = $this->storeAsWebp($logo, 'unit_logos', $logoName);
             }
 
             Unit::where('kode_unit', $kode_unit)->update($data);
@@ -204,5 +205,20 @@ class UnitController extends Controller
             $nama = $g->karyawan->nama_lengkap ?? $g->nama_guru;
             echo "<option value='{$g->id}'" . ($selected == $g->id ? 'selected' : '') . ">{$nama}</option>";
         }
+    }
+
+    /**
+     * Convert and compress an uploaded image to WebP, then store it.
+     */
+    private function storeAsWebp($file, $folder, $filename)
+    {
+        $imageManager = new ImageManager(new Driver());
+        $img = $imageManager->read($file->getRealPath());
+        $encoded = $img->encode(new WebpEncoder(quality: 80));
+
+        $path = $folder . '/' . $filename;
+        Storage::put('public/' . $path, (string) $encoded);
+
+        return $path;
     }
 }

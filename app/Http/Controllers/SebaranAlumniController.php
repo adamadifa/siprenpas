@@ -6,6 +6,9 @@ use App\Models\SebaranAlumni;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Encoders\WebpEncoder;
 
 class SebaranAlumniController extends Controller
 {
@@ -33,15 +36,14 @@ class SebaranAlumniController extends Controller
     {
         $request->validate([
             'nama_universitas' => 'required|string|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg,gif|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg,gif,webp|max:4096',
         ]);
 
         $data = $request->only(['nama_universitas']);
         if ($request->hasFile('logo')) {
             $file = $request->file('logo');
-            $name = 'alumni_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('public/sebaran_alumni', $name);
-            $data['logo'] = 'sebaran_alumni/' . $name;
+            $name = 'alumni_' . time() . '.webp';
+            $data['logo'] = $this->storeAsWebp($file, 'sebaran_alumni', $name);
         }
 
         SebaranAlumni::create($data);
@@ -71,7 +73,7 @@ class SebaranAlumniController extends Controller
     {
         $request->validate([
             'nama_universitas' => 'required|string|max:255',
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg,gif|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,svg,gif,webp|max:4096',
         ]);
 
         $data = $request->only(['nama_universitas']);
@@ -80,9 +82,8 @@ class SebaranAlumniController extends Controller
                 Storage::delete('public/' . $sebaranAlumni->logo);
             }
             $file = $request->file('logo');
-            $name = 'alumni_' . time() . '.' . $file->getClientOriginalExtension();
-            $file->storeAs('public/sebaran_alumni', $name);
-            $data['logo'] = 'sebaran_alumni/' . $name;
+            $name = 'alumni_' . time() . '.webp';
+            $data['logo'] = $this->storeAsWebp($file, 'sebaran_alumni', $name);
         }
 
         $sebaranAlumni->update($data);
