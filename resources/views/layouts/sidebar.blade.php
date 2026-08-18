@@ -678,8 +678,45 @@
                 </ul>
             </li>
         @endif
+        @if (auth()->check() && auth()->user()->hasRole('karyawan'))
+            <li class="menu-item {{ request()->is(['checklistibadah/create']) ? 'active' : '' }}">
+                <a href="{{ route('checklistibadah.create') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-heart-handshake"></i>
+                    <div>Checklist Ibadah</div>
+                </a>
+            </li>
+        @endif
+
+        @if (auth()->check() && auth()->user()->hasRole('karyawan'))
+            <li class="menu-item {{ request()->is(['simpanansaya', 'simpanansaya/*']) ? 'active' : '' }}">
+                <a href="{{ route('simpanan.simpanansaya') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-wallet"></i>
+                    <div>Simpanan</div>
+                </a>
+            </li>
+        @endif
+
+        @if (auth()->check() && auth()->user()->hasRole('karyawan'))
+            <li class="menu-item {{ request()->is(['pinjamansaya', 'pinjamansaya/*']) ? 'active' : '' }}">
+                <a href="{{ route('pembiayaan.pinjamansaya') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-cash"></i>
+                    <div>Pinjaman</div>
+                </a>
+            </li>
+        @endif
+
+        @if (auth()->check() && auth()->user()->hasRole('karyawan'))
+            <li class="menu-item {{ request()->is(['absensikaryawan', 'absensikaryawan/*']) ? 'active' : '' }}">
+                <a href="{{ route('presensi.absensikaryawan') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-calendar-event"></i>
+                    <div>Absensi</div>
+                </a>
+            </li>
+        @endif
+
         @if (auth()->check() &&
-                auth()->user()->hasAnyPermission(['realkegiatan.index', 'agendakegiatan.index', 'programkerja.index', 'jobdesk.index']))
+                (auth()->user()->hasAnyPermission(['realkegiatan.index', 'agendakegiatan.index', 'programkerja.index', 'jobdesk.index']) ||
+                 auth()->user()->hasRole('karyawan')))
             <li class="menu-item {{ request()->is(['realisasikegiatan', 'agendakegiatan', 'programkerja', 'jobdesk']) ? 'open' : '' }}">
 
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -687,15 +724,14 @@
                     <div>Kegiatan</div>
                 </a>
                 <ul class="menu-sub">
-                    @can('jobdesk.index')
+                    @if (auth()->user()->can('jobdesk.index') || auth()->user()->hasRole('karyawan'))
                         <li class="menu-item {{ request()->is(['jobdesk', 'jobdesk/*']) ? 'active' : '' }}">
                             <a href="{{ route('jobdesk.index') }}" class="menu-link">
                                 <div>Jobdesk</div>
                             </a>
                         </li>
-                    @endcan
-                    @if (auth()->check() &&
-                            auth()->user()->hasAnyPermission(['programkerja.index']))
+                    @endif
+                    @if (auth()->user()->can('programkerja.index') || auth()->user()->hasRole('karyawan'))
                         <li class="menu-item {{ request()->is(['programkerja']) ? 'active' : '' }}">
                             <a href="{{ route('programkerja.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-file-description"></i>
@@ -703,8 +739,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (auth()->check() &&
-                            auth()->user()->hasAnyPermission(['realkegiatan.index']))
+                    @if (auth()->user()->can('realkegiatan.index') || auth()->user()->hasRole('karyawan'))
                         <li class="menu-item {{ request()->is(['realisasikegiatan']) ? 'active' : '' }}">
                             <a href="{{ route('realisasikegiatan.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-file-description"></i>
@@ -712,8 +747,7 @@
                             </a>
                         </li>
                     @endif
-                    @if (auth()->check() &&
-                            auth()->user()->hasAnyPermission(['agendakegiatan.index']))
+                    @if (auth()->user()->can('agendakegiatan.index') || auth()->user()->hasRole('karyawan'))
                         <li class="menu-item {{ request()->is(['agendakegiatan']) ? 'active' : '' }}">
                             <a href="{{ route('agendakegiatan.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-file-description"></i>

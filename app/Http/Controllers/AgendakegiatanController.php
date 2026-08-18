@@ -23,6 +23,49 @@ class AgendakegiatanController extends Controller
         $query->join('departemen', 'agenda_kegiatan.kode_dept', '=', 'departemen.kode_dept');
         $query->join('jabatan', 'agenda_kegiatan.kode_jabatan', '=', 'jabatan.kode_jabatan');
         $query->join('users', 'agenda_kegiatan.id_user', '=', 'users.id');
+        if ($user->hasRole('karyawan')) {
+            $userkaryawan = \App\Models\Userkaryawan::where('id_user', $user->id)->first();
+            $karyawan = \App\Models\Karyawan::where('karyawan.npp', $userkaryawan->npp)
+                ->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+                ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+                ->first();
+            
+            $dept = Departemen::where('kode_dept', $user->kode_dept)->first();
+            if ($karyawan && $dept) {
+                $karyawan->nama_dept = $dept->nama_dept;
+            }
+            
+            $data['karyawan'] = $karyawan;
+            
+            // Only show employee's own agenda kegiatan
+            $query->where('agenda_kegiatan.id_user', $user->id);
+            if (!empty($request->dari) && !empty($request->sampai)) {
+                $query->whereBetween('tanggal', [$request->dari, $request->sampai]);
+            }
+            
+            $query->orderBy('tanggal', 'desc');
+            
+            // Handle printing for Karyawan Agenda
+            if ($request->cetak || $request->cetak_pdf) {
+                $data['agenda_kegiatan'] = $query->get();
+                $data['jabatan'] = Jabatan::where('kode_jabatan', $user->kode_jabatan)->first();
+                $data['departemen'] = Departemen::where('kode_dept', $user->kode_dept)->first();
+                $data['dari'] = $request->dari;
+                $data['sampai'] = $request->sampai;
+                
+                if ($request->cetak_pdf) {
+                    $pdf = Pdf::loadView('agenda_kegiatan.cetakpdf', $data)->setPaper('a4', 'landscape');
+                    return $pdf->stream('agenda_kegiatan_' . $request->dari . '_' . $request->sampai . '_' . $user->kode_dept . '.pdf');
+                }
+                return view('agenda_kegiatan.cetak', $data);
+            }
+            
+            $data['agenda_kegiatan'] = $query->paginate(30)->appends($request->all());
+            $data['user'] = $user;
+            
+            return view('agenda_kegiatan.index_karyawan', $data);
+        }
+
         if ($user->hasRole('super admin')) {
             if (!empty($request->kode_jabatan)) {
                 $query->where('agenda_kegiatan.kode_jabatan', $request->kode_jabatan);

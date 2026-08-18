@@ -64,10 +64,32 @@ class ProgramkerjaController extends Controller
         // $query->orderBy('program_kerja.created_at', 'desc');
         $kode_jabatan = $user->hasRole('super admin') ? $request->kode_jabatan : $user->kode_jabatan;
         $kode_dept = $user->hasRole('super admin') ? $request->kode_dept : $user->kode_dept;
-        $data['programkerja'] = $query->get();
+        
+        if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris']) && empty($request->kode_dept)) {
+            $data['programkerja'] = collect();
+        } else {
+            $data['programkerja'] = $query->get();
+        }
+        
         $data['user'] = $user;
         $data['tahunajaran'] = Tahunajaran::all();
         $data['ta_aktif'] = $ta_aktif;
+
+        if ($user->hasRole('karyawan')) {
+            $userkaryawan = \App\Models\Userkaryawan::where('id_user', $user->id)->first();
+            $karyawan = \App\Models\Karyawan::where('karyawan.npp', $userkaryawan->npp)
+                ->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+                ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+                ->first();
+            
+            $dept = \App\Models\Departemen::where('kode_dept', $user->kode_dept)->first();
+            if ($karyawan && $dept) {
+                $karyawan->nama_dept = $dept->nama_dept;
+            }
+            
+            $data['karyawan'] = $karyawan;
+            return view('programkerja.index_karyawan', $data);
+        }
 
         $agent = new Agent();
         if ($agent->isMobile()) {

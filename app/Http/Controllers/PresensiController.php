@@ -571,4 +571,70 @@ class PresensiController extends Controller
             return Redirect::back()->with(messageError($e->getMessage()));
         }
     }
+
+    public function absensikaryawan(Request $request)
+    {
+        $bulan = $request->bulan ?? date('m');
+        $tahun = $request->tahun ?? date('Y');
+        
+        $user = User::where('id', auth()->user()->id)->first();
+        $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
+        $karyawan = Karyawan::where('karyawan.npp', $userkaryawan->npp)
+            ->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+            ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+            ->first();
+        
+        $dept = \App\Models\Departemen::where('kode_dept', $user->kode_dept)->first();
+        if ($karyawan && $dept) {
+            $karyawan->nama_dept = $dept->nama_dept;
+        }
+
+        $presensi = Presensi::where('npp', $karyawan->npp)
+            ->whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun)
+            ->leftJoin('konfigurasi_jam_kerja', 'presensi.kode_jam_kerja', '=', 'konfigurasi_jam_kerja.kode_jam_kerja')
+            ->select('presensi.*', 'konfigurasi_jam_kerja.nama_jam_kerja', 'konfigurasi_jam_kerja.jam_masuk', 'konfigurasi_jam_kerja.jam_pulang')
+            ->orderBy('tanggal', 'asc')
+            ->get();
+            
+        $stats = [
+            'hadir' => 0,
+            'terlambat' => 0,
+            'sakit' => 0,
+            'izin' => 0,
+            'alfa' => 0
+        ];
+        
+        foreach ($presensi as $p) {
+            if ($p->status == 'h') {
+                $stats['hadir']++;
+                if ($p->jam_in && $p->jam_masuk) {
+                    $jam_in_sec = strtotime($p->jam_in);
+                    $jam_masuk_sec = strtotime($p->jam_masuk);
+                    if ($jam_in_sec > $jam_masuk_sec) {
+                        $stats['terlambat']++;
+                    }
+                }
+            } elseif ($p->status == 's') {
+                $stats['sakit']++;
+            } elseif ($p->status == 'i') {
+                $stats['izin']++;
+            } elseif ($p->status == 'a') {
+                $stats['alfa']++;
+            }
+        }
+        
+        $data['karyawan'] = $karyawan;
+        $data['presensi'] = $presensi;
+        $data['stats'] = $stats;
+        $data['bulan'] = $bulan;
+        $data['tahun'] = $tahun;
+        $data['list_bulan'] = [
+            '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
+            '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
+            '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+        ];
+        
+        return view('presensi.index_karyawan', $data);
+    }
 }

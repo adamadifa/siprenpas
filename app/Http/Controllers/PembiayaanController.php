@@ -18,11 +18,49 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Yajra\DataTables\Facades\DataTables;
+use Jenssegers\Agent\Agent;
 
 class PembiayaanController extends Controller
 {
     public function index(Request $request)
     {
+        $user = User::where('id', auth()->user()->id)->first();
+        if ($user->hasRole('karyawan')) {
+            $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
+            $cekanggota = Karyawananggota::where('npp', $userkaryawan->npp)->first();
+            
+            $karyawan = \App\Models\Karyawan::where('karyawan.npp', $userkaryawan->npp)
+                ->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+                ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+                ->first();
+            $dept = \App\Models\Departemen::where('kode_dept', $user->kode_dept)->first();
+            if ($karyawan && $dept) {
+                $karyawan->nama_dept = $dept->nama_dept;
+            }
+            $data['karyawan'] = $karyawan;
+
+            if ($cekanggota == null) {
+                $data['is_member'] = false;
+                $data['pembiayaan'] = collect([]);
+            } else {
+                $data['is_member'] = true;
+                $no_anggota = $cekanggota->no_anggota;
+                
+                $subqueryPembayaran = Historibayarpembiayaan::select('no_akad', DB::raw('SUM(jumlah) as total_bayar'))
+                    ->groupBy('no_akad');
+                
+                $pembiayaan = Pembiayaan::where('no_anggota', $no_anggota)
+                    ->join('koperasi_jenis_pembiayaan', 'koperasi_pembiayaan.kode_pembiayaan', '=', 'koperasi_jenis_pembiayaan.kode_pembiayaan')
+                    ->leftJoinSub($subqueryPembayaran, 'pembayaran', function ($join) {
+                        $join->on('koperasi_pembiayaan.no_akad', '=', 'pembayaran.no_akad');
+                    })
+                    ->orderBy('tanggal', 'desc')
+                    ->select('koperasi_pembiayaan.*', 'koperasi_jenis_pembiayaan.jenis_pembiayaan', 'pembayaran.total_bayar')
+                    ->get();
+                $data['pembiayaan'] = $pembiayaan;
+            }
+            return view('koperasi.pembiayaan.index_karyawan', $data);
+        }
 
         if ($request->ajax()) {
             $anggota = Anggota::select('*');
@@ -480,11 +518,27 @@ class PembiayaanController extends Controller
         $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
         $karyawan_anggota = Karyawananggota::where('npp', $userkaryawan->npp)->first();
         $anggota = Anggota::where('no_anggota', $karyawan_anggota->no_anggota)->first();
+        
+        $karyawan = \App\Models\Karyawan::where('karyawan.npp', $userkaryawan->npp)
+            ->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+            ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+            ->first();
+        $dept = \App\Models\Departemen::where('kode_dept', $user->kode_dept)->first();
+        if ($karyawan && $dept) {
+            $karyawan->nama_dept = $dept->nama_dept;
+        }
+        
+        $data['karyawan'] = $karyawan;
         $data['anggota'] = $anggota;
         $data['provinsi'] = Province::orderBy('name')->get();
         $data['pendidikan'] = config('global.list_pendidikan ');
         $data['jenis_pembiayaan'] = Jenispembiayaan::orderBy('kode_pembiayaan')->get();
-        return view('koperasi.pembiayaan.createmobile', $data);
+
+        $agent = new Agent();
+        if ($agent->isMobile()) {
+            return view('koperasi.pembiayaan.createmobile', $data);
+        }
+        return view('koperasi.pembiayaan.create_karyawan', $data);
     }
 
 
@@ -776,6 +830,213 @@ class PembiayaanController extends Controller
         $rencanapembiayaan = Rencanapembiayaan::where('no_akad', $no_akad)->get();
         $data['pembiayaan'] = $pembiayaan;
         $data['rencanapembiayaan'] = $rencanapembiayaan;
-        return view('koperasi.pembiayaan.showdetail', $data);
+        
+        $agent = new Agent();
+        if ($agent->isMobile()) {
+            return view('koperasi.pembiayaan.showdetail', $data);
+        }
+        return view('koperasi.pembiayaan.showdetail_desktop', $data);
+    }
+
+    public function pinjamansaya(Request $request)
+    {
+        $user = User::where('id', auth()->user()->id)->first();
+        $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
+        $cekanggota = Karyawananggota::where('npp', $userkaryawan->npp)->first();
+        
+        $karyawan = \App\Models\Karyawan::where('karyawan.npp', $userkaryawan->npp)
+            ->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+            ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+            ->first();
+        $dept = \App\Models\Departemen::where('kode_dept', $user->kode_dept)->first();
+        if ($karyawan && $dept) {
+            $karyawan->nama_dept = $dept->nama_dept;
+        }
+        $data['karyawan'] = $karyawan;
+
+        if ($cekanggota == null) {
+            $data['is_member'] = false;
+            $data['pembiayaan'] = collect([]);
+        } else {
+            $data['is_member'] = true;
+            $no_anggota = $cekanggota->no_anggota;
+            
+            $subqueryPembayaran = Historibayarpembiayaan::select('no_akad', DB::raw('SUM(jumlah) as total_bayar'))
+                ->groupBy('no_akad');
+            
+            $pembiayaan = Pembiayaan::where('no_anggota', $no_anggota)
+                ->join('koperasi_jenis_pembiayaan', 'koperasi_pembiayaan.kode_pembiayaan', '=', 'koperasi_jenis_pembiayaan.kode_pembiayaan')
+                ->leftJoinSub($subqueryPembayaran, 'pembayaran', function ($join) {
+                    $join->on('koperasi_pembiayaan.no_akad', '=', 'pembayaran.no_akad');
+                })
+                ->orderBy('tanggal', 'desc')
+                ->select('koperasi_pembiayaan.*', 'koperasi_jenis_pembiayaan.jenis_pembiayaan', 'pembayaran.total_bayar')
+                ->get();
+            $data['pembiayaan'] = $pembiayaan;
+        }
+        return view('koperasi.pembiayaan.index_karyawan', $data);
+    }
+
+    public function createpinjaman()
+    {
+        $user = User::where('id', auth()->user()->id)->first();
+        $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
+        $karyawan_anggota = Karyawananggota::where('npp', $userkaryawan->npp)->first();
+        if ($karyawan_anggota == null) {
+            return Redirect::back()->with(messageWarning('Anda Belum Menjadi Anggota Koperasi Tsarwah'));
+        }
+        $anggota = Anggota::where('no_anggota', $karyawan_anggota->no_anggota)->first();
+        
+        $karyawan = \App\Models\Karyawan::where('karyawan.npp', $userkaryawan->npp)
+            ->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+            ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+            ->first();
+        $dept = \App\Models\Departemen::where('kode_dept', $user->kode_dept)->first();
+        if ($karyawan && $dept) {
+            $karyawan->nama_dept = $dept->nama_dept;
+        }
+        
+        $data['karyawan'] = $karyawan;
+        $data['anggota'] = $anggota;
+        $data['provinsi'] = Province::orderBy('name')->get();
+        $data['pendidikan'] = config('global.list_pendidikan ');
+        $data['jenis_pembiayaan'] = Jenispembiayaan::orderBy('kode_pembiayaan')->get();
+
+        return view('koperasi.pembiayaan.create_karyawan', $data);
+    }
+
+    public function storepinjaman(Request $request)
+    {
+        $user = User::where('id', auth()->user()->id)->first();
+        $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
+        $status = '0'; // default unapproved
+        
+        $request->validate([
+            'no_anggota' => 'required',
+            'nik' => 'required',
+            'nama_lengkap' => 'required',
+            'tempat_lahir' => 'required',
+            'tanggal_lahir' => 'required',
+            'alamat' => 'required',
+            'jenis_kelamin' => 'required',
+            'pendidikan_terakhir' => 'required',
+            'status_pernikahan' => 'required',
+            'id_province' => 'required',
+            'id_regency' => 'required',
+            'id_district' => 'required',
+            'id_village' => 'required',
+            'status_tinggal' => 'required',
+            'no_hp' => 'required',
+            'kode_pos' => 'required',
+            'kode_pembiayaan' => 'required',
+            'persentase' => 'required',
+            'jangka_waktu' => 'required',
+            'jumlah' => 'required',
+            'jumlah_pengembalian' => 'required',
+            'keperluan' => 'required',
+            'jaminan' => 'required',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $dataanggota = [
+                'nik' => $request->nik,
+                'nama_lengkap' => $request->nama_lengkap,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'pendidikan_terakhir' => $request->pendidikan_terakhir,
+                'status_pernikahan' => $request->status_pernikahan,
+                'id_province' => $request->id_province,
+                'id_regency' => $request->id_regency,
+                'id_district' => $request->id_district,
+                'id_village' => $request->id_village,
+                'status_tinggal' => $request->status_tinggal,
+                'no_hp' => $request->no_hp,
+                'alamat' => $request->alamat,
+                'kode_pos' => $request->kode_pos,
+            ];
+
+            $tanggal = $request->tanggal ?? date('Y-m-d');
+            $tgl = explode("-", $tanggal);
+            $tahun = $tgl[0];
+            $bulan = $tgl[1];
+            if (strlen($bulan) > 1) {
+                $bulan = $bulan;
+            } else {
+                $bulan = "0" . $bulan;
+            }
+            $format = "PB" . substr($tahun, 2, 2) . $bulan;
+
+            $lastpembiayaan = Pembiayaan::select('no_akad')
+                ->where(DB::raw('left(no_akad,6)'), $format)
+                ->orderBy('no_akad', 'desc')
+                ->first();
+
+            $last_no_akad = $lastpembiayaan ? $lastpembiayaan->no_akad : '';
+            $no_akad = buatkode($last_no_akad, $format . "-", 3);
+
+            $tagihan = str_replace(".", "", $request->jumlah) + (str_replace(".", "", $request->jumlah) * ($request->persentase / 100));
+            $cicilanperbulan = ROUND($tagihan / $request->jangka_waktu);
+            $cicilan_terakhir = $cicilanperbulan + ($tagihan - ($cicilanperbulan * $request->jangka_waktu));
+
+            Anggota::where('no_anggota', $request->no_anggota)->update($dataanggota);
+            
+            Pembiayaan::create([
+                'no_akad' => $no_akad,
+                'tanggal' => $request->tanggal ?? date('Y-m-d'),
+                'no_anggota' => $request->no_anggota,
+                'kode_pembiayaan' => $request->kode_pembiayaan,
+                'jumlah' => toNumber($request->jumlah),
+                'persentase' => $request->persentase,
+                'jangka_waktu' => $request->jangka_waktu,
+                'keperluan' => $request->keperluan,
+                'jaminan' => $request->jaminan,
+                'jmlbayar' => 0,
+                'ktp_pemohon' => 1,
+                'ktp_pasangan' => 1,
+                'kartu_keluarga' => 1,
+                'struk_gaji' => 1,
+                'status' => $status,
+            ]);
+
+            $bulan_cicilan = $bulan + 1;
+            $tahun_cicilan = $tahun;
+            $thncicilan = $tahun_cicilan;
+            
+            for ($i = 1; $i <= $request->jangka_waktu; $i++) {
+                if ($bulan_cicilan > 12) {
+                    $blncicilan = $bulan_cicilan - 12;
+                    $thncicilan = $thncicilan + 1;
+                    $bulan_cicilan = 1;
+                } else {
+                    $blncicilan = $bulan_cicilan;
+                    $thncicilan = $thncicilan;
+                }
+
+                if ($i == $request->jangka_waktu) {
+                    $cicilan = $cicilan_terakhir;
+                } else {
+                    $cicilan = $cicilanperbulan;
+                }
+
+                Rencanapembiayaan::create([
+                    'no_akad' => $no_akad,
+                    'cicilan_ke' => $i,
+                    'bulan' => $blncicilan,
+                    'tahun' => $thncicilan,
+                    'jumlah' => $cicilan,
+                    'bayar' => 0
+                ]);
+
+                $bulan_cicilan++;
+            }
+
+            DB::commit();
+            return redirect()->route('pembiayaan.pinjamansaya')->with(messageSuccess('Pengajuan Pembiayaan Berhasil Dikirim'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with(messageError('Gagal Disimpan: ' . $e->getMessage()));
+        }
     }
 }

@@ -6,9 +6,9 @@
     <title>Cetak Kartu Santri - {{ $pendaftaran->nama_lengkap }}</title>
     <!-- Include FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Include JsBarcode & html2canvas -->
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <!-- Include html2canvas & JsBarcode -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@700&display=swap');
@@ -23,10 +23,48 @@
             font-family: 'Outfit', sans-serif;
             background-color: #f0f2f5;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: flex-start;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 40px 20px;
+            overflow-y: auto;
+        }
+
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            margin-bottom: 80px;
+            position: relative;
+        }
+
+        .tab-btn {
+            background-color: #e5e7eb;
+            color: #374151;
+            border: none;
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background-color: #064e3b;
+            color: white;
+            box-shadow: 0 4px 10px rgba(6, 78, 59, 0.25);
+        }
+
+        #card-back {
+            display: none;
         }
 
         /* Printable Area - Fixed High-Res Ratio (Aspect 1.586, standard CR-80) */
@@ -91,6 +129,14 @@
             font-weight: bold;
         }
 
+        .arabic-logo-img {
+            height: 56px;
+            width: auto;
+            object-fit: contain;
+            margin-bottom: 2px;
+            display: inline-block;
+        }
+
         .institution-name {
             font-size: 30px;
             font-weight: 800;
@@ -109,6 +155,37 @@
         }
 
         /* Body Style */
+        .codes-row {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 90px;
+            padding-right: 15px;
+        }
+
+        .barcode-container {
+            display: flex;
+            align-items: center;
+            height: 60px;
+        }
+
+        .barcode-container svg {
+            height: 100%;
+            width: auto;
+        }
+
+        .qrcode-container {
+            display: flex;
+            align-items: center;
+            height: 90px;
+        }
+
+        .qrcode-container svg {
+            height: 100%;
+            width: auto;
+        }
+
         .card-body {
             flex-grow: 1;
             display: flex;
@@ -237,8 +314,174 @@
             text-decoration: none;
         }
 
-        .footer-item i {
-            font-size: 14px;
+        .signature-title {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 55px;
+            font-weight: 600;
+        }
+
+        .signature-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: #111827;
+            border-bottom: 1.5px solid #111827;
+            display: inline-block;
+            padding: 0 10px;
+        }
+
+        /* Back Card specific styling */
+        .back-card-body {
+            padding: 40px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-color: #ffffff;
+            position: relative;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        .watermark-logo {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 320px;
+            height: 320px;
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .watermark-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .back-card-title {
+            color: #064e3b;
+            font-size: 26px;
+            font-weight: 800;
+            border-bottom: 2px solid #fcb900;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-card-rules {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            z-index: 2;
+            position: relative;
+        }
+
+        .back-card-rules li {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .rule-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background-color: #064e3b;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 800;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 3px 8px rgba(6, 78, 59, 0.2);
+        }
+
+        .rule-text {
+            color: #374151;
+            font-size: 18px;
+            line-height: 1.5;
+            font-weight: 500;
+            padding-top: 3px;
+            text-align: left;
+        }
+
+        .back-card-footer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+            position: relative;
+            z-index: 2;
+            width: 100%;
+        }
+
+        .back-card-address {
+            color: #4b5563;
+            font-size: 15px;
+            line-height: 1.4;
+            max-width: 100%;
+            text-align: center;
+            width: 100%;
+        }
+
+
+
+        /* Portrait styling for back card */
+        .id-card-wrapper.portrait .back-card-body {
+            padding: 25px 25px !important;
+            justify-content: flex-start !important;
+            gap: 20px;
+        }
+
+        .id-card-wrapper.portrait .back-card-title {
+            font-size: 21px !important;
+            text-align: center;
+        }
+
+        .id-card-wrapper.portrait .back-card-rules {
+            gap: 10px;
+        }
+
+        .id-card-wrapper.portrait .rule-number {
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+        }
+
+        .id-card-wrapper.portrait .rule-text {
+            font-size: 13px !important;
+            padding-top: 1px;
+        }
+
+        .id-card-wrapper.portrait .watermark-logo {
+            width: 200px;
+            height: 200px;
+        }
+
+        .id-card-wrapper.portrait .back-card-footer {
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 25px;
+            margin-top: auto !important;
+        }
+
+        .id-card-wrapper.portrait .back-card-address {
+            text-align: center;
+            font-size: 11px !important;
+            max-width: 100% !important;
+        }
+
+        .id-card-wrapper.portrait .back-card-signature {
+            padding-right: 0 !important;
         }
 
         /* ========================================== */
@@ -263,6 +506,10 @@
 
         .id-card-wrapper.portrait .arabic-text {
             font-size: 18px;
+        }
+
+        .id-card-wrapper.portrait .arabic-logo-img {
+            height: 38px;
         }
 
         .id-card-wrapper.portrait .institution-name {
@@ -322,6 +569,22 @@
             height: 100px;
         }
 
+        .id-card-wrapper.portrait .codes-row {
+            justify-content: space-around;
+            padding-right: 0;
+            margin-top: 20px;
+            height: 80px;
+            width: 100%;
+        }
+
+        .id-card-wrapper.portrait .barcode-container {
+            height: 45px;
+        }
+
+        .id-card-wrapper.portrait .qrcode-container {
+            height: 80px;
+        }
+
         .id-card-wrapper.portrait .footer-bar {
             width: 85%;
             height: 75px;
@@ -363,6 +626,7 @@
             .header::after { height: 0.6mm; }
             .logo-left, .logo-right { width: 9.5mm; height: 9.5mm; }
             .arabic-text { font-size: 7.5pt; }
+            .arabic-logo-img { height: 16pt; }
             .institution-name { font-size: 8.5pt; margin-top: 0.2mm; }
             .address-text { font-size: 3.5pt; margin-top: 0.3mm; }
             
@@ -375,6 +639,9 @@
             .info-table td { font-size: 6.2pt; padding-bottom: 2px; }
             .label-cell { width: 12mm; }
             
+            .codes-row { height: 24mm; margin-top: 2mm; }
+            .barcode-container { height: 16mm; }
+            .qrcode-container { height: 24mm; }
             .footer { height: 6mm; }
             .footer-decor-left, .footer-decor-right { width: 20mm; height: 5.5mm; }
             .footer-bar { height: 4.2mm; border-top-left-radius: 1.5mm; border-top-right-radius: 1.5mm; }
@@ -396,9 +663,13 @@
                 height: 7.5mm;
             }
             .id-card-wrapper.portrait .arabic-text { font-size: 5pt; }
+            .id-card-wrapper.portrait .arabic-logo-img { height: 11pt; }
             .id-card-wrapper.portrait .institution-name { font-size: 6.5pt; }
             .id-card-wrapper.portrait .address-text { font-size: 3pt; }
             
+            .id-card-wrapper.portrait .codes-row { height: 18mm; margin-top: 3mm; }
+            .id-card-wrapper.portrait .barcode-container { height: 10mm; }
+            .id-card-wrapper.portrait .qrcode-container { height: 18mm; }
             .id-card-wrapper.portrait .card-body {
                 padding: 2mm 3mm;
             }
@@ -444,8 +715,49 @@
                 height: 5mm;
             }
 
+            /* Print style rules for back card elements */
+            .back-card-body { padding: 3mm 4mm; }
+            .back-card-title { font-size: 11pt; padding-bottom: 0.5mm; margin-bottom: 2mm; border-bottom-width: 0.5px; }
+            .back-card-rules { gap: 1.8mm; }
+            .rule-number { width: 4.8mm; height: 4.8mm; font-size: 5.5pt; box-shadow: none; }
+            .rule-text { font-size: 7.2pt; line-height: 1.35; padding-top: 0.5mm; }
+            .back-card-footer { margin-top: 2mm; display: flex; justify-content: center; width: 100%; }
+            .back-card-address { font-size: 6pt; max-width: 100%; text-align: center; width: 100%; }
+            .watermark-logo { width: 60mm; height: 60mm; }
+
+            .id-card-wrapper.portrait .back-card-body { padding: 3mm 3mm !important; gap: 2.5mm; }
+            .id-card-wrapper.portrait .back-card-title { font-size: 9.5pt !important; }
+            .id-card-wrapper.portrait .back-card-rules { gap: 1.4mm; }
+            .id-card-wrapper.portrait .rule-number { width: 3.5mm; height: 3.5mm; font-size: 4.5pt; }
+            .id-card-wrapper.portrait .rule-text { font-size: 6.2pt !important; padding-top: 0.2mm; }
+            .id-card-wrapper.portrait .watermark-logo { width: 40mm; height: 40mm; }
+
             .no-print {
                 display: none;
+            }
+
+            #card-front, #card-back {
+                display: flex !important;
+            }
+
+            .id-card-wrapper {
+                page-break-after: always;
+                break-after: page;
+                margin: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                transform: none !important;
+            }
+
+            .id-card-wrapper.back-card {
+                page-break-after: avoid;
+                break-after: avoid;
+            }
+
+            body {
+                padding: 0 !important;
+                margin: 0 !important;
+                background-color: #ffffff !important;
             }
         }
 
@@ -487,7 +799,18 @@
         $orientation = request('orientation', 'landscape');
     @endphp
 
-    <div class="id-card-wrapper {{ $orientation }}">
+    <div class="no-print" style="margin-bottom: 20px; display: flex; gap: 15px; justify-content: center; width: 100%; max-width: 960px; z-index: 100;">
+        <button class="tab-btn active" onclick="switchSide('front')" id="btn-front">
+            <i class="fa-solid fa-id-card"></i> Sisi Depan
+        </button>
+        <button class="tab-btn" onclick="switchSide('back')" id="btn-back">
+            <i class="fa-solid fa-rectangle-list"></i> Sisi Belakang
+        </button>
+    </div>
+
+    <div class="cards-container">
+        <!-- FRONT CARD -->
+        <div id="card-front" class="id-card-wrapper {{ $orientation }}">
         <!-- Header -->
         <div class="header">
             @if ($pengaturan && $pengaturan->logo)
@@ -496,7 +819,7 @@
                 <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="Logo Left" class="logo-left">
             @endif
             <div class="header-text">
-                <span class="arabic-text">معهد الاتحاد الإسلامi ٨٠ الأمين</span>
+                <img src="{{ asset('assets/img/logo/mahad_arabic.png') }}" alt="Ma'had" class="arabic-logo-img">
                 <span class="institution-name">{{ strtoupper($pendaftaran->nama_unit) }}</span>
                 <span class="address-text">Jl. Ancol No.27, Sindangkasih, Kec. Sindangkasih, Kabupaten Ciamis, Jawa Barat 46268</span>
             </div>
@@ -511,7 +834,13 @@
         <div class="card-body">
             <!-- Student Photo -->
             <div class="photo-column">
-                <img src="{{ $foto }}" alt="Foto Santri" class="student-photo">
+                @if ($pendaftaran->foto_pendaftaran && file_exists(public_path('storage/photos/pendaftaran/' . $pendaftaran->foto_pendaftaran)))
+                    <img src="{{ asset('storage/photos/pendaftaran/' . $pendaftaran->foto_pendaftaran) }}" alt="Foto Santri" class="student-photo" onerror="this.onerror=null; this.outerHTML='<div class=\'student-photo\' style=\'display: flex; align-items: center; justify-content: center; background-color: #f3f4f6; border: 3px solid #064e3b; color: #9ca3af;\'><i class=\'fa-solid fa-user\' style=\'font-size: 80px;\'></i></div>';">
+                @else
+                    <div class="student-photo" style="display: flex; align-items: center; justify-content: center; background-color: #f3f4f6; border: 3px solid #064e3b; color: #9ca3af;">
+                        <i class="fa-solid fa-user" style="font-size: 80px;"></i>
+                    </div>
+                @endif
             </div>
 
             <!-- Student Info -->
@@ -542,9 +871,14 @@
                         <td class="value-cell" style="font-size: 19px; line-height: 1.35; padding-right: 15px;">{{ strtoupper($pendaftaran->alamat) }}</td>
                     </tr>
                 </table>
-                <!-- Barcode -->
-                <div style="margin-top: 15px; display: flex; justify-content: flex-end; align-items: center; height: 55px; overflow: hidden; padding-right: 5px;">
-                    <svg id="barcode"></svg>
+                <!-- Codes Row (Barcode left, QR Code right) -->
+                <div class="codes-row">
+                    <div class="barcode-container">
+                        <svg id="barcode"></svg>
+                    </div>
+                    <div class="qrcode-container">
+                        {!! QrCode::size(120)->margin(0)->generate($pendaftaran->id_siswa ?? $pendaftaran->nis ?? $pendaftaran->no_pendaftaran) !!}
+                    </div>
                 </div>
             </div>
         </div>
@@ -570,6 +904,80 @@
         </div>
     </div>
 
+    <!-- BACK CARD -->
+    <div id="card-back" class="id-card-wrapper {{ $orientation }} back-card">
+
+        <!-- Back Card Body -->
+        <div class="card-body back-card-body">
+            <!-- Watermark Logo -->
+            <div class="watermark-logo">
+                @if ($pengaturan && $pengaturan->logo)
+                    <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="Watermark">
+                @else
+                    <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="Watermark">
+                @endif
+            </div>
+
+            <div>
+                <h3 class="back-card-title">
+                    <i class="fa-solid fa-circle-info" style="color: #fcb900;"></i>
+                    KETENTUAN KARTU SANTRI
+                </h3>
+                <ul class="back-card-rules">
+                    <li>
+                        <span class="rule-number">1</span>
+                        <span class="rule-text">Kartu ini adalah kartu identitas resmi Santri Pesantren Persatuan Islam 80 Al Amin.</span>
+                    </li>
+                    <li>
+                        <span class="rule-number">2</span>
+                        <span class="rule-text">Santri wajib membawa kartu ini selama berada di lingkungan Pesantren.</span>
+                    </li>
+                    <li>
+                        <span class="rule-number">3</span>
+                        <span class="rule-text">Apabila kartu ini hilang atau rusak, segera melapor ke bagian administrasi/kesantrian.</span>
+                    </li>
+                    <li>
+                        <span class="rule-number">4</span>
+                        <span class="rule-text">Penyalahgunaan kartu ini oleh pihak lain akan dikenakan sanksi tata tertib.</span>
+                    </li>
+                    <li>
+                        <span class="rule-number">5</span>
+                        <span class="rule-text">Barangsiapa menemukan kartu ini, harap mengembalikan ke alamat Pesantren.</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="back-card-footer">
+                <div class="back-card-address">
+                    <strong>PESANTREN PERSATUAN ISLAM 80 AL AMIN</strong><br>
+                    Jl. Ancol No.27, Sindangkasih, Kec. Sindangkasih, Kab. Ciamis, Jawa Barat 46268<br>
+                    Telp: (0265) 378291 | Web: www.persis80alamin.com
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-decor-left"></div>
+            <div class="footer-decor-right"></div>
+            <div class="footer-bar">
+                <a href="https://persis80alamin.com" target="_blank" class="footer-item">
+                    <i class="fa-solid fa-globe"></i>
+                    <span>https://persis80alamin.com</span>
+                </a>
+                <a href="https://instagram.com/persis.alamin" target="_blank" class="footer-item">
+                    <i class="fa-brands fa-instagram"></i>
+                    <span>persis.amin</span>
+                </a>
+                <a href="https://facebook.com" target="_blank" class="footer-item">
+                    <i class="fa-brands fa-facebook"></i>
+                    <span>Persis Al Amin</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    </div>
+
     <!-- Print & Download Button Container -->
     <div class="no-print-container no-print" style="display: flex; gap: 10px;">
         @if ($orientation == 'portrait')
@@ -583,10 +991,13 @@
         @endif
         
         <button class="print-btn" onclick="window.print()">
-            <i class="fa-solid fa-print"></i> Cetak Kartu
+            <i class="fa-solid fa-print"></i> Cetak Kartu (Depan & Belakang)
         </button>
-        <button class="print-btn" onclick="downloadCard()" style="background-color: #fcb900; color: #111827;">
-            <i class="fa-solid fa-download"></i> Download Gambar
+        <button class="print-btn" onclick="downloadCard('front')" style="background-color: #fcb900; color: #111827;">
+            <i class="fa-solid fa-download"></i> Download Depan
+        </button>
+        <button class="print-btn" onclick="downloadCard('back')" style="background-color: #fcb900; color: #111827;">
+            <i class="fa-solid fa-download"></i> Download Belakang
         </button>
     </div>
 
@@ -598,22 +1009,51 @@
                 width: 2.0,
                 height: 50,
                 displayValue: false,
+                fontSize: 14,
+                fontOptions: "bold",
                 margin: 0
             });
         };
 
+        // Switch active side preview on screen
+        function switchSide(side) {
+            const front = document.getElementById('card-front');
+            const back = document.getElementById('card-back');
+            const btnFront = document.getElementById('btn-front');
+            const btnBack = document.getElementById('btn-back');
+
+            if (side === 'front') {
+                front.style.display = 'flex';
+                back.style.display = 'none';
+                btnFront.classList.add('active');
+                btnBack.classList.remove('active');
+            } else {
+                front.style.display = 'none';
+                back.style.display = 'flex';
+                btnFront.classList.remove('active');
+                btnBack.classList.add('active');
+            }
+        }
+
         // Download Card as Image
-        function downloadCard() {
-            const card = document.querySelector('.id-card-wrapper');
+        function downloadCard(side) {
+            const selector = side === 'front' ? '#card-front' : '#card-back';
+            const card = document.querySelector(selector);
+            
+            // Capture original display style to restore later
+            const originalDisplay = card.style.display;
             
             // Temporarily reset transform scale for crisp, 1:1 render size conversion
             const originalTransform = card.style.transform;
             const originalShadow = card.style.boxShadow;
             const originalBorder = card.style.border;
+            const originalMargin = card.style.margin;
             
+            card.style.display = 'flex';
             card.style.transform = 'none';
             card.style.boxShadow = 'none';
             card.style.border = 'none';
+            card.style.margin = '0';
 
             // Wait brief moment for layout changes to settle
             setTimeout(() => {
@@ -628,10 +1068,12 @@
                     card.style.transform = originalTransform;
                     card.style.boxShadow = originalShadow;
                     card.style.border = originalBorder;
+                    card.style.margin = originalMargin;
+                    card.style.display = originalDisplay;
 
                     // Trigger browser download
                     const link = document.createElement('a');
-                    link.download = 'ID_Card_{{ str_replace(' ', '_', $pendaftaran->nama_lengkap) }}.png';
+                    link.download = `ID_Card_${side === 'front' ? 'Depan' : 'Belakang'}_{{ str_replace(' ', '_', $pendaftaran->nama_lengkap) }}.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                 }).catch(err => {
@@ -639,6 +1081,8 @@
                     card.style.transform = originalTransform;
                     card.style.boxShadow = originalShadow;
                     card.style.border = originalBorder;
+                    card.style.margin = originalMargin;
+                    card.style.display = originalDisplay;
                 });
             }, 100);
         }

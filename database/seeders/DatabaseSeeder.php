@@ -96,6 +96,7 @@ class DatabaseSeeder extends Seeder
             Unitpermissionseeder::class,
             Webpermissionseeder::class,
             WebsiteUpdatePermissionSeeder::class,
+            KaryawanRolePermissionSeeder::class,
         ];
 
         foreach ($seeders as $seeder) {

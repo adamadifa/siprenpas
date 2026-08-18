@@ -22,47 +22,8 @@ class DashboardController extends Controller
 
         $user = User::where('id', auth()->user()->id)->first();
         $hari_ini = date("Y-m-d");
-        if ($user->hasRole('karyawan')) {
-            $userkaryawan = Userkaryawan::where('id_user', auth()->user()->id)->first();
-            $data['karyawan'] = Karyawan::where('npp', $userkaryawan->npp)
-                ->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
-                ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
-                ->first();
-            $data['anggota'] = Karyawananggota::where('npp', $userkaryawan->npp)->first();
-            $data['presensi'] = Presensi::where('npp', $userkaryawan->npp)->where('tanggal', $hari_ini)->first();
-            $data['datapresensi'] = Presensi::leftjoin('konfigurasi_jam_kerja', 'presensi.kode_jam_kerja', '=', 'konfigurasi_jam_kerja.kode_jam_kerja')
-                ->leftJoin('presensi_izinabsen_approve', 'presensi.id', '=', 'presensi_izinabsen_approve.id_presensi')
-                ->leftJoin('presensi_izinabsen', 'presensi_izinabsen_approve.kode_izin', '=', 'presensi_izinabsen.kode_izin')
-
-                ->leftJoin('presensi_izinsakit_approve', 'presensi.id', '=', 'presensi_izinsakit_approve.id_presensi')
-                ->leftJoin('presensi_izinsakit', 'presensi_izinsakit_approve.kode_izin_sakit', '=', 'presensi_izinsakit.kode_izin_sakit')
-                ->select(
-                    'presensi.*',
-                    'konfigurasi_jam_kerja.nama_jam_kerja',
-                    'konfigurasi_jam_kerja.jam_masuk',
-                    'konfigurasi_jam_kerja.jam_pulang',
-                    'konfigurasi_jam_kerja.total_jam',
-                    'konfigurasi_jam_kerja.lintas_hari',
-                    'presensi_izinabsen.keterangan as keterangan_izin',
-                    'presensi_izinsakit.keterangan as keterangan_izin_sakit'
-                )
-
-                ->where('presensi.npp', $userkaryawan->npp)
-                ->orderBy('presensi.tanggal', 'desc')
-                ->limit(30)
-                ->get();
-            // dd($data['datapresensi']);
-            $data['rekappresensi'] = Presensi::select(
-                DB::raw("SUM(IF(status='h',1,0)) as hadir"),
-                DB::raw("SUM(IF(status='i',1,0)) as izin"),
-                DB::raw("SUM(IF(status='s',1,0)) as sakit"),
-                DB::raw("SUM(IF(status='a',1,0)) as alpa"),
-                DB::raw("SUM(IF(status='c',1,0)) as cuti")
-            )
-                ->where('npp', $userkaryawan->npp)
-                ->first();
-            return view('dashboard.karyawan', $data);
-        } else if ($user->hasRole('ketua koperasi')) {
+        
+        if ($user->hasRole('ketua koperasi')) {
             return view('dashboard.koperasi');
         } else if ($user->hasRole(['admin unit', 'admin tu'])) {
             return view('dashboard.admin_unit');

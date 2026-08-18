@@ -317,4 +317,78 @@ class SimpananController extends Controller
             ->get();
         return view('koperasi.simpanan.mutasi-mobile', $data);
     }
+
+    public function simpanansaya(Request $request)
+    {
+        $user = User::where('id', auth()->user()->id)->first();
+        $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
+        $cekanggota = Karyawananggota::where('npp', $userkaryawan->npp)->first();
+        
+        $karyawan = \App\Models\Karyawan::where('karyawan.npp', $userkaryawan->npp)
+            ->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+            ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+            ->first();
+        $dept = \App\Models\Departemen::where('kode_dept', $user->kode_dept)->first();
+        if ($karyawan && $dept) {
+            $karyawan->nama_dept = $dept->nama_dept;
+        }
+        $data['karyawan'] = $karyawan;
+
+        if ($cekanggota == null) {
+            $data['is_member'] = false;
+            $data['saldo_simpanan'] = collect([]);
+            $data['total_saldo'] = 0;
+            $data['mutasi'] = collect([]);
+        } else {
+            $data['is_member'] = true;
+            $no_anggota = $cekanggota->no_anggota;
+            
+            $data['saldo_simpanan'] = Saldosimpanan::where('no_anggota', $no_anggota)
+                ->join('koperasi_jenis_simpanan', 'koperasi_saldo_simpanan.kode_simpanan', '=', 'koperasi_jenis_simpanan.kode_simpanan')
+                ->select('koperasi_saldo_simpanan.*', 'koperasi_jenis_simpanan.jenis_simpanan')
+                ->get();
+                
+            $saldosum = Saldosimpanan::where('no_anggota', $no_anggota)
+                ->select(DB::raw('SUM(jumlah) as total_saldo'))
+                ->first();
+            $data['total_saldo'] = $saldosum ? $saldosum->total_saldo : 0;
+            
+            $data['mutasi'] = Simpanan::where('no_anggota', $no_anggota)
+                ->join('koperasi_jenis_simpanan', 'koperasi_simpanan.kode_simpanan', '=', 'koperasi_jenis_simpanan.kode_simpanan')
+                ->orderBy('tanggal', 'desc')
+                ->select('koperasi_simpanan.*', 'koperasi_jenis_simpanan.jenis_simpanan')
+                ->limit(5)
+                ->get();
+        }
+        return view('koperasi.simpanan.index_karyawan', $data);
+    }
+
+    public function mutasisimpanan(Request $request, $kode_simpanan)
+    {
+        $user = User::where('id', auth()->user()->id)->first();
+        $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
+        $cekanggota = Karyawananggota::where('npp', $userkaryawan->npp)->first();
+        if ($cekanggota == null) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        $no_anggota = $cekanggota->no_anggota;
+        
+        $saldo_simpanan = Saldosimpanan::where('no_anggota', $no_anggota)
+            ->where('koperasi_saldo_simpanan.kode_simpanan', $kode_simpanan)
+            ->join('koperasi_jenis_simpanan', 'koperasi_saldo_simpanan.kode_simpanan', '=', 'koperasi_jenis_simpanan.kode_simpanan')
+            ->first();
+            
+        $mutasi = Simpanan::where('no_anggota', $no_anggota)
+            ->where('koperasi_simpanan.kode_simpanan', $kode_simpanan)
+            ->join('koperasi_jenis_simpanan', 'koperasi_simpanan.kode_simpanan', '=', 'koperasi_jenis_simpanan.kode_simpanan')
+            ->orderBy('tanggal', 'desc')
+            ->orderBy('no_transaksi', 'desc')
+            ->select('koperasi_simpanan.*', 'koperasi_jenis_simpanan.jenis_simpanan')
+            ->get();
+            
+        $data['saldo_simpanan'] = $saldo_simpanan;
+        $data['mutasi'] = $mutasi;
+        
+        return view('koperasi.simpanan.mutasi_desktop', $data);
+    }
 }

@@ -32,6 +32,48 @@ class RealisasikegiatanController extends Controller
         $query->leftJoin('jobdesk', 'realisasi_kegiatan.kode_jobdesk', '=', 'jobdesk.kode_jobdesk');
         $query->leftJoin('program_kerja', 'realisasi_kegiatan.kode_program_kerja', '=', 'program_kerja.kode_program_kerja');
         $query->join('users', 'realisasi_kegiatan.id_user', '=', 'users.id');
+        if ($user->hasRole('karyawan')) {
+            $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
+            $karyawan = Karyawan::where('karyawan.npp', $userkaryawan->npp)
+                ->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+                ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+                ->first();
+            
+            $dept = Departemen::where('kode_dept', $user->kode_dept)->first();
+            if ($karyawan && $dept) {
+                $karyawan->nama_dept = $dept->nama_dept;
+            }
+            
+            $data['karyawan'] = $karyawan;
+            
+            // Only show employee's own realisasi kegiatan
+            $query->where('realisasi_kegiatan.id_user', $user->id);
+            if (!empty($request->dari) && !empty($request->sampai)) {
+                $query->whereBetween('tanggal', [$request->dari, $request->sampai]);
+            }
+            
+            $query->orderBy('tanggal', 'desc');
+            
+            if ($request->cetak || $request->cetak_pdf) {
+                $data['realisasikegiatan'] = $query->get();
+                $data['jabatan'] = Jabatan::where('kode_jabatan', $user->kode_jabatan)->first();
+                $data['departemen'] = Departemen::where('kode_dept', $user->kode_dept)->first();
+                $data['dari'] = $request->dari;
+                $data['sampai'] = $request->sampai;
+                
+                if ($request->cetak_pdf) {
+                    $pdf = Pdf::loadView('realisasi_kegiatan.cetakpdf', $data)->setPaper('a4', 'landscape');
+                    return $pdf->stream('realisasi_kegiatan_' . $request->dari . '_' . $request->sampai . '_' . $user->kode_dept . '.pdf');
+                }
+                return view('realisasi_kegiatan.cetak', $data);
+            }
+            
+            $data['realisasikegiatan'] = $query->paginate(30)->appends($request->all());
+            $data['user'] = $user;
+            
+            return view('realisasi_kegiatan.index_karyawan', $data);
+        }
+
         if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris'])) {
             if (!empty($request->kode_jabatan)) {
                 $query->where('realisasi_kegiatan.kode_jabatan', $request->kode_jabatan);

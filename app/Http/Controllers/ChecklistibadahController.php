@@ -9,12 +9,34 @@ use App\Models\User;
 use App\Models\Userkaryawan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Jenssegers\Agent\Agent;
 
 class ChecklistibadahController extends Controller
 {
     public function create()
     {
-        return view('checklistibadah.create');
+        $user = User::where('id', auth()->user()->id)->first();
+        $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
+        $karyawan = null;
+        if ($userkaryawan) {
+            $karyawan = \App\Models\Karyawan::where('karyawan.npp', $userkaryawan->npp)
+                ->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+                ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+                ->first();
+            
+            $dept = \App\Models\Departemen::where('kode_dept', $user->kode_dept)->first();
+            if ($karyawan && $dept) {
+                $karyawan->nama_dept = $dept->nama_dept;
+            }
+        }
+
+        $data['karyawan'] = $karyawan;
+        
+        $agent = new Agent();
+        if ($agent->isMobile()) {
+            return view('checklistibadah.create_mobile', $data);
+        }
+        return view('checklistibadah.create', $data);
     }
 
     public function getchecklistibadah(Request $request)
@@ -102,10 +124,10 @@ class ChecklistibadahController extends Controller
             }
             DB::commit();
 
-            // if ($is_first_submit) {
-            //     // Dispatch WhatsApp Group notification
-            //     \App\Jobs\SendChecklistIbadahJob::dispatch($request->tanggal);
-            // }
+            if ($is_first_submit) {
+                // Dispatch WhatsApp Group notification
+                \App\Jobs\SendChecklistIbadahJob::dispatch($request->tanggal, $userkaryawan->npp);
+            }
 
             return response()->json([
                 'status' => true,

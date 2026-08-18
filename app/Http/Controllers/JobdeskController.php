@@ -20,6 +20,26 @@ class JobdeskController extends Controller
         $query->join('departemen', 'jobdesk.kode_dept', '=', 'departemen.kode_dept');
         $query->join('jabatan', 'jobdesk.kode_jabatan', '=', 'jabatan.kode_jabatan');
         $query->orderBy('kode_jobdesk');
+        if ($user->hasRole('karyawan')) {
+            $userkaryawan = \App\Models\Userkaryawan::where('id_user', $user->id)->first();
+            $karyawan = \App\Models\Karyawan::where('karyawan.npp', $userkaryawan->npp)
+                ->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+                ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+                ->first();
+            
+            $dept = \App\Models\Departemen::where('kode_dept', $user->kode_dept)->first();
+            if ($karyawan && $dept) {
+                $karyawan->nama_dept = $dept->nama_dept;
+            }
+            
+            $query->where('jobdesk.kode_jabatan', $user->kode_jabatan);
+            $query->where('jobdesk.kode_dept', $user->kode_dept);
+            $data['jobdesk'] = $query->get();
+            $data['karyawan'] = $karyawan;
+            
+            return view('datamaster.jobdesk.index_karyawan', $data);
+        }
+
         if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris'])) {
             if (!empty($request->kode_jabatan)) {
                 $query->where('jobdesk.kode_jabatan', $request->kode_jabatan);

@@ -645,6 +645,11 @@ Route::middleware('auth')->group(function () {
     Route::controller(SimpananController::class)->group(function () {
         Route::get('/simpanan', 'index')->name('simpanan.index')->can('simpanan.index');
         Route::get('/simpanan/{no_anggota}/show', 'show')->name('simpanan.show')->can('simpanan.index');
+        
+        // Employee Dedicated Savings Routes
+        Route::get('/simpanansaya', 'simpanansaya')->name('simpanan.simpanansaya');
+        Route::get('/simpanansaya/mutasi/{kode_simpanan}', 'mutasisimpanan')->name('simpanan.mutasisimpanan');
+        
         Route::get('/simpanan/{no_anggota}/{jenis_transaksi}/create', 'create')->name('simpanan.create')->can('simpanan.create');
         Route::post('/simpanan/{no_anggota}/{jenis_transaksi}/store', 'store')->name('simpanan.store')->can('simpanan.store');
         Route::get('/simpanan/{no_transaksi}/edit', 'edit')->name('simpanan.edit')->can('simpanan.edit');
@@ -686,6 +691,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/pembiayaan', 'index')->name('pembiayaan.index')->can('pembiayaan.index');
         Route::get('/pembiayaan/{no_anggota}/show', 'show')->name('pembiayaan.show')->can('pembiayaan.create');
         Route::get('/pembiayaan/create', 'create')->name('pembiayaan.create')->can('pembiayaan.create');
+        
+        // Employee Dedicated Loan Routes
+        Route::get('/pinjamansaya', 'pinjamansaya')->name('pembiayaan.pinjamansaya');
+        Route::get('/pinjamansaya/create', 'createpinjaman')->name('pembiayaan.createpinjaman');
+        Route::post('/pinjamansaya/store', 'storepinjaman')->name('pembiayaan.storepinjaman');
 
         Route::post('/pembiayaan/store', 'store')->name('pembiayaan.store')->can('pembiayaan.create');
         Route::post('/pembiayaan/storeajuan', 'storeajuan')->name('pembiayaan.storeajuan');
@@ -801,6 +811,7 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(PresensiController::class)->group(function () {
         Route::get('/presensi', 'index')->name('presensi.index')->can('presensi.index');
+        Route::get('/absensikaryawan', 'absensikaryawan')->name('presensi.absensikaryawan');
         Route::get('/presensi/create', 'create')->name('presensi.create')->can('presensi.create');
         Route::post('/presensi', 'store')->name('presensi.store')->can('presensi.create');
         Route::post('/presensi/update', 'update')->name('presensi.update')->can('presensi.edit');
