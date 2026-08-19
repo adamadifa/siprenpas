@@ -313,6 +313,13 @@
                             </a>
                         </li>
                     @endcan
+                    @can('jabatan.index')
+                        <li class="menu-item {{ request()->is(['jabatan', 'jabatan/*']) ? 'active' : '' }}">
+                            <a href="{{ route('jabatan.index') }}" class="menu-link">
+                                <div>Jabatan</div>
+                            </a>
+                        </li>
+                    @endcan
                     @can('siswa.index')
                         <li class="menu-item {{ request()->is(['siswa', 'siswa/*']) ? 'active' : '' }}">
                             <a href="{{ route('siswa.index') }}" class="menu-link">

@@ -51,8 +51,13 @@ class Jabatanpermissionseeder extends Seeder
         ]);
 
         $permissions = Permission::where('id_permission_group', $permissiongroup->id)->get();
-        $roleID = 1;
-        $role = Role::findById($roleID);
-        $role->givePermissionTo($permissions);
+        
+        $rolesToAssign = ['super admin', 'admin', 'staf msdm', 'staff msdm'];
+        foreach ($rolesToAssign as $roleName) {
+            $role = Role::where('name', $roleName)->first();
+            if ($role) {
+                $role->givePermissionTo($permissions);
+            }
+        }
     }
 }
