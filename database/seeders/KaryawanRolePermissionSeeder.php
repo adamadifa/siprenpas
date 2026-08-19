@@ -49,6 +49,9 @@ class KaryawanRolePermissionSeeder extends Seeder
             'agendakegiatan.store',
             'agendakegiatan.update',
             'agendakegiatan.delete',
+
+            // Agenda Pesantren
+            'agenda.index',
         ];
 
         // Revoke first to make it a clean sync

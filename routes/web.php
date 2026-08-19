@@ -389,6 +389,17 @@ Route::middleware('auth')->group(function () {
         Route::post('/agendakegiatan/getagendakegiatan', 'getagendakegiatan')->name('agendakegiatan.getagendakegiatan');
     });
 
+    Route::controller(App\Http\Controllers\AgendaController::class)->group(function () {
+        Route::get('/agenda', 'index')->name('agenda.index')->can('agenda.index');
+        Route::get('/agenda/getevents', 'getEvents')->name('agenda.getevents');
+        Route::post('/agenda/update-date', 'updateDate')->name('agenda.update-date');
+        Route::get('/agenda/create', 'create')->name('agenda.create')->can('agenda.create');
+        Route::post('/agenda', 'store')->name('agenda.store')->can('agenda.store');
+        Route::get('/agenda/{id}/edit', 'edit')->name('agenda.edit')->can('agenda.edit');
+        Route::put('/agenda/{id}/update', 'update')->name('agenda.update')->can('agenda.update');
+        Route::delete('/agenda/{id}/delete', 'destroy')->name('agenda.delete')->can('agenda.delete');
+    });
+
 
     Route::controller(JenisbiayaController::class)->group(function () {
         Route::get('/jenisbiaya', 'index')->name('jenisbiaya.index')->can('jenisbiaya.index');

@@ -28,6 +28,7 @@
     @include('layouts.icons')
 
     @include('layouts.styles')
+    @stack('styles')
 
     <!-- Custom CSS untuk gradasi sidebar dan font Tailwind -->
     <style>

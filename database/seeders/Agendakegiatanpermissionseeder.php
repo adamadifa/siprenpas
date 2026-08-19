@@ -19,34 +19,39 @@ class Agendakegiatanpermissionseeder extends Seeder
             'name' => 'Agenda Kegiatan'
         ]);
 
-        Permission::firstOrCreate([
-            'name' => 'agendakegiatan.index',
+        Permission::updateOrCreate([
+            'name' => 'agendakegiatan.index'
+        ], [
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::firstOrCreate([
-            'name' => 'agendakegiatan.create',
+        Permission::updateOrCreate([
+            'name' => 'agendakegiatan.create'
+        ], [
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::firstOrCreate([
-            'name' => 'agendakegiatan.edit',
+        Permission::updateOrCreate([
+            'name' => 'agendakegiatan.edit'
+        ], [
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::firstOrCreate([
-            'name' => 'agendakegiatan.store',
+        Permission::updateOrCreate([
+            'name' => 'agendakegiatan.store'
+        ], [
             'id_permission_group' => $permissiongroup->id
         ]);
 
-        Permission::firstOrCreate([
-            'name' => 'agendakegiatan.update',
+        Permission::updateOrCreate([
+            'name' => 'agendakegiatan.update'
+        ], [
             'id_permission_group' => $permissiongroup->id
         ]);
 
-
-        Permission::firstOrCreate([
-            'name' => 'agendakegiatan.delete',
+        Permission::updateOrCreate([
+            'name' => 'agendakegiatan.delete'
+        ], [
             'id_permission_group' => $permissiongroup->id
         ]);
 

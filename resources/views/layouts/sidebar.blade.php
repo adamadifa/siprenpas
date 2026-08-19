@@ -715,9 +715,19 @@
         @endif
 
         @if (auth()->check() &&
-                (auth()->user()->hasAnyPermission(['realkegiatan.index', 'agendakegiatan.index', 'programkerja.index', 'jobdesk.index']) ||
+                (auth()->user()->can('agenda.index') || auth()->user()->hasRole('karyawan')))
+            <li class="menu-item {{ request()->is(['agenda', 'agenda/*']) ? 'active' : '' }}">
+                <a href="{{ route('agenda.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons ti ti-calendar"></i>
+                    <div>Agenda Pesantren</div>
+                </a>
+            </li>
+        @endif
+
+        @if (auth()->check() &&
+                (auth()->user()->hasAnyPermission(['realkegiatan.index', 'programkerja.index', 'jobdesk.index']) ||
                  auth()->user()->hasRole('karyawan')))
-            <li class="menu-item {{ request()->is(['realisasikegiatan', 'agendakegiatan', 'programkerja', 'jobdesk']) ? 'open' : '' }}">
+            <li class="menu-item {{ request()->is(['realisasikegiatan', 'programkerja', 'jobdesk']) ? 'open' : '' }}">
 
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-activity"></i>
@@ -744,14 +754,6 @@
                             <a href="{{ route('realisasikegiatan.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-file-description"></i>
                                 <div>Realisasi Kegiatan </div>
-                            </a>
-                        </li>
-                    @endif
-                    @if (auth()->user()->can('agendakegiatan.index') || auth()->user()->hasRole('karyawan'))
-                        <li class="menu-item {{ request()->is(['agendakegiatan']) ? 'active' : '' }}">
-                            <a href="{{ route('agendakegiatan.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-file-description"></i>
-                                <div>Agenda Kegiatan </div>
                             </a>
                         </li>
                     @endif
