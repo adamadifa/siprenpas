@@ -110,14 +110,28 @@
 <div class="row">
     <div class="col-lg-12">
         <!-- Actions Section -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            @can('agenda.create')
-                <button class="btn d-flex align-items-center gap-2 shadow-sm text-white" id="btncreateAgenda"
-                    style="background-color: #064e3b">
-                    <i class="ti ti-plus fs-4"></i>
-                    <span>Tambah Agenda</span>
-                </button>
-            @endcan
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-2">
+                @can('agenda.create')
+                    <button class="btn d-flex align-items-center gap-2 shadow-sm text-white" id="btncreateAgenda"
+                        style="background-color: #064e3b">
+                        <i class="ti ti-plus fs-4"></i>
+                        <span>Tambah Agenda</span>
+                    </button>
+                @endcan
+
+                @if(auth()->check() && auth()->user()->hasRole('super admin'))
+                    <form method="POST" action="{{ route('agenda.reset') }}" class="d-inline-block" id="formResetAgenda">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm btn-reset-confirm"
+                            style="border-radius: 8px;">
+                            <i class="ti ti-rotate fs-4"></i>
+                            <span class="fw-semibold">Reset Agenda</span>
+                        </button>
+                    </form>
+                @endif
+            </div>
             <span class="text-muted small"><i class="ti ti-info-circle text-info me-1"></i>Anda dapat melakukan klik pada tanggal kosong untuk menambah agenda, klik event untuk edit, atau drag & drop untuk memindahkan agenda.</span>
         </div>
 
@@ -296,6 +310,24 @@
             $('#mdlAgenda').modal("show");
             $("#mdlAgenda").find(".modal-title").text("Tambah Agenda");
             $("#loadAgenda").load('/agenda/create');
+        });
+
+        $(document).on('click', '.btn-reset-confirm', function(event) {
+            var form = $(this).closest("form");
+            event.preventDefault();
+            Swal.fire({
+                title: `Apakah Anda Yakin Ingin Mereset Semua Agenda ?`,
+                text: "Semua data agenda akan dihapus secara permanen!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Ya, Reset Semua!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
     });
 </script>

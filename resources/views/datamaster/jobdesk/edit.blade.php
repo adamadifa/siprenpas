@@ -23,6 +23,17 @@
                 @endforeach
             </select>
         </div>
+
+        <div class="form-group mb-3">
+            <select name="kode_unit" id="kode_unit" class="form-select select2Kodeunit">
+                <option value="">Pilih Unit (Opsional)</option>
+                @foreach ($unit as $d)
+                    <option value="{{ $d->kode_unit }}" {{ $jobdesk->kode_unit == $d->kode_unit ? 'selected' : '' }}>
+                        {{ strtoupper($d->nama_unit) }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
     @endhasanyrole
 
     <x-textarea label="Jobdesk" name="jobdesk" :value="$jobdesk->jobdesk" />
@@ -42,6 +53,17 @@
                 var $this = $(this);
                 $this.wrap('<div class="position-relative"></div>').select2({
                     placeholder: 'Pilih  Departemen',
+                    allowClear: true,
+                    dropdownParent: $this.parent()
+                });
+            });
+        }
+        const select2Kodeunit = $('.select2Kodeunit');
+        if (select2Kodeunit.length) {
+            select2Kodeunit.each(function() {
+                var $this = $(this);
+                $this.wrap('<div class="position-relative"></div>').select2({
+                    placeholder: 'Pilih Unit (Opsional)',
                     allowClear: true,
                     dropdownParent: $this.parent()
                 });

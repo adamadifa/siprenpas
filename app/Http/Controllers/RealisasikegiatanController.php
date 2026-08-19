@@ -393,4 +393,19 @@ class RealisasikegiatanController extends Controller
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 400);
         }
     }
+
+    public function reset()
+    {
+        $user = User::where('id', auth()->user()->id)->first();
+        if (!$user->hasRole('super admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            Realisasikegiatan::query()->delete();
+            return Redirect::back()->with(messageSuccess('Semua data realisasi kegiatan berhasil direset'));
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError($e->getMessage()));
+        }
+    }
 }

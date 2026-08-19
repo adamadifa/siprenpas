@@ -12,4 +12,9 @@ class Jobdesk extends Model
     protected $guarded = [];
     protected $primaryKey = 'kode_jobdesk';
     public $incrementing = false;
+
+    public function group()
+    {
+        return $this->belongsTo(JobdeskGroup::class, 'kode_jobdesk_group', 'kode_jobdesk_group');
+    }
 }

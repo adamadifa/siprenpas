@@ -44,13 +44,26 @@
     <div class="col-lg-12">
         <!-- Actions & Info Header -->
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-            @can('agendakegiatan.create')
-                <button class="btn d-flex align-items-center gap-2 shadow-sm text-white px-4 py-2-5 rounded-3 border-0 transition-all" id="btncreateProgramKerja"
-                    style="background: linear-gradient(135deg, #064e3b 0%, #0b6e54 100%);">
-                    <i class="ti ti-plus fs-5"></i>
-                    <span class="fw-semibold">Tambah Program Kerja</span>
-                </button>
-            @endcan
+            <div class="d-flex align-items-center gap-2">
+                @can('agendakegiatan.create')
+                    <button class="btn d-flex align-items-center gap-2 shadow-sm text-white px-4 py-2-5 rounded-3 border-0 transition-all" id="btncreateProgramKerja"
+                        style="background: linear-gradient(135deg, #064e3b 0%, #0b6e54 100%);">
+                        <i class="ti ti-plus fs-5"></i>
+                        <span class="fw-semibold">Tambah Program Kerja</span>
+                    </button>
+                @endcan
+
+                @if(auth()->check() && auth()->user()->hasRole('super admin'))
+                    <form method="POST" action="{{ route('programkerja.reset') }}" class="d-inline-block m-0" id="formResetProgramKerja">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm btn-reset-confirm px-4 py-2-5 rounded-3 border-0 transition-all">
+                            <i class="ti ti-rotate fs-5"></i>
+                            <span class="fw-semibold">Reset Program Kerja</span>
+                        </button>
+                    </form>
+                @endif
+            </div>
             <div class="text-muted small">
                 Total: <span class="fw-bold text-dark">{{ count($programkerja) }}</span> Program Kerja Terdaftar
             </div>
@@ -242,6 +255,24 @@
             $('#mdlProgramkerja').modal("show");
             $("#mdlProgramkerja").find(".modal-title").text("Edit Program Kerja");
             $("#loadProgramkerja").load('/programkerja/' + id + '/edit');
+        });
+
+        $(document).on('click', '.btn-reset-confirm', function(event) {
+            var form = $(this).closest("form");
+            event.preventDefault();
+            Swal.fire({
+                title: `Apakah Anda Yakin Ingin Mereset Semua Program Kerja ?`,
+                text: "Semua data program kerja akan dihapus secara permanen!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Ya, Reset Semua!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
     });
 </script>

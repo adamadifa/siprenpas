@@ -265,7 +265,22 @@ class AgendakegiatanController extends Controller
     public function show($id)
     {
         $id = Crypt::decrypt($id);
-        $data['agenda'] = AgendaKegiatan::where('id', $id)->first();
+        $data['agenda'] = Agendakegiatan::where('id', $id)->first();
         return view('agenda_kegiatan.show', $data);
+    }
+
+    public function reset()
+    {
+        $user = User::where('id', auth()->user()->id)->first();
+        if (!$user->hasRole('super admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            Agendakegiatan::query()->delete();
+            return Redirect::back()->with(messageSuccess('Semua data agenda kegiatan berhasil direset'));
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError($e->getMessage()));
+        }
     }
 }

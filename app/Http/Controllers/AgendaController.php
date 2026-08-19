@@ -175,4 +175,19 @@ class AgendaController extends Controller
         }
         return response()->json(['success' => false, 'message' => 'Agenda not found'], 404);
     }
+
+    public function reset()
+    {
+        $user = User::where('id', auth()->user()->id)->first();
+        if (!$user->hasRole('super admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        try {
+            Agenda::query()->delete();
+            return Redirect::back()->with(messageSuccess('Semua data agenda berhasil direset'));
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError($e->getMessage()));
+        }
+    }
 }

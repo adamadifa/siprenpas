@@ -37,7 +37,7 @@
 <div class="row">
     <div class="col-lg-12">
         <!-- Actions Section -->
-        <div class="d-flex justify-content-start mb-3">
+        <div class="d-flex justify-content-start mb-3 gap-2">
             @can('agendakegiatan.create')
                 <button class="btn d-flex align-items-center gap-2 shadow-sm text-white" id="btncreateAgendaKegiatan"
                     style="background-color: #064e3b">
@@ -45,6 +45,18 @@
                     <span>Tambah Agenda Kegiatan</span>
                 </button>
             @endcan
+
+            @if(auth()->check() && auth()->user()->hasRole('super admin'))
+                <form method="POST" action="{{ route('agendakegiatan.reset') }}" class="d-inline-block" id="formResetAgendaKegiatan">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm btn-reset-confirm"
+                        style="border-radius: 8px;">
+                        <i class="ti ti-rotate fs-4"></i>
+                        <span class="fw-semibold">Reset Agenda Kegiatan</span>
+                    </button>
+                </form>
+            @endif
         </div>
 
         <!-- Filter Form -->
@@ -215,11 +227,13 @@
             @endforelse
         </div>
 
-        <div class="card shadow-sm mb-4">
-            <div class="card-body p-3">
-                {{ $agenda_kegiatan->links() }}
+        @if ($agenda_kegiatan->hasPages())
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-3">
+                    {{ $agenda_kegiatan->links() }}
+                </div>
             </div>
-        </div>
+        @endif
     </div>
 </div>
 
@@ -282,6 +296,24 @@
             $('#mdlAgendaKegiatan').modal("show");
             $("#mdlAgendaKegiatan").find(".modal-title").text("Edit Agenda Kegiatan");
             $("#loadAgendaKegiatan").load('/agendakegiatan/' + id + '/edit');
+        });
+
+        $(document).on('click', '.btn-reset-confirm', function(event) {
+            var form = $(this).closest("form");
+            event.preventDefault();
+            Swal.fire({
+                title: `Apakah Anda Yakin Ingin Mereset Semua Agenda Kegiatan ?`,
+                text: "Semua data agenda kegiatan akan dihapus secara permanen!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Ya, Reset Semua!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
     });
 </script>

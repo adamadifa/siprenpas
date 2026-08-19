@@ -5,7 +5,7 @@
             <select name="kode_jabatan" id="kode_jabatan" class="form-select select2Kodejabatan">
                 <option value="">Jabatan</option>
                 @foreach ($jabatan as $d)
-                    <option value="{{ $d->kode_jabatan }}">{{ strtoUpper($d->nama_jabatan) }}</option>
+                    <option value="{{ $d->kode_jabatan }}" {{ (isset($pre_selected_jabatan) && $pre_selected_jabatan == $d->kode_jabatan) ? 'selected' : '' }}>{{ strtoUpper($d->nama_jabatan) }}</option>
                 @endforeach
             </select>
         </div>
@@ -14,7 +14,16 @@
             <select name="kode_dept" id="kode_dept" class="form-select select2Kodedept">
                 <option value="">Departemen</option>
                 @foreach ($departemen as $d)
-                    <option value="{{ $d->kode_dept }}">{{ strtoupper($d->nama_dept) }}</option>
+                    <option value="{{ $d->kode_dept }}" {{ (isset($pre_selected_dept) && $pre_selected_dept == $d->kode_dept) ? 'selected' : '' }}>{{ strtoupper($d->nama_dept) }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="form-group mb-3">
+            <select name="kode_unit" id="kode_unit" class="form-select select2Kodeunit">
+                <option value="">Pilih Unit (Opsional)</option>
+                @foreach ($unit as $d)
+                    <option value="{{ $d->kode_unit }}" {{ (isset($pre_selected_unit) && $pre_selected_unit == $d->kode_unit) ? 'selected' : '' }}>{{ strtoupper($d->nama_unit) }}</option>
                 @endforeach
             </select>
         </div>
@@ -40,6 +49,18 @@
                 var $this = $(this);
                 $this.wrap('<div class="position-relative"></div>').select2({
                     placeholder: 'Pilih  Departemen',
+                    allowClear: true,
+                    dropdownParent: $this.parent()
+                });
+            });
+        }
+
+        const select2Kodeunit = $('.select2Kodeunit');
+        if (select2Kodeunit.length) {
+            select2Kodeunit.each(function() {
+                var $this = $(this);
+                $this.wrap('<div class="position-relative"></div>').select2({
+                    placeholder: 'Pilih Unit (Opsional)',
                     allowClear: true,
                     dropdownParent: $this.parent()
                 });

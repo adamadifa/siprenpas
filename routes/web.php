@@ -352,7 +352,6 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(JobdeskController::class)->group(function () {
-        Route::get('/jobdesk', 'index')->name('jobdesk.index')->can('jobdesk.index');
         Route::get('/jobdesk/create', 'create')->name('jobdesk.create')->can('jobdesk.create');
         Route::post('/jobdesk', 'store')->name('jobdesk.store')->can('jobdesk.store');
         Route::get('/jobdesk/{kode_jobdesk}/edit', 'edit')->name('jobdesk.edit')->can('jobdesk.edit');
@@ -362,6 +361,12 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/jobdesk/getjobdesk', 'getjobdesk')->name('jobdesk.getjobdesk');
         Route::post('/jobdesk/getjobdesklist', 'getjobdesklist')->name('jobdesk.getjobdesklist');
+        Route::delete('/jobdesk/reset', 'reset')->name('jobdesk.reset');
+        
+        Route::get('/jobdesk/download-format', 'downloadFormat')->name('jobdesk.download-format')->can('jobdesk.create');
+        Route::post('/jobdesk/import', 'import')->name('jobdesk.import')->can('jobdesk.create');
+
+        Route::get('/jobdesk/{kode_unit?}/{kode_dept?}/{kode_jabatan?}', 'index')->name('jobdesk.index')->can('jobdesk.index');
     });
 
     Route::controller(RealisasikegiatanController::class)->group(function () {
@@ -376,6 +381,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/realisasikegiatan/getrealisasikegiatan', 'getrealisasikegiatan')->name('realisasikegiatan.getrealisasikegiatan');
         Route::get('/realisasikegiatan/{id}/takepicture', 'takepicture')->name('realisasikegiatan.takepicture');
         Route::post('/realisasikegiatan/storepicture', 'storepicture')->name('realisasikegiatan.storepicture');
+        Route::delete('/realisasikegiatan/reset', 'reset')->name('realisasikegiatan.reset');
     });
 
     Route::controller(AgendakegiatanController::class)->group(function () {
@@ -388,6 +394,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/agendakegiatan/{id}/delete', 'destroy')->name('agendakegiatan.delete')->can('agendakegiatan.delete');
 
         Route::post('/agendakegiatan/getagendakegiatan', 'getagendakegiatan')->name('agendakegiatan.getagendakegiatan');
+        Route::delete('/agendakegiatan/reset', 'reset')->name('agendakegiatan.reset');
     });
 
     Route::controller(App\Http\Controllers\AgendaController::class)->group(function () {
@@ -399,6 +406,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/agenda/{id}/edit', 'edit')->name('agenda.edit')->can('agenda.edit');
         Route::put('/agenda/{id}/update', 'update')->name('agenda.update')->can('agenda.update');
         Route::delete('/agenda/{id}/delete', 'destroy')->name('agenda.delete')->can('agenda.delete');
+        Route::delete('/agenda/reset', 'reset')->name('agenda.reset');
     });
 
 
@@ -440,6 +448,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/programkerja/getprogramkerja', 'getprogramkerja')->name('programkerja.getprogramkerja');
         Route::post('/programkerja/getprogramkerjalist', 'getprogramkerjalist')->name('programkerja.getprogramkerjalist');
+        Route::delete('/programkerja/reset', 'reset')->name('programkerja.reset');
     });
 
 

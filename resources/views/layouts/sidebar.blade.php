@@ -732,9 +732,9 @@
         @endif
 
         @if (auth()->check() &&
-                (auth()->user()->hasAnyPermission(['realkegiatan.index', 'programkerja.index', 'jobdesk.index']) ||
+                (auth()->user()->hasAnyPermission(['realkegiatan.index', 'programkerja.index', 'jobdesk.index', 'agendakegiatan.index']) ||
                  auth()->user()->hasRole('karyawan')))
-            <li class="menu-item {{ request()->is(['realisasikegiatan', 'programkerja', 'jobdesk', 'kegiatan/laporan']) ? 'open' : '' }}">
+            <li class="menu-item {{ request()->is(['realisasikegiatan', 'programkerja', 'jobdesk', 'kegiatan/laporan', 'agendakegiatan', 'agendakegiatan/*']) ? 'open' : '' }}">
 
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-activity"></i>
@@ -753,6 +753,13 @@
                             <a href="{{ route('programkerja.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-file-description"></i>
                                 <div>Program Kerja </div>
+                            </a>
+                        </li>
+                    @endif
+                    @if (auth()->user()->can('agendakegiatan.index') || auth()->user()->hasRole('karyawan'))
+                        <li class="menu-item {{ request()->is(['agendakegiatan', 'agendakegiatan/*']) ? 'active' : '' }}">
+                            <a href="{{ route('agendakegiatan.index') }}" class="menu-link">
+                                <div>Agenda Kegiatan </div>
                             </a>
                         </li>
                     @endif

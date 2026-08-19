@@ -37,7 +37,7 @@
 <div class="row">
     <div class="col-lg-12">
         <!-- Actions Section -->
-        <div class="d-flex justify-content-start mb-3">
+        <div class="d-flex justify-content-start mb-3 gap-2">
             @can('realkegiatan.create')
                 <button class="btn d-flex align-items-center gap-2 shadow-sm text-white" id="btncreateRealisasiKegiatan"
                     style="background-color: #064e3b">
@@ -45,6 +45,18 @@
                     <span>Tambah Realisasi Kegiatan</span>
                 </button>
             @endcan
+
+            @if(auth()->check() && auth()->user()->hasRole('super admin'))
+                <form method="POST" action="{{ route('realisasikegiatan.reset') }}" class="d-inline-block" id="formResetRealisasi">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm btn-reset-confirm"
+                        style="border-radius: 8px;">
+                        <i class="ti ti-rotate fs-4"></i>
+                        <span class="fw-semibold">Reset Realisasi Kegiatan</span>
+                    </button>
+                </form>
+            @endif
         </div>
 
         <!-- Filter Section -->
@@ -233,11 +245,13 @@
             @endforelse
         </div>
 
-        <div class="card shadow-sm mb-4">
-            <div class="card-body p-3">
-                {{ $realisasikegiatan->links() }}
+        @if ($realisasikegiatan->hasPages())
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-3">
+                    {{ $realisasikegiatan->links() }}
+                </div>
             </div>
-        </div>
+        @endif
     </div>
 </div>
 
@@ -299,6 +313,24 @@
             $('#mdlRealisasiKegiatan').modal("show");
             $("#mdlRealisasiKegiatan").find(".modal-title").text("Edit Realisasi Kegiatan");
             $("#loadRealisasiKegiatan").load('/realisasikegiatan/' + id + '/edit');
+        });
+
+        $(document).on('click', '.btn-reset-confirm', function(event) {
+            var form = $(this).closest("form");
+            event.preventDefault();
+            Swal.fire({
+                title: `Apakah Anda Yakin Ingin Mereset Semua Realisasi Kegiatan ?`,
+                text: "Semua data realisasi kegiatan akan dihapus secara permanen!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Ya, Reset Semua!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
     });
 </script>
