@@ -81,6 +81,20 @@
             </div>
         @endif
 
+        <!-- Actions & Info Header -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            @can('programkerja.create')
+                <button class="btn d-flex align-items-center gap-2 shadow-sm text-white px-4 py-2-5 rounded-3 border-0 transition-all" id="btncreateProgramKerja"
+                    style="background: linear-gradient(135deg, #064e3b 0%, #0b6e54 100%);">
+                    <i class="ti ti-plus fs-5"></i>
+                    <span class="fw-semibold">Tambah Program Kerja</span>
+                </button>
+            @endcan
+            <div class="text-muted small">
+                Total: <span class="fw-bold text-dark">{{ count($programkerja) }}</span> Program Kerja Terdaftar
+            </div>
+        </div>
+
         <!-- Filter Form -->
         <div class="mb-4">
             <form action="{{ route('programkerja.index') }}" id="myForm" class="form-filter">
@@ -125,6 +139,7 @@
                                 <th class="py-3 text-white font-weight-bold" style="min-width: 250px;">PROGRAM KERJA</th>
                                 <th class="py-3 text-white font-weight-bold" style="min-width: 380px;">TARGET PENCAPAIAN</th>
                                 <th class="py-3 text-white font-weight-bold text-center" style="width: 120px;">DEPARTEMEN</th>
+                                <th class="py-3 text-white font-weight-bold text-end pe-4" style="width: 110px;">AKSI</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -153,10 +168,34 @@
                                             {{ $d->kode_dept }}
                                         </span>
                                     </td>
+                                    <td class="py-3 text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            @can('programkerja.edit')
+                                                <a href="#" class="btn btn-icon btn-label-success border-0 shadow-sm btnEdit rounded-3"
+                                                    style="width: 32px; height: 32px;"
+                                                    id="{{ Crypt::encrypt($d->kode_program_kerja) }}"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Program Kerja">
+                                                    <i class="ti ti-edit fs-5"></i>
+                                                </a>
+                                            @endcan
+                                            @can('programkerja.delete')
+                                                <form method="POST" name="deleteform" class="deleteform m-0"
+                                                    action="{{ route('programkerja.delete', Crypt::encrypt($d->kode_program_kerja)) }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-icon btn-label-danger border-0 shadow-sm delete-confirm rounded-3"
+                                                        style="width: 32px; height: 32px;"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus Program Kerja">
+                                                        <i class="ti ti-trash fs-5"></i>
+                                                    </button>
+                                                </form>
+                                            @endcan
+                                        </div>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center p-5 bg-white">
+                                    <td colspan="5" class="text-center p-5 bg-white">
                                         <div class="mb-3 text-muted">
                                             <i class="ti ti-notebook-off fs-1 opacity-50 text-success"></i>
                                         </div>
@@ -174,4 +213,33 @@
     </div>
 </div>
 
+<x-modal-form id="mdlProgramkerja" size="" show="loadProgramkerja" title="" />
+
 @endsection
+
+@push('myscript')
+<script>
+    $(function() {
+        // Initialize Tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        $("#btncreateProgramKerja").click(function(e) {
+            e.preventDefault();
+            $('#mdlProgramkerja').modal("show");
+            $("#mdlProgramkerja").find(".modal-title").text("Tambah Program Kerja {{ $ta_aktif->tahun_ajaran }}");
+            $("#loadProgramkerja").load('/programkerja/create');
+        });
+
+        $(".btnEdit").click(function(e) {
+            var id = $(this).attr("id");
+            e.preventDefault();
+            $('#mdlProgramkerja').modal("show");
+            $("#mdlProgramkerja").find(".modal-title").text("Edit Program Kerja");
+            $("#loadProgramkerja").load('/programkerja/' + id + '/edit');
+        });
+    });
+</script>
+@endpush
