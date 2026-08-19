@@ -171,6 +171,7 @@ Route::middleware('auth')->group(function () {
 
             Route::get('/users/{id}/editpassword', 'editpassword')->name('users.editpassword');
             Route::put('/users/{id}/updatepassword', 'updatepassword')->name('users.updatepassword');
+            Route::get('/users/{id}/updatestatus', 'updatestatus')->name('users.updatestatus');
         });
     });
 
@@ -1031,6 +1032,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporankeuangan', 'index')->name('lk.index')->can('pembayaranpdd.index');
         Route::post('/laporankeuangan/cetakpembayaran', 'cetakpembayaran')->name('lk.cetakpembayaran')->can('pembayaranpdd.index');
         Route::post('/laporankeuangan/cetakrekaptagihan', 'cetakrekaptagihan')->name('lk.cetakrekaptagihan')->can('pembayaranpdd.index');
+    });
+
+    Route::controller(App\Http\Controllers\LaporankegiatanController::class)->group(function () {
+        Route::get('/kegiatan/laporan', 'index')->name('kegiatan.laporan.index')->can('realkegiatan.laporan');
+        Route::post('/kegiatan/laporan/cetak', 'cetakrealisasi')->name('kegiatan.laporan.cetak')->can('realkegiatan.laporan');
     });
 
     // Routes untuk Pengumuman

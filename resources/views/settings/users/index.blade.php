@@ -77,29 +77,65 @@
                     <i class="ti ti-users fs-5"></i>
                     <h6 class="card-title mb-0 text-white">Data Users</h6>
                 </div>
-                <ul class="nav nav-pills" role="tablist" style="gap: 5px;">
-                    <li class="nav-item">
-                        <a href="{{ route('users.index', array_merge(request()->query(), ['role' => ''])) }}" 
-                           class="nav-link py-1 px-3 {{ empty(request('role')) ? 'bg-white text-success fw-bold' : 'text-white' }}" 
-                           style="font-size: 0.85rem; {{ empty(request('role')) ? 'color: #064e3b !important; background-color: #fff !important;' : 'border: 1px solid rgba(255,255,255,0.4);' }}">
-                            Semua User
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('users.index', array_merge(request()->query(), ['role' => 'karyawan'])) }}" 
-                           class="nav-link py-1 px-3 {{ request('role') == 'karyawan' ? 'bg-white text-success fw-bold' : 'text-white' }}" 
-                           style="font-size: 0.85rem; {{ request('role') == 'karyawan' ? 'color: #064e3b !important; background-color: #fff !important;' : 'border: 1px solid rgba(255,255,255,0.4);' }}">
-                            Karyawan
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('users.index', array_merge(request()->query(), ['role' => 'lainnya'])) }}" 
-                           class="nav-link py-1 px-3 {{ request('role') == 'lainnya' ? 'bg-white text-success fw-bold' : 'text-white' }}" 
-                           style="font-size: 0.85rem; {{ request('role') == 'lainnya' ? 'color: #064e3b !important; background-color: #fff !important;' : 'border: 1px solid rgba(255,255,255,0.4);' }}">
-                            Lainnya
-                        </a>
-                    </li>
-                </ul>
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <!-- Status Filter -->
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="small opacity-75" style="font-size: 0.8rem">Status:</span>
+                        <ul class="nav nav-pills" role="tablist" style="gap: 3px;">
+                            <li class="nav-item">
+                                <a href="{{ route('users.index', array_merge(request()->query(), ['status' => ''])) }}" 
+                                   class="nav-link py-1 px-2 {{ empty(request('status')) ? 'bg-white text-success fw-bold' : 'text-white' }}" 
+                                   style="font-size: 0.8rem; {{ empty(request('status')) ? 'color: #064e3b !important; background-color: #fff !important;' : 'border: 1px solid rgba(255,255,255,0.4);' }}">
+                                    Semua
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('users.index', array_merge(request()->query(), ['status' => 'aktif'])) }}" 
+                                   class="nav-link py-1 px-2 {{ request('status') == 'aktif' ? 'bg-white text-success fw-bold' : 'text-white' }}" 
+                                   style="font-size: 0.8rem; {{ request('status') == 'aktif' ? 'color: #064e3b !important; background-color: #fff !important;' : 'border: 1px solid rgba(255,255,255,0.4);' }}">
+                                    Aktif
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('users.index', array_merge(request()->query(), ['status' => 'nonaktif'])) }}" 
+                                   class="nav-link py-1 px-2 {{ request('status') == 'nonaktif' ? 'bg-white text-success fw-bold' : 'text-white' }}" 
+                                   style="font-size: 0.8rem; {{ request('status') == 'nonaktif' ? 'color: #064e3b !important; background-color: #fff !important;' : 'border: 1px solid rgba(255,255,255,0.4);' }}">
+                                    Nonaktif
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="vr bg-white opacity-50 my-1" style="height: 18px; width: 1px;"></div>
+
+                    <!-- Kategori Filter -->
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="small opacity-75" style="font-size: 0.8rem">Kategori:</span>
+                        <ul class="nav nav-pills" role="tablist" style="gap: 3px;">
+                            <li class="nav-item">
+                                <a href="{{ route('users.index', array_merge(request()->query(), ['role' => ''])) }}" 
+                                   class="nav-link py-1 px-2 {{ empty(request('role')) ? 'bg-white text-success fw-bold' : 'text-white' }}" 
+                                   style="font-size: 0.8rem; {{ empty(request('role')) ? 'color: #064e3b !important; background-color: #fff !important;' : 'border: 1px solid rgba(255,255,255,0.4);' }}">
+                                    Semua
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('users.index', array_merge(request()->query(), ['role' => 'karyawan'])) }}" 
+                                   class="nav-link py-1 px-2 {{ request('role') == 'karyawan' ? 'bg-white text-success fw-bold' : 'text-white' }}" 
+                                   style="font-size: 0.8rem; {{ request('role') == 'karyawan' ? 'color: #064e3b !important; background-color: #fff !important;' : 'border: 1px solid rgba(255,255,255,0.4);' }}">
+                                    Karyawan
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('users.index', array_merge(request()->query(), ['role' => 'lainnya'])) }}" 
+                                   class="nav-link py-1 px-2 {{ request('role') == 'lainnya' ? 'bg-white text-success fw-bold' : 'text-white' }}" 
+                                   style="font-size: 0.8rem; {{ request('role') == 'lainnya' ? 'color: #064e3b !important; background-color: #fff !important;' : 'border: 1px solid rgba(255,255,255,0.4);' }}">
+                                    Lainnya
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -112,6 +148,7 @@
                                 <th class="text-white py-3" style="width: 1%;">EMAIL</th>
                                 <th class="text-white py-3" style="width: 1%;">ROLE</th>
                                 <th class="text-white py-3" style="width: 1%;">UNITS</th>
+                                <th class="text-white py-3" style="width: 1%;">STATUS</th>
                                 <th class="text-white py-3 text-end" style="width: 80px;">#</th>
                             </tr>
                         </thead>
@@ -135,6 +172,15 @@
                                         @endforeach
                                     </td>
                                     <td class="py-1">{{ $d->nama_unit }}</td>
+                                    <td class="py-1">
+                                        <a href="{{ route('users.updatestatus', Crypt::encrypt($d->id)) }}">
+                                            @if ($d->status == 1)
+                                                <span class="badge bg-label-success rounded-pill px-3">AKTIF</span>
+                                            @else
+                                                <span class="badge bg-label-danger rounded-pill px-3">OFF</span>
+                                            @endif
+                                        </a>
+                                    </td>
                                     <td class="py-1 text-end">
                                         <div class="d-flex justify-content-end gap-1">
                                             <a href="#" class="btn btn-icon btn-label-success border editUser"
@@ -156,7 +202,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center p-5">
+                                    <td colspan="8" class="text-center p-5">
                                         <div class="mb-3">
                                             <i class="ti ti-users fs-1 opacity-25"></i>
                                         </div>

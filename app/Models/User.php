@@ -26,7 +26,8 @@ class User extends Authenticatable
         'kode_unit',
         'kode_dept',
         'kode_jabatan',
-        'npp'
+        'npp',
+        'status'
     ];
 
     /**

@@ -727,7 +727,7 @@
         @if (auth()->check() &&
                 (auth()->user()->hasAnyPermission(['realkegiatan.index', 'programkerja.index', 'jobdesk.index']) ||
                  auth()->user()->hasRole('karyawan')))
-            <li class="menu-item {{ request()->is(['realisasikegiatan', 'programkerja', 'jobdesk']) ? 'open' : '' }}">
+            <li class="menu-item {{ request()->is(['realisasikegiatan', 'programkerja', 'jobdesk', 'kegiatan/laporan']) ? 'open' : '' }}">
 
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-activity"></i>
@@ -754,6 +754,14 @@
                             <a href="{{ route('realisasikegiatan.index') }}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-file-description"></i>
                                 <div>Realisasi Kegiatan </div>
+                            </a>
+                        </li>
+                    @endif
+                    @if (auth()->user()->can('realkegiatan.laporan') || auth()->user()->hasRole('karyawan'))
+                        <li class="menu-item {{ request()->is(['kegiatan/laporan']) ? 'active' : '' }}">
+                            <a href="{{ route('kegiatan.laporan.index') }}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-printer"></i>
+                                <div>Laporan </div>
                             </a>
                         </li>
                     @endif

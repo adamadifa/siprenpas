@@ -17,6 +17,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $query = User::query();
+        $query->select('users.*', 'unit.nama_unit');
         $query->with('roles');
         $query->leftjoin('unit', 'users.kode_unit', '=', 'unit.kode_unit');
         if (!empty($request->name)) {
@@ -31,6 +32,11 @@ class UserController extends Controller
             } else {
                 $query->role($request->role);
             }
+        }
+
+        if ($request->filled('status')) {
+            $statusVal = $request->status === 'aktif' ? 1 : 0;
+            $query->where('users.status', $statusVal);
         }
 
         $users = $query->paginate(20);
@@ -108,7 +114,8 @@ class UserController extends Controller
             'role' => 'required',
             'kode_unit' => $isOrangTua ? 'nullable' : 'required',
             'kode_dept' => $isOrangTua ? 'nullable' : 'required',
-            'kode_jabatan' => $isOrangTua ? 'nullable' : 'required'
+            'kode_jabatan' => $isOrangTua ? 'nullable' : 'required',
+            'status' => 'nullable|in:0,1'
         ]);
 
         try {
@@ -117,6 +124,10 @@ class UserController extends Controller
                 'username' => $request->username,
                 'email' => $request->email,
             ];
+
+            if ($request->has('status')) {
+                $data['status'] = $request->status;
+            }
 
             if ($request->filled('password')) {
                 $data['password'] = bcrypt($request->password);
@@ -175,5 +186,18 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return Redirect::back()->with(['error' => $e->getMessage()]);
         }
+    }
+
+    public function updatestatus($id)
+    {
+        $id = Crypt::decrypt($id);
+        $user = User::findOrFail($id);
+        if ($user->status == 1) {
+            $user->status = 0;
+        } else {
+            $user->status = 1;
+        }
+        $user->save();
+        return Redirect::back()->with(messageSuccess('Status Berhasil Diubah'));
     }
 }

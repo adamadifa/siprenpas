@@ -41,6 +41,7 @@ class KaryawanRolePermissionSeeder extends Seeder
             'realkegiatan.store',
             'realkegiatan.update',
             'realkegiatan.delete',
+            'realkegiatan.laporan',
             
             // Agenda Kegiatan
             'agendakegiatan.index',

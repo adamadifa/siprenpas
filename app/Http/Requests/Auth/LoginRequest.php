@@ -58,6 +58,18 @@ class LoginRequest extends FormRequest
         $id_user = $this->input('id_user');
         $password = $this->input('password');
 
+        // Check if user is deactivated
+        $userObj = \App\Models\User::where('username', $id_user)
+            ->orWhere('email', $id_user)
+            ->orWhere('npp', $id_user)
+            ->first();
+
+        if ($userObj && $userObj->status == 0) {
+            throw ValidationException::withMessages([
+                'id_user' => 'Akun Anda telah dinonaktifkan. Silakan hubungi admin.',
+            ]);
+        }
+
         // Tentukan apakah id_user adalah email atau username/NPP
         $isEmail = filter_var($id_user, FILTER_VALIDATE_EMAIL);
 
@@ -90,6 +102,7 @@ class LoginRequest extends FormRequest
                         'npp' => $karyawan->npp,
                         'password' => $guru->password, // Samakan password dengan guru agar konsisten
                         'email' => strtolower(removeTitik($karyawan->npp)) . '@persisalamin.com',
+                        'status' => 1,
                     ]);
 
                     // Buat link di user_karyawan jika belum ada
@@ -115,7 +128,8 @@ class LoginRequest extends FormRequest
             }
         }
 
-        if (!Auth::attempt($this->only($this->id_type, 'password'), $this->boolean('remember'))) {
+        $credentials = array_merge($this->only($this->id_type, 'password'), ['status' => 1]);
+        if (!Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

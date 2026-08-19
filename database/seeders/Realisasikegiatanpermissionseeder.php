@@ -50,6 +50,11 @@ class Realisasikegiatanpermissionseeder extends Seeder
             'id_permission_group' => $permissiongroup->id
         ]);
 
+        Permission::firstOrCreate([
+            'name' => 'realkegiatan.laporan',
+            'id_permission_group' => $permissiongroup->id
+        ]);
+
         $permissions = Permission::where('id_permission_group', $permissiongroup->id)->get();
         $roleID = 1;
         $role = Role::findById($roleID);
