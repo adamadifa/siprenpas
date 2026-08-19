@@ -139,6 +139,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [App\Http\Controllers\Api\AgendakegiatanController::class, 'destroy']);
     });
 
+    // Agenda Pesantren API Route
+    Route::get('/agenda-pesantren', [App\Http\Controllers\AgendaController::class, 'getEvents']);
+
     // Tabungan Karyawan API Routes
     Route::get('/tabungan-karyawan', [App\Http\Controllers\Api\TabunganKaryawanController::class, 'getTabunganDetails']);
     Route::get('/tabungan-karyawan/{no_rekening}', [App\Http\Controllers\Api\TabunganKaryawanController::class, 'getTabunganDetail']);
