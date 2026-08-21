@@ -449,6 +449,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/programkerja/getprogramkerja', 'getprogramkerja')->name('programkerja.getprogramkerja');
         Route::post('/programkerja/getprogramkerjalist', 'getprogramkerjalist')->name('programkerja.getprogramkerjalist');
         Route::delete('/programkerja/reset', 'reset')->name('programkerja.reset');
+        Route::get('/programkerja/get-filter-options', 'getFilterOptions')->name('programkerja.get-filter-options');
+        Route::get('/programkerja/get-karyawan-filter-options', 'getKaryawanFilterOptions')->name('programkerja.get-karyawan-filter-options');
     });
 
 
@@ -1046,6 +1048,7 @@ Route::middleware('auth')->group(function () {
     Route::controller(App\Http\Controllers\LaporankegiatanController::class)->group(function () {
         Route::get('/kegiatan/laporan', 'index')->name('kegiatan.laporan.index')->can('realkegiatan.laporan');
         Route::post('/kegiatan/laporan/cetak', 'cetakrealisasi')->name('kegiatan.laporan.cetak')->can('realkegiatan.laporan');
+        Route::get('/kegiatan/laporan/get-filter-options', 'getFilterOptions')->name('kegiatan.laporan.get-filter-options')->can('realkegiatan.laporan');
     });
 
     // Routes untuk Pengumuman

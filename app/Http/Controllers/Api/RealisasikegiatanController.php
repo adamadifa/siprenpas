@@ -69,15 +69,26 @@ class RealisasikegiatanController extends Controller
         try {
             $user = $request->user();
 
-            $jobdesks = Jobdesk::where('kode_jabatan', $user->kode_jabatan)
-                ->orderBy('jobdesk')
-                ->get(['kode_jobdesk', 'jobdesk']);
+            $jobdesks = Jobdesk::whereHas('group', function($q) use ($user) {
+                $q->where('kode_jabatan', $user->kode_jabatan)
+                  ->where('kode_dept', $user->kode_dept);
+                if (!empty($user->kode_unit)) {
+                    $q->where('kode_unit', $user->kode_unit);
+                }
+            })
+            ->orderBy('jobdesk')
+            ->get(['kode_jobdesk', 'jobdesk']);
 
             $ta_aktif = Tahunajaran::where('status', 1)->first();
-            $queryProgram = Programkerja::where('kode_dept', $user->kode_dept);
-            if ($ta_aktif) {
-                $queryProgram->where('kode_ta', $ta_aktif->kode_ta);
-            }
+            $queryProgram = Programkerja::whereHas('group', function($q) use ($user, $ta_aktif) {
+                $q->where('kode_dept', $user->kode_dept);
+                if ($ta_aktif) {
+                    $q->where('kode_ta', $ta_aktif->kode_ta);
+                }
+                if (!empty($user->kode_unit)) {
+                    $q->where('kode_unit', $user->kode_unit);
+                }
+            });
             $programs = $queryProgram->orderBy('program_kerja')->get(['kode_program_kerja', 'program_kerja']);
 
             return response()->json([

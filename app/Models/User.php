@@ -66,4 +66,31 @@ class User extends Authenticatable
         }
         return $this->username;
     }
+
+    public function getKodeJabatanAttribute()
+    {
+        $karyawan = \App\Models\Karyawan::where('npp', $this->npp)->first();
+        if ($karyawan) {
+            return $karyawan->kode_jabatan;
+        }
+        return $this->attributes['kode_jabatan'] ?? null;
+    }
+
+    public function getKodeDeptAttribute()
+    {
+        $karyawan = \App\Models\Karyawan::where('npp', $this->npp)->first();
+        if ($karyawan) {
+            return $karyawan->kode_dept;
+        }
+        return $this->attributes['kode_dept'] ?? null;
+    }
+
+    public function getKodeUnitAttribute()
+    {
+        $karyawan = \App\Models\Karyawan::where('npp', $this->npp)->first();
+        if ($karyawan) {
+            return $karyawan->kode_unit;
+        }
+        return $this->attributes['kode_unit'] ?? null;
+    }
 }

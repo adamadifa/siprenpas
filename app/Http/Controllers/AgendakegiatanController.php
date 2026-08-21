@@ -8,6 +8,7 @@ use App\Models\Jabatan;
 use App\Models\Departemen;
 use App\Models\Jobdesk;
 use App\Models\User;
+use App\Models\Unit;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
 use Jenssegers\Agent\Agent;
@@ -19,10 +20,12 @@ class AgendakegiatanController extends Controller
     {
         $user = User::where('id', auth()->user()->id)->first();
         $query = Agendakegiatan::query();
-        $query->select('agenda_kegiatan.*', 'name');
+        $query->select('agenda_kegiatan.*', 'name', 'unit.nama_unit');
         $query->join('departemen', 'agenda_kegiatan.kode_dept', '=', 'departemen.kode_dept');
         $query->join('jabatan', 'agenda_kegiatan.kode_jabatan', '=', 'jabatan.kode_jabatan');
+        $query->leftJoin('unit', 'agenda_kegiatan.kode_unit', '=', 'unit.kode_unit');
         $query->join('users', 'agenda_kegiatan.id_user', '=', 'users.id');
+        
         if ($user->hasRole('karyawan')) {
             $userkaryawan = \App\Models\Userkaryawan::where('id_user', $user->id)->first();
             $karyawan = \App\Models\Karyawan::where('karyawan.npp', $userkaryawan->npp)
@@ -66,23 +69,28 @@ class AgendakegiatanController extends Controller
             return view('agenda_kegiatan.index_karyawan', $data);
         }
 
-        if ($user->hasRole('super admin')) {
+        if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris'])) {
             if (!empty($request->kode_jabatan)) {
                 $query->where('agenda_kegiatan.kode_jabatan', $request->kode_jabatan);
             }
             if (!empty($request->kode_dept)) {
                 $query->where('agenda_kegiatan.kode_dept', $request->kode_dept);
             }
+            if (!empty($request->kode_unit)) {
+                $query->where('agenda_kegiatan.kode_unit', $request->kode_unit);
+            }
         } else {
             $query->where('agenda_kegiatan.kode_jabatan', $user->kode_jabatan);
             $query->where('agenda_kegiatan.kode_dept', $user->kode_dept);
+            if (!empty($user->kode_unit)) {
+                $query->where('agenda_kegiatan.kode_unit', $user->kode_unit);
+            }
         }
-
-
 
         $data['user'] = $user;
         $data['jabatan'] = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
         $data['departemen'] = Departemen::orderBy('kode_dept')->get();
+        $data['unit'] = Unit::where('kode_unit', '!=', 'U00')->where('nama_unit', 'not like', '%undefined%')->orderBy('kode_unit')->get();
 
         $agent = new Agent();
         if ($agent->isMobile()) {
@@ -107,7 +115,7 @@ class AgendakegiatanController extends Controller
             return view('agenda_kegiatan.cetak', $data);
         }
         $query->orderBy('tanggal', 'desc');
-        $data['agenda_kegiatan'] = $query->paginate(30);
+        $data['agenda_kegiatan'] = $query->paginate(30)->appends($request->all());
         return view('agenda_kegiatan.index', $data);
     }
 
@@ -118,6 +126,7 @@ class AgendakegiatanController extends Controller
         $data['user'] = $user;
         $data['jabatan'] = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
         $data['departemen'] = Departemen::orderBy('kode_dept')->get();
+        $data['unit'] = Unit::where('kode_unit', '!=', 'U00')->where('nama_unit', 'not like', '%undefined%')->orderBy('kode_unit')->get();
         $agent = new Agent();
         if ($agent->isMobile()) {
             return view('agenda_kegiatan.create_mobile', $data);
@@ -128,7 +137,7 @@ class AgendakegiatanController extends Controller
     public function store(Request $request)
     {
         $user = User::where('id', auth()->user()->id)->first();
-        if ($user->hasRole('super admin')) {
+        if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris'])) {
             $request->validate([
                 'tanggal' => 'required',
                 'nama_kegiatan' => 'required',
@@ -139,6 +148,7 @@ class AgendakegiatanController extends Controller
 
             $kode_jabatan = $request->kode_jabatan;
             $kode_dept = $request->kode_dept;
+            $kode_unit = $request->kode_unit;
         } else {
             $request->validate([
                 'tanggal' => 'required',
@@ -147,6 +157,7 @@ class AgendakegiatanController extends Controller
             ]);
             $kode_jabatan = $user->kode_jabatan;
             $kode_dept = $user->kode_dept;
+            $kode_unit = $user->kode_unit;
         }
 
 
@@ -156,6 +167,7 @@ class AgendakegiatanController extends Controller
                 'nama_kegiatan' => $request->nama_kegiatan,
                 'kode_jabatan' => $kode_jabatan,
                 'kode_dept' => $kode_dept,
+                'kode_unit' => $kode_unit,
                 'uraian_kegiatan' => $request->uraian_kegiatan,
                 'id_user' => auth()->user()->id
             ]);
@@ -188,6 +200,7 @@ class AgendakegiatanController extends Controller
         $data['user'] = User::where('id', auth()->user()->id)->first();
         $data['jabatan'] = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
         $data['departemen'] = Departemen::orderBy('kode_dept')->get();
+        $data['unit'] = Unit::where('kode_unit', '!=', 'U00')->where('nama_unit', 'not like', '%undefined%')->orderBy('kode_unit')->get();
         $data['agenda_kegiatan'] = AgendaKegiatan::where('id', $id)->first();
         $agent = new Agent();
         if ($agent->isMobile()) {
@@ -200,7 +213,7 @@ class AgendakegiatanController extends Controller
     {
         $id = Crypt::decrypt($id);
         $user = User::where('id', auth()->user()->id)->first();
-        if ($user->hasRole('super admin')) {
+        if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris'])) {
             $request->validate([
                 'tanggal' => 'required',
                 'nama_kegiatan' => 'required',
@@ -211,6 +224,7 @@ class AgendakegiatanController extends Controller
             ]);
             $kode_jabatan = $request->kode_jabatan;
             $kode_dept = $request->kode_dept;
+            $kode_unit = $request->kode_unit;
         } else {
             $request->validate([
                 'tanggal' => 'required',
@@ -220,6 +234,7 @@ class AgendakegiatanController extends Controller
             ]);
             $kode_jabatan = auth()->user()->kode_jabatan;
             $kode_dept = auth()->user()->kode_dept;
+            $kode_unit = $user->kode_unit;
         }
 
 
@@ -230,6 +245,7 @@ class AgendakegiatanController extends Controller
                 'nama_kegiatan' => $request->nama_kegiatan,
                 'kode_jabatan' => $kode_jabatan,
                 'kode_dept' => $kode_dept,
+                'kode_unit' => $kode_unit,
                 'uraian_kegiatan' => $request->uraian_kegiatan,
                 'id_user' => auth()->user()->id
             ]);
@@ -249,12 +265,16 @@ class AgendakegiatanController extends Controller
         $user = User::where('id', auth()->user()->id)->first();
         $tanggal = $request->tanggal;
         $query = Agendakegiatan::query();
-        $query->select('agenda_kegiatan.*', 'name');
+        $query->select('agenda_kegiatan.*', 'name', 'unit.nama_unit');
         $query->join('departemen', 'agenda_kegiatan.kode_dept', '=', 'departemen.kode_dept');
         $query->join('jabatan', 'agenda_kegiatan.kode_jabatan', '=', 'jabatan.kode_jabatan');
+        $query->leftJoin('unit', 'agenda_kegiatan.kode_unit', '=', 'unit.kode_unit');
         $query->join('users', 'agenda_kegiatan.id_user', '=', 'users.id');
         $query->where('agenda_kegiatan.kode_jabatan', $user->kode_jabatan);
         $query->where('agenda_kegiatan.kode_dept', $user->kode_dept);
+        if (!empty($user->kode_unit)) {
+            $query->where('agenda_kegiatan.kode_unit', $user->kode_unit);
+        }
         $query->where('agenda_kegiatan.tanggal', $tanggal);
         $query->where('agenda_kegiatan.id_user', auth()->user()->id);
         $query->orderBy('tanggal');

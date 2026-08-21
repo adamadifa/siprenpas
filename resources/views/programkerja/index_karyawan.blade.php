@@ -99,7 +99,7 @@
         <div class="mb-4">
             <form action="{{ route('programkerja.index') }}" id="myForm" class="form-filter">
                 <div class="row g-3 align-items-center">
-                    <div class="col-lg-3 col-md-6">
+                    <div class="col-lg-2 col-md-6">
                         <div class="form-group">
                             <div class="input-group border rounded-2 shadow-sm bg-white" style="border-color: #e0e0e0 !important;">
                                 <span class="input-group-text bg-white border-0 border-end" style="border-color: #e0e0e0 !important; color: #8e9ba5; padding-right: 12px; padding-left: 12px;"><i class="ti ti-calendar fs-5"></i></span>
@@ -113,7 +113,21 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-7 col-md-6">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="form-group">
+                            <div class="input-group border rounded-2 shadow-sm bg-white" style="border-color: #e0e0e0 !important;">
+                                <span class="input-group-text bg-white border-0 border-end" style="border-color: #e0e0e0 !important; color: #8e9ba5; padding-right: 12px; padding-left: 12px;"><i class="ti ti-user-check fs-5"></i></span>
+                                <select name="kode_jabatan" id="kode_jabatan" class="form-select border-0 ps-2 bg-transparent" style="box-shadow: none;">
+                                    <option value="">Pilih Jabatan</option>
+                                    @foreach ($jabatans as $j)
+                                        <option value="{{ $j->kode_jabatan }}" {{ Request('kode_jabatan') == $j->kode_jabatan ? 'selected' : '' }}>
+                                            {{ strtoupper($j->nama_jabatan) }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-6">
                         <x-input-with-icon label="" value="{{ Request('programkerja_search') }}" name="programkerja_search"
                             placeholder="Cari program kerja..." icon="ti ti-search" />
                     </div>
@@ -139,6 +153,7 @@
                                 <th class="py-3 text-white font-weight-bold" style="min-width: 250px;">PROGRAM KERJA</th>
                                 <th class="py-3 text-white font-weight-bold" style="min-width: 380px;">TARGET PENCAPAIAN</th>
                                 <th class="py-3 text-white font-weight-bold text-center" style="width: 120px;">DEPARTEMEN</th>
+                                <th class="py-3 text-white font-weight-bold text-center" style="width: 120px;">JABATAN</th>
                                 <th class="py-3 text-white font-weight-bold text-end pe-4" style="width: 110px;">AKSI</th>
                             </tr>
                         </thead>
@@ -166,6 +181,11 @@
                                     <td class="text-center">
                                         <span class="badge bg-label-success px-2.5 py-1 fw-bold text-uppercase" style="letter-spacing: 0.5px;">
                                             {{ $d->kode_dept }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-label-info px-2.5 py-1 fw-bold text-uppercase" style="letter-spacing: 0.5px;">
+                                            {{ $d->nama_jabatan }}
                                         </span>
                                     </td>
                                     <td class="py-3 text-end pe-4">

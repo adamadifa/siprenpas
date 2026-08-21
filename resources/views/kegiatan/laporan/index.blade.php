@@ -62,26 +62,37 @@
                             @csrf
                             
                             @if(!auth()->user()->hasRole('karyawan'))
-                                <!-- Department Filter (Admin) -->
-                                <div class="form-group mb-3">
-                                    <select name="kode_dept" id="kode_dept" class="form-select select2">
-                                        <option value="">Semua Departemen</option>
-                                        @foreach($departemen as $dept)
-                                            <option value="{{ $dept->kode_dept }}">{{ $dept->nama_dept }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                 <!-- Unit Filter (Admin) -->
+                                 <div class="form-group mb-3">
+                                     <select name="kode_unit" id="kode_unit" class="form-select select2">
+                                         <option value="">Pilih Unit</option>
+                                         @foreach($unit as $u)
+                                             <option value="{{ $u->kode_unit }}">{{ strtoupper($u->nama_unit) }}</option>
+                                         @endforeach
+                                     </select>
+                                 </div>
 
-                                <!-- Karyawan Filter (Admin) -->
-                                <div class="form-group mb-3">
-                                    <select name="npp" id="npp" class="form-select select2">
-                                        <option value="">Semua Karyawan</option>
-                                        @foreach($karyawan as $kary)
-                                            <option value="{{ $kary->npp }}">{{ $kary->nama_lengkap }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            @endif
+                                 <!-- Department Filter (Admin) -->
+                                 <div class="form-group mb-3">
+                                     <select name="kode_dept" id="kode_dept" class="form-select select2">
+                                         <option value="">Pilih Departemen</option>
+                                     </select>
+                                 </div>
+
+                                 <!-- Jabatan Filter (Admin) -->
+                                 <div class="form-group mb-3">
+                                     <select name="kode_jabatan" id="kode_jabatan" class="form-select select2">
+                                         <option value="">Pilih Jabatan</option>
+                                     </select>
+                                 </div>
+
+                                 <!-- Karyawan Filter (Admin) -->
+                                 <div class="form-group mb-3">
+                                     <select name="npp" id="npp" class="form-select select2">
+                                         <option value="">Pilih Karyawan</option>
+                                     </select>
+                                 </div>
+                             @endif
 
                             <div class="row">
                                 <div class="col-md-6">
@@ -175,6 +186,82 @@
                 dropdownParent: $this.parent(),
                 allowClear: true
             });
+        });
+
+        function updateFilterOptions() {
+            let kode_unit = $('#kode_unit').val();
+            let kode_dept = $('#kode_dept').val();
+            let kode_jabatan = $('#kode_jabatan').val();
+
+            if (kode_unit === "" || kode_unit === null) {
+                $('#kode_dept').html('<option value="">Pilih Departemen</option>').trigger('change.select2');
+                $('#kode_jabatan').html('<option value="">Pilih Jabatan</option>').trigger('change.select2');
+                $('#npp').html('<option value="">Pilih Karyawan</option>').trigger('change.select2');
+                return;
+            }
+
+            if (kode_dept === "" || kode_dept === null) {
+                $('#kode_jabatan').html('<option value="">Pilih Jabatan</option>').trigger('change.select2');
+                $('#npp').html('<option value="">Pilih Karyawan</option>').trigger('change.select2');
+            }
+
+            $.ajax({
+                url: "{{ route('kegiatan.laporan.get-filter-options') }}",
+                type: "GET",
+                data: {
+                    kode_unit: kode_unit,
+                    kode_dept: kode_dept,
+                    kode_jabatan: kode_jabatan
+                },
+                success: function(response) {
+                    // Update Departemen select options
+                    let currentDept = $('#kode_dept').val();
+                    $('#kode_dept').html('<option value="">Pilih Departemen</option>');
+                    response.departments.forEach(function(d) {
+                        let selected = d.kode_dept === currentDept ? 'selected' : '';
+                        $('#kode_dept').append(`<option value="${d.kode_dept}" ${selected}>${d.nama_dept.toUpperCase()}</option>`);
+                    });
+                    $('#kode_dept').trigger('change.select2');
+
+                    // Update Jabatan select options (only if Departemen is selected)
+                    let currentJabatan = $('#kode_jabatan').val();
+                    $('#kode_jabatan').html('<option value="">Pilih Jabatan</option>');
+                    if (kode_dept !== "" && kode_dept !== null) {
+                        response.jabatans.forEach(function(j) {
+                            let selected = j.kode_jabatan === currentJabatan ? 'selected' : '';
+                            $('#kode_jabatan').append(`<option value="${j.kode_jabatan}" ${selected}>${j.nama_jabatan.toUpperCase()}</option>`);
+                        });
+                    }
+                    $('#kode_jabatan').trigger('change.select2');
+
+                    // Update Karyawan select options
+                    let currentKaryawan = $('#npp').val();
+                    $('#npp').html('<option value="">Pilih Karyawan</option>');
+                    response.karyawans.forEach(function(k) {
+                        let selected = k.npp === currentKaryawan ? 'selected' : '';
+                        $('#npp').append(`<option value="${k.npp}" ${selected}>${k.nama_lengkap.toUpperCase()}</option>`);
+                    });
+                    $('#npp').trigger('change.select2');
+                }
+            });
+        }
+
+        $('#kode_unit').on('change', function() {
+            $('#kode_dept').val('').trigger('change.select2');
+            $('#kode_jabatan').val('').trigger('change.select2');
+            $('#npp').val('').trigger('change.select2');
+            updateFilterOptions();
+        });
+
+        $('#kode_dept').on('change', function() {
+            $('#kode_jabatan').val('').trigger('change.select2');
+            $('#npp').val('').trigger('change.select2');
+            updateFilterOptions();
+        });
+
+        $('#kode_jabatan').on('change', function() {
+            $('#npp').val('').trigger('change.select2');
+            updateFilterOptions();
         });
     });
 </script>

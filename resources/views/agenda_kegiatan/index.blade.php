@@ -61,7 +61,7 @@
 
         <!-- Filter Form -->
         @php
-            $isSuperAdmin = $user->hasRole('super admin');
+            $isSuperAdmin = $user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris']);
         @endphp
         <div class="card shadow-none border bg-transparent border-0 mb-4">
             <div class="card-body p-0">
@@ -77,13 +77,13 @@
                             <div class="col-lg col-md-6 col-12">
                                 <div class="form-group mb-3">
                                     <div class="input-group input-group-merge">
-                                        <span class="input-group-text"><i class="ti ti-briefcase text-muted"></i></span>
-                                        <select name="kode_jabatan" id="kode_jabatan" class="form-select select2">
-                                            <option value="">Semua Jabatan</option>
-                                            @foreach ($jabatan as $d)
-                                                <option value="{{ $d->kode_jabatan }}"
-                                                    {{ Request('kode_jabatan') == $d->kode_jabatan ? 'selected' : '' }}>
-                                                    {{ strtoUpper($d->nama_jabatan) }}</option>
+                                        <span class="input-group-text"><i class="ti ti-building-community text-muted"></i></span>
+                                        <select name="kode_unit" id="kode_unit" class="form-select select2">
+                                            <option value="">Pilih Unit</option>
+                                            @foreach ($unit as $u)
+                                                <option value="{{ $u->kode_unit }}"
+                                                    {{ Request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>
+                                                    {{ strtoupper($u->nama_unit) }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -94,12 +94,31 @@
                                     <div class="input-group input-group-merge">
                                         <span class="input-group-text"><i class="ti ti-building text-muted"></i></span>
                                         <select name="kode_dept" id="kode_dept" class="form-select select2">
-                                            <option value="">Semua Departemen</option>
-                                            @foreach ($departemen as $d)
-                                                <option value="{{ $d->kode_dept }}"
-                                                    {{ Request('kode_dept') == $d->kode_dept ? 'selected' : '' }}>
-                                                    {{ strtoUpper($d->nama_dept) }}</option>
-                                            @endforeach
+                                            <option value="">Pilih Departemen</option>
+                                            @if (!empty(Request('kode_unit')))
+                                                @foreach ($departemen as $d)
+                                                    <option value="{{ $d->kode_dept }}"
+                                                        {{ Request('kode_dept') == $d->kode_dept ? 'selected' : '' }}>
+                                                        {{ strtoUpper($d->nama_dept) }}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg col-md-6 col-12">
+                                <div class="form-group mb-3">
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-briefcase text-muted"></i></span>
+                                        <select name="kode_jabatan" id="kode_jabatan" class="form-select select2">
+                                            <option value="">Pilih Jabatan</option>
+                                            @if (!empty(Request('kode_unit')) && !empty(Request('kode_dept')))
+                                                @foreach ($jabatan as $d)
+                                                    <option value="{{ $d->kode_jabatan }}"
+                                                        {{ Request('kode_jabatan') == $d->kode_jabatan ? 'selected' : '' }}>
+                                                        {{ strtoUpper($d->nama_jabatan) }}</option>
+                                                @endforeach
+                                            @endif
                                         </select>
                                     </div>
                                 </div>
@@ -183,8 +202,11 @@
                             <div class="col-12 col-md-3">
                                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                                     <div>
-                                        <span class="text-muted small d-block mb-1">Departemen</span>
-                                        <span class="badge bg-success bg-opacity-10 text-success px-2 py-1">{{ $d->kode_dept }}</span>
+                                        <span class="text-muted small d-block mb-1">Departemen & Unit</span>
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            <span class="badge bg-success bg-opacity-10 text-success px-2 py-1">{{ $d->kode_dept }}</span>
+                                            <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1">{{ $d->nama_unit ?? 'UMUM' }}</span>
+                                        </div>
                                     </div>
                                     
                                     <div class="d-flex gap-1 align-items-center">
@@ -314,6 +336,60 @@
                     form.submit();
                 }
             });
+        });
+
+        function updateFilterOptions() {
+            let kode_unit = $('#kode_unit').val();
+            let kode_dept = $('#kode_dept').val();
+
+            if (kode_unit === "" || kode_unit === null) {
+                $('#kode_dept').html('<option value="">Pilih Departemen</option>').trigger('change.select2');
+                $('#kode_jabatan').html('<option value="">Pilih Jabatan</option>').trigger('change.select2');
+                return;
+            }
+
+            if (kode_dept === "" || kode_dept === null) {
+                $('#kode_jabatan').html('<option value="">Pilih Jabatan</option>').trigger('change.select2');
+            }
+
+            $.ajax({
+                url: "{{ route('programkerja.get-karyawan-filter-options') }}",
+                type: "GET",
+                data: {
+                    kode_unit: kode_unit,
+                    kode_dept: kode_dept
+                },
+                success: function(response) {
+                    let currentDept = $('#kode_dept').val();
+                    $('#kode_dept').html('<option value="">Pilih Departemen</option>');
+                    response.departments.forEach(function(d) {
+                        let selected = d.kode_dept === currentDept ? 'selected' : '';
+                        $('#kode_dept').append(`<option value="${d.kode_dept}" ${selected}>${d.nama_dept.toUpperCase()}</option>`);
+                    });
+                    $('#kode_dept').trigger('change.select2');
+
+                    let currentJabatan = $('#kode_jabatan').val();
+                    $('#kode_jabatan').html('<option value="">Pilih Jabatan</option>');
+                    if (kode_dept !== "" && kode_dept !== null) {
+                        response.jabatans.forEach(function(j) {
+                            let selected = j.kode_jabatan === currentJabatan ? 'selected' : '';
+                            $('#kode_jabatan').append(`<option value="${j.kode_jabatan}" ${selected}>${j.nama_jabatan.toUpperCase()}</option>`);
+                        });
+                    }
+                    $('#kode_jabatan').trigger('change.select2');
+                }
+            });
+        }
+
+        $('#kode_unit').on('change', function() {
+            $('#kode_dept').val('').trigger('change.select2');
+            $('#kode_jabatan').val('').trigger('change.select2');
+            updateFilterOptions();
+        });
+
+        $('#kode_dept').on('change', function() {
+            $('#kode_jabatan').val('').trigger('change.select2');
+            updateFilterOptions();
         });
     });
 </script>

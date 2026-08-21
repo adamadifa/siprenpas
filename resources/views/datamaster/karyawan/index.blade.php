@@ -116,11 +116,11 @@
             <div class="card-body p-0">
                 <form action="{{ route('karyawan.index') }}" class="form-filter">
                     <div class="row g-3 align-items-center">
-                        <div class="col-lg-5 col-md-5">
+                        <div class="col-lg-4 col-md-4">
                             <x-input-with-icon label="" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
                                 placeholder="Cari Nama Karyawan" icon="ti ti-search" />
                         </div>
-                        <div class="col-lg-4 col-md-4">
+                        <div class="col-lg-3 col-md-3">
                             <div class="form-group">
                                 <select name="kode_unit" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
                                     <option value="">Semua Unit</option>
@@ -133,9 +133,21 @@
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-3">
+                            <div class="form-group">
+                                <select name="kode_dept" class="form-select border-0 shadow-sm border" style="border-color: #e0e0e0 !important;">
+                                    <option value="">Semua Departemen</option>
+                                    @foreach ($departemen as $dept)
+                                        <option value="{{ $dept->kode_dept }}" {{ Request('kode_dept') == $dept->kode_dept ? 'selected' : '' }}>
+                                            {{ $dept->nama_dept }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2">
                             <button type="submit" class="btn btn-primary w-100 p-2 d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; border-color: #064e3b">
                                 <i class="ti ti-search fs-5"></i>
-                                <span>Cari Data</span>
+                                <span>Cari</span>
                             </button>
                         </div>
                     </div>
@@ -169,6 +181,9 @@
                                             <div class="d-flex align-items-center gap-2 flex-wrap">
                                                 <span class="text-muted small"><i class="ti ti-id me-1"></i>{{ $d->npp }}</span>
                                                 <span class="badge bg-label-secondary" style="font-size: 0.65rem">{{ $d->nama_unit }}</span>
+                                                @if (!empty($d->nama_dept))
+                                                    <span class="badge bg-label-primary" style="font-size: 0.65rem">{{ $d->nama_dept }}</span>
+                                                @endif
                                                 @if (!empty($d->id_user))
                                                     <span class="badge bg-label-success" style="font-size: 0.65rem"><i class="ti ti-shield-check me-1"></i>Has User</span>
                                                 @else

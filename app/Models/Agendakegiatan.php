@@ -10,4 +10,9 @@ class Agendakegiatan extends Model
     use HasFactory;
     protected $table = 'agenda_kegiatan';
     protected $guarded = [];
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class, 'kode_unit', 'kode_unit');
+    }
 }

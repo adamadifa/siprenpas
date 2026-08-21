@@ -7,6 +7,8 @@ use App\Models\Karyawan;
 use App\Models\Realisasikegiatan;
 use App\Models\User;
 use App\Models\Userkaryawan;
+use App\Models\Jabatan;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -24,8 +26,10 @@ class LaporankegiatanController extends Controller
             $data['karyawan'] = Karyawan::where('npp', $userkaryawan->npp)->get();
             $data['departemen'] = Departemen::where('kode_dept', $user->kode_dept)->get();
         } else {
-            $data['karyawan'] = Karyawan::orderBy('nama_lengkap', 'asc')->get();
-            $data['departemen'] = Departemen::orderBy('nama_dept', 'asc')->get();
+            $data['unit'] = Unit::where('kode_unit', '!=', 'U00')->where('nama_unit', 'not like', '%undefined%')->orderBy('nama_unit')->get();
+            $data['karyawan'] = collect();
+            $data['departemen'] = collect();
+            $data['jabatan'] = collect();
         }
 
         return view('kegiatan.laporan.index', $data);
@@ -65,8 +69,14 @@ class LaporankegiatanController extends Controller
             if (!empty($request->npp)) {
                 $query->where('karyawan.npp', $request->npp);
             }
+            if (!empty($request->kode_unit)) {
+                $query->where('karyawan.kode_unit', $request->kode_unit);
+            }
             if (!empty($request->kode_dept)) {
                 $query->where('realisasi_kegiatan.kode_dept', $request->kode_dept);
+            }
+            if (!empty($request->kode_jabatan)) {
+                $query->where('realisasi_kegiatan.kode_jabatan', $request->kode_jabatan);
             }
         }
 
@@ -90,5 +100,49 @@ class LaporankegiatanController extends Controller
         }
 
         return view('realisasi_kegiatan.cetak', $data);
+    }
+
+    public function getFilterOptions(Request $request)
+    {
+        $kode_unit = $request->kode_unit;
+        $kode_dept = $request->kode_dept;
+        $kode_jabatan = $request->kode_jabatan;
+
+        $deptsQuery = Departemen::whereIn('kode_dept', function($q) use ($kode_unit) {
+            $q->select('kode_dept')->from('karyawan');
+            if (!empty($kode_unit)) {
+                $q->where('kode_unit', $kode_unit);
+            }
+        });
+        $departments = $deptsQuery->orderBy('nama_dept')->get();
+
+        $jabsQuery = Jabatan::whereIn('kode_jabatan', function($q) use ($kode_unit, $kode_dept) {
+            $q->select('kode_jabatan')->from('karyawan');
+            if (!empty($kode_unit)) {
+                $q->where('kode_unit', $kode_unit);
+            }
+            if (!empty($kode_dept)) {
+                $q->where('kode_dept', $kode_dept);
+            }
+        })->where('kode_jabatan', '!=', 'J00');
+        $jabatans = $jabsQuery->orderBy('nama_jabatan')->get();
+
+        $karyQuery = Karyawan::query();
+        if (!empty($kode_unit)) {
+            $karyQuery->where('kode_unit', $kode_unit);
+        }
+        if (!empty($kode_dept)) {
+            $karyQuery->where('kode_dept', $kode_dept);
+        }
+        if (!empty($kode_jabatan)) {
+            $karyQuery->where('kode_jabatan', $kode_jabatan);
+        }
+        $karyawans = $karyQuery->orderBy('nama_lengkap')->get(['npp', 'nama_lengkap']);
+
+        return response()->json([
+            'departments' => $departments,
+            'jabatans' => $jabatans,
+            'karyawans' => $karyawans
+        ]);
     }
 }

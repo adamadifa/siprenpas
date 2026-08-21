@@ -10,6 +10,7 @@ use App\Models\Setjamkerjabyday;
 use App\Models\Unit;
 use App\Models\User;
 use App\Models\Userkaryawan;
+use App\Models\Departemen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -29,12 +30,17 @@ class KaryawanController extends Controller
             $query->where('karyawan.kode_unit', $request->kode_unit);
         }
 
+        if (!empty($request->kode_dept)) {
+            $query->where('karyawan.kode_dept', $request->kode_dept);
+        }
+
         if (auth()->user()->kode_unit != 'U06') {
             $query->where('karyawan.kode_unit', auth()->user()->kode_unit);
         }
-        $query->select('karyawan.*', 'jabatan.nama_jabatan', 'unit.nama_unit', 'id_user');
-        $query->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan');
-        $query->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit');
+        $query->select('karyawan.*', 'jabatan.nama_jabatan', 'unit.nama_unit', 'departemen.nama_dept', 'id_user');
+        $query->leftJoin('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan');
+        $query->leftJoin('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit');
+        $query->leftJoin('departemen', 'karyawan.kode_dept', '=', 'departemen.kode_dept');
         $query->leftJoin('user_karyawan', 'karyawan.npp', '=', 'user_karyawan.npp');
         $query->orderBy('karyawan.nama_lengkap', 'asc');
         $karyawan = $query->paginate(15);
@@ -51,15 +57,17 @@ class KaryawanController extends Controller
         $stats['total_unit'] = Unit::count();
 
         $units = Unit::orderBy('nama_unit')->get();
+        $departemen = Departemen::orderBy('nama_dept')->get();
 
-        return view('datamaster.karyawan.index', compact('karyawan', 'stats', 'units'));
+        return view('datamaster.karyawan.index', compact('karyawan', 'stats', 'units', 'departemen'));
     }
 
     public function create()
     {
         $jabatan = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
         $unit = Unit::orderBy('kode_unit')->get();
-        return view('datamaster.karyawan.create', compact('jabatan', 'unit'));
+        $departemen = Departemen::orderBy('kode_dept')->get();
+        return view('datamaster.karyawan.create', compact('jabatan', 'unit', 'departemen'));
     }
 
     public function store(Request $request)
@@ -79,7 +87,7 @@ class KaryawanController extends Controller
             'pendidikan_terakhir' => 'required',
             'kode_jabatan' => 'required',
             'kode_unit' => 'required',
-
+            'kode_dept' => 'required',
         ]);
 
 
@@ -100,6 +108,7 @@ class KaryawanController extends Controller
                 'pendidikan_terakhir' => $request->pendidikan_terakhir,
                 'kode_jabatan' => $request->kode_jabatan,
                 'kode_unit' => $request->kode_unit,
+                'kode_dept' => $request->kode_dept,
                 'password' => bcrypt('12345678')
             ]);
 
@@ -116,7 +125,8 @@ class KaryawanController extends Controller
         $karyawan = Karyawan::where('npp', $npp)->first();
         $jabatan = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
         $unit = Unit::orderBy('kode_unit')->get();
-        return view('datamaster.karyawan.edit', compact('karyawan', 'jabatan', 'unit'));
+        $departemen = Departemen::orderBy('kode_dept')->get();
+        return view('datamaster.karyawan.edit', compact('karyawan', 'jabatan', 'unit', 'departemen'));
     }
 
     public function update(Request $request, $npp)
@@ -138,6 +148,7 @@ class KaryawanController extends Controller
             'pendidikan_terakhir' => 'required',
             'kode_jabatan' => 'required',
             'kode_unit' => 'required',
+            'kode_dept' => 'required',
             'status' => 'required',
             'foto' => 'nullable|image|mimes:jpeg,jpg,png|max:2048',
         ]);
@@ -196,6 +207,7 @@ class KaryawanController extends Controller
                 'pendidikan_terakhir' => $request->pendidikan_terakhir,
                 'kode_jabatan' => $request->kode_jabatan,
                 'kode_unit' => $request->kode_unit,
+                'kode_dept' => $request->kode_dept,
                 // 'password' => bcrypt('12345678'),
                 'status' => $request->status,
                 'foto' => $fotoName
@@ -218,8 +230,9 @@ class KaryawanController extends Controller
     {
         $npp = Crypt::decrypt($npp);
         $karyawan = Karyawan::where('npp', $npp)
-            ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
-            ->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+            ->leftJoin('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+            ->leftJoin('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+            ->leftJoin('departemen', 'karyawan.kode_dept', '=', 'departemen.kode_dept')
             ->first();
         return view('datamaster.karyawan.show', compact('karyawan'));
     }
@@ -454,8 +467,8 @@ class KaryawanController extends Controller
                 'unit.nama_unit',
                 'karyawan.kode_unit'
             )
-                ->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
-                ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+                ->leftJoin('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+                ->leftJoin('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
                 ->where('karyawan.status', 1);
 
             // Filter berdasarkan unit

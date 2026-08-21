@@ -44,6 +44,10 @@
                                 </li>
 
                                 <li class="list-inline-item d-flex gap-1">
+                                    <i class="ti ti-building-store"></i> {{ textCamelCase($karyawan->nama_dept ?? '-') }}
+                                </li>
+
+                                <li class="list-inline-item d-flex gap-1">
                                     <i class="ti ti-user"></i> {{ textCamelCase($karyawan->nama_jabatan) }}
                                 </li>
                             </ul>
@@ -139,6 +143,12 @@
                         <i class="ti ti-building text-heading"></i><span class="fw-medium mx-2 text-heading">
                             Unit:</span>
                         <span>{{ $karyawan->nama_unit }} </span>
+                    </li>
+
+                    <li class="d-flex align-items-center mb-3">
+                        <i class="ti ti-building-store text-heading"></i><span class="fw-medium mx-2 text-heading">
+                            Departemen:</span>
+                        <span>{{ $karyawan->nama_dept ?? '-' }} </span>
                     </li>
 
                     <li class="d-flex align-items-center mb-3">

@@ -12,4 +12,9 @@ class Programkerja extends Model
     protected $primaryKey = 'kode_program_kerja';
     public $incrementing = false;
     protected $guarded = [];
+
+    public function group()
+    {
+        return $this->belongsTo(ProgramkerjaGroup::class, 'kode_program_kerja_group', 'kode_program_kerja_group');
+    }
 }

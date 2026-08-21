@@ -9,10 +9,10 @@
     </div>
     @if ($user->hasRole('super admin'))
         <div class="form-group mb-3">
-            <select name="kode_jabatan" id="kode_jabatan" class="form-select select2Kodejabatan">
-                <option value="">Jabatan</option>
-                @foreach ($jabatan as $d)
-                    <option value="{{ $d->kode_jabatan }}">{{ strtoUpper($d->nama_jabatan) }}</option>
+            <select name="kode_unit" id="kode_unit" class="form-select select2Kodeunit">
+                <option value="">Unit</option>
+                @foreach ($unit as $u)
+                    <option value="{{ $u->kode_unit }}">{{ strtoupper($u->nama_unit) }}</option>
                 @endforeach
             </select>
         </div>
@@ -20,9 +20,12 @@
         <div class="form-group mb-3">
             <select name="kode_dept" id="kode_dept" class="form-select select2Kodedept">
                 <option value="">Departemen</option>
-                @foreach ($departemen as $d)
-                    <option value="{{ $d->kode_dept }}">{{ strtoupper($d->nama_dept) }}</option>
-                @endforeach
+            </select>
+        </div>
+
+        <div class="form-group mb-3">
+            <select name="kode_jabatan" id="kode_jabatan" class="form-select select2Kodejabatan">
+                <option value="">Jabatan</option>
             </select>
         </div>
     @endif
@@ -100,6 +103,18 @@
             }
         });
         $("#tanggal_pelaksanaan").flatpickr();
+        const select2Kodeunit = $('.select2Kodeunit');
+        if (select2Kodeunit.length) {
+            select2Kodeunit.each(function() {
+                var $this = $(this);
+                $this.wrap('<div class="position-relative"></div>').select2({
+                    placeholder: 'Pilih Unit',
+                    allowClear: true,
+                    dropdownParent: $this.parent()
+                });
+            });
+        }
+
         const select2Kodedept = $('.select2Kodedept');
         if (select2Kodedept.length) {
             select2Kodedept.each(function() {
@@ -136,6 +151,67 @@
             });
         }
 
+
+        function updateFilterOptions() {
+            let kode_unit = $("#formCreateProgramKerja").find('#kode_unit').val();
+            let kode_dept = $("#formCreateProgramKerja").find('#kode_dept').val();
+
+            if (kode_unit === "" || kode_unit === null) {
+                let deptSelect = $("#formCreateProgramKerja").find('#kode_dept');
+                deptSelect.empty().append('<option value="">Departemen</option>').trigger('change.select2');
+                let jabSelect = $("#formCreateProgramKerja").find('#kode_jabatan');
+                jabSelect.empty().append('<option value="">Jabatan</option>').trigger('change.select2');
+                return;
+            }
+
+            if (kode_dept === "" || kode_dept === null) {
+                let jabSelect = $("#formCreateProgramKerja").find('#kode_jabatan');
+                jabSelect.empty().append('<option value="">Jabatan</option>').trigger('change.select2');
+            }
+
+            $.ajax({
+                url: "{{ route('programkerja.get-karyawan-filter-options') }}",
+                type: "GET",
+                data: {
+                    kode_unit: kode_unit,
+                    kode_dept: kode_dept
+                },
+                success: function(response) {
+                    // Update Departemen select options
+                    let deptSelect = $("#formCreateProgramKerja").find('#kode_dept');
+                    let activeDept = deptSelect.val();
+                    deptSelect.empty().append('<option value="">Departemen</option>');
+                    response.departments.forEach(function(dept) {
+                        let selected = activeDept === dept.kode_dept ? 'selected' : '';
+                        deptSelect.append(`<option value="${dept.kode_dept}" ${selected}>${dept.nama_dept.toUpperCase()}</option>`);
+                    });
+                    deptSelect.trigger('change.select2');
+
+                    // Update Jabatan select options (only if Departemen is selected)
+                    let jabSelect = $("#formCreateProgramKerja").find('#kode_jabatan');
+                    let activeJab = jabSelect.val();
+                    jabSelect.empty().append('<option value="">Jabatan</option>');
+                    if (kode_dept !== "" && kode_dept !== null) {
+                        response.jabatans.forEach(function(jab) {
+                            let selected = activeJab === jab.kode_jabatan ? 'selected' : '';
+                            jabSelect.append(`<option value="${jab.kode_jabatan}" ${selected}>${jab.nama_jabatan.toUpperCase()}</option>`);
+                        });
+                    }
+                    jabSelect.trigger('change.select2');
+                }
+            });
+        }
+
+        $("#formCreateProgramKerja").find('#kode_unit').change(function() {
+            $("#formCreateProgramKerja").find('#kode_dept').val('').trigger('change.select2');
+            $("#formCreateProgramKerja").find('#kode_jabatan').val('').trigger('change.select2');
+            updateFilterOptions();
+        });
+
+        $("#formCreateProgramKerja").find('#kode_dept').change(function() {
+            $("#formCreateProgramKerja").find('#kode_jabatan').val('').trigger('change.select2');
+            updateFilterOptions();
+        });
 
         function getJobdesk() {
             let kode_jabatan = $("#formCreateProgramKerja").find('#kode_jabatan').val();

@@ -5,13 +5,14 @@
     <x-input-with-icon icon="ti ti-calendar" label="Tanggal" name="tanggal" datepicker="flatpickr-date"
         value="{{ date('Y-m-d', strtotime($agenda_kegiatan->tanggal)) }}" />
     <x-input-with-icon icon="ti ti-file-description" label="Nama Kegiatan" name="nama_kegiatan" value="{{ $agenda_kegiatan->nama_kegiatan }}" />
-    @if ($user->hasRole('super admin'))
+    @if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris']))
         <div class="form-group mb-3">
-            <select name="kode_jabatan" id="kode_jabatan" class="form-select select2Kodejabatan">
-                <option value="">Jabatan</option>
-                @foreach ($jabatan as $d)
-                    <option value="{{ $d->kode_jabatan }}" {{ $d->kode_jabatan == $agenda_kegiatan->kode_jabatan ? 'selected' : '' }}>
-                        {{ strtoUpper($d->nama_jabatan) }}</option>
+            <select name="kode_unit" id="kode_unit" class="form-select select2Kodeunit">
+                <option value="">Unit</option>
+                @foreach ($unit as $u)
+                    <option value="{{ $u->kode_unit }}" {{ $u->kode_unit == $agenda_kegiatan->kode_unit ? 'selected' : '' }}>
+                        {{ strtoupper($u->nama_unit) }}
+                    </option>
                 @endforeach
             </select>
         </div>
@@ -22,6 +23,16 @@
                 @foreach ($departemen as $d)
                     <option value="{{ $d->kode_dept }}" {{ $d->kode_dept == $agenda_kegiatan->kode_dept ? 'selected' : '' }}>
                         {{ strtoupper($d->nama_dept) }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="form-group mb-3">
+            <select name="kode_jabatan" id="kode_jabatan" class="form-select select2Kodejabatan">
+                <option value="">Jabatan</option>
+                @foreach ($jabatan as $d)
+                    <option value="{{ $d->kode_jabatan }}" {{ $d->kode_jabatan == $agenda_kegiatan->kode_jabatan ? 'selected' : '' }}>
+                        {{ strtoUpper($d->nama_jabatan) }}</option>
                 @endforeach
             </select>
         </div>
@@ -116,6 +127,18 @@
             }
         });
         $("#tanggal").flatpickr();
+        const select2Kodeunit = $('.select2Kodeunit');
+        if (select2Kodeunit.length) {
+            select2Kodeunit.each(function() {
+                var $this = $(this);
+                $this.wrap('<div class="position-relative"></div>').select2({
+                    placeholder: 'Pilih Unit',
+                    allowClear: true,
+                    dropdownParent: $this.parent()
+                });
+            });
+        }
+
         const select2Kodedept = $('.select2Kodedept');
         if (select2Kodedept.length) {
             select2Kodedept.each(function() {
@@ -152,9 +175,66 @@
             });
         }
 
+        function updateFilterOptions() {
+            let kode_unit = $("#formEditAgendakegiatan").find('#kode_unit').val();
+            let kode_dept = $("#formEditAgendakegiatan").find('#kode_dept').val();
 
+            if (kode_unit === "" || kode_unit === null) {
+                let deptSelect = $("#formEditAgendakegiatan").find('#kode_dept');
+                deptSelect.empty().append('<option value="">Departemen</option>').trigger('change.select2');
+                let jabSelect = $("#formEditAgendakegiatan").find('#kode_jabatan');
+                jabSelect.empty().append('<option value="">Jabatan</option>').trigger('change.select2');
+                return;
+            }
 
+            if (kode_dept === "" || kode_dept === null) {
+                let jabSelect = $("#formEditAgendakegiatan").find('#kode_jabatan');
+                jabSelect.empty().append('<option value="">Jabatan</option>').trigger('change.select2');
+            }
 
+            $.ajax({
+                url: "{{ route('programkerja.get-karyawan-filter-options') }}",
+                type: "GET",
+                data: {
+                    kode_unit: kode_unit,
+                    kode_dept: kode_dept
+                },
+                success: function(response) {
+                    // Update Departemen select options
+                    let deptSelect = $("#formEditAgendakegiatan").find('#kode_dept');
+                    let activeDept = deptSelect.val();
+                    deptSelect.empty().append('<option value="">Departemen</option>');
+                    response.departments.forEach(function(dept) {
+                        let selected = activeDept === dept.kode_dept ? 'selected' : '';
+                        deptSelect.append(`<option value="${dept.kode_dept}" ${selected}>${dept.nama_dept.toUpperCase()}</option>`);
+                    });
+                    deptSelect.trigger('change.select2');
+
+                    // Update Jabatan select options (only if Departemen is selected)
+                    let jabSelect = $("#formEditAgendakegiatan").find('#kode_jabatan');
+                    let activeJab = jabSelect.val();
+                    jabSelect.empty().append('<option value="">Jabatan</option>');
+                    if (kode_dept !== "" && kode_dept !== null) {
+                        response.jabatans.forEach(function(jab) {
+                            let selected = activeJab === jab.kode_jabatan ? 'selected' : '';
+                            jabSelect.append(`<option value="${jab.kode_jabatan}" ${selected}>${jab.nama_jabatan.toUpperCase()}</option>`);
+                        });
+                    }
+                    jabSelect.trigger('change.select2');
+                }
+            });
+        }
+
+        $("#formEditAgendakegiatan").find('#kode_unit').change(function() {
+            $("#formEditAgendakegiatan").find('#kode_dept').val('').trigger('change.select2');
+            $("#formEditAgendakegiatan").find('#kode_jabatan').val('').trigger('change.select2');
+            updateFilterOptions();
+        });
+
+        $("#formEditAgendakegiatan").find('#kode_dept').change(function() {
+            $("#formEditAgendakegiatan").find('#kode_jabatan').val('').trigger('change.select2');
+            updateFilterOptions();
+        });
 
     });
 </script>

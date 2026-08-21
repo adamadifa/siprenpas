@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Departemen;
 use App\Models\Jabatan;
 use App\Models\Programkerja;
+use App\Models\ProgramkerjaGroup;
 use App\Models\Tahunajaran;
 use App\Models\User;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
@@ -25,30 +27,46 @@ class ProgramkerjaController extends Controller
             'program_kerja.program_kerja',
             'program_kerja.target_pencapaian',
             'program_kerja.keterangan',
-            'program_kerja.kode_dept',
+            'program_kerja_group.kode_dept',
+            'program_kerja_group.kode_unit',
+            'unit.nama_unit',
+            'program_kerja_group.kode_jabatan',
+            'jabatan.nama_jabatan',
             DB::raw("GROUP_CONCAT(CONCAT(realisasi_kegiatan.tanggal, ' / ', nama_kegiatan) ORDER BY tanggal SEPARATOR ', ') as realisasi_program")
         );
-        $query->join('departemen', 'program_kerja.kode_dept', '=', 'departemen.kode_dept');
-        $query->join('jabatan', 'program_kerja.kode_jabatan', '=', 'jabatan.kode_jabatan');
-        $query->join('users', 'program_kerja.id_user', '=', 'users.id');
+        $query->join('program_kerja_group', 'program_kerja.kode_program_kerja_group', '=', 'program_kerja_group.kode_program_kerja_group');
+        $query->join('departemen', 'program_kerja_group.kode_dept', '=', 'departemen.kode_dept');
+        $query->join('jabatan', 'program_kerja_group.kode_jabatan', '=', 'jabatan.kode_jabatan');
+        $query->leftJoin('unit', 'program_kerja_group.kode_unit', '=', 'unit.kode_unit');
+        $query->join('users', 'program_kerja_group.id_user', '=', 'users.id');
         $query->leftJoin('realisasi_kegiatan', 'program_kerja.kode_program_kerja', '=', 'realisasi_kegiatan.kode_program_kerja');
         if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris'])) {
             if (!empty($request->kode_jabatan)) {
-                $query->where('program_kerja.kode_jabatan', $request->kode_jabatan);
+                $query->where('program_kerja_group.kode_jabatan', $request->kode_jabatan);
             }
 
             if (!empty($request->kode_dept)) {
-                $query->where('program_kerja.kode_dept', $request->kode_dept);
+                $query->where('program_kerja_group.kode_dept', $request->kode_dept);
+            }
+
+            if (!empty($request->kode_unit)) {
+                $query->where('program_kerja_group.kode_unit', $request->kode_unit);
             }
         } else {
-            // $query->where('program_kerja.kode_jabatan', $user->kode_jabatan);
-            $query->where('program_kerja.kode_dept', $user->kode_dept);
+            // $query->where('program_kerja_group.kode_jabatan', $user->kode_jabatan);
+            $query->where('program_kerja_group.kode_dept', $user->kode_dept);
+            if (!empty(auth()->user()->kode_unit)) {
+                $query->where('program_kerja_group.kode_unit', auth()->user()->kode_unit);
+            }
+            if (!empty($request->kode_jabatan)) {
+                $query->where('program_kerja_group.kode_jabatan', $request->kode_jabatan);
+            }
         }
 
         if (!empty($request->kode_ta)) {
-            $query->where('program_kerja.kode_ta', $request->kode_ta);
+            $query->where('program_kerja_group.kode_ta', $request->kode_ta);
         } elseif ($ta_aktif) {
-            $query->where('program_kerja.kode_ta', $ta_aktif->kode_ta);
+            $query->where('program_kerja_group.kode_ta', $ta_aktif->kode_ta);
         }
 
         if (!empty($request->cari)) {
@@ -59,7 +77,11 @@ class ProgramkerjaController extends Controller
             'program_kerja.program_kerja',
             'program_kerja.target_pencapaian',
             'program_kerja.keterangan',
-            'program_kerja.kode_dept'
+            'program_kerja_group.kode_dept',
+            'program_kerja_group.kode_unit',
+            'unit.nama_unit',
+            'program_kerja_group.kode_jabatan',
+            'jabatan.nama_jabatan'
         );
         // $query->orderBy('program_kerja.created_at', 'desc');
         $kode_jabatan = $user->hasRole('super admin') ? $request->kode_jabatan : $user->kode_jabatan;
@@ -71,6 +93,38 @@ class ProgramkerjaController extends Controller
             $data['programkerja'] = $query->get();
         }
         
+        $activeTa = $request->kode_ta ?: ($ta_aktif ? $ta_aktif->kode_ta : null);
+
+        $data['unit'] = Unit::whereIn('kode_unit', function($q) use ($activeTa) {
+            $q->select('kode_unit')->from('program_kerja_group');
+            if ($activeTa) {
+                $q->where('kode_ta', $activeTa);
+            }
+        })->where('nama_unit', 'not like', '%undefined%')->orderBy('nama_unit')->get();
+
+        $data['departemen'] = Departemen::whereIn('kode_dept', function($q) use ($activeTa, $request) {
+            $q->select('kode_dept')->from('program_kerja_group');
+            if ($activeTa) {
+                $q->where('kode_ta', $activeTa);
+            }
+            if (!empty($request->kode_unit)) {
+                $q->where('kode_unit', $request->kode_unit);
+            }
+        })->orderBy('nama_dept')->get();
+
+        $data['jabatan'] = Jabatan::whereIn('kode_jabatan', function($q) use ($activeTa, $request) {
+            $q->select('kode_jabatan')->from('program_kerja_group');
+            if ($activeTa) {
+                $q->where('kode_ta', $activeTa);
+            }
+            if (!empty($request->kode_unit)) {
+                $q->where('kode_unit', $request->kode_unit);
+            }
+            if (!empty($request->kode_dept)) {
+                $q->where('kode_dept', $request->kode_dept);
+            }
+        })->where('kode_jabatan', '!=', 'J00')->orderBy('nama_jabatan')->get();
+
         $data['user'] = $user;
         $data['tahunajaran'] = Tahunajaran::all();
         $data['ta_aktif'] = $ta_aktif;
@@ -86,6 +140,13 @@ class ProgramkerjaController extends Controller
             if ($karyawan && $dept) {
                 $karyawan->nama_dept = $dept->nama_dept;
             }
+            
+            $data['jabatans'] = Jabatan::whereIn('kode_jabatan', function($q) use ($karyawan, $user) {
+                $q->select('kode_jabatan')
+                  ->from('karyawan')
+                  ->where('kode_unit', $karyawan->kode_unit)
+                  ->where('kode_dept', $user->kode_dept);
+            })->orderBy('nama_jabatan')->get();
             
             $data['karyawan'] = $karyawan;
             return view('programkerja.index_karyawan', $data);
@@ -103,16 +164,24 @@ class ProgramkerjaController extends Controller
             $data['departemen'] = Departemen::orderBy('kode_dept')->where('kode_dept', $kode_dept)->first();
             return view('programkerja.cetak', $data);
         } else {
-            $data['jabatan'] = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
-            $data['departemen'] = Departemen::orderBy('kode_dept')->get();
             return view('programkerja.index', $data);
         }
     }
 
     public function create()
     {
-        $data['jabatan'] = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
-        $data['departemen'] = Departemen::orderBy('kode_dept')->get();
+        $data['unit'] = Unit::whereIn('kode_unit', function($q) {
+            $q->select('kode_unit')->from('karyawan');
+        })->where('nama_unit', 'not like', '%undefined%')->orderBy('nama_unit')->get();
+
+        $data['departemen'] = Departemen::whereIn('kode_dept', function($q) {
+            $q->select('kode_dept')->from('karyawan');
+        })->orderBy('nama_dept')->get();
+
+        $data['jabatan'] = Jabatan::whereIn('kode_jabatan', function($q) {
+            $q->select('kode_jabatan')->from('karyawan');
+        })->where('kode_jabatan', '!=', 'J00')->orderBy('nama_jabatan')->get();
+
         $data['user'] = User::where('id', auth()->user()->id)->first();
         $agent = new Agent();
         if ($agent->isMobile()) {
@@ -123,11 +192,9 @@ class ProgramkerjaController extends Controller
 
     public function store(Request $request)
     {
-
         $user = User::where('id', auth()->user()->id)->first();
         if ($user->hasRole('super admin')) {
             $request->validate([
-
                 'program_kerja' => 'required',
                 'target_pencapaian' => 'required',
                 'keterangan' => 'required',
@@ -137,17 +204,17 @@ class ProgramkerjaController extends Controller
 
             $kode_jabatan = $request->kode_jabatan;
             $kode_dept = $request->kode_dept;
+            $kode_unit = $request->kode_unit;
         } else {
             $request->validate([
-
                 'program_kerja' => 'required',
                 'target_pencapaian' => 'required',
                 'keterangan' => 'required',
             ]);
             $kode_jabatan = $user->kode_jabatan;
             $kode_dept = $user->kode_dept;
+            $kode_unit = $user->kode_unit;
         }
-
 
         $ta_aktif = Tahunajaran::where('status', '1')->first();
         if (!$ta_aktif) {
@@ -156,24 +223,31 @@ class ProgramkerjaController extends Controller
         $ta = explode("/", $ta_aktif->tahun_ajaran);
         $format = substr($ta[0], 2, 2) . substr($ta[1], 2, 2) . $kode_dept;
         try {
-            $lastprogramkerja = Programkerja::where('kode_dept', $kode_dept)
-                ->where('kode_ta', $ta_aktif->kode_ta)
+            $groupId = substr($ta_aktif->kode_ta . $kode_jabatan . $kode_dept . ($kode_unit ?: 'U00'), 0, 15);
+            $group = ProgramkerjaGroup::firstOrCreate(
+                ['kode_program_kerja_group' => $groupId],
+                [
+                    'kode_unit' => $kode_unit,
+                    'kode_dept' => $kode_dept,
+                    'kode_jabatan' => $kode_jabatan,
+                    'kode_ta' => $ta_aktif->kode_ta,
+                    'id_user' => auth()->user()->id
+                ]
+            );
+
+            $lastprogramkerja = Programkerja::where('kode_program_kerja_group', $groupId)
                 ->orderBy('kode_program_kerja', 'desc')
                 ->first();
 
-            // dd($lastprogramkerja);
             $last_kode_program_kerja = $lastprogramkerja !== null ? $lastprogramkerja->kode_program_kerja : '';
             $kode_program_kerja = buatkode($last_kode_program_kerja, $format, 4);
-            // dd($kode_program_kerja);
+
             Programkerja::create([
                 'kode_program_kerja' => $kode_program_kerja,
+                'kode_program_kerja_group' => $groupId,
                 'program_kerja' => $request->program_kerja,
                 'target_pencapaian' => $request->target_pencapaian,
                 'keterangan' => $request->keterangan,
-                'kode_dept' => $kode_dept,
-                'kode_jabatan' => $kode_jabatan,
-                'kode_ta' => $ta_aktif->kode_ta,
-                'id_user' => auth()->user()->id
             ]);
 
             $agent = new Agent();
@@ -192,9 +266,38 @@ class ProgramkerjaController extends Controller
     public function edit($kode_program_kerja)
     {
         $kode_program_kerja = Crypt::decrypt($kode_program_kerja);
-        $data['jabatan'] = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
-        $data['departemen'] = Departemen::orderBy('kode_dept')->get();
-        $data['programkerja'] = Programkerja::where('kode_program_kerja', $kode_program_kerja)->first();
+        $programkerja = Programkerja::where('kode_program_kerja', $kode_program_kerja)->first();
+        $data['programkerja'] = $programkerja;
+
+        $data['unit'] = Unit::whereIn('kode_unit', function($q) {
+            $q->select('kode_unit')->from('karyawan');
+        })->where('nama_unit', 'not like', '%undefined%')->orderBy('nama_unit')->get();
+
+        $data['departemen'] = Departemen::whereIn('kode_dept', function($q) use ($programkerja) {
+            $q->select('users.kode_dept')
+              ->from('karyawan')
+              ->join('user_karyawan', 'karyawan.npp', '=', 'user_karyawan.npp')
+              ->join('users', 'user_karyawan.id_user', '=', 'users.id');
+            if ($programkerja && $programkerja->group && !empty($programkerja->group->kode_unit)) {
+                $q->where('karyawan.kode_unit', $programkerja->group->kode_unit);
+            }
+        })->orderBy('nama_dept')->get();
+
+        $data['jabatan'] = Jabatan::whereIn('kode_jabatan', function($q) use ($programkerja) {
+            $q->select('karyawan.kode_jabatan')->from('karyawan');
+            if ($programkerja && $programkerja->group && !empty($programkerja->group->kode_unit)) {
+                $q->where('karyawan.kode_unit', $programkerja->group->kode_unit);
+            }
+            if ($programkerja && $programkerja->group && !empty($programkerja->group->kode_dept)) {
+                $q->whereIn('karyawan.npp', function($sub) use ($programkerja) {
+                    $sub->select('user_karyawan.npp')
+                        ->from('user_karyawan')
+                        ->join('users', 'user_karyawan.id_user', '=', 'users.id')
+                        ->where('users.kode_dept', $programkerja->group->kode_dept);
+                });
+            }
+        })->where('kode_jabatan', '!=', 'J00')->orderBy('nama_jabatan')->get();
+
         $data['user'] = User::where('id', auth()->user()->id)->first();
         $agent = new Agent();
         if ($agent->isMobile()) {
@@ -210,10 +313,8 @@ class ProgramkerjaController extends Controller
         $user = User::where('id', auth()->user()->id)->first();
         if ($user->hasRole('super admin')) {
             $request->validate([
-
                 'program_kerja' => 'required',
                 'target_pencapaian' => 'required',
-
                 'keterangan' => 'required',
                 'kode_jabatan' => 'required',
                 'kode_dept' => 'required',
@@ -221,29 +322,40 @@ class ProgramkerjaController extends Controller
 
             $kode_jabatan = $request->kode_jabatan;
             $kode_dept = $request->kode_dept;
+            $kode_unit = $request->kode_unit;
         } else {
             $request->validate([
-
                 'program_kerja' => 'required',
                 'target_pencapaian' => 'required',
-
                 'keterangan' => 'required',
             ]);
             $kode_jabatan = $user->kode_jabatan;
             $kode_dept = $user->kode_dept;
+            $kode_unit = $user->kode_unit;
         }
 
-
-
         try {
+            $pk = Programkerja::where('kode_program_kerja', $kode_jam_kerja)->first();
+            $groupId = substr($pk->group->kode_ta . $kode_jabatan . $kode_dept . ($kode_unit ?: 'U00'), 0, 15);
 
-            Programkerja::where('kode_program_kerja', $kode_jam_kerja)->update([
+            $group = ProgramkerjaGroup::firstOrCreate(
+                ['kode_program_kerja_group' => $groupId],
+                [
+                    'kode_unit' => $kode_unit,
+                    'kode_dept' => $kode_dept,
+                    'kode_jabatan' => $kode_jabatan,
+                    'kode_ta' => $pk->group->kode_ta,
+                    'id_user' => auth()->user()->id
+                ]
+            );
+
+            $pk->update([
+                'kode_program_kerja_group' => $groupId,
                 'program_kerja' => $request->program_kerja,
                 'target_pencapaian' => $request->target_pencapaian,
                 'keterangan' => $request->keterangan,
-                'kode_dept' => $kode_dept,
-                'kode_jabatan' => $kode_jabatan,
             ]);
+
             $agent = new Agent();
 
             if ($agent->isMobile()) {
@@ -276,13 +388,13 @@ class ProgramkerjaController extends Controller
         if (!$ta_aktif) {
             return response()->json([]);
         }
-        $qprogramkerja = Programkerja::query();
-        // $qprogramkerja->where('program_kerja.kode_jabatan', $kode_jabatan);
-        $qprogramkerja->where('program_kerja.kode_dept', $kode_dept);
-        // if (!empty($request->cari)) {
-        //     $qprogramkerja->where('program_kerja.program_kerja', 'like', '%' . $request->cari . '%');
-        // }
-        $qprogramkerja->where('program_kerja.kode_ta', $ta_aktif->kode_ta);
+        $qprogramkerja = Programkerja::query()
+            ->join('program_kerja_group', 'program_kerja.kode_program_kerja_group', '=', 'program_kerja_group.kode_program_kerja_group')
+            ->where('program_kerja_group.kode_dept', $kode_dept);
+        if (!empty($request->kode_unit)) {
+            $qprogramkerja->where('program_kerja_group.kode_unit', $request->kode_unit);
+        }
+        $qprogramkerja->where('program_kerja_group.kode_ta', $ta_aktif->kode_ta);
         $program_kerja = $qprogramkerja->get();
         return response()->json($program_kerja);
     }
@@ -293,15 +405,17 @@ class ProgramkerjaController extends Controller
         $kode_jabatan = $user->hasRole('super admin') ? $request->kode_jabatan : auth()->user()->kode_jabatan;
         $kode_dept = $user->hasRole('super admin') ? $request->kode_dept : auth()->user()->kode_dept;
 
-        $qprogramkerja = Programkerja::query();
-        // $qprogramkerja->where('program_kerja.kode_jabatan', $kode_jabatan);
-        $qprogramkerja->where('program_kerja.kode_dept', $kode_dept);
+        $qprogramkerja = Programkerja::query()
+            ->join('program_kerja_group', 'program_kerja.kode_program_kerja_group', '=', 'program_kerja_group.kode_program_kerja_group')
+            ->where('program_kerja_group.kode_dept', $kode_dept);
+        if (!empty($request->kode_unit)) {
+            $qprogramkerja->where('program_kerja_group.kode_unit', $request->kode_unit);
+        }
         if (!empty($request->cari)) {
             $qprogramkerja->where('program_kerja.program_kerja', 'like', '%' . $request->cari . '%');
         }
-        $qprogramkerja->where('program_kerja.kode_ta', $request->kode_ta);
+        $qprogramkerja->where('program_kerja_group.kode_ta', $request->kode_ta);
         $program_kerja = $qprogramkerja->get();
-
 
         return view('programkerja.getprogramkerjalist', compact('program_kerja'));
     }
@@ -314,10 +428,86 @@ class ProgramkerjaController extends Controller
         }
 
         try {
-            Programkerja::query()->delete();
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            DB::table('program_kerja')->delete();
+            DB::table('program_kerja_group')->delete();
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             return Redirect::back()->with(messageSuccess('Semua data program kerja berhasil direset'));
         } catch (\Exception $e) {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             return Redirect::back()->with(messageError($e->getMessage()));
         }
+    }
+
+    public function getFilterOptions(Request $request)
+    {
+        $kode_unit = $request->kode_unit;
+        $kode_dept = $request->kode_dept;
+        $kode_ta = $request->kode_ta;
+
+        $ta_aktif = Tahunajaran::where('status', 1)->first();
+        $activeTa = $kode_ta ?: ($ta_aktif ? $ta_aktif->kode_ta : null);
+
+        $deptsQuery = ProgramkerjaGroup::query()
+            ->join('departemen', 'program_kerja_group.kode_dept', '=', 'departemen.kode_dept')
+            ->select('program_kerja_group.kode_dept', 'departemen.nama_dept')
+            ->distinct();
+        if (!empty($kode_unit)) {
+            $deptsQuery->where('program_kerja_group.kode_unit', $kode_unit);
+        }
+        if ($activeTa) {
+            $deptsQuery->where('program_kerja_group.kode_ta', $activeTa);
+        }
+        $departments = $deptsQuery->orderBy('departemen.nama_dept')->get();
+
+        $jabsQuery = ProgramkerjaGroup::query()
+            ->join('jabatan', 'program_kerja_group.kode_jabatan', '=', 'jabatan.kode_jabatan')
+            ->select('program_kerja_group.kode_jabatan', 'jabatan.nama_jabatan')
+            ->distinct();
+        if (!empty($kode_unit)) {
+            $jabsQuery->where('program_kerja_group.kode_unit', $kode_unit);
+        }
+        if (!empty($kode_dept)) {
+            $jabsQuery->where('program_kerja_group.kode_dept', $kode_dept);
+        }
+        if ($activeTa) {
+            $jabsQuery->where('program_kerja_group.kode_ta', $activeTa);
+        }
+        $jabatans = $jabsQuery->orderBy('jabatan.nama_jabatan')->get();
+
+        return response()->json([
+            'departments' => $departments,
+            'jabatans' => $jabatans
+        ]);
+    }
+
+    public function getKaryawanFilterOptions(Request $request)
+    {
+        $kode_unit = $request->kode_unit;
+        $kode_dept = $request->kode_dept;
+
+        $deptsQuery = Departemen::whereIn('kode_dept', function($q) use ($kode_unit) {
+            $q->select('kode_dept')->from('karyawan');
+            if (!empty($kode_unit)) {
+                $q->where('kode_unit', $kode_unit);
+            }
+        });
+        $departments = $deptsQuery->orderBy('nama_dept')->get();
+
+        $jabsQuery = Jabatan::whereIn('kode_jabatan', function($q) use ($kode_unit, $kode_dept) {
+            $q->select('kode_jabatan')->from('karyawan');
+            if (!empty($kode_unit)) {
+                $q->where('kode_unit', $kode_unit);
+            }
+            if (!empty($kode_dept)) {
+                $q->where('kode_dept', $kode_dept);
+            }
+        })->where('kode_jabatan', '!=', 'J00');
+        $jabatans = $jabsQuery->orderBy('nama_jabatan')->get();
+
+        return response()->json([
+            'departments' => $departments,
+            'jabatans' => $jabatans
+        ]);
     }
 }

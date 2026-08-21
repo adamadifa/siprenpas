@@ -132,6 +132,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [App\Http\Controllers\Api\RealisasikegiatanController::class, 'destroy']);
     });
 
+    // Program Kerja API Routes
+    Route::prefix('program-kerja')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\ProgramkerjaController::class, 'index']);
+    });
+
     // Agenda Kegiatan API Routes
     Route::prefix('agenda-kegiatan')->group(function () {
         Route::get('/', [App\Http\Controllers\Api\AgendakegiatanController::class, 'index']);

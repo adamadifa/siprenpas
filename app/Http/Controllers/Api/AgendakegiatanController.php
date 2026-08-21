@@ -48,6 +48,7 @@ class AgendakegiatanController extends Controller
             $agenda = Agendakegiatan::create([
                 'tanggal' => $request->tanggal,
                 'nama_kegiatan' => $request->nama_kegiatan,
+                'kode_unit' => $user->kode_unit,
                 'kode_jabatan' => $user->kode_jabatan,
                 'kode_dept' => $user->kode_dept,
                 'uraian_kegiatan' => $request->uraian_kegiatan,

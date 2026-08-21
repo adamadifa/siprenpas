@@ -75,16 +75,48 @@
                 <form action="{{ route('programkerja.index') }}" id="myForm" class="form-filter">
                     <div class="row g-3 align-items-center">
                         @if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris']))
-                            <div class="col-lg-4 col-md-6">
+                            <div class="col-lg-2 col-md-6">
+                                <div class="form-group">
+                                    <div class="input-group border rounded-2 shadow-sm bg-white" style="border-color: #e0e0e0 !important;">
+                                        <span class="input-group-text bg-white border-0 border-end" style="border-color: #e0e0e0 !important; color: #8e9ba5; padding-right: 12px; padding-left: 12px;"><i class="ti ti-building fs-5"></i></span>
+                                        <select name="kode_unit" id="kode_unit" class="form-select border-0 ps-2 bg-transparent" style="box-shadow: none;">
+                                            <option value="">Pilih Unit</option>
+                                            @foreach ($unit as $u)
+                                                <option value="{{ $u->kode_unit }}" {{ Request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>
+                                                    {{ strtoupper($u->nama_unit) }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-6">
                                 <div class="form-group">
                                     <div class="input-group border rounded-2 shadow-sm bg-white" style="border-color: #e0e0e0 !important;">
                                         <span class="input-group-text bg-white border-0 border-end" style="border-color: #e0e0e0 !important; color: #8e9ba5; padding-right: 12px; padding-left: 12px;"><i class="ti ti-hierarchy-2 fs-5"></i></span>
                                         <select name="kode_dept" id="kode_dept" class="form-select border-0 ps-2 bg-transparent" style="box-shadow: none;">
-                                            <option value="">Semua Departemen</option>
-                                            @foreach ($departemen as $d)
-                                                <option value="{{ $d->kode_dept }}" {{ Request('kode_dept') == $d->kode_dept ? 'selected' : '' }}>
-                                                    {{ strtoUpper($d->nama_dept) }}</option>
-                                            @endforeach
+                                            <option value="">Pilih Departemen</option>
+                                            @if (!empty(Request('kode_unit')))
+                                                @foreach ($departemen as $d)
+                                                    <option value="{{ $d->kode_dept }}" {{ Request('kode_dept') == $d->kode_dept ? 'selected' : '' }}>
+                                                        {{ strtoUpper($d->nama_dept) }}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <div class="form-group">
+                                    <div class="input-group border rounded-2 shadow-sm bg-white" style="border-color: #e0e0e0 !important;">
+                                        <span class="input-group-text bg-white border-0 border-end" style="border-color: #e0e0e0 !important; color: #8e9ba5; padding-right: 12px; padding-left: 12px;"><i class="ti ti-user-check fs-5"></i></span>
+                                        <select name="kode_jabatan" id="kode_jabatan" class="form-select border-0 ps-2 bg-transparent" style="box-shadow: none;">
+                                            <option value="">Pilih Jabatan</option>
+                                            @if (!empty(Request('kode_unit')) && !empty(Request('kode_dept')))
+                                                @foreach ($jabatan as $j)
+                                                    <option value="{{ $j->kode_jabatan }}" {{ Request('kode_jabatan') == $j->kode_jabatan ? 'selected' : '' }}>
+                                                        {{ strtoupper($j->nama_jabatan) }}</option>
+                                                @endforeach
+                                            @endif
                                         </select>
                                     </div>
                                 </div>
@@ -104,7 +136,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-{{ $user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris']) ? '5' : '8' }} col-md-6">
+                        <div class="col-lg-{{ $user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris']) ? '2' : '9' }} col-md-6">
                             <x-input-with-icon label="" value="{{ Request('programkerja_search') }}" name="programkerja_search"
                                 placeholder="Cari program kerja..." icon="ti ti-search" />
                         </div>
@@ -144,7 +176,9 @@
                                 <th class="text-center py-3 text-white font-weight-bold" style="width: 60px;">NO.</th>
                                 <th class="py-3 text-white font-weight-bold" style="min-width: 250px;">PROGRAM KERJA</th>
                                 <th class="py-3 text-white font-weight-bold" style="min-width: 380px;">TARGET PENCAPAIAN</th>
+                                <th class="py-3 text-white font-weight-bold text-center" style="width: 120px;">UNIT</th>
                                 <th class="py-3 text-white font-weight-bold text-center" style="width: 120px;">DEPARTEMEN</th>
+                                <th class="py-3 text-white font-weight-bold text-center" style="width: 120px;">JABATAN</th>
                                 <th class="py-3 text-white font-weight-bold text-end pe-4" style="width: 110px;">AKSI</th>
                             </tr>
                         </thead>
@@ -166,7 +200,13 @@
                                         </div>
                                     </td>
                                     <td class="py-3 text-center">
+                                        <span class="badge rounded-pill bg-label-primary px-2-5 py-1-5 fw-semibold">{{ $d->nama_unit ?? 'UMUM' }}</span>
+                                    </td>
+                                    <td class="py-3 text-center">
                                         <span class="badge rounded-pill bg-label-success px-2-5 py-1-5 fw-semibold">{{ $d->kode_dept }}</span>
+                                    </td>
+                                    <td class="py-3 text-center">
+                                        <span class="badge rounded-pill bg-label-info px-2-5 py-1-5 fw-semibold">{{ $d->nama_jabatan }}</span>
                                     </td>
                                     <td class="py-3 text-end pe-4">
                                         <div class="d-flex justify-content-end gap-2">
@@ -195,7 +235,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center p-5 bg-white">
+                                    <td colspan="7" class="text-center p-5 bg-white">
                                         @if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris']) && empty(Request('kode_dept')))
                                             <div class="mb-3 text-muted">
                                                 <i class="ti ti-filter fs-1 opacity-50 text-success"></i>
@@ -240,6 +280,64 @@
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
         tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        function updateFilterOptions() {
+            let kode_unit = $('#kode_unit').val();
+            let kode_dept = $('#kode_dept').val();
+            let kode_ta = $('#kode_ta').val();
+
+            if (kode_unit === "" || kode_unit === null) {
+                $('#kode_dept').html('<option value="">Pilih Departemen</option>');
+                $('#kode_jabatan').html('<option value="">Pilih Jabatan</option>');
+                return;
+            }
+
+            if (kode_dept === "" || kode_dept === null) {
+                $('#kode_jabatan').html('<option value="">Pilih Jabatan</option>');
+            }
+
+            $.ajax({
+                url: "{{ route('programkerja.get-filter-options') }}",
+                type: "GET",
+                data: {
+                    kode_unit: kode_unit,
+                    kode_dept: kode_dept,
+                    kode_ta: kode_ta
+                },
+                success: function(response) {
+                    let currentDept = $('#kode_dept').val();
+                    $('#kode_dept').html('<option value="">Pilih Departemen</option>');
+                    response.departments.forEach(function(d) {
+                        let selected = d.kode_dept === currentDept ? 'selected' : '';
+                        $('#kode_dept').append(`<option value="${d.kode_dept}" ${selected}>${d.nama_dept.toUpperCase()}</option>`);
+                    });
+
+                    let currentJabatan = $('#kode_jabatan').val();
+                    $('#kode_jabatan').html('<option value="">Pilih Jabatan</option>');
+                    if (kode_dept !== "" && kode_dept !== null) {
+                        response.jabatans.forEach(function(j) {
+                            let selected = j.kode_jabatan === currentJabatan ? 'selected' : '';
+                            $('#kode_jabatan').append(`<option value="${j.kode_jabatan}" ${selected}>${j.nama_jabatan.toUpperCase()}</option>`);
+                        });
+                    }
+                }
+            });
+        }
+
+        $('#kode_unit').on('change', function() {
+            $('#kode_dept').val('');
+            $('#kode_jabatan').val('');
+            updateFilterOptions();
+        });
+
+        $('#kode_dept').on('change', function() {
+            $('#kode_jabatan').val('');
+            updateFilterOptions();
+        });
+
+        $('#kode_ta').on('change', function() {
+            updateFilterOptions();
         });
 
         $("#btncreateProgramKerja").click(function(e) {

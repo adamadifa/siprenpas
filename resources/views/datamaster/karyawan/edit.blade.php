@@ -155,6 +155,8 @@
         key="kode_jabatan" textShow="nama_jabatan" required="true" />
     <x-select-label label="Unit" name="kode_unit" selected="{{ $karyawan->kode_unit }}" :data="$unit"
         key="kode_unit" textShow="nama_unit" upperCase="true" required="true" />
+    <x-select-label label="Departemen" name="kode_dept" selected="{{ $karyawan->kode_dept }}" :data="$departemen"
+        key="kode_dept" textShow="nama_dept" upperCase="true" required="true" />
     <div class="form-group mb-3">
         <label for="exampleFormControlInput1" style="font-weight: 600" class="form-label">Status <span class="text-danger">*</span></label>
         <select name="status" id="status" class="form-select">

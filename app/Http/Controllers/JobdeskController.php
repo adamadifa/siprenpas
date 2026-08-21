@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\DB;
 use Jenssegers\Agent\Agent;
 
 class JobdeskController extends Controller
@@ -291,7 +292,8 @@ class JobdeskController extends Controller
 
         try {
             \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-            Jobdesk::query()->delete();
+            DB::table('jobdesk')->delete();
+            DB::table('jobdesk_group')->delete();
             \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             return Redirect::back()->with(messageSuccess('Semua data jobdesk berhasil direset'));
         } catch (\Exception $e) {

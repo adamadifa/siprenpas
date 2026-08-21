@@ -70,6 +70,8 @@
         required="true" />
     <x-select-label label="Unit" name="kode_unit" :data="$unit" key="kode_unit" textShow="nama_unit"
         upperCase="true" required="true" />
+    <x-select-label label="Departemen" name="kode_dept" :data="$departemen" key="kode_dept" textShow="nama_dept"
+        upperCase="true" required="true" />
     <div class="form-group mt-4">
         <button class="btn btn-primary w-100" type="submit" style="background-color: #064e3b; border-color: #064e3b">
             <i class="ti ti-device-floppy me-2"></i>
