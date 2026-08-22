@@ -142,7 +142,8 @@
                     <table class="table table-hover mb-0 text-nowrap">
                         <thead style="background-color: #064e3b">
                             <tr>
-                                <th class="text-white py-3" style="width: 1%;">NO.</th>
+                                                             <th class="text-white py-3" style="width: 1%;">NO.</th>
+                                <th class="text-white py-3" style="width: 1%;">ID</th>
                                 <th class="text-white py-3">NAME</th>
                                 <th class="text-white py-3" style="width: 1%;">USERNAME</th>
                                 <th class="text-white py-3" style="width: 1%;">EMAIL</th>
@@ -156,6 +157,7 @@
                             @forelse ($users as $d)
                                 <tr>
                                     <td class="py-1">{{ $loop->iteration + $users->firstItem() - 1 }}</td>
+                                    <td class="py-1"><span class="text-muted">{{ $d->id }}</span></td>
                                     <td class="py-1">
                                         <div class="d-flex align-items-center gap-2">
                                             <div class="avatar avatar-xs">
@@ -202,7 +204,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-center p-5">
+                                    <td colspan="9" class="text-center p-5">
                                         <div class="mb-3">
                                             <i class="ti ti-users fs-1 opacity-25"></i>
                                         </div>
