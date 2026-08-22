@@ -165,10 +165,14 @@ class UserController extends Controller
     public function destroy($id)
     {
         $id = Crypt::decrypt($id);
+        \Illuminate\Support\Facades\DB::beginTransaction();
         try {
             User::where('id', $id)->delete();
+            \App\Models\Userkaryawan::where('id_user', $id)->delete();
+            \Illuminate\Support\Facades\DB::commit();
             return Redirect::back()->with(['success' => 'Data Berhasil Dihapus']);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
             return Redirect::back()->with(['error' => $e->getMessage()]);
         }
     }
