@@ -185,6 +185,15 @@
                                     </td>
                                     <td class="py-1 text-end">
                                         <div class="d-flex justify-content-end gap-1">
+                                            @if ($d->id !== auth()->id())
+                                                <a href="{{ route('users.impersonate', Crypt::encrypt($d->id)) }}" 
+                                                    class="btn btn-icon btn-label-info border"
+                                                    style="width: 28px; height: 28px;"
+                                                    data-bs-toggle="tooltip" 
+                                                    title="View As (Masuk Sebagai)">
+                                                    <i class="ti ti-eye fs-6"></i>
+                                                </a>
+                                            @endif
                                             <a href="#" class="btn btn-icon btn-label-success border editUser"
                                                 style="width: 28px; height: 28px;"
                                                 id="{{ Crypt::encrypt($d->id) }}">

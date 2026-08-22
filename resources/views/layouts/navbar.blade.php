@@ -21,6 +21,18 @@
         </div>
         <!-- /Search -->
 
+        @if(session()->has('impersonator_id'))
+            <div class="alert alert-warning d-flex align-items-center mb-0 py-1 px-3 ms-3 rounded-pill shadow-sm" role="alert" style="font-size: 0.8rem;">
+                <i class="ti ti-user-check me-2 fs-5 text-warning"></i>
+                <div class="text-dark">
+                    Viewing as: <strong>{{ auth()->user()->name }}</strong>
+                </div>
+                <a href="{{ route('users.stop-impersonate') }}" class="btn btn-xs btn-dark ms-3 rounded-pill px-3 py-1 fw-bold text-uppercase" style="font-size: 0.7rem; color: #fff !important;">
+                    Exit View As
+                </a>
+            </div>
+        @endif
+
         <ul class="navbar-nav flex-row align-items-center ms-auto">
 
 

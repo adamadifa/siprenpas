@@ -214,4 +214,34 @@ class UserController extends Controller
         $user->save();
         return Redirect::back()->with(messageSuccess('Status Berhasil Diubah'));
     }
+
+    public function impersonate($id)
+    {
+        $id = Crypt::decrypt($id);
+        
+        if (!auth()->user()->hasRole('super admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if (auth()->id() == $id) {
+            return Redirect::back()->with(['error' => 'Tidak bisa melakukan View As ke diri sendiri.']);
+        }
+
+        session(['impersonator_id' => auth()->id()]);
+        \Illuminate\Support\Facades\Auth::loginUsingId($id);
+
+        return redirect()->route('dashboard.index')->with(['success' => 'Anda sekarang masuk sebagai ' . auth()->user()->name]);
+    }
+
+    public function stopImpersonate()
+    {
+        if (!session()->has('impersonator_id')) {
+            return redirect()->route('dashboard.index');
+        }
+
+        $adminId = session()->pull('impersonator_id');
+        \Illuminate\Support\Facades\Auth::loginUsingId($adminId);
+
+        return redirect()->route('users.index')->with(['success' => 'Kembali ke Admin Utama']);
+    }
 }

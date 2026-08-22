@@ -120,6 +120,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/users/stop-impersonate', [UserController::class, 'stopImpersonate'])->name('users.stop-impersonate');
 
     //Setings
     //Role
@@ -172,6 +173,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/users/{id}/editpassword', 'editpassword')->name('users.editpassword');
             Route::put('/users/{id}/updatepassword', 'updatepassword')->name('users.updatepassword');
             Route::get('/users/{id}/updatestatus', 'updatestatus')->name('users.updatestatus');
+            Route::get('/users/{id}/impersonate', 'impersonate')->name('users.impersonate');
         });
     });
 
