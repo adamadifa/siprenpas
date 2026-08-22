@@ -137,6 +137,16 @@ class UserController extends Controller
                 $data['kode_unit'] = $request->kode_unit;
                 $data['kode_dept'] = $request->kode_dept;
                 $data['kode_jabatan'] = $request->kode_jabatan;
+
+                // Sync with karyawan table if exists
+                $karyawan = \App\Models\Karyawan::where('npp', $user->npp)->first();
+                if ($karyawan) {
+                    $karyawan->update([
+                        'kode_unit' => $request->kode_unit,
+                        'kode_dept' => $request->kode_dept,
+                        'kode_jabatan' => $request->kode_jabatan
+                    ]);
+                }
             }
 
             $user->update($data);

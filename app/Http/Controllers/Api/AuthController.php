@@ -519,10 +519,12 @@ class AuthController extends Controller
                 'karyawan.nama_lengkap as nama',
                 'jabatan.nama_jabatan as jabatan',
                 'unit.nama_unit',
+                'departemen.nama_dept',
                 'karyawan.foto'
             )
             ->leftJoin('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
             ->leftJoin('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+            ->leftJoin('departemen', 'karyawan.kode_dept', '=', 'departemen.kode_dept')
             ->where('karyawan.npp', $npp)
             ->first();
             
@@ -532,6 +534,7 @@ class AuthController extends Controller
                     'nama' => $karyawan->nama,
                     'jabatan' => $karyawan->jabatan,
                     'nama_unit' => $karyawan->nama_unit,
+                    'nama_dept' => $karyawan->nama_dept,
                     'foto' => $karyawan->foto ? url('/storage/photos/karyawan/' . $karyawan->foto) : null,
                     'presensi_today' => $presensiToday,
                     'rekap_presensi' => $rekapPresensi,
@@ -542,12 +545,16 @@ class AuthController extends Controller
         
         $jabatanName = null;
         $unitName = null;
+        $deptName = null;
         
         if ($user->kode_jabatan) {
             $jabatanName = DB::table('jabatan')->where('kode_jabatan', $user->kode_jabatan)->value('nama_jabatan');
         }
         if ($user->kode_unit) {
             $unitName = DB::table('unit')->where('kode_unit', $user->kode_unit)->value('nama_unit');
+        }
+        if ($user->kode_dept) {
+            $deptName = DB::table('departemen')->where('kode_dept', $user->kode_dept)->value('nama_dept');
         }
 
         $isGuru = false;
@@ -559,6 +566,7 @@ class AuthController extends Controller
             'nama' => $user->name,
             'jabatan' => $jabatanName ?? 'Karyawan',
             'nama_unit' => $unitName ?? 'Asatidz',
+            'nama_dept' => $deptName,
             'foto' => null,
             'presensi_today' => $presensiToday,
             'rekap_presensi' => $rekapPresensi,
