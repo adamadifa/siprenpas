@@ -64,4 +64,83 @@ class ProgramkerjaController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
+
+    public function store(Request $request)
+    {
+        try {
+            $user = $request->user();
+            
+            $request->validate([
+                'program_kerja' => 'required',
+                'target_pencapaian' => 'required',
+                'keterangan' => 'nullable',
+            ]);
+
+            $kode_jabatan = $user->kode_jabatan;
+            $kode_dept = $user->kode_dept;
+            $kode_unit = $user->kode_unit;
+
+            $ta_aktif = Tahunajaran::where('status', '1')->first();
+            if (!$ta_aktif) {
+                return response()->json(['success' => false, 'message' => 'Tahun ajaran aktif tidak ditemukan.'], 400);
+            }
+
+            $ta = explode("/", $ta_aktif->tahun_ajaran);
+            $format = substr($ta[0], 2, 2) . substr($ta[1], 2, 2) . $kode_dept;
+            $groupId = substr($ta_aktif->kode_ta . $kode_jabatan . $kode_dept . ($kode_unit ?: 'U00'), 0, 15);
+
+            \App\Models\ProgramkerjaGroup::firstOrCreate(
+                ['kode_program_kerja_group' => $groupId],
+                [
+                    'kode_unit' => $kode_unit,
+                    'kode_dept' => $kode_dept,
+                    'kode_jabatan' => $kode_jabatan,
+                    'kode_ta' => $ta_aktif->kode_ta,
+                    'id_user' => $user->id
+                ]
+            );
+
+            $lastprogramkerja = Programkerja::where('kode_program_kerja_group', $groupId)
+                ->orderBy('kode_program_kerja', 'desc')
+                ->first();
+
+            $last_kode_program_kerja = $lastprogramkerja !== null ? $lastprogramkerja->kode_program_kerja : '';
+            $kode_program_kerja = buatkode($last_kode_program_kerja, $format, 4);
+
+            $program = Programkerja::create([
+                'kode_program_kerja' => $kode_program_kerja,
+                'kode_program_kerja_group' => $groupId,
+                'program_kerja' => $request->program_kerja,
+                'target_pencapaian' => $request->target_pencapaian,
+                'keterangan' => $request->keterangan,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Program kerja berhasil disimpan',
+                'data' => $program
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function destroy($kode_program_kerja)
+    {
+        try {
+            $program = Programkerja::where('kode_program_kerja', $kode_program_kerja)->first();
+            if (!$program) {
+                return response()->json(['success' => false, 'message' => 'Program kerja tidak ditemukan.'], 404);
+            }
+            
+            $program->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Program kerja berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
 }

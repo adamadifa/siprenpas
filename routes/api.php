@@ -135,6 +135,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Program Kerja API Routes
     Route::prefix('program-kerja')->group(function () {
         Route::get('/', [App\Http\Controllers\Api\ProgramkerjaController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\ProgramkerjaController::class, 'store']);
+        Route::delete('/{kode_program_kerja}', [App\Http\Controllers\Api\ProgramkerjaController::class, 'destroy']);
     });
 
     // Agenda Kegiatan API Routes
@@ -142,6 +144,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [App\Http\Controllers\Api\AgendakegiatanController::class, 'index']);
         Route::post('/', [App\Http\Controllers\Api\AgendakegiatanController::class, 'store']);
         Route::delete('/{id}', [App\Http\Controllers\Api\AgendakegiatanController::class, 'destroy']);
+    });
+
+    // Jobdesk API Routes
+    Route::prefix('jobdesk')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\JobdeskController::class, 'index']);
     });
 
     // Agenda Pesantren API Route
