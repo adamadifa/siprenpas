@@ -17,8 +17,6 @@ class JobdeskController extends Controller
             $query->select(
                 'jobdesk.kode_jobdesk',
                 'jobdesk.jobdesk',
-                'jobdesk.target_pencapaian',
-                'jobdesk.keterangan',
                 'jobdesk_group.kode_dept',
                 'jobdesk_group.kode_jabatan',
                 'jobdesk_group.kode_unit',
