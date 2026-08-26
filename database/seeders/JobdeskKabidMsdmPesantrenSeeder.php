@@ -14,10 +14,10 @@ class JobdeskKabidMsdmPesantrenSeeder extends Seeder
      */
     public function run(): void
     {
-        $kode_jabatan = 'J06'; // Kepala Bidang
+        $kode_jabatan = 'J27'; // Kepala Bidang
         $kode_dept = 'SDM';    // MSDM
         $kode_unit = 'U06';    // Pesantren
-        $groupId = 'J06SDMU06';
+        $groupId = 'J27SDMU06';
 
         // Clean existing data for this group first
         DB::table('jobdesk')->where('kode_jobdesk_group', $groupId)->delete();
@@ -41,7 +41,7 @@ class JobdeskKabidMsdmPesantrenSeeder extends Seeder
             'Menyusun Rencana Kerja & Anggaran (RKA) HRD jangka pendek, menengah & tahunan: Mempresentasikan RKA menengah & tahunan dalam rapat dengan Pengurus Pesantren.',
             'Menyusun Rencana Kerja & Anggaran (RKA) HRD jangka pendek, menengah & tahunan: Menerima pengesahan RKA Bidang MSDM dari Pengurus Pesantren.',
             'Menyusun Rencana Kerja & Anggaran (RKA) HRD jangka pendek, menengah & tahunan: Melakukan sosialisasi rencana strategis Bidang MSDM yang telah disahkan oleh Pengurus Pesantren kepada seluruh Pegawai.',
-            
+
             'Rekrutmen SDM (Recruitment): Menyusun SOP terkait rekrutmen pegawai baru yang mekanisme dan prosedurnya menyesuaikan dengan peraturan kepegawaian Pesantren.',
             'Rekrutmen SDM (Recruitment): Membuat Term of References (ToR) pelaksanaan program terkait rekrutmen SDM yang telah di sesuaikan dengan kebutuhan (Training need analysis (TNA)) lengkap dengan anggaran biaya dan kemudian mendapatkan persetujuan dari Pengurus Pesantren.',
             'Rekrutmen SDM (Recruitment): Membentuk panitia khusus dalam membantu pelaksanaan rekrutmen SDM.',
@@ -50,7 +50,7 @@ class JobdeskKabidMsdmPesantrenSeeder extends Seeder
             'Rekrutmen SDM (Recruitment): Menyebarluaskan iklan terkait penerimaan pegawai baru baik melalui media sosial atau media promosi lainnya.',
             'Rekrutmen SDM (Recruitment): Dalam proses mencari calon pegawai untuk mengisi kebutuhan SDM di Pesantren, Sekolah dan Asrama, Kabid MSDM harus melakukan analisis jabatan dan menjelaskan deskripsi pekerjaan juga spesifikasi pekerjaan tersebut.',
             'Rekrutmen SDM (Recruitment): Menyusun laporan pertanggung jawaban kegiatan dan pencapaian program.',
-            
+
             'Menyusun program Orientasi/pelatihan dan pendidikan pegawai baru: Menyusun SOP terkait pelatihan dan pendidikan pegawai baru yang mekanisme dan prosedurnya menyesuaikan dengan peraturan kepegawaian Pesantren.',
             'Menyusun program Orientasi/pelatihan dan pendidikan pegawai baru: Membuat Term of References (ToR) pelaksanaan program terkait pelatihan & pendidikan pegawai baru yang telah di sesuaikan dengan kebutuhan jabatan yang diterima lengkap dengan anggaran biaya dan kemudian mendapatkan persetujuan dari Pengurus Pesantren.'
         ];

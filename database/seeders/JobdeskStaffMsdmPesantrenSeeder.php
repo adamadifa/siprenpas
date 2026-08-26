@@ -14,10 +14,10 @@ class JobdeskStaffMsdmPesantrenSeeder extends Seeder
      */
     public function run(): void
     {
-        $kode_jabatan = 'J21'; // Staff
+        $kode_jabatan = 'J26'; // Staff
         $kode_dept = 'SDM';    // MSDM
         $kode_unit = 'U06';    // Pesantren
-        $groupId = 'J21SDMU06';
+        $groupId = 'J26SDMU06';
 
         // Clean existing data for this group first
         DB::table('jobdesk')->where('kode_jobdesk_group', $groupId)->delete();

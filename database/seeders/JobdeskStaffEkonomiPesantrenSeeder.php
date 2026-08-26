@@ -14,10 +14,10 @@ class JobdeskStaffEkonomiPesantrenSeeder extends Seeder
      */
     public function run(): void
     {
-        $kode_jabatan = 'J21'; // Staff
+        $kode_jabatan = 'J26'; // Staff
         $kode_dept = 'EKM';    // EKONOMI
         $kode_unit = 'U06';    // Pesantren
-        $groupId = 'J21EKMU06';
+        $groupId = 'J26EKMU06';
 
         // Clean existing data for this group first
         DB::table('jobdesk')->where('kode_jobdesk_group', $groupId)->delete();
@@ -44,7 +44,7 @@ class JobdeskStaffEkonomiPesantrenSeeder extends Seeder
             'Koordinasi dengan Pihak Terkait: Melaksanakan koordinasi dengan pihak pihak terkait.',
             'Analisis dan evaluasi: Bersama Kabid Ekonomi melakukan evaluasi program bulanan, semesteran dan tahunan serta tindak lanjutnya.',
             'Melaksanakan arahan/intruksi atasan: diluar poin diatas selama tidak bertentangan dengan syariat dan untuk kepentingan Pesantren/Sekolah.',
-            
+
             // Wewenang
             'Wewenang: Mengembangkan program ekonomi.',
             'Wewenang: Mengelola aset usaha pesantren atau sumber pendapatan pesantren.',

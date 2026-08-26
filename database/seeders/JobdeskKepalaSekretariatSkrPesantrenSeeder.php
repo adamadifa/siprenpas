@@ -14,10 +14,10 @@ class JobdeskKepalaSekretariatSkrPesantrenSeeder extends Seeder
      */
     public function run(): void
     {
-        $kode_jabatan = 'J05'; // Kepala Sekretariat
+        $kode_jabatan = 'J27'; // Kepala Sekretariat
         $kode_dept = 'SKR';    // Sekretariat (SKR)
         $kode_unit = 'U06';    // Pesantren
-        $groupId = 'J05SKRU06';
+        $groupId = 'J27SKRU06';
 
         // Clean existing data for this group first
         DB::table('jobdesk')->where('kode_jobdesk_group', $groupId)->delete();

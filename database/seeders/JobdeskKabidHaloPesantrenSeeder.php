@@ -14,10 +14,10 @@ class JobdeskKabidHaloPesantrenSeeder extends Seeder
      */
     public function run(): void
     {
-        $kode_jabatan = 'J06'; // Kepala Bidang
+        $kode_jabatan = 'J27'; // Kepala Bidang
         $kode_dept = 'HLO';    // HALO (HLO)
         $kode_unit = 'U06';    // Pesantren
-        $groupId = 'J06HLOU06';
+        $groupId = 'J27HLOU06';
 
         // Clean existing data for this group first
         DB::table('jobdesk')->where('kode_jobdesk_group', $groupId)->delete();
