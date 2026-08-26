@@ -27,17 +27,54 @@
         <textarea name="keterangan" id="keterangan" class="form-control" rows="5">{{ $agenda->keterangan }}</textarea>
     </div>
 
-    <div class="form-group mb-3">
-        <button class="btn btn-primary w-100" id="btnSimpan" type="submit">
-            <i class="ti ti-device-floppy me-1"></i>
-            Simpan
-        </button>
+    <div class="row mb-3">
+        <div class="col-md-6 mb-2">
+            <button class="btn btn-primary w-100" id="btnSimpan" type="submit">
+                <i class="ti ti-device-floppy me-1"></i>
+                Simpan
+            </button>
+        </div>
+        @can('agenda.delete')
+            <div class="col-md-6 mb-2">
+                <button class="btn btn-danger w-100" id="btnHapus" type="button">
+                    <i class="ti ti-trash me-1"></i>
+                    Hapus
+                </button>
+            </div>
+        @endcan
     </div>
 </form>
+
+@can('agenda.delete')
+    <form id="formDeleteAgenda" action="{{ route('agenda.delete', ['id' => Crypt::encrypt($agenda->id)]) }}" method="POST" class="d-none">
+        @csrf
+        @method('DELETE')
+    </form>
+@endcan
 
 <script>
     $(function() {
         $(".flatpickr-date").flatpickr();
+
+        @can('agenda.delete')
+            $("#btnHapus").click(function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Agenda ini akan dihapus secara permanen!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $("#formDeleteAgenda").submit();
+                    }
+                });
+            });
+        @endcan
 
         $("#formEditAgenda").submit(function(e) {
             let nama_agenda = $(this).find('#nama_agenda').val();

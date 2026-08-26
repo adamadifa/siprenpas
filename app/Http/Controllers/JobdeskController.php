@@ -182,6 +182,24 @@ class JobdeskController extends Controller
         }
     }
 
+    public function destroyMultiple(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'required|string'
+        ]);
+
+        try {
+            foreach ($request->ids as $encryptedId) {
+                $kode_jobdesk = Crypt::decrypt($encryptedId);
+                Jobdesk::where('kode_jobdesk', $kode_jobdesk)->delete();
+            }
+            return Redirect::back()->with(messageSuccess('Data Berhasil Dihapus'));
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError($e->getMessage()));
+        }
+    }
+
     public function edit($kode_jobdesk)
     {
         $kode_jobdesk = Crypt::decrypt($kode_jobdesk);

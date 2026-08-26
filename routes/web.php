@@ -360,6 +360,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/jobdesk/{kode_jobdesk}/show', 'show')->name('jobdesk.show')->can('jobdesk.show');
         Route::put('/jobdesk/{kode_jobdesk}/update', 'update')->name('jobdesk.update')->can('jobdesk.update');
         Route::delete('/jobdesk/{kode_jobdesk}/delete', 'destroy')->name('jobdesk.delete')->can('jobdesk.delete');
+        Route::post('/jobdesk/delete-multiple', 'destroyMultiple')->name('jobdesk.delete-multiple')->can('jobdesk.delete');
 
         Route::get('/jobdesk/getjobdesk', 'getjobdesk')->name('jobdesk.getjobdesk');
         Route::post('/jobdesk/getjobdesklist', 'getjobdesklist')->name('jobdesk.getjobdesklist');

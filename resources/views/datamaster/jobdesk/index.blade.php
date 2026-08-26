@@ -116,6 +116,17 @@
                         </button>
                     </form>
                 @endif
+
+                @can('jobdesk.delete')
+                    <button id="btnDeleteSelected" class="btn btn-danger d-none align-items-center gap-2 shadow-sm px-3 py-2"
+                        style="border-radius: 8px;">
+                        <i class="ti ti-trash fs-5"></i>
+                        <span class="fw-semibold">Hapus Terpilih (<span id="selected-count">0</span>)</span>
+                    </button>
+                    <form id="formBulkDelete" method="POST" action="{{ route('jobdesk.delete-multiple') }}" class="d-none">
+                        @csrf
+                    </form>
+                @endcan
             </div>
             
             <!-- Breadcrumbs Navigation -->
@@ -322,6 +333,11 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead style="background-color: #064e3b">
                             <tr>
+                                @can('jobdesk.delete')
+                                    <th class="py-2 text-white font-weight-bold text-center" style="width: 50px;">
+                                        <input type="checkbox" id="check-all-jobdesk" class="form-check-input">
+                                    </th>
+                                @endcan
                                 <th class="py-2 text-white font-weight-bold text-center" style="width: 120px; font-size: 0.875rem;">KODE</th>
                                 <th class="py-2 text-white font-weight-bold text-center d-none" id="th-dept" style="width: 180px; font-size: 0.875rem;">DEPARTEMEN</th>
                                 <th class="py-2 text-white font-weight-bold text-center d-none" id="th-jabatan" style="width: 180px; font-size: 0.875rem;">JABATAN</th>
@@ -332,6 +348,11 @@
                         <tbody id="jobdesk-table-body">
                             @forelse ($jobdesk as $d)
                                 <tr class="jobdesk-card-item transition-all" data-dept-id="{{ $d->kode_dept }}" data-jab-id="{{ $d->kode_jabatan }}" data-search-content="{{ strtolower($d->jobdesk) }} {{ strtolower($d->nama_jabatan) }} {{ strtolower($d->nama_dept) }} {{ strtolower($d->nama_unit ?? 'umum') }}">
+                                    @can('jobdesk.delete')
+                                        <td class="text-center py-2">
+                                            <input type="checkbox" class="form-check-input jobdesk-checkbox" value="{{ Crypt::encrypt($d->kode_jobdesk) }}">
+                                        </td>
+                                    @endcan
                                     <td class="text-center py-2">
                                         <span class="badge bg-label-success px-2 py-0.5 rounded fw-semibold" style="font-size: 0.75rem;">{{ $d->kode_jobdesk }}</span>
                                     </td>
@@ -371,7 +392,7 @@
                                 </tr>
                             @empty
                                 <tr id="jobdesk-empty-row">
-                                    <td colspan="5" class="text-center p-5 bg-white">
+                                    <td colspan="{{ auth()->user()->can('jobdesk.delete') ? 6 : 5 }}" class="text-center p-5 bg-white">
                                         <div class="mb-3 text-muted">
                                             <i class="ti ti-briefcase fs-1 opacity-50 text-success"></i>
                                         </div>
@@ -381,7 +402,7 @@
                                 </tr>
                             @endforelse
                             <tr id="jobdesk-no-results" class="d-none">
-                                <td colspan="5" class="text-center p-5 bg-white">
+                                <td colspan="{{ auth()->user()->can('jobdesk.delete') ? 6 : 5 }}" class="text-center p-5 bg-white">
                                     <div class="mb-3 text-muted">
                                         <i class="ti ti-search fs-1 opacity-50 text-warning"></i>
                                     </div>
@@ -542,6 +563,59 @@
                     form.submit();
                 }
             });
+        });
+
+        // Bulk delete checkbox implementation
+        $('#check-all-jobdesk').on('change', function() {
+            const isChecked = $(this).is(':checked');
+            $('.jobdesk-card-item:visible .jobdesk-checkbox').prop('checked', isChecked);
+            toggleBulkDeleteButton();
+        });
+
+        $(document).on('change', '.jobdesk-checkbox', function() {
+            const allVisible = $('.jobdesk-card-item:visible .jobdesk-checkbox');
+            const allChecked = allVisible.filter(':checked');
+            $('#check-all-jobdesk').prop('checked', allVisible.length === allChecked.length && allVisible.length > 0);
+            toggleBulkDeleteButton();
+        });
+
+        function toggleBulkDeleteButton() {
+            const checkedCount = $('.jobdesk-checkbox:checked').length;
+            if (checkedCount > 0) {
+                $('#btnDeleteSelected').removeClass('d-none').addClass('d-flex');
+                $('#selected-count').text(checkedCount);
+            } else {
+                $('#btnDeleteSelected').removeClass('d-flex').addClass('d-none');
+            }
+        }
+
+        $('#btnDeleteSelected').on('click', function(e) {
+            e.preventDefault();
+            const checkedCount = $('.jobdesk-checkbox:checked').length;
+            Swal.fire({
+                title: `Apakah Anda Yakin Ingin Menghapus ${checkedCount} Jobdesk Terpilih?`,
+                text: "Tindakan ini tidak dapat dibatalkan!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#3085d6",
+                confirmButtonText: "Ya, Hapus!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = $('#formBulkDelete');
+                    form.find('.dynamic-id-input').remove();
+                    $('.jobdesk-checkbox:checked').each(function() {
+                        form.append(`<input type="hidden" class="dynamic-id-input" name="ids[]" value="${$(this).val()}">`);
+                    });
+                    form.submit();
+                }
+            });
+        });
+
+        // Reset check-all and checkboxes when searching or changing sections
+        $('#jobdesk-local-search').on('input', function() {
+            $('.jobdesk-checkbox, #check-all-jobdesk').prop('checked', false);
+            toggleBulkDeleteButton();
         });
     });
 </script>
