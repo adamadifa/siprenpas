@@ -5,22 +5,48 @@
     $total_mutasi = 0;
     $total_bayar = 0;
     $total_sisa_tagihan = 0;
+
+    // Subtotal variables per Year
+    $sub_biaya = 0;
+    $sub_potongan = 0;
+    $sub_biaya_bersih = 0;
+    $sub_mutasi = 0;
+    $sub_bayar = 0;
+    $sub_sisa_tagihan = 0;
+
     $tahun_ajaran = '';
+    $first = true;
 @endphp
 @foreach ($biaya as $key => $b)
     @php
         $jumlah_biaya = $b->jumlah - $b->jumlah_potongan;
-        $total_biaya += $b->jumlah;
-        $total_potongan += $b->jumlah_potongan;
-        $total_biaya_bersih += $jumlah_biaya;
         $sisa_tagihan = $jumlah_biaya - $b->jumlah_mutasi - $b->jmlbayar;
-        $total_sisa_tagihan += $sisa_tagihan;
-        $total_mutasi += $b->jumlah_mutasi;
     @endphp
+
     @if ($tahun_ajaran != $b->tahun_ajaran)
+        @if (!$first)
+            <tr style="background-color: #e8f5e9; border-top: 1px solid #c8e6c9;" class="fw-bold">
+                <td colspan="2" class="py-2 px-3 text-dark text-uppercase small">Subtotal {{ $tahun_ajaran }}</td>
+                <td class="text-end py-2 text-dark small">{{ formatAngka($sub_biaya) }}</td>
+                <td class="text-end py-2 text-danger small">{{ formatAngka($sub_potongan) }}</td>
+                <td class="text-end py-2 text-dark small">{{ formatAngka($sub_biaya_bersih) }}</td>
+                <td class="text-end py-2 text-info small">{{ formatAngka($sub_mutasi) }}</td>
+                <td class="text-end py-2 text-dark small">{{ formatAngka($sub_bayar) }}</td>
+                <td class="text-end py-2 text-success small">{{ formatAngka($sub_sisa_tagihan) }}</td>
+            </tr>
+            @php
+                $sub_biaya = 0;
+                $sub_potongan = 0;
+                $sub_biaya_bersih = 0;
+                $sub_mutasi = 0;
+                $sub_bayar = 0;
+                $sub_sisa_tagihan = 0;
+            @endphp
+        @endif
         @php
             $tahun_ajaran = $b->tahun_ajaran;
             $hasPayment = $biaya->where('kode_biaya', $b->kode_biaya)->sum('jmlbayar') > 0;
+            $first = false;
         @endphp
         <tr style="background-color: #f1f3f4">
             <td colspan="8" class="text-dark fw-bold py-2 px-3 small">
@@ -42,6 +68,21 @@
             </td>
         </tr>
     @endif
+    @php
+        $total_biaya += $b->jumlah;
+        $total_potongan += $b->jumlah_potongan;
+        $total_biaya_bersih += $jumlah_biaya;
+        $total_sisa_tagihan += $sisa_tagihan;
+        $total_mutasi += $b->jumlah_mutasi;
+        $total_bayar += $b->jmlbayar;
+
+        $sub_biaya += $b->jumlah;
+        $sub_potongan += $b->jumlah_potongan;
+        $sub_biaya_bersih += $jumlah_biaya;
+        $sub_sisa_tagihan += $sisa_tagihan;
+        $sub_mutasi += $b->jumlah_mutasi;
+        $sub_bayar += $b->jmlbayar;
+    @endphp
     <tr class="align-middle">
         <td class="py-1 small text-muted">{{ $b->kode_biaya }}</td>
         <td class="py-1">
@@ -97,12 +138,23 @@
         <td class="text-end py-1 fw-bold text-success">{{ formatAngka($sisa_tagihan) }}</td>
     </tr>
 @endforeach
+@if ($tahun_ajaran != '')
+    <tr style="background-color: #e8f5e9; border-top: 1px solid #c8e6c9;" class="fw-bold">
+        <td colspan="2" class="py-2 px-3 text-dark text-uppercase small">Subtotal {{ $tahun_ajaran }}</td>
+        <td class="text-end py-2 text-dark small">{{ formatAngka($sub_biaya) }}</td>
+        <td class="text-end py-2 text-danger small">{{ formatAngka($sub_potongan) }}</td>
+        <td class="text-end py-2 text-dark small">{{ formatAngka($sub_biaya_bersih) }}</td>
+        <td class="text-end py-2 text-info small">{{ formatAngka($sub_mutasi) }}</td>
+        <td class="text-end py-2 text-dark small">{{ formatAngka($sub_bayar) }}</td>
+        <td class="text-end py-2 text-success small">{{ formatAngka($sub_sisa_tagihan) }}</td>
+    </tr>
+@endif
 <tr style="background-color: #f8f9fa" class="border-top border-dark">
     <td colspan="2" class="fw-bold py-2 text-dark px-3">TOTAL</td>
     <td class="text-end fw-bold py-2 text-dark">{{ formatAngka($total_biaya) }}</td>
     <td class="text-end fw-bold py-2 text-danger">{{ formatAngka($total_potongan) }}</td>
     <td class="text-end fw-bold py-2 text-dark">{{ formatAngka($total_biaya_bersih) }}</td>
     <td class="text-end fw-bold py-2 text-info">{{ formatAngka($total_mutasi) }}</td>
-    <td></td>
+    <td class="text-end fw-bold py-2 text-dark">{{ formatAngka($total_bayar) }}</td>
     <td class="text-end fw-bold py-2 text-success">{{ formatAngka($total_sisa_tagihan) }}</td>
 </tr>
