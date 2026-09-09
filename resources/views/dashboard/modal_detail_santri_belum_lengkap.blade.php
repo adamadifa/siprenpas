@@ -90,7 +90,9 @@
                         {{-- Santri Header --}}
                         <div class="d-flex align-items-center justify-content-between pb-3 mb-3 border-bottom" style="border-color: #f1f5f9 !important;">
                             <div class="d-flex align-items-center gap-3 overflow-hidden">
-                                @if (!empty($s->foto_pendaftaran))
+                                @if (!empty($s->foto_pendaftaran) && Storage::disk('public')->exists('photos/pendaftaran/' . $s->foto_pendaftaran))
+                                    <img src="{{ asset('storage/photos/pendaftaran/' . $s->foto_pendaftaran) }}" alt="Foto" class="rounded-circle flex-shrink-0" style="width: 44px; height: 44px; object-fit: cover; border: 1px solid #e2e8f0;">
+                                @elseif (!empty($s->foto_pendaftaran) && Storage::disk('public')->exists($s->foto_pendaftaran))
                                     <img src="{{ asset('storage/' . $s->foto_pendaftaran) }}" alt="Foto" class="rounded-circle flex-shrink-0" style="width: 44px; height: 44px; object-fit: cover; border: 1px solid #e2e8f0;">
                                 @else
                                     <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-secondary flex-shrink-0" style="width: 44px; height: 44px; font-size: 0.95rem; background-color: #f8fafc; border: 1px solid #e2e8f0;">
