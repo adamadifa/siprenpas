@@ -364,14 +364,17 @@ class DashboardController extends Controller
             }
 
             // 3. Santri, Kelengkapan Data & Ploting Kelas
+            $kelasSiswaTa = DB::table('kelas_siswa')
+                ->join('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
+                ->where('kelas.kode_ta', $kode_ta)
+                ->select('kelas_siswa.id_siswa', 'kelas.kode_kelas', 'kelas.nama_kelas');
+
             $students = DB::table('siswa_biaya')
                 ->join('konfigurasi_biaya', 'siswa_biaya.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
                 ->join('pendaftaran', 'siswa_biaya.no_pendaftaran', '=', 'pendaftaran.no_pendaftaran')
                 ->join('siswa', 'pendaftaran.id_siswa', '=', 'siswa.id_siswa')
-                ->leftJoin('kelas_siswa', 'siswa.id_siswa', '=', 'kelas_siswa.id_siswa')
-                ->leftJoin('kelas', function($join) use ($kode_ta) {
-                    $join->on('kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
-                         ->where('kelas.kode_ta', '=', $kode_ta);
+                ->leftJoinSub($kelasSiswaTa, 'ks', function($join) {
+                    $join->on('siswa.id_siswa', '=', 'ks.id_siswa');
                 })
                 ->where('konfigurasi_biaya.kode_ta', $kode_ta)
                 ->where('pendaftaran.kode_unit', $u->kode_unit)
@@ -401,8 +404,8 @@ class DashboardController extends Controller
                     'siswa.kode_pos',
                     'pendaftaran.foto as foto_pendaftaran',
                     'pendaftaran.nis',
-                    'kelas.kode_kelas',
-                    'kelas.nama_kelas'
+                    'ks.kode_kelas',
+                    'ks.nama_kelas'
                 )
                 ->get()
                 ->unique('id_siswa');
@@ -601,15 +604,16 @@ class DashboardController extends Controller
             ->join('konfigurasi_biaya', 'siswa_biaya.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
             ->join('pendaftaran', 'siswa_biaya.no_pendaftaran', '=', 'pendaftaran.no_pendaftaran')
             ->join('siswa', 'pendaftaran.id_siswa', '=', 'siswa.id_siswa')
-            ->leftJoin('kelas_siswa', 'siswa.id_siswa', '=', 'kelas_siswa.id_siswa')
-            ->leftJoin('kelas', function($join) use ($kode_ta) {
-                $join->on('kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
-                     ->where('kelas.kode_ta', '=', $kode_ta);
-            })
             ->where('konfigurasi_biaya.kode_ta', $kode_ta)
             ->where('pendaftaran.kode_unit', $kode_unit)
             ->where('pendaftaran.status_siswa', 1)
-            ->whereNull('kelas.kode_kelas')
+            ->whereNotExists(function ($query) use ($kode_ta) {
+                $query->select(DB::raw(1))
+                    ->from('kelas_siswa')
+                    ->join('kelas', 'kelas_siswa.kode_kelas', '=', 'kelas.kode_kelas')
+                    ->whereColumn('kelas_siswa.id_siswa', 'siswa.id_siswa')
+                    ->where('kelas.kode_ta', $kode_ta);
+            })
             ->select(
                 'siswa.id_siswa',
                 'siswa.nama_lengkap',
