@@ -127,6 +127,10 @@ Route::middleware('auth')->group(function () {
     Route::controller(DashboardController::class)->group(function () {
         Route::post('/dashboard/getrealisasikegiatan', 'getrealisasikegiatan')->name('dashboard.getrealisasikegiatan');
         Route::post('/dashboard/getagendakegiatan', 'getagendakegiatan')->name('dashboard.getagendakegiatan');
+        Route::post('/dashboard/get-report-kelengkapan', 'getReportKelengkapan')->name('dashboard.getReportKelengkapan');
+        Route::post('/dashboard/get-detail-santri-belum-lengkap', 'getDetailSantriBelumLengkap')->name('dashboard.getDetailSantriBelumLengkap');
+        Route::post('/dashboard/get-detail-santri-belum-plot', 'getDetailSantriBelumPlot')->name('dashboard.getDetailSantriBelumPlot');
+        Route::post('/dashboard/get-detail-jadwal-kelas', 'getDetailJadwalKelas')->name('dashboard.getDetailJadwalKelas');
     });
     Route::middleware('role:super admin')->group(function () {
         Route::controller(RoleController::class)->group(function () {

@@ -1,5 +1,5 @@
 <form action="{{ route('siswa.update', Crypt::encrypt($siswa->id_siswa)) }}" aria-autocomplete="false" id="formSiswa"
-    method="POST">
+    method="POST" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     <div class="row">
@@ -9,6 +9,58 @@
                     <i class="ti ti-user me-1"></i> Data Siswa
                 </div>
             </div>
+
+            <!-- Upload Foto Siswa -->
+            <div class="form-group mb-4">
+                <label style="font-weight: 600" class="form-label">
+                    <i class="ti ti-camera me-1 text-primary"></i> Foto Santri / Siswa
+                </label>
+                <div class="row g-2 align-items-center">
+                    <div class="col-auto">
+                        <div class="photo-preview-container position-relative"
+                            style="width: 100px; height: 120px; border: 2px dashed #cbd5e1; border-radius: 10px; overflow: hidden; background: #f8fafc;">
+                            @php
+                                $fotoPath = isset($pendaftaran) && !empty($pendaftaran->foto) ? $pendaftaran->foto : null;
+                            @endphp
+                            @if ($fotoPath)
+                                <img id="photoPreview"
+                                    src="{{ asset('storage/photos/pendaftaran/' . $fotoPath) }}"
+                                    style="width: 100%; height: 100%; object-fit: cover;"
+                                    alt="Foto Siswa"
+                                    onerror="this.style.display='none'; document.getElementById('photoPlaceholder').style.display='flex';">
+                                <div id="photoPlaceholder" style="display: none; height: 100%; flex-direction: column; justify-content: center; align-items: center; color: #94a3b8;">
+                                    <i class="ti ti-camera fs-3"></i>
+                                    <span style="font-size: 0.65rem;">Kosong</span>
+                                </div>
+                            @else
+                                <div id="photoPlaceholder"
+                                    style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; color: #94a3b8;">
+                                    <i class="ti ti-camera fs-3"></i>
+                                    <span style="font-size: 0.65rem;">Belum ada</span>
+                                </div>
+                                <img id="photoPreview"
+                                    style="width: 100%; height: 100%; object-fit: cover; display: none;"
+                                    alt="Preview Foto">
+                            @endif
+                            <button type="button" id="removePhoto" class="btn btn-danger btn-xs"
+                                style="position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; padding: 0; display: {{ $fotoPath ? 'flex' : 'none' }}; align-items: center; justify-content: center;">
+                                <i class="ti ti-x" style="font-size: 0.75rem;"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="upload-area p-3 text-center rounded-3 border"
+                            style="border: 2px dashed #cbd5e1 !important; background: #f8fafc; cursor: pointer; transition: all 0.2s;"
+                            onclick="document.getElementById('photoInput').click()">
+                            <i class="ti ti-cloud-upload fs-3 text-primary d-block mb-1"></i>
+                            <div class="fw-semibold text-dark" style="font-size: 0.8rem;">Pilih / Drag Foto Baru</div>
+                            <div class="text-muted" style="font-size: 0.7rem;">Format: JPG, PNG (Maks 2MB)</div>
+                        </div>
+                        <input type="file" id="photoInput" name="foto" accept="image/jpeg,image/jpg,image/png" style="display: none;">
+                    </div>
+                </div>
+            </div>
+
             <x-input-with-icon-label icon="ti ti-barcode" label="NISN" name="nisn" value="{{ $siswa->nisn }}" />
             <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap" name="nama_lengkap"
                 value="{{ $siswa->nama_lengkap }}" required="true" />
@@ -239,6 +291,62 @@
         getRegency();
         getDistrict();
         getVillage();
+
+        // Script Photo Upload Handling
+        const photoInput = document.getElementById('photoInput');
+        const photoPreview = document.getElementById('photoPreview');
+        const photoPlaceholder = document.getElementById('photoPlaceholder');
+        const removePhotoBtn = document.getElementById('removePhoto');
+
+        if (photoInput) {
+            photoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    if (file.size > 2 * 1024 * 1024) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Ukuran File Terlalu Besar',
+                            text: 'Ukuran file foto maksimal adalah 2MB',
+                            confirmButtonColor: '#064e3b'
+                        });
+                        this.value = '';
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        photoPreview.src = e.target.result;
+                        photoPreview.style.display = 'block';
+                        if (photoPlaceholder) {
+                            photoPlaceholder.style.display = 'none';
+                        }
+                        if (removePhotoBtn) {
+                            removePhotoBtn.style.display = 'flex';
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        if (removePhotoBtn) {
+            removePhotoBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (photoInput) photoInput.value = '';
+                if (photoPreview) photoPreview.style.display = 'none';
+                if (photoPlaceholder) photoPlaceholder.style.display = 'flex';
+                removePhotoBtn.style.display = 'none';
+
+                if (!document.getElementById('deletePhoto')) {
+                    const deleteInput = document.createElement('input');
+                    deleteInput.type = 'hidden';
+                    deleteInput.name = 'delete_photo';
+                    deleteInput.id = 'deletePhoto';
+                    deleteInput.value = '1';
+                    document.getElementById('formSiswa').appendChild(deleteInput);
+                }
+            });
+        }
 
         $("#id_province").change(function(){
             getRegency();

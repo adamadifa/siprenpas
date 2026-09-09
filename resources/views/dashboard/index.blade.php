@@ -10,506 +10,221 @@
         }
     </style> --}}
     <style>
-        .detail {
-            cursor: pointer;
-        }
-
-        #tab-content-main {
-            box-shadow: none !important;
-            background: none !important;
-        }
-
-        .dashboard-header {
-            background: linear-gradient(135deg, #144725 0%, #1a5e31 100%);
+        .welcome-banner {
+            background: #ffffff;
             border-radius: 1.25rem;
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-            color: #fff;
-            box-shadow: 0 10px 30px 0 rgba(20, 71, 37, 0.2);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .dashboard-header:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px 0 rgba(20, 71, 37, 0.3);
-        }
-
-        .dashboard-header::before {
-            content: '';
-            position: absolute;
-            top: -20%;
-            right: -10%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
-            border-radius: 50%;
-            z-index: 1;
-        }
-
-        .dashboard-header::after {
-            content: '';
-            position: absolute;
-            bottom: -15%;
-            left: -5%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255, 152, 0, 0.05) 0%, transparent 70%);
-            border-radius: 50%;
-            z-index: 1;
-        }
-
-        .dashboard-header-content {
-            position: relative;
-            z-index: 2;
+            padding: 1.35rem 1.75rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid #e9ecef;
             display: flex;
             align-items: center;
-            gap: 2rem;
+            justify-content: space-between;
+            gap: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
         }
 
-        .dashboard-header .avatar-wrapper {
-            position: relative;
-            flex-shrink: 0;
-        }
-
-        .dashboard-header .avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 24px;
+        .welcome-banner .avatar {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
             object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            padding: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
         }
 
-        .dashboard-header:hover .avatar {
-            transform: rotate(3deg) scale(1.05);
-            border-color: rgba(255, 152, 0, 0.5);
+        .welcome-banner .welcome {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 0.15rem;
+            color: #0f172a;
+            letter-spacing: -0.3px;
         }
 
-        .dashboard-header .avatar-status {
-            position: absolute;
-            bottom: -5px;
-            right: -5px;
-            width: 24px;
-            height: 24px;
-            background: #4caf50;
-            border: 4px solid #144725;
-            border-radius: 50%;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .dashboard-header .welcome-content {
-            flex: 1;
-        }
-
-        .dashboard-header .welcome-greeting {
+        .welcome-banner .desc {
             font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.7);
+            color: #64748b;
             margin-bottom: 0.5rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
+        }
+
+        .welcome-banner .info-badges {
             display: flex;
-            align-items: center;
+            flex-wrap: wrap;
             gap: 0.5rem;
         }
 
-        .dashboard-header .welcome {
-            font-size: 2.25rem;
-            font-weight: 800;
-            margin-bottom: 0.75rem;
-            color: #fff;
-            letter-spacing: -0.5px;
-            line-height: 1.1;
-        }
-
-        .dashboard-header .desc {
-            font-size: 1.05rem;
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 1.5rem;
-            font-weight: 400;
-            max-width: 500px;
-        }
-
-        .dashboard-header .info-badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .dashboard-header .info-badge {
+        .welcome-banner .info-badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.6rem;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            padding: 0.6rem 1.25rem;
-            border-radius: 12px;
-            font-size: 0.875rem;
+            gap: 0.4rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 0.2rem 0.65rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
             font-weight: 600;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            color: rgba(255, 255, 255, 0.9);
+            color: #334155;
         }
 
-        .dashboard-header .info-badge:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .dashboard-header .info-badge i {
-            font-size: 1.1rem;
-            color: #ff9800;
-        }
-
-        .dashboard-header .datetime-info {
+        .welcome-banner .datetime-info {
             text-align: right;
             flex-shrink: 0;
-            background: rgba(0, 0, 0, 0.15);
-            padding: 1.25rem;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: #f8fafc;
+            padding: 0.65rem 1rem;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
         }
 
-        .dashboard-header .current-date {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 0.4rem;
+        .welcome-banner .current-date {
+            font-size: 0.78rem;
+            color: #64748b;
             font-weight: 500;
+        }
+
+        .welcome-banner .current-time {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0f172a;
             font-variant-numeric: tabular-nums;
         }
 
-        .dashboard-header .current-time {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: 1px;
-            font-family: 'Inter', system-ui, sans-serif;
-        }
-
-        .card.h-100 {
-            background: linear-gradient(120deg, #1B5E20 60%, #388e3c 100%);
-            color: #fff;
-            border: none;
-            border-radius: 1.1rem;
-            box-shadow: 0 4px 16px 0 rgba(27, 94, 32, 0.10);
-            margin-bottom: 1.2rem;
-        }
-
-        .card .card-header {
-            background: transparent;
-            border-bottom: none;
-            padding-bottom: 0.5rem;
-        }
-
-        .card .card-title {
-            color: #fff;
-            font-weight: 700;
-        }
-
-        .card .text-success {
-            color: #b9f6ca !important;
-        }
-
-        .card .text-body,
-        .card .text-muted,
-        .card small,
-        .card .card-text {
-            color: #e0f2f1 !important;
-        }
-
-        .badge.bg-label-info,
-        .badge.bg-label-primary {
-            background: #e8f5e9;
-            color: #1B5E20;
-        }
-
-        .progress-bar.bg-primary {
-            background: #00e676 !important;
-        }
-
-        .progress-bar.bg-danger {
-            background: #ff8c00 !important;
-        }
-
-        .swiper-container .card.dark-bg {
-            background: #1B5E20;
-            color: #fff;
-            border-radius: 1.2rem;
-            box-shadow: 0 4px 16px 0 rgba(27, 94, 32, 0.18);
-            margin-bottom: 1rem;
-            position: relative;
-            overflow: hidden;
-            min-height: 170px;
-            padding: 0;
-        }
-
-        .atm-glossy {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(120deg, rgba(255, 255, 255, 0.13) 10%, rgba(255, 255, 255, 0.03) 60%, rgba(255, 255, 255, 0.18) 100%);
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .atm-chip {
-            width: 38px;
-            height: 28px;
-            border-radius: 6px;
-
-            margin-bottom: 1.1rem;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .atm-chip-bar {
-            width: 24px;
-            height: 4px;
-            background: #bdbdbd;
-            border-radius: 2px;
-            margin: 0 2px;
-        }
-
-        .atm-card-content {
-            position: relative;
-            z-index: 3;
-            padding: 1.2rem 1.5rem 1rem 1.5rem;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .atm-card-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .atm-card-label {
-            font-size: 0.85rem;
-            color: #b9f6ca;
-            letter-spacing: 1px;
-            font-weight: 500;
-        }
-
-        .atm-card-number {
-            font-size: 1.15rem;
-            letter-spacing: 2px;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: 600;
-            margin-bottom: 0.2rem;
-        }
-
-        .atm-card-balance {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #fff;
-            text-shadow: 0 2px 8px rgba(27, 94, 32, 0.18), 0 1px 0 #1B5E20;
-        }
-
-        .atm-card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: 0.7rem;
-        }
-
-        .atm-card-logo {
-            width: 48px;
-            height: 24px;
-            object-fit: contain;
-            opacity: 0.85;
-        }
-
-        .timeline .timeline-item .timeline-event {
-            background: #e8f5e9;
-            color: #1B5E20;
-            border-radius: 0.7rem;
-            box-shadow: 0 2px 8px 0 rgba(27, 94, 32, 0.08);
-            margin-bottom: 0.7rem;
-        }
-
-        .timeline .timeline-item .timeline-event .text-muted,
-        .timeline .timeline-item .timeline-event .small {
-            color: #388e3c !important;
-        }
-
-        .nav-pills .nav-link.active {
-            background: #1B5E20;
-            color: #fff !important;
-            font-weight: 600;
-            border-radius: 2rem;
-        }
-
-        .nav-pills .nav-link {
-            color: #1B5E20;
-            font-weight: 500;
-            margin-right: 0.5rem;
-        }
-
-        .nav-pills {
-            margin-bottom: 1rem;
-        }
-
-        .tab-content {
-            margin-top: 1rem;
-        }
-
-        .row,
-        .col,
-        .form-group,
-        .timeline,
-        .swiper-container {
-            margin-bottom: 0.8rem;
-        }
-
-        .form-group {
-            margin-bottom: 0.6rem;
-        }
-
-        .timeline .timeline-item {
-            margin-bottom: 0.5rem;
-        }
-
-        .swiper-container .card.dark-bg h4,
-        .swiper-container .card.dark-bg .nominal-highlight {
-            color: #fff !important;
-            text-shadow: 0 2px 8px rgba(27, 94, 32, 0.18), 0 1px 0 #1B5E20;
-            font-weight: 700;
-        }
-
         @media (max-width: 768px) {
-            .dashboard-header {
-                padding: 1.5rem;
-            }
-
-            .dashboard-header-content {
+            .welcome-banner {
+                padding: 1.25rem;
                 flex-direction: column;
                 text-align: center;
             }
-
-            .dashboard-header .avatar {
-                width: 70px;
-                height: 70px;
+            .welcome-banner .datetime-info {
+                display: none;
             }
-
-            .dashboard-header .welcome {
-                font-size: 1.5rem;
-            }
-
-            .dashboard-header .desc {
-                font-size: 0.9rem;
-            }
-
-            .dashboard-header .info-badges {
+            .welcome-banner .info-badges {
                 justify-content: center;
-            }
-
-            .dashboard-header .datetime-info {
-                text-align: center;
-                margin-top: 1rem;
-            }
-
-            .dashboard-header .current-time {
-                font-size: 1.25rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .dashboard-header {
-                padding: 1.2rem;
-            }
-
-            .dashboard-header .avatar {
-                width: 60px;
-                height: 60px;
-            }
-
-            .dashboard-header .welcome {
-                font-size: 1.3rem;
-            }
-
-            .dashboard-header .info-badge {
-                font-size: 0.8rem;
-                padding: 0.4rem 0.8rem;
             }
         }
     </style>
 
-    <div class="dashboard-header">
-        <div class="dashboard-header-content">
-            <div class="avatar-wrapper">
-                <img src="{{ asset(auth()->user()->avatar ? 'storage/avatars/' . auth()->user()->avatar : 'assets/img/avatars/1.png') }}" class="avatar"
-                    alt="Avatar">
-                <span class="avatar-status"></span>
-            </div>
-            <div class="welcome-content">
-                <div class="welcome-greeting">
-                    @php
-                        $hour = date('H');
-                        $greeting = 'Selamat ';
-                        if ($hour >= 5 && $hour < 11) {
-                            $greeting .= 'Pagi';
-                            $icon = 'ti-sun';
-                        } elseif ($hour >= 11 && $hour < 15) {
-                            $greeting .= 'Siang';
-                            $icon = 'ti-sun';
-                        } elseif ($hour >= 15 && $hour < 18) {
-                            $greeting .= 'Sore';
-                            $icon = 'ti-cloud-sun';
-                        } else {
-                            $greeting .= 'Malam';
-                            $icon = 'ti-moon';
-                        }
-                    @endphp
-                    <i class="ti {{ $icon }} me-1"></i> {{ $greeting }}
-                </div>
-                <div class="welcome">{{ auth()->user()->name }}</div>
-                <div class="desc">Selamat datang kembali! Mari kendalikan operasional pesantren dengan lebih efisien hari ini.</div>
+    <div class="welcome-banner">
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <img src="{{ asset(auth()->user()->avatar ? 'storage/avatars/' . auth()->user()->avatar : 'assets/img/avatars/1.png') }}"
+                class="avatar" alt="Avatar">
+            <div>
+                <div class="welcome">Selamat Datang, {{ auth()->user()->name }}</div>
+                <div class="desc">Sistem Informasi Pesantren Persis Tarogong • Panel Monitoring Administrasi</div>
                 <div class="info-badges">
                     <div class="info-badge">
-                        <i class="ti ti-shield-check"></i>
-                        <span>{{ auth()->user()->getRoleNames()->first() ?? 'User' }}</span>
+                        <i class="ti ti-shield-check text-success"></i>
+                        <span>{{ auth()->user()->getRoleNames()->first() ?? 'Pengguna' }}</span>
                     </div>
                     @if ($pengaturan)
                         <div class="info-badge">
-                            <i class="ti ti-building-community"></i>
+                            <i class="ti ti-building text-primary"></i>
                             <span>{{ $pengaturan->nama_sekolah }}</span>
                         </div>
                     @endif
-                    <div class="info-badge">
-                        <i class="ti ti-calendar-event"></i>
-                        <span>{{ date('Y') }} / {{ date('Y') + 1 }}</span>
-                    </div>
                 </div>
             </div>
-            <div class="datetime-info d-none d-md-block">
-                <div class="current-date" id="currentDate"></div>
-                <div class="current-time" id="currentTime"></div>
+        </div>
+        <div class="datetime-info d-none d-md-block">
+            <div class="current-date" id="currentDate"></div>
+            <div class="current-time" id="currentTime"></div>
+        </div>
+    </div>
+
+    {{-- FILTER TOOLBAR & REPORT SECTION --}}
+    <div class="card mb-4 border-0" style="border-radius: 1.25rem; border: 1px solid #e9ecef !important; background: #ffffff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);">
+        <div class="card-body p-3 px-4">
+            <div class="row align-items-center g-3">
+                <div class="col-12 col-md-5 col-lg-6">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar avatar-md rounded-3 d-flex align-items-center justify-content-center" style="background-color: #0f172a; color: #ffffff;">
+                            <i class="ti ti-layout-dashboard fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold" style="color: #0f172a; font-size: 1rem;">Monitoring Kesiapan Data</h6>
+                            <span style="font-size: 0.78rem; color: #64748b;">Rekap 4 pilar administrasi kurikulum & santri</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-7 col-lg-6">
+                    <div class="d-flex flex-wrap align-items-center justify-content-md-end gap-2">
+                        {{-- Filter Tahun Ajaran --}}
+                        <div class="input-group input-group-merge" style="width: auto; min-width: 175px;">
+                            <span class="input-group-text" style="background-color: #f8fafc; border-color: #e2e8f0;"><i class="ti ti-calendar-event text-primary"></i></span>
+                            <select id="filter_kode_ta" class="form-select form-select-sm fw-semibold" style="border-color: #e2e8f0; color: #0f172a; border-radius: 0 8px 8px 0;">
+                                @foreach ($tahunajaran as $ta)
+                                    <option value="{{ $ta->kode_ta }}" {{ ($activeTa && $activeTa->kode_ta == $ta->kode_ta) ? 'selected' : '' }}>
+                                        TA {{ $ta->tahun_ajaran }} {{ $ta->status == '1' ? '(Aktif)' : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Filter Unit (Jika Super Admin / Semua Unit) --}}
+                        @if (auth()->user()->kode_unit == 'U06' || auth()->user()->hasRole('super admin'))
+                            <div class="input-group input-group-merge" style="width: auto; min-width: 175px;">
+                                <span class="input-group-text" style="background-color: #f8fafc; border-color: #e2e8f0;"><i class="ti ti-school text-success"></i></span>
+                                <select id="filter_kode_unit" class="form-select form-select-sm fw-semibold" style="border-color: #e2e8f0; color: #0f172a; border-radius: 0 8px 8px 0;">
+                                    <option value="">Semua Unit</option>
+                                    @foreach ($units as $u)
+                                        <option value="{{ $u->kode_unit }}">{{ $u->nama_unit }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @else
+                            <input type="hidden" id="filter_kode_unit" value="{{ auth()->user()->kode_unit }}">
+                        @endif
+
+                        <button type="button" class="btn btn-sm btn-dark d-flex align-items-center gap-1.5 fw-semibold" id="btnRefreshReport" style="border-radius: 8px; padding: 0.45rem 0.9rem;" title="Refresh Data">
+                            <i class="ti ti-refresh fs-6"></i> <span>Refresh</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    {{-- CONTAINER AJAX REPORT KELENGKAPAN --}}
+    <div id="loadReportKelengkapan" class="mb-4">
+        <div class="card p-5 text-center border-0 shadow-sm" style="border-radius: 1.1rem;">
+            <div class="spinner-border text-success mx-auto mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+            <h6 class="fw-bold text-dark mb-1">Memuat Rekap Kelengkapan Data...</h6>
+            <small class="text-muted">Menghitung kelengkapan mata pelajaran, jadwal, santri & kelas</small>
+        </div>
+    </div>
 
+    {{-- MODAL DRILL-DOWN REPORT --}}
+    <div class="modal fade" id="modalDetailReport" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow" id="modalDetailReportContent" style="border-radius: 1.25rem; overflow: hidden;">
+                <div class="modal-body text-center p-5">
+                    <div class="spinner-border text-success mx-auto mb-3" role="status"></div>
+                    <div class="fw-bold text-dark">Memuat Detail...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL EDIT DATA SISWA (IN-PLACE DARI REPORT) --}}
+    <x-modal-form id="modalEditSiswa" size="modal-lg" show="loadmodaleditsiswa" title="Edit Data Siswa" icon="ti ti-user-edit" />
+    <x-modal-form id="modalSekolah" size="" show="loadmodal" title="" icon="ti ti-school" />
 
 @endsection
 @push('myscript')
     <script>
         $(function() {
+            // Modal stacking z-index handler agar backdrop modal kedua (misal: modal edit) berada di atas modal pertama
+            $(document).on('show.bs.modal', '.modal', function() {
+                const zIndex = 1090 + 10 * $('.modal:visible').length;
+                $(this).css('z-index', zIndex);
+                setTimeout(() => {
+                    $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+                }, 0);
+            });
+
+            $(document).on('hidden.bs.modal', '.modal', function() {
+                if ($('.modal:visible').length) {
+                    $('body').addClass('modal-open');
+                }
+            });
+
             // Update waktu dan tanggal
             function updateDateTime() {
                 const now = new Date();
@@ -535,99 +250,175 @@
             updateDateTime();
             setInterval(updateDateTime, 1000);
 
-            function getrealisasikegiatan() {
-                // alert('test');
-                let dari = $('#dari').val();
-                let sampai = $('#sampai').val();
-                let kode_dept = $('#kode_dept').val();
-                $("#getrealisasikegiatan").html(`<div class="sk-wave sk-primary" style="margin:auto">
-                <div class="sk-wave-rect"></div>
-                <div class="sk-wave-rect"></div>
-                <div class="sk-wave-rect"></div>
-                <div class="sk-wave-rect"></div>
-                <div class="sk-wave-rect"></div>
-                </div>`);
+            // AJAX REPORT KELENGKAPAN
+            function getReportKelengkapan() {
+                let kode_ta = $('#filter_kode_ta').val();
+                let kode_unit = $('#filter_kode_unit').val();
+
+                $("#loadReportKelengkapan").html(`
+                    <div class="card p-5 text-center border-0 shadow-sm" style="border-radius: 1.1rem;">
+                        <div class="spinner-border text-success mx-auto mb-3" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
+                        <h6 class="fw-bold text-dark mb-1">Memperbarui Rekap Kelengkapan Data...</h6>
+                        <small class="text-muted">Tahun Ajaran: ${$('#filter_kode_ta option:selected').text()}</small>
+                    </div>
+                `);
+
                 $.ajax({
                     method: "POST",
-                    url: "{{ route('dashboard.getrealisasikegiatan') }}",
+                    url: "{{ route('dashboard.getReportKelengkapan') }}",
                     data: {
                         _token: "{{ csrf_token() }}",
-                        dari: dari,
-                        sampai: sampai,
-                        kode_dept: kode_dept
+                        kode_ta: kode_ta,
+                        kode_unit: kode_unit
                     },
                     cache: false,
-                    success: function(data) {
-                        $('#getrealisasikegiatan').html(data);
-                    }
-                })
-            }
-
-            function getagendakegiatan() {
-                // alert('test');
-                let dari = $('#dari').val();
-                let sampai = $('#sampai').val();
-                let kode_dept = $('#kode_dept').val();
-                $("#getrealisasikegiatan").html(`<div class="sk-wave sk-primary" style="margin:auto">
-                <div class="sk-wave-rect"></div>
-                <div class="sk-wave-rect"></div>
-                <div class="sk-wave-rect"></div>
-                <div class="sk-wave-rect"></div>
-                <div class="sk-wave-rect"></div>
-                </div>`);
-                $.ajax({
-                    method: "POST",
-                    url: "{{ route('dashboard.getagendakegiatan') }}",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        dari: dari,
-                        sampai: sampai,
-                        kode_dept: kode_dept
+                    success: function(response) {
+                        $('#loadReportKelengkapan').html(response);
                     },
-                    cache: false,
-                    success: function(data) {
-                        $('#getagendakegiatan').html(data);
+                    error: function(xhr) {
+                        $('#loadReportKelengkapan').html(`
+                            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                <i class="ti ti-alert-circle fs-3 me-2"></i>
+                                <div>
+                                    <strong>Gagal memuat data report.</strong> Silakan refresh halaman atau hubungi administrator.
+                                </div>
+                            </div>
+                        `);
                     }
-                })
+                });
             }
 
-            $("#kode_dept, #dari, #sampai").on('change', function() {
-                getrealisasikegiatan();
-                getagendakegiatan();
+            $('#filter_kode_ta, #filter_kode_unit').on('change', function() {
+                getReportKelengkapan();
             });
 
-            function getjadwalkerja() {
-                let hari = $('#hari').val();
-                let unit = $('#unit').val();
-                $("#loadjadwalkerja").html(`<div class="sk-wave sk-primary" style="margin:auto">
-                <div class="sk-wave-rect"></div>
-                <div class="sk-wave-rect"></div>
-                <div class="sk-wave-rect"></div>
-                <div class="sk-wave-rect"></div>
-                <div class="sk-wave-rect"></div>
-                </div>`);
+            $('#btnRefreshReport').on('click', function() {
+                getReportKelengkapan();
+            });
+
+            // Initial load
+            getReportKelengkapan();
+
+            // MODAL DRILL-DOWNS
+            // 1. Santri Belum Lengkap
+            $(document).on('click', '.btn-view-santri-belum-lengkap', function() {
+                let kode_unit = $(this).data('kode-unit');
+                let kode_ta = $('#filter_kode_ta').val();
+
+                $('#modalDetailReportContent').html(`
+                    <div class="modal-body text-center p-5">
+                        <div class="spinner-border text-warning mx-auto mb-3" role="status"></div>
+                        <div class="fw-bold text-dark">Memuat Data Santri Belum Lengkap...</div>
+                    </div>
+                `);
+                $('#modalDetailReport').modal('show');
+
                 $.ajax({
                     method: "POST",
-                    url: "{{ route('karyawan.getjadwalkerja') }}",
+                    url: "{{ route('dashboard.getDetailSantriBelumLengkap') }}",
                     data: {
                         _token: "{{ csrf_token() }}",
-                        hari: hari,
-                        unit: unit
-
+                        kode_unit: kode_unit,
+                        kode_ta: kode_ta
                     },
-                    cache: false,
-                    success: function(data) {
-                        $('#loadjadwalkerja').html(data);
+                    success: function(html) {
+                        $('#modalDetailReportContent').html(html);
+                    },
+                    error: function() {
+                        $('#modalDetailReportContent').html(`
+                            <div class="modal-body p-4 text-center text-danger">
+                                <i class="ti ti-alert-circle fs-1 d-block mb-2"></i>
+                                Gagal mengambil detail data santri.
+                            </div>
+                        `);
                     }
-                })
-            }
-
-            $("#hari, #unit").on('change', function() {
-                getjadwalkerja();
+                });
             });
-            getjadwalkerja();
-            getrealisasikegiatan();
-            getagendakegiatan();
+
+            // 2. Santri Belum Ploting Kelas
+            $(document).on('click', '.btn-view-santri-belum-plot', function() {
+                let kode_unit = $(this).data('kode-unit');
+                let kode_ta = $('#filter_kode_ta').val();
+
+                $('#modalDetailReportContent').html(`
+                    <div class="modal-body text-center p-5">
+                        <div class="spinner-border text-primary mx-auto mb-3" role="status"></div>
+                        <div class="fw-bold text-dark">Memuat Data Santri Belum Masuk Rombel...</div>
+                    </div>
+                `);
+                $('#modalDetailReport').modal('show');
+
+                $.ajax({
+                    method: "POST",
+                    url: "{{ route('dashboard.getDetailSantriBelumPlot') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        kode_unit: kode_unit,
+                        kode_ta: kode_ta
+                    },
+                    success: function(html) {
+                        $('#modalDetailReportContent').html(html);
+                    },
+                    error: function() {
+                        $('#modalDetailReportContent').html(`
+                            <div class="modal-body p-4 text-center text-danger">
+                                <i class="ti ti-alert-circle fs-1 d-block mb-2"></i>
+                                Gagal mengambil detail data santri.
+                            </div>
+                        `);
+                    }
+                });
+            });
+
+            // 3. Detail Jadwal Per Kelas
+            $(document).on('click', '.btn-view-jadwal', function() {
+                let kode_unit = $(this).data('kode-unit');
+                let kode_ta = $('#filter_kode_ta').val();
+
+                $('#modalDetailReportContent').html(`
+                    <div class="modal-body text-center p-5">
+                        <div class="spinner-border text-success mx-auto mb-3" role="status"></div>
+                        <div class="fw-bold text-dark">Memuat Data Jadwal Kelas...</div>
+                    </div>
+                `);
+                $('#modalDetailReport').modal('show');
+
+                $.ajax({
+                    method: "POST",
+                    url: "{{ route('dashboard.getDetailJadwalKelas') }}",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        kode_unit: kode_unit,
+                        kode_ta: kode_ta
+                    },
+                    success: function(html) {
+                        $('#modalDetailReportContent').html(html);
+                    },
+                    error: function() {
+                        $('#modalDetailReportContent').html(`
+                            <div class="modal-body p-4 text-center text-danger">
+                                <i class="ti ti-alert-circle fs-1 d-block mb-2"></i>
+                                Gagal mengambil detail jadwal kelas.
+                            </div>
+                        `);
+                    }
+                });
+            });
+
+            // 4. Modal Edit Santri In-Place (Konsep Menu Akademik)
+            $(document).on('click', '.btn-edit-siswa-modal', function(e) {
+                e.preventDefault();
+                let no_pendaftaran = $(this).data('no-pendaftaran');
+                $('#modalEditSiswa').modal('show');
+                $('#modalEditSiswa').find('.modal-title').text('Edit Pendaftaran & Data Siswa');
+                $('#loadmodaleditsiswa').html(`
+                    <div class="p-5 text-center">
+                        <div class="spinner-border text-success mb-2" role="status"></div>
+                        <div class="text-muted fw-semibold">Memuat Formulir Pendaftaran Siswa...</div>
+                    </div>
+                `);
+                $('#loadmodaleditsiswa').load(`/pendaftaran/${no_pendaftaran}/edit`);
+            });
         });
     </script>
 @endpush

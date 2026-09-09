@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pendaftaran;
 use App\Models\Province;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 
 class SiswaController extends Controller
@@ -142,6 +144,7 @@ class SiswaController extends Controller
     {
         $id_siswa = Crypt::decrypt($id_siswa);
         $data['siswa'] = Siswa::where('id_siswa', $id_siswa)->first();
+        $data['pendaftaran'] = Pendaftaran::where('id_siswa', $id_siswa)->latest()->first();
         $data['provinsi'] = Province::orderBy('name')->get();
         $data['pendidikan'] = config('global.list_pendidikan ');
         return view('datamaster.siswa.edit', $data);
@@ -177,7 +180,7 @@ class SiswaController extends Controller
 
         $tahun_masuk = config('global.tahun_ppdb');
         try {
-            //Buat ID Siswa
+            DB::beginTransaction();
 
             Siswa::where('id_siswa', $id_siswa)->update([
                 'nisn' => $request->nisn,
@@ -204,14 +207,45 @@ class SiswaController extends Controller
                 'pekerjaan_ibu' => $request->pekerjaan_ibu,
                 'no_hp_orang_tua' => $request->no_hp_orang_tua,
                 'tahun_masuk' => $tahun_masuk,
-
             ]);
 
+            // Handle Foto Santri pada Tabel Pendaftaran
+            $pendaftaran = Pendaftaran::where('id_siswa', $id_siswa)->latest()->first();
+            if ($pendaftaran) {
+                $fotoName = $pendaftaran->foto;
+
+                if ($request->has('delete_photo') && $request->delete_photo == '1') {
+                    if ($pendaftaran->foto && file_exists(public_path('storage/photos/pendaftaran/' . $pendaftaran->foto))) {
+                        unlink(public_path('storage/photos/pendaftaran/' . $pendaftaran->foto));
+                    }
+                    $fotoName = null;
+                } elseif ($request->hasFile('foto')) {
+                    if ($pendaftaran->foto && file_exists(public_path('storage/photos/pendaftaran/' . $pendaftaran->foto))) {
+                        unlink(public_path('storage/photos/pendaftaran/' . $pendaftaran->foto));
+                    }
+
+                    $file = $request->file('foto');
+                    $fileName = time() . '_' . $pendaftaran->no_pendaftaran . '.' . $file->getClientOriginalExtension();
+
+                    $uploadPath = public_path('storage/photos/pendaftaran');
+                    if (!file_exists($uploadPath)) {
+                        mkdir($uploadPath, 0755, true);
+                    }
+
+                    $file->move($uploadPath, $fileName);
+                    $fotoName = $fileName;
+                }
+
+                $pendaftaran->update([
+                    'foto' => $fotoName
+                ]);
+            }
+
+            DB::commit();
             return Redirect::back()->with(messageSuccess('Data Berhasil Disimpan'));
         } catch (\Exception $e) {
-            dd($e);
+            DB::rollBack();
             return Redirect::back()->with(messageError($e->getMessage()));
-            //throw $th;
         }
     }
 
