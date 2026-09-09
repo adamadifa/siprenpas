@@ -61,24 +61,29 @@
         flex-shrink: 0;
     }
 
-    .sidebar-user-avatar img {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    .sidebar-user-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
         transition: transform 0.3s ease;
     }
 
-    .sidebar-user-info:hover .sidebar-user-avatar img {
+    .sidebar-user-info:hover .sidebar-user-icon {
         transform: scale(1.05);
+        background: rgba(255, 255, 255, 0.18);
     }
 
     .sidebar-user-status {
         position: absolute;
-        bottom: 2px;
-        right: 2px;
+        bottom: -2px;
+        right: -2px;
         width: 12px;
         height: 12px;
         background: #4caf50;
@@ -244,8 +249,9 @@
     <div class="sidebar-user-info">
         <div class="sidebar-user-info-content">
             <div class="sidebar-user-avatar">
-                <img src="{{ asset(auth()->user()->avatar ? 'storage/avatars/' . auth()->user()->avatar : 'assets/img/avatars/1.png') }}"
-                    alt="{{ auth()->user()->name }}">
+                <div class="sidebar-user-icon">
+                    <i class="ti ti-user fs-4"></i>
+                </div>
                 <span class="sidebar-user-status"></span>
             </div>
             <div class="sidebar-user-details">

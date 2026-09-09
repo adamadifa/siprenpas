@@ -439,21 +439,34 @@ class DashboardController extends Controller
                 }
             }
 
+            // Setting jadwal hanya berlaku untuk SDIT (U03), MTs (U04), dan MA (U05)
+            $hasJadwal = in_array($u->kode_unit, ['U03', 'U04', 'U05']);
+
             // Hitung skor kesiapan unit (0 - 100)
             $scoreMapel = ($mapelAktif > 0) ? min(100, ($mapelAktif / 10) * 100) : 0;
-            $scoreJadwal = ($totalKelas > 0) ? ($kelasDenganJadwal / $totalKelas) * 100 : 0;
             $scoreSantri = ($totalSantri > 0) ? ($santriLengkap / $totalSantri) * 100 : 0;
             $scorePloting = ($totalSantri > 0) ? ($santriPlotted / $totalSantri) * 100 : 0;
 
-            $overallScore = round(
-                ($scoreMapel * 0.20) + 
-                ($scoreJadwal * 0.30) + 
-                ($scoreSantri * 0.25) + 
-                ($scorePloting * 0.25)
-            );
+            if ($hasJadwal) {
+                $scoreJadwal = ($totalKelas > 0) ? ($kelasDenganJadwal / $totalKelas) * 100 : 0;
+                $overallScore = round(
+                    ($scoreMapel * 0.20) + 
+                    ($scoreJadwal * 0.30) + 
+                    ($scoreSantri * 0.25) + 
+                    ($scorePloting * 0.25)
+                );
+            } else {
+                // Untuk unit tanpa jadwal (TK, Diniyah, dll), bobot dialihkan ke 3 aspek lain
+                $overallScore = round(
+                    ($scoreMapel * 0.30) + 
+                    ($scoreSantri * 0.35) + 
+                    ($scorePloting * 0.35)
+                );
+            }
 
             $reportData[] = [
                 'unit' => $u,
+                'has_jadwal' => $hasJadwal,
                 'mapel' => [
                     'total' => $mapelTotal,
                     'aktif' => $mapelAktif,
@@ -604,12 +617,20 @@ class DashboardController extends Controller
                 'pendaftaran.foto as foto_pendaftaran',
                 'pendaftaran.nis',
                 'pendaftaran.no_pendaftaran',
+                'pendaftaran.kode_unit',
                 'konfigurasi_biaya.tingkat'
             )
             ->get()
             ->unique('id_siswa');
 
-        return view('dashboard.modal_detail_santri_belum_plot', compact('students', 'unit', 'ta'));
+        $kelasList = Kelas::where('kode_unit', $kode_unit)
+            ->where('kode_ta', $kode_ta)
+            ->with(['waliKelas.karyawan'])
+            ->orderBy('tingkat')
+            ->orderBy('nama_kelas')
+            ->get();
+
+        return view('dashboard.modal_detail_santri_belum_plot', compact('students', 'unit', 'ta', 'kelasList'));
     }
 
     public function getDetailJadwalKelas(Request $request)

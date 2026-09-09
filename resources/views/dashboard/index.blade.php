@@ -11,120 +11,132 @@
     </style> --}}
     <style>
         .welcome-banner {
-            background: #ffffff;
-            border-radius: 1.25rem;
-            padding: 1.35rem 1.75rem;
-            margin-bottom: 1.25rem;
-            border: 1px solid #e9ecef;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+            background: linear-gradient(135deg, #064e3b 0%, #043a2b 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(6, 78, 59, 0.15);
+            color: #ffffff;
         }
 
-        .welcome-banner .avatar {
+        .welcome-banner .profile-avatar-icon {
             width: 54px;
             height: 54px;
-            border-radius: 14px;
-            object-fit: cover;
-            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
 
-        .welcome-banner .welcome {
-            font-size: 1.35rem;
+        .welcome-banner .title-name {
+            font-size: 1.2rem;
             font-weight: 700;
-            margin-bottom: 0.15rem;
-            color: #0f172a;
-            letter-spacing: -0.3px;
+            color: #ffffff;
+            margin-bottom: 0.2rem;
+            line-height: 1.3;
         }
 
-        .welcome-banner .desc {
-            font-size: 0.85rem;
-            color: #64748b;
+        .welcome-banner .subtitle-text {
+            font-size: 0.84rem;
+            color: #d1fae5;
             margin-bottom: 0.5rem;
+            line-height: 1.4;
         }
 
-        .welcome-banner .info-badges {
+        .welcome-banner .meta-tags {
             display: flex;
             flex-wrap: wrap;
+            align-items: center;
             gap: 0.5rem;
         }
 
-        .welcome-banner .info-badge {
+        .welcome-banner .meta-item {
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 0.2rem 0.65rem;
-            border-radius: 100px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #334155;
-        }
-
-        .welcome-banner .datetime-info {
-            text-align: right;
-            flex-shrink: 0;
-            background: #f8fafc;
-            padding: 0.65rem 1rem;
-            border-radius: 14px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .welcome-banner .current-date {
-            font-size: 0.78rem;
-            color: #64748b;
+            font-size: 0.74rem;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 6px;
+            padding: 0.2rem 0.6rem;
             font-weight: 500;
+            line-height: 1.3;
         }
 
-        .welcome-banner .current-time {
-            font-size: 1.3rem;
+        .welcome-banner .clock-box {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 10px;
+            padding: 0.75rem 1.25rem;
+            text-align: right;
+            min-width: 175px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .welcome-banner .clock-date {
+            font-size: 0.75rem;
+            color: #a7f3d0;
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+            line-height: 1.2;
+        }
+
+        .welcome-banner .clock-time {
+            font-size: 1.35rem;
             font-weight: 700;
-            color: #0f172a;
+            color: #ffffff;
             font-variant-numeric: tabular-nums;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
         }
 
         @media (max-width: 768px) {
             .welcome-banner {
                 padding: 1.25rem;
-                flex-direction: column;
-                text-align: center;
             }
-            .welcome-banner .datetime-info {
+            .welcome-banner .clock-box {
                 display: none;
-            }
-            .welcome-banner .info-badges {
-                justify-content: center;
             }
         }
     </style>
 
     <div class="welcome-banner">
-        <div class="d-flex align-items-center gap-3 flex-wrap">
-            <img src="{{ asset(auth()->user()->avatar ? 'storage/avatars/' . auth()->user()->avatar : 'assets/img/avatars/1.png') }}"
-                class="avatar" alt="Avatar">
-            <div>
-                <div class="welcome">Selamat Datang, {{ auth()->user()->name }}</div>
-                <div class="desc">Sistem Informasi Pesantren Persis Tarogong • Panel Monitoring Administrasi</div>
-                <div class="info-badges">
-                    <div class="info-badge">
-                        <i class="ti ti-shield-check text-success"></i>
-                        <span>{{ auth()->user()->getRoleNames()->first() ?? 'Pengguna' }}</span>
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="profile-avatar-icon">
+                    <i class="ti ti-user fs-2"></i>
+                </div>
+                <div class="d-flex flex-column justify-content-center">
+                    <div class="title-name">Selamat Datang, {{ auth()->user()->name }}</div>
+                    <div class="subtitle-text">{{ $pengaturan->nama_sekolah ?? 'Pesantren Persatuan Islam 80 Al Amin' }} &bull; Panel Monitoring Administrasi</div>
+                    <div class="meta-tags">
+                        <span class="meta-item">
+                            <i class="ti ti-shield text-warning fs-6"></i>
+                            <span>{{ auth()->user()->getRoleNames()->first() ?? 'Pengguna' }}</span>
+                        </span>
+                        @if ($pengaturan)
+                            <span class="meta-item">
+                                <i class="ti ti-building text-info fs-6"></i>
+                                <span>{{ $pengaturan->nama_sekolah }}</span>
+                            </span>
+                        @endif
                     </div>
-                    @if ($pengaturan)
-                        <div class="info-badge">
-                            <i class="ti ti-building text-primary"></i>
-                            <span>{{ $pengaturan->nama_sekolah }}</span>
-                        </div>
-                    @endif
                 </div>
             </div>
-        </div>
-        <div class="datetime-info d-none d-md-block">
-            <div class="current-date" id="currentDate"></div>
-            <div class="current-time" id="currentTime"></div>
+
+            <div class="clock-box d-none d-md-flex">
+                <div class="clock-date" id="currentDate"></div>
+                <div class="clock-time" id="currentTime"></div>
+            </div>
         </div>
     </div>
 
