@@ -173,11 +173,11 @@
                                 <div class="d-flex flex-column gap-2">
                                     <div class="info-item">
                                         <i class="ti ti-briefcase"></i>
-                                        <span class="text-dark fw-bold text-truncate">{{ $d->nama_jabatan }}</span>
+                                        <span class="text-dark fw-bold text-truncate">{{ $d->nama_jabatan ?? '-' }}</span>
                                     </div>
                                     <div class="info-item">
                                         <i class="ti ti-building"></i>
-                                        <span class="text-muted text-truncate">{{ $d->nama_unit }}</span>
+                                        <span class="text-muted text-truncate">{{ $d->nama_unit ?? '-' }}</span>
                                     </div>
                                 </div>
                             </div>

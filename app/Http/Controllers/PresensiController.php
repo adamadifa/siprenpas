@@ -56,6 +56,7 @@ class PresensiController extends Controller
             'presensi.status',
             'nama_jabatan',
             'nama_unit',
+            'nama_dept',
             'presensi.id',
             'karyawan.pin',
             'karyawan.status_karyawan'
@@ -63,8 +64,9 @@ class PresensiController extends Controller
         $query->leftjoinSub($presensi, 'presensi', function ($join) {
             $join->on('karyawan.npp', '=', 'presensi.npp');
         });
-        $query->join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan');
-        $query->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit');
+        $query->leftJoin('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan');
+        $query->leftJoin('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit');
+        $query->leftJoin('departemen', 'karyawan.kode_dept', '=', 'departemen.kode_dept');
         if (!empty($request->kode_unit)) {
             $query->where('karyawan.kode_unit', $request->kode_unit);
         }
