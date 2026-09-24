@@ -47,7 +47,7 @@ class JobdeskController extends Controller
             return view('datamaster.jobdesk.index_karyawan', $data);
         }
 
-        if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris'])) {
+        if ($user->hasRole('super admin')) {
             if (!empty($kode_jabatan)) {
                 $query->where('jobdesk_group.kode_jabatan', $kode_jabatan);
             } elseif (!empty($request->kode_jabatan)) {
@@ -65,12 +65,32 @@ class JobdeskController extends Controller
             } elseif (!empty($request->kode_unit)) {
                 $query->where('jobdesk_group.kode_unit', $request->kode_unit);
             }
-        } else {
-            $query->where('jobdesk_group.kode_jabatan', $user->kode_jabatan);
-            $query->where('jobdesk_group.kode_dept', $user->kode_dept);
-            if (!empty($user->kode_unit)) {
-                $query->where('jobdesk_group.kode_unit', $user->kode_unit);
+        } elseif ($user->hasRole(['pimpinan pesantren', 'sekretaris'])) {
+            $accessibleUnits = $user->getAccessibleUnitCodes();
+            $accessibleDepts = $user->getAccessibleDeptCodes();
+
+            if (!empty($request->kode_unit)) {
+                $query->where('jobdesk_group.kode_unit', $request->kode_unit);
+            } else {
+                $query->whereIn('jobdesk_group.kode_unit', $accessibleUnits);
             }
+
+            if (!empty($request->kode_dept)) {
+                $query->where('jobdesk_group.kode_dept', $request->kode_dept);
+            } else {
+                $query->whereIn('jobdesk_group.kode_dept', $accessibleDepts);
+            }
+
+            if (!empty($request->kode_jabatan)) {
+                $query->where('jobdesk_group.kode_jabatan', $request->kode_jabatan);
+            }
+        } else {
+            $accessibleUnits = $user->getAccessibleUnitCodes();
+            $accessibleDepts = $user->getAccessibleDeptCodes();
+
+            $query->where('jobdesk_group.kode_jabatan', $user->kode_jabatan);
+            $query->whereIn('jobdesk_group.kode_dept', $accessibleDepts);
+            $query->whereIn('jobdesk_group.kode_unit', $accessibleUnits);
         }
 
         if (!empty($request->jobdesk_search)) {
@@ -80,8 +100,10 @@ class JobdeskController extends Controller
         $data['jobdesk'] = $query->get();
 
         $data['jabatan'] = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
-        $data['departemen'] = Departemen::orderBy('kode_dept')->get();
-        $data['unit'] = \App\Models\Unit::where('kode_unit', '!=', 'U00')->orderBy('kode_unit')->get();
+        $uModel = new \App\Models\Unit();
+        $dModel = new Departemen();
+        $data['departemen'] = $dModel->getDepartemen();
+        $data['unit'] = $uModel->getUnit();
 
         $data['selected_unit'] = $kode_unit ? \App\Models\Unit::where('kode_unit', $kode_unit)->first() : null;
         $data['selected_dept'] = $kode_dept ? Departemen::where('kode_dept', $kode_dept)->first() : null;

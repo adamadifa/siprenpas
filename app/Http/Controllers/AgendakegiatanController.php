@@ -69,7 +69,7 @@ class AgendakegiatanController extends Controller
             return view('agenda_kegiatan.index_karyawan', $data);
         }
 
-        if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris'])) {
+        if ($user->hasRole('super admin')) {
             if (!empty($request->kode_jabatan)) {
                 $query->where('agenda_kegiatan.kode_jabatan', $request->kode_jabatan);
             }
@@ -79,18 +79,40 @@ class AgendakegiatanController extends Controller
             if (!empty($request->kode_unit)) {
                 $query->where('agenda_kegiatan.kode_unit', $request->kode_unit);
             }
-        } else {
-            $query->where('agenda_kegiatan.kode_jabatan', $user->kode_jabatan);
-            $query->where('agenda_kegiatan.kode_dept', $user->kode_dept);
-            if (!empty($user->kode_unit)) {
-                $query->where('agenda_kegiatan.kode_unit', $user->kode_unit);
+        } elseif ($user->hasRole(['pimpinan pesantren', 'sekretaris'])) {
+            $accessibleUnits = $user->getAccessibleUnitCodes();
+            $accessibleDepts = $user->getAccessibleDeptCodes();
+
+            if (!empty($request->kode_unit)) {
+                $query->where('agenda_kegiatan.kode_unit', $request->kode_unit);
+            } else {
+                $query->whereIn('agenda_kegiatan.kode_unit', $accessibleUnits);
             }
+
+            if (!empty($request->kode_dept)) {
+                $query->where('agenda_kegiatan.kode_dept', $request->kode_dept);
+            } else {
+                $query->whereIn('agenda_kegiatan.kode_dept', $accessibleDepts);
+            }
+
+            if (!empty($request->kode_jabatan)) {
+                $query->where('agenda_kegiatan.kode_jabatan', $request->kode_jabatan);
+            }
+        } else {
+            $accessibleUnits = $user->getAccessibleUnitCodes();
+            $accessibleDepts = $user->getAccessibleDeptCodes();
+
+            $query->where('agenda_kegiatan.kode_jabatan', $user->kode_jabatan);
+            $query->whereIn('agenda_kegiatan.kode_dept', $accessibleDepts);
+            $query->whereIn('agenda_kegiatan.kode_unit', $accessibleUnits);
         }
 
         $data['user'] = $user;
         $data['jabatan'] = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
-        $data['departemen'] = Departemen::orderBy('kode_dept')->get();
-        $data['unit'] = Unit::where('kode_unit', '!=', 'U00')->where('nama_unit', 'not like', '%undefined%')->orderBy('kode_unit')->get();
+        $dModel = new Departemen();
+        $uModel = new Unit();
+        $data['departemen'] = $dModel->getDepartemen();
+        $data['unit'] = $uModel->getUnit();
 
         $agent = new Agent();
         if ($agent->isMobile()) {

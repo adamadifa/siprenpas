@@ -74,16 +74,28 @@ class RealisasikegiatanController extends Controller
             return view('realisasi_kegiatan.index_karyawan', $data);
         }
 
-        if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris'])) {
+        if ($user->hasRole('super admin')) {
             if (!empty($request->kode_jabatan)) {
                 $query->where('realisasi_kegiatan.kode_jabatan', $request->kode_jabatan);
             }
             if (!empty($request->kode_dept)) {
                 $query->where('realisasi_kegiatan.kode_dept', $request->kode_dept);
             }
+        } elseif ($user->hasRole(['pimpinan pesantren', 'sekretaris'])) {
+            $accessibleDepts = $user->getAccessibleDeptCodes();
+            if (!empty($request->kode_dept)) {
+                $query->where('realisasi_kegiatan.kode_dept', $request->kode_dept);
+            } else {
+                $query->whereIn('realisasi_kegiatan.kode_dept', $accessibleDepts);
+            }
+
+            if (!empty($request->kode_jabatan)) {
+                $query->where('realisasi_kegiatan.kode_jabatan', $request->kode_jabatan);
+            }
         } else {
+            $accessibleDepts = $user->getAccessibleDeptCodes();
             $query->where('realisasi_kegiatan.kode_jabatan', $user->kode_jabatan);
-            $query->where('realisasi_kegiatan.kode_dept', $user->kode_dept);
+            $query->whereIn('realisasi_kegiatan.kode_dept', $accessibleDepts);
         }
 
         if (!empty($request->dari) && !empty($request->sampai)) {
@@ -100,11 +112,10 @@ class RealisasikegiatanController extends Controller
             $realisasikegiatan->appends($request->all());
         }
 
-
-
         $data['realisasikegiatan'] = $realisasikegiatan;
         $data['jabatan'] = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
-        $data['departemen'] = Departemen::orderBy('kode_dept')->get();
+        $dModel = new Departemen();
+        $data['departemen'] = $dModel->getDepartemen();
         $data['user'] = $user;
 
 

@@ -40,7 +40,7 @@
         <div class="nav-align-left card border-0 shadow-none bg-transparent">
             <!-- Minimalist Sidebar -->
             <ul class="nav nav-tabs border-0 pe-4" role="tablist" style="min-width: 240px; background: transparent;">
-                <li class="nav-item w-100 mb-0" role="presentation">
+                <li class="nav-item w-100 mb-2" role="presentation">
                     <button type="button" class="nav-link active py-2 px-3 rounded-3 d-flex align-items-center gap-3 border-0 w-100"
                         role="tab" data-bs-toggle="tab" data-bs-target="#realisasi" aria-controls="realisasi"
                         aria-selected="true" style="background: transparent;">
@@ -48,10 +48,19 @@
                         <span class="fw-medium">Realisasi Kegiatan</span>
                     </button>
                 </li>
+                <li class="nav-item w-100 mb-0" role="presentation">
+                    <button type="button" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-3 border-0 w-100"
+                        role="tab" data-bs-toggle="tab" data-bs-target="#agenda" aria-controls="agenda"
+                        aria-selected="false" style="background: transparent;">
+                        <i class="ti ti-calendar-event fs-4"></i>
+                        <span class="fw-medium">Agenda Kegiatan</span>
+                    </button>
+                </li>
             </ul>
 
             <!-- Report Card with Dark Header -->
             <div class="tab-content ms-4 p-0 border-0 shadow-sm rounded-3 overflow-hidden" style="flex-grow: 1; background: #fff;">
+                {{-- TAB REALISASI KEGIATAN --}}
                 <div class="tab-pane fade show active" id="realisasi" role="tabpanel">
                     <div class="card-header border-0 d-flex align-items-center gap-2 py-3 px-4" style="background: #064e3b">
                         <i class="ti ti-clipboard-list text-white fs-4"></i>
@@ -61,8 +70,8 @@
                         <form action="{{ route('kegiatan.laporan.cetak') }}" method="POST" target="_blank">
                             @csrf
                             
-                            @if(!auth()->user()->hasRole('karyawan'))
-                                 <!-- Unit Filter (Admin) -->
+                            @if($can_filter_all)
+                                 <!-- Unit Filter -->
                                  <div class="form-group mb-3">
                                      <select name="kode_unit" id="kode_unit" class="form-select select2">
                                          <option value="">Pilih Unit</option>
@@ -72,21 +81,21 @@
                                      </select>
                                  </div>
 
-                                 <!-- Department Filter (Admin) -->
+                                 <!-- Department Filter -->
                                  <div class="form-group mb-3">
                                      <select name="kode_dept" id="kode_dept" class="form-select select2">
                                          <option value="">Pilih Departemen</option>
                                      </select>
                                  </div>
 
-                                 <!-- Jabatan Filter (Admin) -->
+                                 <!-- Jabatan Filter -->
                                  <div class="form-group mb-3">
                                      <select name="kode_jabatan" id="kode_jabatan" class="form-select select2">
                                          <option value="">Pilih Jabatan</option>
                                      </select>
                                  </div>
 
-                                 <!-- Karyawan Filter (Admin) -->
+                                 <!-- Karyawan Filter -->
                                  <div class="form-group mb-3">
                                      <select name="npp" id="npp" class="form-select select2">
                                          <option value="">Pilih Karyawan</option>
@@ -127,7 +136,92 @@
                                     </button>
                                 </div>
                                 <div class="col-lg-2 col-md-12 col-sm-12 mb-2">
-                                    <button type="submit" name="export_excel" value="true" class="btn btn-success w-100 shadow-none border-0 d-flex align-items-center justify-content-center">
+                                    <button type="submit" name="export_excel" value="true" class="btn btn-success w-100 shadow-none border-0 d-flex align-items-center justify-content-center" title="Export Excel">
+                                        <i class="ti ti-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                {{-- TAB AGENDA KEGIATAN --}}
+                <div class="tab-pane fade" id="agenda" role="tabpanel">
+                    <div class="card-header border-0 d-flex align-items-center gap-2 py-3 px-4" style="background: #064e3b">
+                        <i class="ti ti-calendar-event text-white fs-4"></i>
+                        <h6 class="mb-0 fw-bold text-white">Laporan Agenda Kegiatan</h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <form action="{{ route('kegiatan.laporan.cetak-agenda') }}" method="POST" target="_blank">
+                            @csrf
+                            
+                            @if($can_filter_all)
+                                 <!-- Unit Filter -->
+                                 <div class="form-group mb-3">
+                                     <select name="kode_unit" id="agenda_kode_unit" class="form-select select2">
+                                         <option value="">Pilih Unit</option>
+                                         @foreach($unit as $u)
+                                             <option value="{{ $u->kode_unit }}">{{ strtoupper($u->nama_unit) }}</option>
+                                         @endforeach
+                                     </select>
+                                 </div>
+
+                                 <!-- Department Filter -->
+                                 <div class="form-group mb-3">
+                                     <select name="kode_dept" id="agenda_kode_dept" class="form-select select2">
+                                         <option value="">Pilih Departemen</option>
+                                     </select>
+                                 </div>
+
+                                 <!-- Jabatan Filter -->
+                                 <div class="form-group mb-3">
+                                     <select name="kode_jabatan" id="agenda_kode_jabatan" class="form-select select2">
+                                         <option value="">Pilih Jabatan</option>
+                                     </select>
+                                 </div>
+
+                                 <!-- Karyawan Filter -->
+                                 <div class="form-group mb-3">
+                                     <select name="npp" id="agenda_npp" class="form-select select2">
+                                         <option value="">Pilih Karyawan</option>
+                                     </select>
+                                 </div>
+                             @endif
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <select name="bulan" id="agenda_bulan" class="form-select">
+                                            <option value="">Bulan</option>
+                                            @foreach ($list_bulan as $d)
+                                                <option {{ date('m') == $d['kode_bulan'] ? 'selected' : '' }} value="{{ $d['kode_bulan'] }}">
+                                                    {{ $d['nama_bulan'] }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <select name="tahun" id="agenda_tahun" class="form-select">
+                                            <option value="">Tahun</option>
+                                            @for ($t = $start_year; $t <= date('Y'); $t++)
+                                                <option {{ date('Y') == $t ? 'selected' : '' }} value="{{ $t }}">{{ $t }}</option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col-lg-10 col-md-12 col-sm-12 mb-2">
+                                    <button type="submit" class="btn btn-primary w-100 shadow-sm border-0 d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b !important;">
+                                        <i class="ti ti-printer fs-5"></i>
+                                        <span>Cetak Laporan Agenda</span>
+                                    </button>
+                                </div>
+                                <div class="col-lg-2 col-md-12 col-sm-12 mb-2">
+                                    <button type="submit" name="export_excel" value="true" class="btn btn-success w-100 shadow-none border-0 d-flex align-items-center justify-content-center" title="Export Excel">
                                         <i class="ti ti-download"></i>
                                     </button>
                                 </div>
@@ -188,81 +282,90 @@
             });
         });
 
-        function updateFilterOptions() {
-            let kode_unit = $('#kode_unit').val();
-            let kode_dept = $('#kode_dept').val();
-            let kode_jabatan = $('#kode_jabatan').val();
+        function setupCascadingFilters(prefix) {
+            let unitSelect = $('#' + (prefix ? prefix + '_' : '') + 'kode_unit');
+            let deptSelect = $('#' + (prefix ? prefix + '_' : '') + 'kode_dept');
+            let jabatanSelect = $('#' + (prefix ? prefix + '_' : '') + 'kode_jabatan');
+            let nppSelect = $('#' + (prefix ? prefix + '_' : '') + 'npp');
 
-            if (kode_unit === "" || kode_unit === null) {
-                $('#kode_dept').html('<option value="">Pilih Departemen</option>').trigger('change.select2');
-                $('#kode_jabatan').html('<option value="">Pilih Jabatan</option>').trigger('change.select2');
-                $('#npp').html('<option value="">Pilih Karyawan</option>').trigger('change.select2');
-                return;
-            }
+            function update() {
+                let kode_unit = unitSelect.val();
+                let kode_dept = deptSelect.val();
+                let kode_jabatan = jabatanSelect.val();
 
-            if (kode_dept === "" || kode_dept === null) {
-                $('#kode_jabatan').html('<option value="">Pilih Jabatan</option>').trigger('change.select2');
-                $('#npp').html('<option value="">Pilih Karyawan</option>').trigger('change.select2');
-            }
-
-            $.ajax({
-                url: "{{ route('kegiatan.laporan.get-filter-options') }}",
-                type: "GET",
-                data: {
-                    kode_unit: kode_unit,
-                    kode_dept: kode_dept,
-                    kode_jabatan: kode_jabatan
-                },
-                success: function(response) {
-                    // Update Departemen select options
-                    let currentDept = $('#kode_dept').val();
-                    $('#kode_dept').html('<option value="">Pilih Departemen</option>');
-                    response.departments.forEach(function(d) {
-                        let selected = d.kode_dept === currentDept ? 'selected' : '';
-                        $('#kode_dept').append(`<option value="${d.kode_dept}" ${selected}>${d.nama_dept.toUpperCase()}</option>`);
-                    });
-                    $('#kode_dept').trigger('change.select2');
-
-                    // Update Jabatan select options (only if Departemen is selected)
-                    let currentJabatan = $('#kode_jabatan').val();
-                    $('#kode_jabatan').html('<option value="">Pilih Jabatan</option>');
-                    if (kode_dept !== "" && kode_dept !== null) {
-                        response.jabatans.forEach(function(j) {
-                            let selected = j.kode_jabatan === currentJabatan ? 'selected' : '';
-                            $('#kode_jabatan').append(`<option value="${j.kode_jabatan}" ${selected}>${j.nama_jabatan.toUpperCase()}</option>`);
-                        });
-                    }
-                    $('#kode_jabatan').trigger('change.select2');
-
-                    // Update Karyawan select options
-                    let currentKaryawan = $('#npp').val();
-                    $('#npp').html('<option value="">Pilih Karyawan</option>');
-                    response.karyawans.forEach(function(k) {
-                        let selected = k.npp === currentKaryawan ? 'selected' : '';
-                        $('#npp').append(`<option value="${k.npp}" ${selected}>${k.nama_lengkap.toUpperCase()}</option>`);
-                    });
-                    $('#npp').trigger('change.select2');
+                if (kode_unit === "" || kode_unit === null) {
+                    deptSelect.html('<option value="">Pilih Departemen</option>').trigger('change.select2');
+                    jabatanSelect.html('<option value="">Pilih Jabatan</option>').trigger('change.select2');
+                    nppSelect.html('<option value="">Pilih Karyawan</option>').trigger('change.select2');
+                    return;
                 }
+
+                if (kode_dept === "" || kode_dept === null) {
+                    jabatanSelect.html('<option value="">Pilih Jabatan</option>').trigger('change.select2');
+                    nppSelect.html('<option value="">Pilih Karyawan</option>').trigger('change.select2');
+                }
+
+                $.ajax({
+                    url: "{{ route('kegiatan.laporan.get-filter-options') }}",
+                    type: "GET",
+                    data: {
+                        kode_unit: kode_unit,
+                        kode_dept: kode_dept,
+                        kode_jabatan: kode_jabatan
+                    },
+                    success: function(response) {
+                        let currentDept = deptSelect.val();
+                        deptSelect.html('<option value="">Pilih Departemen</option>');
+                        response.departments.forEach(function(d) {
+                            let selected = d.kode_dept === currentDept ? 'selected' : '';
+                            deptSelect.append(`<option value="${d.kode_dept}" ${selected}>${d.nama_dept.toUpperCase()}</option>`);
+                        });
+                        deptSelect.trigger('change.select2');
+
+                        let currentJabatan = jabatanSelect.val();
+                        jabatanSelect.html('<option value="">Pilih Jabatan</option>');
+                        if (kode_dept !== "" && kode_dept !== null) {
+                            response.jabatans.forEach(function(j) {
+                                let selected = j.kode_jabatan === currentJabatan ? 'selected' : '';
+                                jabatanSelect.append(`<option value="${j.kode_jabatan}" ${selected}>${j.nama_jabatan.toUpperCase()}</option>`);
+                            });
+                        }
+                        jabatanSelect.trigger('change.select2');
+
+                        let currentKaryawan = nppSelect.val();
+                        nppSelect.html('<option value="">Pilih Karyawan</option>');
+                        response.karyawans.forEach(function(k) {
+                            let selected = k.npp === currentKaryawan ? 'selected' : '';
+                            nppSelect.append(`<option value="${k.npp}" ${selected}>${k.nama_lengkap.toUpperCase()}</option>`);
+                        });
+                        nppSelect.trigger('change.select2');
+                    }
+                });
+            }
+
+            unitSelect.on('change', function() {
+                deptSelect.val('').trigger('change.select2');
+                jabatanSelect.val('').trigger('change.select2');
+                nppSelect.val('').trigger('change.select2');
+                update();
+            });
+
+            deptSelect.on('change', function() {
+                jabatanSelect.val('').trigger('change.select2');
+                nppSelect.val('').trigger('change.select2');
+                update();
+            });
+
+            jabatanSelect.on('change', function() {
+                nppSelect.val('').trigger('change.select2');
+                update();
             });
         }
 
-        $('#kode_unit').on('change', function() {
-            $('#kode_dept').val('').trigger('change.select2');
-            $('#kode_jabatan').val('').trigger('change.select2');
-            $('#npp').val('').trigger('change.select2');
-            updateFilterOptions();
-        });
-
-        $('#kode_dept').on('change', function() {
-            $('#kode_jabatan').val('').trigger('change.select2');
-            $('#npp').val('').trigger('change.select2');
-            updateFilterOptions();
-        });
-
-        $('#kode_jabatan').on('change', function() {
-            $('#npp').val('').trigger('change.select2');
-            updateFilterOptions();
-        });
+        // Initialize for Realisasi tab
+        setupCascadingFilters('');
+        // Initialize for Agenda tab
+        setupCascadingFilters('agenda');
     });
 </script>
 @endpush

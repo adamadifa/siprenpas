@@ -178,6 +178,10 @@ Route::middleware('auth')->group(function () {
             Route::put('/users/{id}/updatepassword', 'updatepassword')->name('users.updatepassword');
             Route::get('/users/{id}/updatestatus', 'updatestatus')->name('users.updatestatus');
             Route::get('/users/{id}/impersonate', 'impersonate')->name('users.impersonate');
+            Route::get('/users/{id}/createuserpermission', 'createuserpermission')->name('users.createuserpermission');
+            Route::post('/users/{id}/storeuserpermission', 'storeuserpermission')->name('users.storeuserpermission');
+            Route::get('/users/{id}/createuserunitdept', 'createuserunitdept')->name('users.createuserunitdept');
+            Route::post('/users/{id}/storeuserunitdept', 'storeuserunitdept')->name('users.storeuserunitdept');
         });
     });
 
@@ -1055,6 +1059,7 @@ Route::middleware('auth')->group(function () {
     Route::controller(App\Http\Controllers\LaporankegiatanController::class)->group(function () {
         Route::get('/kegiatan/laporan', 'index')->name('kegiatan.laporan.index')->can('realkegiatan.laporan');
         Route::post('/kegiatan/laporan/cetak', 'cetakrealisasi')->name('kegiatan.laporan.cetak')->can('realkegiatan.laporan');
+        Route::post('/kegiatan/laporan/cetak-agenda', 'cetakagenda')->name('kegiatan.laporan.cetak-agenda')->can('realkegiatan.laporan');
         Route::get('/kegiatan/laporan/get-filter-options', 'getFilterOptions')->name('kegiatan.laporan.get-filter-options')->can('realkegiatan.laporan');
     });
 

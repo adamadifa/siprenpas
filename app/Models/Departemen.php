@@ -12,4 +12,26 @@ class Departemen extends Model
     protected $primaryKey = 'kode_dept';
     public $incrementing = false;
     protected $guarded = [];
+
+    /**
+     * Mendapatkan daftar departemen yang boleh diakses user saat ini.
+     * Mengikuti prinsip yang sama dengan getUnit().
+     */
+    public function getDepartemen()
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return self::orderBy('kode_dept')->get();
+        }
+
+        if ($user->hasRole('super admin')) {
+            return self::orderBy('kode_dept')->get();
+        }
+
+        $accessibleDepts = $user->getAccessibleDeptCodes();
+
+        return self::whereIn('kode_dept', $accessibleDepts)
+            ->orderBy('kode_dept')
+            ->get();
+    }
 }

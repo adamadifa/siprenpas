@@ -30,16 +30,24 @@ class Unit extends Model
 
     public function getUnit()
     {
-        $user = User::where('id', auth()->user()->id)->first();
-        if ($user->kode_unit == 'U06') {
-            $unit = Unit::whereNotIn('kode_unit', ['U00', 'U06', 'U07'])
-                ->orderBy('kode_unit')
-                ->get();
-        } else {
-            $unit = Unit::where('kode_unit',$user->kode_unit)
+        $user = auth()->user();
+        if (!$user) {
+            return Unit::whereNotIn('kode_unit', ['U00'])->orderBy('kode_unit')->get();
+        }
+
+        // Jika super admin, dapat mengakses semua unit operasional
+        if ($user->hasRole('super admin')) {
+            return Unit::whereNotIn('kode_unit', ['U00'])
                 ->orderBy('kode_unit')
                 ->get();
         }
-        return $unit;
+
+        // Ambil unit yang diizinkan (unit utama + unit tambahan yang di-assign)
+        $accessibleUnitCodes = $user->getAccessibleUnitCodes();
+
+        return Unit::whereIn('kode_unit', $accessibleUnitCodes)
+            ->whereNotIn('kode_unit', ['U00'])
+            ->orderBy('kode_unit')
+            ->get();
     }
 }

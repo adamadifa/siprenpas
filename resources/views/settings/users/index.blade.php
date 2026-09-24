@@ -149,8 +149,9 @@
                                 <th class="text-white py-3" style="width: 1%;">EMAIL</th>
                                 <th class="text-white py-3" style="width: 1%;">ROLE</th>
                                 <th class="text-white py-3" style="width: 1%;">UNITS</th>
+                                <th class="text-white py-3" style="width: 1%;">DEPT</th>
                                 <th class="text-white py-3" style="width: 1%;">STATUS</th>
-                                <th class="text-white py-3 text-end" style="width: 80px;">#</th>
+                                <th class="text-white py-3 text-end" style="width: 110px;">#</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -173,7 +174,8 @@
                                             <span class="badge bg-label-info">{{ ucwords($role->name) }}</span>
                                         @endforeach
                                     </td>
-                                    <td class="py-1">{{ $d->nama_unit }}</td>
+                                    <td class="py-1">{{ $d->nama_unit ?? '-' }}</td>
+                                    <td class="py-1">{{ $d->nama_dept ?? '-' }}</td>
                                     <td class="py-1">
                                         <a href="{{ route('users.updatestatus', Crypt::encrypt($d->id)) }}">
                                             @if ($d->status == 1)
@@ -194,6 +196,20 @@
                                                     <i class="ti ti-eye fs-6"></i>
                                                 </a>
                                             @endif
+                                            <a href="{{ route('users.createuserunitdept', Crypt::encrypt($d->id)) }}"
+                                                class="btn btn-icon btn-label-primary border text-primary"
+                                                style="width: 28px; height: 28px;"
+                                                data-bs-toggle="tooltip"
+                                                title="Akses Unit & Departemen">
+                                                <i class="ti ti-building-community fs-6"></i>
+                                            </a>
+                                            <a href="{{ route('users.createuserpermission', Crypt::encrypt($d->id)) }}"
+                                                class="btn btn-icon btn-label-warning border text-warning"
+                                                style="width: 28px; height: 28px;"
+                                                data-bs-toggle="tooltip"
+                                                title="Set Permission Khusus">
+                                                <i class="ti ti-shield-lock fs-6"></i>
+                                            </a>
                                             <a href="#" class="btn btn-icon btn-label-success border editUser"
                                                 style="width: 28px; height: 28px;"
                                                 id="{{ Crypt::encrypt($d->id) }}">
@@ -213,7 +229,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center p-5">
+                                    <td colspan="10" class="text-center p-5">
                                         <div class="mb-3">
                                             <i class="ti ti-users fs-1 opacity-25"></i>
                                         </div>

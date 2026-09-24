@@ -8,8 +8,8 @@ use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -17,9 +17,10 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $query = User::query();
-        $query->select('users.*', 'unit.nama_unit');
-        $query->with('roles');
+        $query->select('users.*', 'unit.nama_unit', 'departemen.nama_dept');
+        $query->with(['roles', 'assignedUnits', 'assignedDepartemens']);
         $query->leftjoin('unit', 'users.kode_unit', '=', 'unit.kode_unit');
+        $query->leftjoin('departemen', 'users.kode_dept', '=', 'departemen.kode_dept');
         if (!empty($request->name)) {
             $query->where('name', 'like', '%' . $request->name . '%');
         }
@@ -243,5 +244,106 @@ class UserController extends Controller
         \Illuminate\Support\Facades\Auth::loginUsingId($adminId);
 
         return redirect()->route('users.index')->with(['success' => 'Kembali ke Admin Utama']);
+    }
+
+    public function createuserpermission($id)
+    {
+        $id = Crypt::decrypt($id);
+        $user = User::with(['roles.permissions', 'permissions'])->findOrFail($id);
+
+        $permissions = Permission::orderBy('id_permission_group')
+            ->selectRaw('id_permission_group,permission_groups.name as group_name,GROUP_CONCAT(permissions.id,"-",permissions.name) as permissions')
+            ->join('permission_groups', 'permissions.id_permission_group', '=', 'permission_groups.id')
+            ->groupBy('id_permission_group')
+            ->groupBy('permission_groups.name')
+            ->get();
+
+        // Permissions inherited from roles (read-only/locked)
+        $rolePermissions = $user->getPermissionsViaRoles()->pluck('name')->unique()->toArray();
+
+        // Direct permissions assigned specifically to this user
+        $directPermissions = $user->getDirectPermissions()->pluck('name')->toArray();
+
+        return view('settings.users.create_user_permission', compact(
+            'user',
+            'permissions',
+            'rolePermissions',
+            'directPermissions'
+        ));
+    }
+
+    public function storeuserpermission($id, Request $request)
+    {
+        $id = Crypt::decrypt($id);
+        $user = User::findOrFail($id);
+
+        try {
+            $inputPermissions = $request->input('permission', []);
+
+            // Role permissions already granted via roles
+            $rolePermissions = $user->getPermissionsViaRoles()->pluck('name')->unique()->toArray();
+
+            // We only save permissions that are NOT already in the role
+            $directPermissionsToSync = array_values(array_diff($inputPermissions, $rolePermissions));
+            $user->syncPermissions($directPermissionsToSync);
+
+            return Redirect::back()->with(messageSuccess('Hak Akses Khusus User Berhasil Disimpan'));
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError($e->getMessage()));
+        }
+    }
+
+    public function createuserunitdept($id)
+    {
+        $id = Crypt::decrypt($id);
+        $user = User::with(['assignedUnits', 'assignedDepartemens'])->findOrFail($id);
+
+        // All active units except undefined
+        $allUnits = Unit::where('kode_unit', '!=', 'U00')->orderBy('kode_unit')->get();
+        $defaultUnit = $user->kode_unit;
+        $assignedUnitCodes = $user->assignedUnits->pluck('kode_unit')->toArray();
+
+        // All active departments
+        $allDepts = Departemen::orderBy('kode_dept')->get();
+        $defaultDept = $user->kode_dept;
+        $assignedDeptCodes = $user->assignedDepartemens->pluck('kode_dept')->toArray();
+
+        return view('settings.users.create_user_unit_dept', compact(
+            'user',
+            'allUnits',
+            'defaultUnit',
+            'assignedUnitCodes',
+            'allDepts',
+            'defaultDept',
+            'assignedDeptCodes'
+        ));
+    }
+
+    public function storeuserunitdept($id, Request $request)
+    {
+        $id = Crypt::decrypt($id);
+        $user = User::findOrFail($id);
+
+        try {
+            // 1. Sync Assigned Units (Extra Units beyond default unit)
+            $inputUnits = $request->input('unit_access', []);
+            $defaultUnit = $user->kode_unit;
+            $extraUnitsToSync = array_values(array_filter($inputUnits, function ($code) use ($defaultUnit) {
+                return $code !== $defaultUnit && !empty($code);
+            }));
+            $user->assignedUnits()->sync($extraUnitsToSync);
+
+            // 2. Sync Assigned Departemens (Extra Departemens beyond default dept)
+            $inputDepts = $request->input('dept_access', []);
+            $defaultDept = $user->kode_dept;
+            $extraDeptsToSync = array_values(array_filter($inputDepts, function ($code) use ($defaultDept) {
+                return $code !== $defaultDept && !empty($code);
+            }));
+            $user->assignedDepartemens()->sync($extraDeptsToSync);
+
+            return Redirect::back()->with(messageSuccess('Hak Akses Data Unit & Departemen Berhasil Disimpan'));
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError($e->getMessage()));
+        }
     }
 }

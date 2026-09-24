@@ -33,11 +33,11 @@ class DashboardController extends Controller
         $activeTa = Tahunajaran::where('status', '1')->first() ?? $tahunajaran->first();
         $pengaturan = PengaturanUmum::first();
 
-        $unitsQuery = Unit::whereNotIn('kode_unit', ['U00', 'U06', 'U07'])->orderBy('kode_unit');
-        if ($user->kode_unit != 'U06' && !empty($user->kode_unit)) {
-            $units = Unit::where('kode_unit', $user->kode_unit)->get();
+        $accessibleUnits = $user->getAccessibleUnitCodes();
+        if ($user->hasRole('super admin')) {
+            $units = Unit::whereNotIn('kode_unit', ['U00', 'U06', 'U07'])->orderBy('kode_unit')->get();
         } else {
-            $units = $unitsQuery->get();
+            $units = Unit::whereIn('kode_unit', $accessibleUnits)->whereNotIn('kode_unit', ['U00'])->orderBy('kode_unit')->get();
         }
         
         if ($user->hasRole('ketua koperasi')) {
@@ -321,11 +321,13 @@ class DashboardController extends Controller
         $kode_ta = $request->kode_ta ?: ($activeTa ? $activeTa->kode_ta : 'TA2627');
         $selectedTa = Tahunajaran::where('kode_ta', $kode_ta)->first();
 
-        // Units query
+        // Units query respecting user accessible units
         $unitQuery = Unit::whereNotIn('kode_unit', ['U00', 'U06', 'U07'])->orderBy('kode_unit');
-        if ($user->kode_unit != 'U06' && !empty($user->kode_unit)) {
-            $unitQuery->where('kode_unit', $user->kode_unit);
-        } elseif (!empty($request->kode_unit)) {
+        if (!$user->hasRole('super admin')) {
+            $accessibleUnits = $user->getAccessibleUnitCodes();
+            $unitQuery->whereIn('kode_unit', $accessibleUnits);
+        }
+        if (!empty($request->kode_unit)) {
             $unitQuery->where('kode_unit', $request->kode_unit);
         }
         $units = $unitQuery->get();

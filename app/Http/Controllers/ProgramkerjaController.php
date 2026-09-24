@@ -40,7 +40,7 @@ class ProgramkerjaController extends Controller
         $query->leftJoin('unit', 'program_kerja_group.kode_unit', '=', 'unit.kode_unit');
         $query->join('users', 'program_kerja_group.id_user', '=', 'users.id');
         $query->leftJoin('realisasi_kegiatan', 'program_kerja.kode_program_kerja', '=', 'realisasi_kegiatan.kode_program_kerja');
-        if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris'])) {
+        if ($user->hasRole('super admin')) {
             if (!empty($request->kode_jabatan)) {
                 $query->where('program_kerja_group.kode_jabatan', $request->kode_jabatan);
             }
@@ -52,12 +52,32 @@ class ProgramkerjaController extends Controller
             if (!empty($request->kode_unit)) {
                 $query->where('program_kerja_group.kode_unit', $request->kode_unit);
             }
-        } else {
-            // $query->where('program_kerja_group.kode_jabatan', $user->kode_jabatan);
-            $query->where('program_kerja_group.kode_dept', $user->kode_dept);
-            if (!empty(auth()->user()->kode_unit)) {
-                $query->where('program_kerja_group.kode_unit', auth()->user()->kode_unit);
+        } elseif ($user->hasRole(['pimpinan pesantren', 'sekretaris'])) {
+            $accessibleUnits = $user->getAccessibleUnitCodes();
+            $accessibleDepts = $user->getAccessibleDeptCodes();
+
+            if (!empty($request->kode_unit)) {
+                $query->where('program_kerja_group.kode_unit', $request->kode_unit);
+            } else {
+                $query->whereIn('program_kerja_group.kode_unit', $accessibleUnits);
             }
+
+            if (!empty($request->kode_dept)) {
+                $query->where('program_kerja_group.kode_dept', $request->kode_dept);
+            } else {
+                $query->whereIn('program_kerja_group.kode_dept', $accessibleDepts);
+            }
+
+            if (!empty($request->kode_jabatan)) {
+                $query->where('program_kerja_group.kode_jabatan', $request->kode_jabatan);
+            }
+        } else {
+            $accessibleUnits = $user->getAccessibleUnitCodes();
+            $accessibleDepts = $user->getAccessibleDeptCodes();
+
+            $query->whereIn('program_kerja_group.kode_dept', $accessibleDepts);
+            $query->whereIn('program_kerja_group.kode_unit', $accessibleUnits);
+
             if (!empty($request->kode_jabatan)) {
                 $query->where('program_kerja_group.kode_jabatan', $request->kode_jabatan);
             }
@@ -87,7 +107,7 @@ class ProgramkerjaController extends Controller
         $kode_jabatan = $user->hasRole('super admin') ? $request->kode_jabatan : $user->kode_jabatan;
         $kode_dept = $user->hasRole('super admin') ? $request->kode_dept : $user->kode_dept;
         
-        if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris']) && empty($request->kode_dept)) {
+        if ($user->hasRole('super admin') && empty($request->kode_dept)) {
             $data['programkerja'] = collect();
         } else {
             $data['programkerja'] = $query->get();
@@ -95,14 +115,19 @@ class ProgramkerjaController extends Controller
         
         $activeTa = $request->kode_ta ?: ($ta_aktif ? $ta_aktif->kode_ta : null);
 
-        $data['unit'] = Unit::whereIn('kode_unit', function($q) use ($activeTa) {
+        $unitQuery = Unit::whereIn('kode_unit', function($q) use ($activeTa) {
             $q->select('kode_unit')->from('program_kerja_group');
             if ($activeTa) {
                 $q->where('kode_ta', $activeTa);
             }
-        })->where('nama_unit', 'not like', '%undefined%')->orderBy('nama_unit')->get();
+        })->where('nama_unit', 'not like', '%undefined%')->orderBy('nama_unit');
 
-        $data['departemen'] = Departemen::whereIn('kode_dept', function($q) use ($activeTa, $request) {
+        if (!$user->hasRole('super admin')) {
+            $unitQuery->whereIn('kode_unit', $user->getAccessibleUnitCodes());
+        }
+        $data['unit'] = $unitQuery->get();
+
+        $deptQuery = Departemen::whereIn('kode_dept', function($q) use ($activeTa, $request) {
             $q->select('kode_dept')->from('program_kerja_group');
             if ($activeTa) {
                 $q->where('kode_ta', $activeTa);
@@ -110,7 +135,12 @@ class ProgramkerjaController extends Controller
             if (!empty($request->kode_unit)) {
                 $q->where('kode_unit', $request->kode_unit);
             }
-        })->orderBy('nama_dept')->get();
+        })->orderBy('nama_dept');
+
+        if (!$user->hasRole('super admin')) {
+            $deptQuery->whereIn('kode_dept', $user->getAccessibleDeptCodes());
+        }
+        $data['departemen'] = $deptQuery->get();
 
         $data['jabatan'] = Jabatan::whereIn('kode_jabatan', function($q) use ($activeTa, $request) {
             $q->select('kode_jabatan')->from('program_kerja_group');
