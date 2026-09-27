@@ -2,131 +2,145 @@
 @section('titlepage', 'Dashboard')
 @section('content')
     <style>
-        .welcome-banner {
-            background: linear-gradient(135deg, #064e3b 0%, #043a2b 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.25rem 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 12px rgba(6, 78, 59, 0.15);
-            color: #ffffff;
-        }
-
-        .welcome-banner .profile-avatar-icon {
-            width: 54px;
-            height: 54px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .welcome-banner .title-name {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 0.2rem;
-            line-height: 1.3;
-        }
-
-        .welcome-banner .subtitle-text {
-            font-size: 0.84rem;
-            color: #d1fae5;
+        /* Seamless & Cardless Executive Header */
+        .dash-page-header {
+            padding: 0.25rem 0 1.25rem 0;
             margin-bottom: 0.5rem;
-            line-height: 1.4;
         }
 
-        .welcome-banner .meta-tags {
-            display: flex;
-            flex-wrap: wrap;
+        .dash-page-header .welcome-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+            line-height: 1.25;
+            display: inline-flex;
             align-items: center;
             gap: 0.5rem;
         }
 
-        .welcome-banner .meta-item {
+        .dash-page-header .welcome-meta {
+            font-size: 0.84rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.35rem;
+        }
+
+        .dash-page-header .meta-divider {
+            color: #cbd5e1;
+        }
+
+        .dash-page-header .badge-role {
+            font-size: 0.74rem;
+            font-weight: 600;
+            color: #047857;
+            background: #ecfdf5;
+            border: 1px solid #d1fae5;
+            padding: 0.15rem 0.55rem;
+            border-radius: 6px;
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
-            font-size: 0.74rem;
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 6px;
-            padding: 0.2rem 0.6rem;
+            gap: 0.3rem;
+        }
+
+        .dash-page-header .clock-date {
+            font-size: 0.76rem;
             font-weight: 500;
-            line-height: 1.3;
+            color: #64748b;
+            margin-bottom: 0.1rem;
         }
 
-        .welcome-banner .clock-box {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            border-radius: 10px;
-            padding: 0.75rem 1.25rem;
-            text-align: right;
-            min-width: 175px;
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .welcome-banner .clock-date {
-            font-size: 0.75rem;
-            color: #a7f3d0;
-            font-weight: 500;
-            margin-bottom: 0.2rem;
-            line-height: 1.2;
-        }
-
-        .welcome-banner .clock-time {
+        .dash-page-header .clock-time {
             font-size: 1.35rem;
-            font-weight: 700;
-            color: #ffffff;
+            font-weight: 800;
+            color: #0f172a;
             font-variant-numeric: tabular-nums;
             letter-spacing: -0.02em;
             line-height: 1.1;
         }
 
-        @media (max-width: 768px) {
-            .welcome-banner {
-                padding: 1.25rem;
-            }
-            .welcome-banner .clock-box {
-                display: none;
-            }
+        /* Filter Toolbar Card */
+        .dash-filter-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+            padding: 0.9rem 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .dash-filter-card .icon-badge {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            background: #f8fafc;
+            color: #0f172a;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+        }
+
+        .dash-filter-card .custom-select-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #1e293b;
+            transition: all 0.2s ease;
+        }
+        .dash-filter-card .custom-select-box:focus {
+            background: #ffffff;
+            border-color: #0f172a;
+            box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+        }
+
+        .btn-dash-refresh {
+            background: #0f172a;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.42rem 0.9rem;
+            font-weight: 600;
+            font-size: 0.82rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+        }
+        .btn-dash-refresh:hover {
+            background: #1e293b;
+            color: #ffffff;
         }
     </style>
 
-    {{-- HEADER BANNER --}}
-    <div class="welcome-banner">
+    {{-- CARDLESS SEAMLESS WELCOME HEADER --}}
+    <div class="dash-page-header">
         <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
-            <div class="d-flex align-items-center gap-3">
-                <div class="profile-avatar-icon">
-                    <i class="ti ti-user fs-2"></i>
+            <div>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <h4 class="welcome-title mb-0">
+                        <i class="ti ti-user-circle text-muted fs-3"></i>
+                        <span>Selamat Datang, {{ auth()->user()->name }}</span>
+                    </h4>
+                    <span class="badge-role">
+                        <i class="ti ti-shield-check fs-6"></i>
+                        {{ auth()->user()->getRoleNames()->first() ?? 'Admin Unit' }}
+                    </span>
                 </div>
-                <div class="d-flex flex-column justify-content-center">
-                    <div class="title-name">Selamat Datang, {{ auth()->user()->name }}</div>
-                    <div class="subtitle-text">Kelola administrasi, jadwal, data santri & rombel unit Anda dengan efisien.</div>
-                    <div class="meta-tags">
-                        <span class="meta-item">
-                            <i class="ti ti-shield text-warning fs-6"></i>
-                            <span>{{ auth()->user()->getRoleNames()->first() ?? 'Admin Unit' }}</span>
-                        </span>
-                        @if (!empty(auth()->user()->unit))
-                            <span class="meta-item">
-                                <i class="ti ti-building text-info fs-6"></i>
-                                <span>{{ auth()->user()->unit->nama_unit ?? auth()->user()->kode_unit }}</span>
-                            </span>
-                        @endif
-                    </div>
+                <div class="welcome-meta">
+                    <span>{{ auth()->user()->unit->nama_unit ?? ($pengaturan->nama_sekolah ?? 'Pesantren Persatuan Islam 80 Al Amin') }}</span>
+                    <span class="meta-divider">&bull;</span>
+                    <span>Monitoring Administrasi & Kesiapan Unit</span>
                 </div>
             </div>
 
-            <div class="clock-box d-none d-md-flex">
+            <div class="text-md-end d-none d-md-block">
                 <div class="clock-date" id="currentDate"></div>
                 <div class="clock-time" id="currentTime"></div>
             </div>
@@ -134,37 +148,37 @@
     </div>
 
     {{-- FILTER TOOLBAR --}}
-    <div class="card mb-4 border-0" style="border-radius: 1.25rem; border: 1px solid #e9ecef !important; background: #ffffff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);">
-        <div class="card-body p-3 px-4">
-            <div class="row align-items-center g-3">
-                <div class="col-12 col-md-6">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="avatar avatar-md rounded-3 d-flex align-items-center justify-content-center" style="background-color: #0f172a; color: #ffffff;">
-                            <i class="ti ti-layout-dashboard fs-4"></i>
-                        </div>
-                        <div>
-                            <h6 class="mb-0 fw-bold" style="color: #0f172a; font-size: 1rem;">Monitoring Kesiapan Unit</h6>
-                            <span style="font-size: 0.78rem; color: #64748b;">Status kurikulum, jadwal pelajaran, data santri & rombel</span>
-                        </div>
+    <div class="dash-filter-card">
+        <div class="row align-items-center g-3">
+            <div class="col-12 col-md-6">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="icon-badge">
+                        <i class="ti ti-chart-dots-3"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold" style="color: #0f172a; font-size: 0.98rem; letter-spacing: -0.2px;">Monitoring Kesiapan Unit</h6>
+                        <span style="font-size: 0.78rem; color: #64748b;">Status kurikulum, jadwal pelajaran, data santri & rombel</span>
                     </div>
                 </div>
-                <div class="col-12 col-md-6">
-                    <div class="d-flex flex-wrap align-items-center justify-content-md-end gap-2">
-                        <div class="input-group input-group-merge" style="width: auto; min-width: 175px;">
-                            <span class="input-group-text" style="background-color: #f8fafc; border-color: #e2e8f0;"><i class="ti ti-calendar-event text-primary"></i></span>
-                            <select id="filter_kode_ta" class="form-select form-select-sm fw-semibold" style="border-color: #e2e8f0; color: #0f172a; border-radius: 0 8px 8px 0;">
-                                @foreach ($tahunajaran as $ta)
-                                    <option value="{{ $ta->kode_ta }}" {{ ($activeTa && $activeTa->kode_ta == $ta->kode_ta) ? 'selected' : '' }}>
-                                        TA {{ $ta->tahun_ajaran }} {{ $ta->status == '1' ? '(Aktif)' : '' }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <input type="hidden" id="filter_kode_unit" value="{{ auth()->user()->kode_unit }}">
-                        <button type="button" class="btn btn-sm btn-dark d-flex align-items-center gap-1.5 fw-semibold" id="btnRefreshReport" style="border-radius: 8px; padding: 0.45rem 0.9rem;" title="Refresh Data">
-                            <i class="ti ti-refresh fs-6"></i> <span>Refresh</span>
-                        </button>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="d-flex flex-wrap align-items-center justify-content-md-end gap-2">
+                    <div class="input-group input-group-merge" style="width: auto; min-width: 175px;">
+                        <span class="input-group-text" style="background-color: #f8fafc; border-color: #e2e8f0;"><i class="ti ti-calendar-event text-primary"></i></span>
+                        <select id="filter_kode_ta" class="form-select form-select-sm custom-select-box" style="border-radius: 0 8px 8px 0;">
+                            @foreach ($tahunajaran as $ta)
+                                <option value="{{ $ta->kode_ta }}" {{ ($activeTa && $activeTa->kode_ta == $ta->kode_ta) ? 'selected' : '' }}>
+                                    TA {{ $ta->tahun_ajaran }} {{ $ta->status == '1' ? '(Aktif)' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
+
+                    <input type="hidden" id="filter_kode_unit" value="{{ auth()->user()->kode_unit }}">
+
+                    <button type="button" class="btn btn-dash-refresh" id="btnRefreshReport" title="Segarkan Data Kesiapan">
+                        <i class="ti ti-refresh fs-6"></i> <span>Refresh</span>
+                    </button>
                 </div>
             </div>
         </div>

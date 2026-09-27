@@ -80,5 +80,27 @@ class WebsiteUpdatePermissionSeeder extends Seeder
             Permission::firstOrCreate(['name' => $p, 'id_permission_group' => $groupVisiMisi->id]);
             $role->givePermissionTo($p);
         }
+
+        // 6. Tentang Pesantren
+        $groupTentang = Permission_group::firstOrCreate(['name' => 'Tentang Pesantren']);
+        $permissionsTentang = [
+            'tentang-pesantren.index',
+            'tentang-pesantren.store-or-update',
+        ];
+        foreach ($permissionsTentang as $p) {
+            Permission::firstOrCreate(['name' => $p, 'id_permission_group' => $groupTentang->id]);
+            $role->givePermissionTo($p);
+        }
+
+        // 7. PPDB Setting
+        $groupPpdb = Permission_group::firstOrCreate(['name' => 'PPDB Setting']);
+        $permissionsPpdb = [
+            'ppdb-setting.index',
+            'ppdb-setting.store',
+        ];
+        foreach ($permissionsPpdb as $p) {
+            Permission::firstOrCreate(['name' => $p, 'id_permission_group' => $groupPpdb->id]);
+            $role->givePermissionTo($p);
+        }
     }
 }

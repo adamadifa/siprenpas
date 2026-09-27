@@ -99,12 +99,9 @@ class RoleController extends Controller
     public function createrolepermission($id)
     {
         $id = Crypt::decrypt($id);
-        $permissions = Permission::orderBy('id_permission_group')
-            ->selectRaw('id_permission_group,permission_groups.name as group_name,GROUP_CONCAT(permissions.id,"-",permissions.name) as permissions')
-            ->join('permission_groups', 'permissions.id_permission_group', '=', 'permission_groups.id')
-            ->groupBy('id_permission_group')
-            ->groupBy('permission_groups.name')
-            ->get();
+        $permissions = Permission_group::with(['permissions' => function ($q) {
+            $q->orderBy('name');
+        }])->has('permissions')->orderBy('id')->get();
 
         $role = Role::findById($id);
         $rolepermissions = $role->permissions->pluck('name')->toArray();

@@ -1,42 +1,98 @@
-{{-- Report Kelengkapan Data: Ultra-Clean SaaS Dashboard Aesthetic (Card Grid Only) --}}
+{{-- Report Kelengkapan Data: Ultra-Clean SaaS Dashboard Aesthetic with Global KPI Cards --}}
 <style>
     .clean-dashboard-wrapper {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* KPI Summary Stat Cards */
+    .kpi-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 1.2rem 1.4rem;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.07);
+    }
+    .kpi-card .kpi-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+    .kpi-icon.icon-blue { background: #eff6ff; color: #2563eb; }
+    .kpi-icon.icon-emerald { background: #ecfdf5; color: #059669; }
+    .kpi-icon.icon-amber { background: #fffbeb; color: #d97706; }
+    .kpi-icon.icon-purple { background: #faf5ff; color: #7c3aed; }
+
+    .kpi-title {
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #64748b;
+        margin-bottom: 0.2rem;
+    }
+    .kpi-value {
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+    }
+    .kpi-sub {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-top: 0.35rem;
     }
 
     /* Unit Clean Cards */
     .clean-unit-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
-        border-radius: 0.75rem;
+        border-radius: 1rem;
         padding: 1.4rem;
-        transition: all 0.2s ease;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        transition: all 0.25s ease;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
     .clean-unit-card:hover {
         border-color: #cbd5e1;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08);
     }
 
     .unit-avatar-box {
-        width: 46px;
-        height: 46px;
-        border-radius: 8px;
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
         background: #f8fafc;
         border: 1px solid #e2e8f0;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 700;
-        color: #0f172a;
-        font-size: 1rem;
+        font-weight: 800;
+        color: #064e3b;
+        font-size: 1.05rem;
         overflow: hidden;
         flex-shrink: 0;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
     }
     .unit-avatar-box img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
     }
 
     .clean-segment-track {
@@ -48,13 +104,16 @@
 
     .clean-badge-pill {
         border-radius: 100px;
-        padding: 0.2rem 0.65rem;
-        font-size: 0.72rem;
-        font-weight: 600;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.74rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
     }
 
     .metric-row {
-        padding: 0.65rem 0;
+        padding: 0.7rem 0;
         border-bottom: 1px solid #f8fafc;
     }
     .metric-row:last-child {
@@ -63,7 +122,7 @@
     }
 
     .metric-name {
-        font-size: 0.8rem;
+        font-size: 0.82rem;
         font-weight: 600;
         color: #334155;
     }
@@ -75,8 +134,8 @@
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        padding: 0.22rem 0.65rem;
-        border-radius: 6px;
+        padding: 0.25rem 0.7rem;
+        border-radius: 8px;
         transition: all 0.2s ease;
         border: 1px solid transparent;
         line-height: 1.2;
@@ -101,28 +160,111 @@
         color: #ffffff;
         border-color: #f59e0b;
     }
+
+    .btn-action-unit {
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.76rem;
+        padding: 0.35rem 0.75rem;
+    }
 </style>
 
 <div class="clean-dashboard-wrapper" id="captureAllUnitsWrapper">
-    {{-- Header Section Rekap Unit --}}
+
+    {{-- 1. KPI GLOBAL OVERVIEW (SUMMARY STATS) --}}
+    @if(isset($summary))
+    <div class="row g-3 mb-4">
+        {{-- Total Santri Aktif --}}
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="kpi-card h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="kpi-title">Total Santri</div>
+                        <div class="kpi-value">{{ number_format($summary['total_santri'] ?? 0, 0, ',', '.') }}</div>
+                        <div class="kpi-sub">Santri terdaftar & aktif</div>
+                    </div>
+                    <div class="kpi-icon icon-blue">
+                        <i class="ti ti-users"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Profil Santri Lengkap --}}
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="kpi-card h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="kpi-title">Profil Santri Lengkap</div>
+                        <div class="kpi-value text-success">
+                            {{ $summary['persen_santri_lengkap'] ?? 0 }}%
+                        </div>
+                        <div class="kpi-sub">{{ $summary['total_santri_lengkap'] ?? 0 }} dari {{ $summary['total_santri'] ?? 0 }} santri</div>
+                    </div>
+                    <div class="kpi-icon icon-emerald">
+                        <i class="ti ti-id-badge-2"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Ploting Kelas / Rombel --}}
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="kpi-card h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="kpi-title">Ploting Rombel</div>
+                        <div class="kpi-value text-primary">
+                            {{ $summary['persen_santri_plotted'] ?? 0 }}%
+                        </div>
+                        <div class="kpi-sub">{{ $summary['total_santri_plotted'] ?? 0 }} santri sudah masuk kelas</div>
+                    </div>
+                    <div class="kpi-icon icon-purple">
+                        <i class="ti ti-layout-grid"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Jadwal Pelajaran Terplot --}}
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="kpi-card h-100">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="kpi-title">Kesiapan Jadwal</div>
+                        <div class="kpi-value text-warning">
+                            {{ $summary['persen_jadwal'] ?? 0 }}%
+                        </div>
+                        <div class="kpi-sub">{{ $summary['total_kelas_jadwal'] ?? 0 }}/{{ $summary['total_kelas'] ?? 0 }} rombel terjadwal</div>
+                    </div>
+                    <div class="kpi-icon icon-amber">
+                        <i class="ti ti-calendar-time"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- 2. HEADER REKAPITULASI UNIT --}}
     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-3">
         <div>
             <h6 class="mb-0 fw-bold text-dark" style="font-size: 1.05rem; letter-spacing: -0.2px;">
                 Rekapitulasi Kesiapan Unit Pendidikan
             </h6>
-            <div class="text-muted" style="font-size: 0.78rem;">Monitoring kesiapan 4 pilar operasional per unit • Tahun Ajaran: <strong>{{ $selectedTa ? $selectedTa->tahun_ajaran : $kode_ta }}</strong></div>
+            <div class="text-muted" style="font-size: 0.78rem;">Monitoring 4 pilar operasional per unit pendidikan • TA: <strong>{{ $selectedTa ? $selectedTa->tahun_ajaran : $kode_ta }}</strong></div>
         </div>
         <div class="d-flex align-items-center gap-2" id="headerActionRekap">
             <span class="badge clean-badge-pill" style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;">
-                <i class="ti ti-school me-1 text-primary"></i> {{ count($reportData) }} Unit Terdaftar
+                <i class="ti ti-school text-primary"></i> {{ count($reportData) }} Unit Terdaftar
             </span>
-            <button type="button" class="btn btn-xs btn-success d-flex align-items-center gap-1.5 fw-semibold shadow-sm" id="btnDownloadAllUnits" title="Download Gambar Rekap Seluruh Unit untuk WhatsApp / Laporan" style="border-radius: 8px; padding: 0.35rem 0.75rem;">
+            <button type="button" class="btn btn-sm btn-success d-flex align-items-center gap-1.5 fw-semibold shadow-sm" id="btnDownloadAllUnits" title="Download Gambar Rekap Seluruh Unit untuk WhatsApp / Laporan" style="border-radius: 8px; padding: 0.4rem 0.85rem; font-size: 0.8rem;">
                 <i class="ti ti-download fs-6"></i> <span>Unduh Rekap Semua Unit</span>
             </button>
         </div>
     </div>
 
-    {{-- Unit Card Grid --}}
+    {{-- 3. UNIT CARDS GRID --}}
     <div class="row g-3">
         @forelse ($reportData as $row)
             @php
@@ -135,38 +277,41 @@
                 $hasJadwal = $row['has_jadwal'] ?? true;
 
                 if ($score >= 80) {
-                    $badgeStyle = 'background: #dcfce7; color: #15803d;';
+                    $badgeStyle = 'background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0;';
                     $labelKesiapan = 'Lengkap';
+                    $scoreColor = '#15803d';
                 } elseif ($score >= 40) {
-                    $badgeStyle = 'background: #fef3c7; color: #b45309;';
+                    $badgeStyle = 'background: #fef3c7; color: #b45309; border: 1px solid #fde68a;';
                     $labelKesiapan = 'Dalam Proses';
+                    $scoreColor = '#b45309';
                 } else {
-                    $badgeStyle = 'background: #fee2e2; color: #b91c1c;';
+                    $badgeStyle = 'background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca;';
                     $labelKesiapan = 'Belum Siap';
+                    $scoreColor = '#b91c1c';
                 }
             @endphp
             <div class="col-12 col-md-6 col-xl-4">
-                <div class="clean-unit-card h-100 d-flex flex-column justify-content-between" id="card-unit-{{ $u->kode_unit }}">
+                <div class="clean-unit-card h-100" id="card-unit-{{ $u->kode_unit }}">
                     <div>
                         {{-- Top: Unit Header --}}
-                        <div class="d-flex align-items-center justify-content-between pb-4 mb-3.5 border-bottom" style="border-color: #f1f5f9 !important;">
+                        <div class="d-flex align-items-center justify-content-between pb-3 mb-3 border-bottom" style="border-color: #f1f5f9 !important;">
                             <div class="d-flex align-items-center gap-3 overflow-hidden me-2">
                                 @if (!empty($u->logo))
                                     <img src="{{ asset('storage/' . $u->logo) }}" alt="{{ $u->nama_unit }}" class="flex-shrink-0" style="width: 44px; height: 44px; object-fit: contain;">
                                 @else
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-dark flex-shrink-0" style="width: 44px; height: 44px; background: #f1f5f9; font-size: 0.95rem;">
+                                    <div class="unit-avatar-box">
                                         {{ substr($u->nama_unit, 0, 2) }}
                                     </div>
                                 @endif
                                 <div class="overflow-hidden">
-                                    <div class="fw-bold text-dark text-truncate" style="font-size: 0.94rem; letter-spacing: -0.2px; line-height: 1.3;" title="{{ $u->nama_unit }}">
+                                    <div class="fw-bold text-dark text-truncate" style="font-size: 0.96rem; letter-spacing: -0.2px; line-height: 1.3;" title="{{ $u->nama_unit }}">
                                         {{ $u->nama_unit }}
                                     </div>
                                     <div class="mt-0.5" style="font-size: 0.76rem; color: #64748b;">Kode Unit: <strong class="text-dark">{{ $u->kode_unit }}</strong></div>
                                 </div>
                             </div>
                             <span class="badge clean-badge-pill flex-shrink-0" style="{{ $badgeStyle }}">
-                                {{ $score }}% • {{ $labelKesiapan }}
+                                <span style="font-size: 0.82rem; font-weight: 800;">{{ $score }}%</span> • {{ $labelKesiapan }}
                             </span>
                         </div>
 
@@ -198,7 +343,7 @@
                                         </div>
                                     </div>
                                     <div class="clean-segment-track mb-1.5">
-                                        <div class="h-100 {{ $jadwal['persen'] == 100 ? 'bg-success' : 'bg-primary' }}" style="width: {{ $jadwal['persen'] }}%;"></div>
+                                        <div class="h-100 {{ $jadwal['persen'] == 100 ? 'bg-success' : 'bg-primary' }}" style="width: {{ $jadwal['persen'] }}%; border-radius: 100px;"></div>
                                     </div>
                                     <div class="d-flex align-items-center justify-content-between">
                                         <span style="font-size: 0.74rem; color: #64748b;">{{ $jadwal['total_sesi'] }} Jam Pelajaran</span>
@@ -224,7 +369,7 @@
                                     </div>
                                 </div>
                                 <div class="clean-segment-track mb-1.5">
-                                    <div class="h-100 {{ $santri['persen'] >= 80 ? 'bg-success' : ($santri['persen'] >= 40 ? 'bg-warning' : 'bg-danger') }}" style="width: {{ $santri['persen'] }}%;"></div>
+                                    <div class="h-100 {{ $santri['persen'] >= 80 ? 'bg-success' : ($santri['persen'] >= 40 ? 'bg-warning' : 'bg-danger') }}" style="width: {{ $santri['persen'] }}%; border-radius: 100px;"></div>
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between">
                                     @if ($santri['belum_lengkap'] > 0)
@@ -236,7 +381,7 @@
                                             <span>Periksa</span> <i class="ti ti-arrow-right fs-6"></i>
                                         </button>
                                     @else
-                                        <span class="text-success fw-semibold" style="font-size: 0.74rem;">100% Lengkap</span>
+                                        <span class="text-success fw-semibold" style="font-size: 0.74rem;"><i class="ti ti-check me-0.5"></i> 100% Lengkap</span>
                                     @endif
                                 </div>
                             </div>
@@ -253,7 +398,7 @@
                                     </div>
                                 </div>
                                 <div class="clean-segment-track mb-1.5">
-                                    <div class="h-100 bg-primary" style="width: {{ $ploting['persen'] }}%;"></div>
+                                    <div class="h-100 bg-primary" style="width: {{ $ploting['persen'] }}%; border-radius: 100px;"></div>
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between">
                                     @if ($ploting['belum_plotted'] > 0)
@@ -265,7 +410,7 @@
                                             <span>Daftar</span> <i class="ti ti-arrow-right fs-6"></i>
                                         </button>
                                     @else
-                                        <span class="text-success fw-semibold" style="font-size: 0.74rem;">100% Ter-plot</span>
+                                        <span class="text-success fw-semibold" style="font-size: 0.74rem;"><i class="ti ti-check me-0.5"></i> 100% Ter-plot</span>
                                     @endif
                                 </div>
                             </div>
@@ -276,10 +421,10 @@
                     <div class="pt-3 mt-3 border-top d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center gap-1.5">
                             <div class="dropdown">
-                                <button class="btn btn-xs btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="border-radius: 8px; font-weight: 500;">
-                                    Menu Unit
+                                <button class="btn btn-xs btn-outline-secondary dropdown-toggle btn-action-unit" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="ti ti-category me-1"></i> Menu Unit
                                 </button>
-                                <ul class="dropdown-menu shadow-sm" style="font-size: 0.82rem; border-radius: 10px;">
+                                <ul class="dropdown-menu shadow-lg border-0" style="font-size: 0.82rem; border-radius: 10px;">
                                     <li>
                                         <a class="dropdown-item py-1.5" href="{{ route('mata-pelajaran.index', ['kode_unit' => $u->kode_unit]) }}">
                                             <i class="ti ti-book me-1.5 text-primary"></i> Mata Pelajaran
@@ -304,13 +449,13 @@
                             </div>
 
                             {{-- Tombol Download Gambar --}}
-                            <button type="button" class="btn btn-xs btn-outline-success btn-download-unit-card d-flex align-items-center gap-1" data-card-id="card-unit-{{ $u->kode_unit }}" data-unit-name="{{ $u->nama_unit }}" title="Download Rekap Gambar untuk WhatsApp / Grup" style="border-radius: 8px; font-weight: 500;">
-                                <i class="ti ti-download fs-6"></i> <span>Unduh Gambar</span>
+                            <button type="button" class="btn btn-xs btn-outline-success btn-download-unit-card btn-action-unit d-flex align-items-center gap-1" data-card-id="card-unit-{{ $u->kode_unit }}" data-unit-name="{{ $u->nama_unit }}" title="Download Rekap Gambar untuk WhatsApp / Grup">
+                                <i class="ti ti-download fs-6"></i> <span>Unduh</span>
                             </button>
                         </div>
 
-                        <a href="{{ route('kelas.index', ['kode_unit_search' => $u->kode_unit, 'kode_ta' => $kode_ta]) }}" class="btn btn-xs btn-dark d-flex align-items-center gap-1" style="border-radius: 8px; font-weight: 500;">
-                            <span>Kelola Unit</span> <i class="ti ti-arrow-right" style="font-size: 0.75rem;"></i>
+                        <a href="{{ route('kelas.index', ['kode_unit_search' => $u->kode_unit, 'kode_ta' => $kode_ta]) }}" class="btn btn-xs btn-dark btn-action-unit d-flex align-items-center gap-1">
+                            <span>Kelola</span> <i class="ti ti-arrow-right" style="font-size: 0.75rem;"></i>
                         </a>
                     </div>
                 </div>

@@ -856,6 +856,9 @@
                         'kategori.index',
                         'post.index',
                         'pages.index',
+                        'tentang-pesantren.index',
+                        'visimisi.index',
+                        'ppdb-setting.index',
                         'testimonials.index',
                         'prestasisiswa.index',
                         'programunggulan.index',
@@ -899,21 +902,27 @@
                             </a>
                         </li>
                     @endcan
-                    <li class="menu-item {{ request()->is(['tentang-pesantren']) || request()->routeIs('tentang-pesantren.*') ? 'active' : '' }}">
-                        <a href="{{ route('tentang-pesantren.index') }}" class="menu-link">
-                            <div>Tentang Pesantren</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ request()->is(['visimisi']) ? 'active' : '' }}">
-                        <a href="{{ route('visimisi.index') }}" class="menu-link">
-                            <div>Visi & Misi</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ request()->is(['ppdb-setting', 'ppdb-setting/*']) ? 'active' : '' }}">
-                        <a href="{{ route('ppdb-setting.index') }}" class="menu-link">
-                            <div>PPDB</div>
-                        </a>
-                    </li>
+                    @can('tentang-pesantren.index')
+                        <li class="menu-item {{ request()->is(['tentang-pesantren']) || request()->routeIs('tentang-pesantren.*') ? 'active' : '' }}">
+                            <a href="{{ route('tentang-pesantren.index') }}" class="menu-link">
+                                <div>Tentang Pesantren</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('visimisi.index')
+                        <li class="menu-item {{ request()->is(['visimisi']) ? 'active' : '' }}">
+                            <a href="{{ route('visimisi.index') }}" class="menu-link">
+                                <div>Visi & Misi</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('ppdb-setting.index')
+                        <li class="menu-item {{ request()->is(['ppdb-setting', 'ppdb-setting/*']) ? 'active' : '' }}">
+                            <a href="{{ route('ppdb-setting.index') }}" class="menu-link">
+                                <div>PPDB</div>
+                            </a>
+                        </li>
+                    @endcan
                     @can('testimonials.index')
                         <li class="menu-item {{ request()->is(['testimonials', 'testimonials/*']) ? 'active' : '' }}">
                             <a href="{{ route('testimonials.index') }}" class="menu-link">

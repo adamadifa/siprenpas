@@ -19,6 +19,7 @@ class Post extends Model
         'title',
         'slug',
         'category_id',
+        'kode_unit',
         'user_id',
         'content',
         'image'
@@ -27,6 +28,11 @@ class Post extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class, 'kode_unit', 'kode_unit');
     }
 
     public function user()

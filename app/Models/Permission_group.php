@@ -12,4 +12,9 @@ class Permission_group extends Model
     protected $fillable = [
         'name'
     ];
+
+    public function permissions()
+    {
+        return $this->hasMany(\Spatie\Permission\Models\Permission::class, 'id_permission_group', 'id');
+    }
 }

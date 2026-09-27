@@ -58,9 +58,19 @@
             <div class="card-body p-0">
                 <form action="{{ route('post.index') }}" class="form-filter">
                     <div class="row g-3 align-items-center">
-                        <div class="col-lg-11 col-md-10">
+                        <div class="col-lg-6 col-md-5">
                             <x-input-with-icon label="" value="{{ Request('title') }}" name="title"
                                 placeholder="Cari Judul Artikel" icon="ti ti-search" />
+                        </div>
+                        <div class="col-lg-5 col-md-5">
+                            <select name="kode_unit" class="form-select select2" onchange="this.form.submit()">
+                                <option value="">Semua Unit</option>
+                                @foreach ($units as $u)
+                                    <option value="{{ $u->kode_unit }}" {{ Request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>
+                                        {{ $u->nama_unit }} ({{ $u->kode_unit }})
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="col-lg-1 col-md-2">
                             <button type="submit" class="btn btn-primary w-100 p-2 d-flex align-items-center justify-content-center"
@@ -86,6 +96,7 @@
                                 <th class="text-white py-3" style="width: 1%;">NO.</th>
                                 <th class="text-white py-3" style="width: 100px;">IMAGE</th>
                                 <th class="text-white py-3">JUDUL</th>
+                                <th class="text-white py-3">UNIT</th>
                                 <th class="text-white py-3">KATEGORI</th>
                                 <th class="text-white py-3 text-end" style="width: 80px;">#</th>
                             </tr>
@@ -110,7 +121,12 @@
                                     </td>
                                     <td class="py-2 fw-bold text-dark">{{ $d->title }}</td>
                                     <td class="py-2">
-                                        <span class="badge bg-label-success">{{ $d->category->name }}</span>
+                                        <span class="badge bg-label-primary">
+                                            {{ $d->unit->nama_unit ?? $d->kode_unit ?? '-' }}
+                                        </span>
+                                    </td>
+                                    <td class="py-2">
+                                        <span class="badge bg-label-success">{{ $d->category->name ?? '-' }}</span>
                                     </td>
                                     <td class="py-2 text-end">
                                         <div class="d-flex justify-content-end gap-1">
@@ -137,7 +153,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center p-5">
+                                    <td colspan="6" class="text-center p-5">
                                         <div class="mb-3">
                                             <i class="ti ti-news fs-1 opacity-25"></i>
                                         </div>

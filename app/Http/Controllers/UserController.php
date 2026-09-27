@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Departemen;
 use App\Models\Jabatan;
+use App\Models\Permission_group;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -251,12 +252,9 @@ class UserController extends Controller
         $id = Crypt::decrypt($id);
         $user = User::with(['roles.permissions', 'permissions'])->findOrFail($id);
 
-        $permissions = Permission::orderBy('id_permission_group')
-            ->selectRaw('id_permission_group,permission_groups.name as group_name,GROUP_CONCAT(permissions.id,"-",permissions.name) as permissions')
-            ->join('permission_groups', 'permissions.id_permission_group', '=', 'permission_groups.id')
-            ->groupBy('id_permission_group')
-            ->groupBy('permission_groups.name')
-            ->get();
+        $permissions = Permission_group::with(['permissions' => function ($q) {
+            $q->orderBy('name');
+        }])->has('permissions')->orderBy('id')->get();
 
         // Permissions inherited from roles (read-only/locked)
         $rolePermissions = $user->getPermissionsViaRoles()->pluck('name')->unique()->toArray();

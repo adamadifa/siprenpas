@@ -14,10 +14,20 @@
     
     <x-input-file name="image" label="Gambar Baru (opsional)" />
     <x-input-with-icon-label icon="ti ti-file-text" label="Judul" name="title" value="{{ old('title', $post->title) }}" />
+    <div class="form-group mb-3">
+        <label for="kode_unit" style="font-weight: 600" class="form-label">Unit</label>
+        <select name="kode_unit" id="kode_unit" class="form-select" required>
+            @foreach ($units as $u)
+                <option value="{{ $u->kode_unit }}" {{ old('kode_unit', $post->kode_unit) == $u->kode_unit ? 'selected' : '' }}>
+                    {{ $u->nama_unit }} ({{ $u->kode_unit }})
+                </option>
+            @endforeach
+        </select>
+    </div>
     <label for="category_id" style="font-weight: 600" class="form-label">Kategori</label>
-    <div class="form-group">
-        <select name="category_id" id="category_id" class="form-select">
-            <option value="">Kategori</option>
+    <div class="form-group mb-3">
+        <select name="category_id" id="category_id" class="form-select" required>
+            <option value="">Pilih Kategori</option>
             @foreach ($categories as $d)
                 <option value="{{ $d->id }}" {{ old('category_id', $post->category_id) == $d->id ? 'selected' : '' }}>
                     {{ $d->name }}
