@@ -59,6 +59,7 @@
                             <tr>
                                 <th class="text-white py-3">KODE</th>
                                 <th class="text-white py-3">JENIS BIAYA</th>
+                                <th class="text-white py-3 text-center" style="width: 180px;">TAMPIL DI LANDING PAGE</th>
                                 <th class="text-white py-3 text-end" style="width: 100px;">#</th>
                             </tr>
                         </thead>
@@ -67,6 +68,15 @@
                                 <tr>
                                     <td class="py-1"><span class="fw-bold">{{ $d->kode_jenis_biaya }}</span></td>
                                     <td class="py-1">{{ $d->jenis_biaya }}</td>
+                                    <td class="py-1 text-center">
+                                        <div class="form-check form-switch d-inline-block">
+                                            <input class="form-check-input toggle-landing" type="checkbox" role="switch"
+                                                id="toggle_{{ $d->kode_jenis_biaya }}"
+                                                kode_jenis_biaya="{{ Crypt::encrypt($d->kode_jenis_biaya) }}"
+                                                {{ $d->tampilkan_di_landing ? 'checked' : '' }}
+                                                style="cursor: pointer; width: 2.4em; height: 1.25em;">
+                                        </div>
+                                    </td>
                                     <td class="py-1 text-end">
                                         <div class="d-flex justify-content-end gap-1">
                                             @can('jenisbiaya.edit')
@@ -92,7 +102,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="text-center p-5">
+                                    <td colspan="4" class="text-center p-5">
                                         <div class="mb-3">
                                             <i class="ti ti-credit-card fs-1 opacity-25"></i>
                                         </div>
@@ -128,6 +138,49 @@
             $('#modal').modal("show");
             $(".modal-title").text("Edit Jenis Biaya");
             $("#loadmodal").load(`/jenisbiaya/${kode_jenis_biaya}/edit`);
+        });
+
+        // Quick AJAX Toggle Tampilkan di Landing Page
+        $(document).on('change', '.toggle-landing', function() {
+            const el = $(this);
+            const kode_jenis_biaya = el.attr('kode_jenis_biaya');
+            const isChecked = el.is(':checked') ? 1 : 0;
+
+            $.ajax({
+                url: `/jenisbiaya/${kode_jenis_biaya}/toggle-landing`,
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    status: isChecked
+                },
+                success: function(res) {
+                    if (typeof Swal !== 'undefined') {
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true
+                        });
+                        Toast.fire({
+                            icon: 'success',
+                            title: res.message || 'Status berhasil diubah'
+                        });
+                    }
+                },
+                error: function(err) {
+                    el.prop('checked', !isChecked);
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Gagal memperbarui status tampilan'
+                        });
+                    } else {
+                        alert('Gagal memperbarui status');
+                    }
+                }
+            });
         });
     });
 </script>

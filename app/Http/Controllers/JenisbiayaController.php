@@ -31,6 +31,7 @@ class JenisbiayaController extends Controller
             Jenisbiaya::create([
                 'kode_jenis_biaya' => $request->kode_jenis_biaya,
                 'jenis_biaya' => $request->jenis_biaya,
+                'tampilkan_di_landing' => $request->has('tampilkan_di_landing') ? 1 : 0,
             ]);
 
             return Redirect::back()->with(messageSuccess('Data Berhasil Disimpan'));
@@ -57,11 +58,37 @@ class JenisbiayaController extends Controller
         try {
             Jenisbiaya::where('kode_jenis_biaya', $kode_jenis_biaya)->update([
                 'jenis_biaya' => $request->jenis_biaya,
+                'tampilkan_di_landing' => $request->has('tampilkan_di_landing') ? 1 : 0,
             ]);
 
             return Redirect::back()->with(messageSuccess('Data Berhasil Disimpan'));
         } catch (\Exception $e) {
             return Redirect::back()->with(messageError($e->getMessage()));
+        }
+    }
+
+    /**
+     * Quick toggle tampilkan di landing page via Switch / Checkbox
+     */
+    public function toggleLanding(Request $request, $kode_jenis_biaya)
+    {
+        $kode_jenis_biaya = Crypt::decrypt($kode_jenis_biaya);
+        $status = $request->input('status', 0);
+
+        try {
+            Jenisbiaya::where('kode_jenis_biaya', $kode_jenis_biaya)->update([
+                'tampilkan_di_landing' => $status ? 1 : 0,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status tampilan landing page berhasil diperbarui'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
     public function destroy($kode_jenis_biaya)

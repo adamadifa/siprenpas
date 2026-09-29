@@ -430,6 +430,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/jenisbiaya', 'store')->name('jenisbiaya.store')->can('jenisbiaya.store');
         Route::get('/jenisbiaya/{kode_jenis_biaya}/edit', 'edit')->name('jenisbiaya.edit')->can('jenisbiaya.edit');
         Route::put('/jenisbiaya/{kode_jenis_biaya}/update', 'update')->name('jenisbiaya.update')->can('jenisbiaya.update');
+        Route::post('/jenisbiaya/{kode_jenis_biaya}/toggle-landing', 'toggleLanding')->name('jenisbiaya.togglelanding')->can('jenisbiaya.edit');
         Route::delete('/jenisbiaya/{kode_jenis_biaya}/delete', 'destroy')->name('jenisbiaya.delete')->can('jenisbiaya.delete');
     });
 

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('titlepage', 'Setting Landing Page Unit - ' . $unit->nama_unit)
 
-@push('myscript')
+@push('styles')
 <style>
     /* Styling Standar Admin Dashboard Profesional - Clean & Semi-Formal */
     .landing-card {
@@ -10,6 +10,19 @@
         border-radius: 12px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
+
+    /* Wrapper utama: pastikan tidak ada overflow yang memotong sticky */
+    .landing-settings-wrapper {
+        align-items: flex-start !important;
+    }
+
+    .landing-sidebar-col {
+        position: sticky !important;
+        top: 85px !important;
+        z-index: 100 !important;
+        align-self: flex-start !important;
+    }
+
     .landing-sidebar-card {
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -145,7 +158,6 @@
 </style>
 @endpush
 
-@section('content')
 @section('navigasi')
     <div class="card shadow-none bg-transparent border-0 mb-3">
         <div class="card-body p-0">
@@ -178,13 +190,14 @@
     </div>
 @endsection
 
+@section('content')
 <form action="{{ route('unit.update-landing-setting', Crypt::encrypt($unit->kode_unit)) }}" method="POST" enctype="multipart/form-data">
     @csrf
 
-    <div class="row g-4">
+    <div class="row g-4 landing-settings-wrapper">
         <!-- Sidebar Navigation Tabs -->
-        <div class="col-lg-3 col-md-4">
-            <div class="landing-sidebar-card sticky-top" style="top: 20px; z-index: 10;">
+        <div class="col-lg-3 col-md-4 landing-sidebar-col">
+            <div class="landing-sidebar-card">
                 <div class="sidebar-unit-header d-flex align-items-center gap-3">
                     @if ($unit->logo && Storage::disk('public')->exists($unit->logo))
                         <div class="p-1 bg-white rounded-2 border flex-shrink-0">
@@ -959,12 +972,52 @@
                             </div>
 
                             <div class="col-md-6">
+                                <label class="form-label-custom">Teks Tombol Aksi Utama</label>
+                                <input type="text" class="form-control form-control-custom" name="cta_button_text" value="{{ old('cta_button_text', $setting->cta_button_text) }}" placeholder="Contoh: Daftar Santri Baru">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label-custom">URL / Link Tombol Aksi</label>
+                                <input type="text" class="form-control form-control-custom" name="cta_button_url" value="{{ old('cta_button_url', $setting->cta_button_url) }}" placeholder="Contoh: /register">
+                            </div>
+
+                            <div class="col-md-6">
                                 <label class="form-label-custom">Pesan Otomatis WhatsApp</label>
                                 <input type="text" class="form-control form-control-custom" name="cta_wa_text" value="{{ old('cta_wa_text', $setting->cta_wa_text) }}" placeholder="Contoh: Halo Admin, saya ingin tanya rincian pendaftaran...">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label-custom">Nomor WhatsApp CS Khusus Unit</label>
                                 <input type="text" class="form-control form-control-custom" name="unit_whatsapp" value="{{ old('unit_whatsapp', $setting->unit_whatsapp) }}" placeholder="08xxxxxxxxxx">
+                            </div>
+
+                            <!-- Upload Foto Model Banner CTA -->
+                            <div class="col-md-12 mt-2">
+                                <div class="form-sub-section">
+                                    <div class="form-sub-section-header">
+                                        <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                                            <i class="ti ti-camera text-success"></i> Foto Model Banner CTA (Ajakan Daftar)
+                                        </h6>
+                                    </div>
+                                    <div class="row align-items-center g-3">
+                                        <div class="col-md-7">
+                                            <label class="form-label-custom">Upload Foto Model Banner Baru (Transparan PNG / WebP)</label>
+                                            <input type="file" class="form-control form-control-custom" name="cta_model_image" accept="image/*">
+                                            <div class="alert alert-success border border-success border-opacity-25 py-2 px-3 mt-2 mb-0 d-flex align-items-center gap-2" style="background-color: #f0fdf4; border-color: #bbf7d0;">
+                                                <i class="ti ti-info-circle text-success fs-5"></i>
+                                                <small style="color: #166534;">Foto model/maskot santri ceria untuk Banner CTA penutup. Sistem otomatis mengompresi ke <strong>WebP kualitas tinggi</strong>.</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5 text-center">
+                                            <label class="form-label-custom d-block text-start">Foto Model CTA Aktif</label>
+                                            <div class="preview-box-custom p-2 d-flex align-items-center justify-content-center" style="min-height: 120px;">
+                                                @if ($setting->cta_model_image && Storage::disk('public')->exists($setting->cta_model_image))
+                                                    <img src="{{ asset('storage/' . $setting->cta_model_image) }}" alt="CTA Model" class="img-fluid rounded" style="max-height: 110px; object-fit: contain;">
+                                                @else
+                                                    <span class="text-muted small"><i class="ti ti-photo-off me-1"></i> Belum ada foto model khusus CTA (akan memakai model hero / default)</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="col-md-12 mt-3">
@@ -1210,6 +1263,33 @@
                 }
             });
         }
+
+        // Ketika admin berpindah tab, scroll viewport ke atas tab-content area
+        // Mencegah browser auto-scroll ke tab button yang di-focus
+        const tabBtns = document.querySelectorAll('#landingTab button[data-bs-toggle="pill"]');
+        tabBtns.forEach(btn => {
+            // Prevent browser focus scroll on the button itself
+            btn.addEventListener('focus', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+
+            btn.addEventListener('shown.bs.tab', function(e) {
+                // Cari elemen target tab-pane yang aktif
+                const targetSelector = e.target.getAttribute('data-bs-target');
+                const targetPane = document.querySelector(targetSelector);
+                if (targetPane) {
+                    // Hitung posisi tab-pane dari atas viewport
+                    const rect = targetPane.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const navbarHeight = 75; // tinggi navbar/header
+                    const targetTop = rect.top + scrollTop - navbarHeight - 10;
+                    window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Pastikan saat halaman pertama kali load, posisi scroll di atas
+        window.scrollTo({ top: 0, behavior: 'instant' });
     });
 </script>
 @endpush
