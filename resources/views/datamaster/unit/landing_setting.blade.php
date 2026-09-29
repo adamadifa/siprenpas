@@ -283,8 +283,39 @@
                                 <textarea class="form-control form-control-custom" name="hero_description" rows="3" placeholder="Tuliskan deskripsi memikat mengenai keunggulan unit...">{{ old('hero_description', $setting->hero_description) }}</textarea>
                             </div>
 
-                            <!-- Upload Visual Model -->
+                            <!-- Upload Background Image Hero -->
                             <div class="col-md-12 mt-4">
+                                <div class="form-sub-section">
+                                    <div class="form-sub-section-header">
+                                        <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                                            <i class="ti ti-photo text-success"></i> Foto Background Hero Section (Latar Belakang)
+                                        </h6>
+                                    </div>
+                                    <div class="row align-items-center g-3">
+                                        <div class="col-md-7">
+                                            <label class="form-label-custom">Upload Foto Background Baru (Landscape JPG / PNG / WebP)</label>
+                                            <input type="file" class="form-control form-control-custom" name="hero_background_image" accept="image/*">
+                                            <div class="alert alert-success border border-success border-opacity-25 py-2 px-3 mt-2 mb-0 d-flex align-items-center gap-2" style="background-color: #f0fdf4; border-color: #bbf7d0;">
+                                                <i class="ti ti-info-circle text-success fs-5"></i>
+                                                <small style="color: #166534;">Disarankan resolusi landscape (min. 1920x1080px). Sistem otomatis mengompresi ke <strong>WebP</strong>.</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5 text-center">
+                                            <label class="form-label-custom d-block text-start">Background Aktif</label>
+                                            <div class="preview-box-custom p-2 d-flex align-items-center justify-content-center" style="min-height: 130px;">
+                                                @if ($setting->hero_background_image && Storage::disk('public')->exists($setting->hero_background_image))
+                                                    <img src="{{ asset('storage/' . $setting->hero_background_image) }}" alt="Hero Background" class="img-fluid rounded" style="max-height: 120px; width: 100%; object-fit: cover;">
+                                                @else
+                                                    <span class="text-muted small"><i class="ti ti-photo-off me-1"></i> Menggunakan background default template</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Upload Visual Model -->
+                            <div class="col-md-12 mt-3">
                                 <div class="form-sub-section">
                                     <div class="form-sub-section-header">
                                         <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
@@ -334,6 +365,57 @@
                                         <div class="col-md-4">
                                             <label class="form-label-custom">Status Badge</label>
                                             <input type="text" class="form-control form-control-custom" name="hero_badge_status" value="{{ old('hero_badge_status', $setting->hero_badge_status) }}" placeholder="Contoh: Kuota Terbatas">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3 Feature Badges on Bottom Hero Section -->
+                            <div class="col-md-12 mt-3">
+                                <div class="form-sub-section">
+                                        <div class="form-sub-section-header">
+                                            <div>
+                                                <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                                                    <i class="ti ti-badge text-success"></i> 3 Kartu Fitur Hero Section (Bawah Tombol CTA)
+                                                </h6>
+                                                <small class="text-muted">3 pilar poin ringkas yang tampil di baris bawah teks Hero (Contoh: Kurikulum Terpadu, Pendidik Berdedikasi, Lingkungan Kondusif).</small>
+                                            </div>
+                                        </div>
+                                        @php
+                                            $defaultHeroFeatures = [
+                                                ['icon' => 'ti-book', 'title' => 'Kurikulum Terpadu', 'desc' => 'Kemenag & Pesantren'],
+                                                ['icon' => 'ti-certificate', 'title' => 'Pendidik Berdedikasi', 'desc' => 'Hufadz & Profesional'],
+                                                ['icon' => 'ti-shield-check', 'title' => 'Lingkungan Kondusif', 'desc' => 'Boarding & Full Day'],
+                                            ];
+                                            $currFeatures = (!empty($setting->hero_features) && count($setting->hero_features) > 0)
+                                                ? $setting->hero_features
+                                                : $defaultHeroFeatures;
+                                        @endphp
+                                        <div class="row g-3">
+                                            @for($hf = 0; $hf < 3; $hf++)
+                                                @php
+                                                    $fVal = $currFeatures[$hf] ?? ($defaultHeroFeatures[$hf] ?? ['icon' => 'ti-star', 'title' => '', 'desc' => '']);
+                                                @endphp
+                                                <div class="col-md-4">
+                                                    <div class="dynamic-item-card p-3 h-100">
+                                                        <div class="d-flex align-items-center gap-2 mb-2 pb-2 border-bottom">
+                                                            <span class="badge bg-success bg-opacity-10 text-success fw-bold">Fitur {{ $hf + 1 }}</span>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label class="form-label-custom">Icon Tabler</label>
+                                                            <input type="text" class="form-control form-control-custom" name="hero_features[{{ $hf }}][icon]" value="{{ old("hero_features.{$hf}.icon", $fVal['icon'] ?? 'ti-star') }}" placeholder="Contoh: ti-book / ti-certificate">
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label class="form-label-custom">Judul Fitur</label>
+                                                            <input type="text" class="form-control form-control-custom" name="hero_features[{{ $hf }}][title]" value="{{ old("hero_features.{$hf}.title", $fVal['title'] ?? '') }}" placeholder="Contoh: Kurikulum Terpadu">
+                                                        </div>
+                                                        <div>
+                                                            <label class="form-label-custom">Subjudul / Keterangan</label>
+                                                            <input type="text" class="form-control form-control-custom" name="hero_features[{{ $hf }}][desc]" value="{{ old("hero_features.{$hf}.desc", $fVal['desc'] ?? '') }}" placeholder="Contoh: Kemenag & Pesantren">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endfor
                                         </div>
                                     </div>
                                 </div>
@@ -729,6 +811,55 @@
                             <div class="col-md-12">
                                 <label class="form-label-custom">Deskripsi Pengantar</label>
                                 <textarea class="form-control form-control-custom" name="testimoni_description" rows="2" placeholder="Deskripsi kata orang tua...">{{ old('testimoni_description', $setting->testimoni_description) }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Foto Galeri Samping Testimoni (3 Foto Galeri / Kegiatan Santri) -->
+                        <div class="form-sub-section mb-4">
+                            <div class="form-sub-section-header">
+                                <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                                    <i class="ti ti-photo-plus text-success"></i> 3 Foto Dokumentasi Kegiatan (Samping Testimoni)
+                                </h6>
+                            </div>
+                            <div class="row g-3">
+                                <!-- Foto 1 -->
+                                <div class="col-md-4">
+                                    <label class="form-label-custom">Foto Galeri 1 (Kiri Atas)</label>
+                                    <input type="file" class="form-control form-control-custom bg-white" name="testimoni_image_1" accept="image/*">
+                                    <div class="preview-box-custom p-1.5 mt-2 d-flex align-items-center justify-content-center" style="height: 90px;">
+                                        @if ($setting->testimoni_image_1 && Storage::disk('public')->exists($setting->testimoni_image_1))
+                                            <img src="{{ asset('storage/' . $setting->testimoni_image_1) }}" alt="Testimoni Foto 1" class="img-fluid rounded" style="max-height: 80px; width: 100%; object-fit: cover;">
+                                        @else
+                                            <span class="text-muted small" style="font-size: 0.75rem;"><i class="ti ti-photo me-1"></i> Foto Default 1</span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <!-- Foto 2 -->
+                                <div class="col-md-4">
+                                    <label class="form-label-custom">Foto Galeri 2 (Tengah)</label>
+                                    <input type="file" class="form-control form-control-custom bg-white" name="testimoni_image_2" accept="image/*">
+                                    <div class="preview-box-custom p-1.5 mt-2 d-flex align-items-center justify-content-center" style="height: 90px;">
+                                        @if ($setting->testimoni_image_2 && Storage::disk('public')->exists($setting->testimoni_image_2))
+                                            <img src="{{ asset('storage/' . $setting->testimoni_image_2) }}" alt="Testimoni Foto 2" class="img-fluid rounded" style="max-height: 80px; width: 100%; object-fit: cover;">
+                                        @else
+                                            <span class="text-muted small" style="font-size: 0.75rem;"><i class="ti ti-photo me-1"></i> Foto Default 2</span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <!-- Foto 3 -->
+                                <div class="col-md-4">
+                                    <label class="form-label-custom">Foto Galeri 3 (Kanan Bawah)</label>
+                                    <input type="file" class="form-control form-control-custom bg-white" name="testimoni_image_3" accept="image/*">
+                                    <div class="preview-box-custom p-1.5 mt-2 d-flex align-items-center justify-content-center" style="height: 90px;">
+                                        @if ($setting->testimoni_image_3 && Storage::disk('public')->exists($setting->testimoni_image_3))
+                                            <img src="{{ asset('storage/' . $setting->testimoni_image_3) }}" alt="Testimoni Foto 3" class="img-fluid rounded" style="max-height: 80px; width: 100%; object-fit: cover;">
+                                        @else
+                                            <span class="text-muted small" style="font-size: 0.75rem;"><i class="ti ti-photo me-1"></i> Foto Default 3</span>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

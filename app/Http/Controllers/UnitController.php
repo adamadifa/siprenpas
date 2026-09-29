@@ -240,6 +240,21 @@ class UnitController extends Controller
             $setting->hero_badge_status = $request->hero_badge_status;
             $setting->hero_badge_icon = $request->hero_badge_icon;
 
+            // Hero 3 Feature Badges on Bottom
+            if ($request->has('hero_features')) {
+                $features = [];
+                foreach ($request->input('hero_features') as $f) {
+                    if (!empty($f['title'])) {
+                        $features[] = [
+                            'icon' => $f['icon'] ?? 'ti-book',
+                            'title' => $f['title'] ?? '',
+                            'desc' => $f['desc'] ?? '',
+                        ];
+                    }
+                }
+                $setting->hero_features = $features;
+            }
+
             // Stats
             $setting->stat_1_val = $request->stat_1_val;
             $setting->stat_1_label = $request->stat_1_label;
@@ -290,6 +305,12 @@ class UnitController extends Controller
             $setting->unit_youtube = $request->unit_youtube;
 
             // Handle File Uploads (WebP Conversion)
+            if ($request->hasFile('hero_background_image')) {
+                $file = $request->file('hero_background_image');
+                $filename = 'hero_bg_' . $kode_unit . '_' . time() . '.webp';
+                $setting->hero_background_image = $this->storeAsWebp($file, 'landing_units', $filename);
+            }
+
             if ($request->hasFile('hero_model_image')) {
                 $file = $request->file('hero_model_image');
                 $filename = 'hero_model_' . $kode_unit . '_' . time() . '.webp';
@@ -306,6 +327,25 @@ class UnitController extends Controller
                 $file = $request->file('cta_model_image');
                 $filename = 'cta_model_' . $kode_unit . '_' . time() . '.webp';
                 $setting->cta_model_image = $this->storeAsWebp($file, 'landing_units', $filename);
+            }
+
+            // Handle Testimoni Side Gallery Images (3 Photos)
+            if ($request->hasFile('testimoni_image_1')) {
+                $file = $request->file('testimoni_image_1');
+                $filename = 'testi_gal1_' . $kode_unit . '_' . time() . '.webp';
+                $setting->testimoni_image_1 = $this->storeAsWebp($file, 'landing_units', $filename);
+            }
+
+            if ($request->hasFile('testimoni_image_2')) {
+                $file = $request->file('testimoni_image_2');
+                $filename = 'testi_gal2_' . $kode_unit . '_' . time() . '.webp';
+                $setting->testimoni_image_2 = $this->storeAsWebp($file, 'landing_units', $filename);
+            }
+
+            if ($request->hasFile('testimoni_image_3')) {
+                $file = $request->file('testimoni_image_3');
+                $filename = 'testi_gal3_' . $kode_unit . '_' . time() . '.webp';
+                $setting->testimoni_image_3 = $this->storeAsWebp($file, 'landing_units', $filename);
             }
 
             // Handle Dynamic Program Unggulan Items & Images

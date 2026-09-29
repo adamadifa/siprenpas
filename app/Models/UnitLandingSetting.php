@@ -17,6 +17,7 @@ class UnitLandingSetting extends Model
     protected $guarded = [];
 
     protected $casts = [
+        'hero_features' => 'array',
         'custom_programs' => 'array',
         'custom_fasilitas' => 'array',
         'custom_testimoni' => 'array',
