@@ -253,6 +253,9 @@ Route::middleware('auth')->group(function () {
         Route::put('/unit/{kode_unit}/update', 'update')->name('unit.update')->can('unit.update');
         Route::delete('/unit/{kode_unit}/delete', 'destroy')->name('unit.delete')->can('unit.delete');
 
+        Route::get('/unit/{kode_unit}/landing-setting', 'landingSetting')->name('unit.landing-setting')->can('unit.edit');
+        Route::post('/unit/{kode_unit}/landing-setting', 'updateLandingSetting')->name('unit.update-landing-setting')->can('unit.edit');
+
         //AJAX REQUEST
         Route::post('/unit/gettingkatbyunit', 'gettingkatbyunit')->name('unit.gettingkatbyunit');
         Route::post('/unit/getkelasbytingkat', 'getkelasbytingkat')->name('unit.getkelasbytingkat');

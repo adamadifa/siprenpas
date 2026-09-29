@@ -50,4 +50,9 @@ class Unit extends Model
             ->orderBy('kode_unit')
             ->get();
     }
+
+    public function landingSetting()
+    {
+        return $this->hasOne(UnitLandingSetting::class, 'kode_unit', 'kode_unit');
+    }
 }

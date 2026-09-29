@@ -111,8 +111,15 @@
                                     <td class="py-1 text-end">
                                         <div class="d-flex justify-content-end gap-1">
                                             @can('unit.edit')
+                                                <a href="{{ route('unit.landing-setting', Crypt::encrypt($d->kode_unit)) }}" 
+                                                    class="btn btn-icon btn-label-primary border"
+                                                    style="width: 28px; height: 28px;"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Setting Landing Page">
+                                                    <i class="ti ti-browser-check fs-6"></i>
+                                                </a>
                                                 <a href="#" class="btn btn-icon btn-label-success border editUnit"
                                                     style="width: 28px; height: 28px;"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Unit"
                                                     kode_unit="{{ Crypt::encrypt($d->kode_unit) }}">
                                                     <i class="ti ti-edit fs-6"></i>
                                                 </a>
@@ -123,7 +130,8 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <a href="#" class="btn btn-icon btn-label-danger border delete-confirm"
-                                                        style="width: 28px; height: 28px;">
+                                                        style="width: 28px; height: 28px;"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus Unit">
                                                         <i class="ti ti-trash fs-6"></i>
                                                     </a>
                                                 </form>
