@@ -308,6 +308,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/gallery/{gallery}', 'destroy')->name('gallery.destroy');
         Route::get('/gallery/{gallery}', 'show')->name('gallery.show');
         Route::post('/gallery/{gallery}/photos', 'uploadPhoto')->name('gallery.photos.upload');
+        Route::post('/gallery/{gallery}/photos/{photo}/toggle-hero', 'toggleHero')->name('gallery.photos.toggle-hero');
         Route::delete('/gallery/{gallery}/photos/{photo}', 'destroyPhoto')->name('gallery.photos.destroy');
     });
 

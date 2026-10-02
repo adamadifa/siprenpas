@@ -125,6 +125,28 @@ class GalleryAlbumController extends Controller
 
         return redirect()->route('gallery.show', $gallery->id)->with('success', 'Foto berhasil dihapus.');
     }
+
+    public function toggleHero(Request $request, GalleryAlbum $gallery, GalleryPhoto $photo)
+    {
+        $photo->is_hero = !$photo->is_hero;
+        $photo->save();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'is_hero' => $photo->is_hero,
+                'message' => $photo->is_hero 
+                    ? 'Foto berhasil ditambahkan ke Hero Landing Page.' 
+                    : 'Foto berhasil dihapus dari Hero Landing Page.',
+            ]);
+        }
+
+        $msg = $photo->is_hero 
+            ? 'Foto berhasil ditambahkan ke Hero Landing Page.' 
+            : 'Foto berhasil dihapus dari Hero Landing Page.';
+
+        return redirect()->route('gallery.show', $gallery->id)->with('success', $msg);
+    }
 }
 
 

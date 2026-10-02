@@ -13,6 +13,11 @@ class GalleryPhoto extends Model
         'gallery_album_id',
         'title',
         'path',
+        'is_hero',
+    ];
+
+    protected $casts = [
+        'is_hero' => 'boolean',
     ];
 
     public function album()
