@@ -537,11 +537,11 @@
 <x-modal-form id="modal" size="modal-xl" show="loadmodal" title="" />
 <x-modal-form id="modalpotongan" size="" show="loadmodalpotongan" title="" />
 <x-modal-form id="modalmutasi" size="" show="loadmodalmutasi" title="" />
-<x-modal-form id="modalrencanaspp" size="" show="loadmodalrencanaspp" title="" />
-<x-modal-form id="modaleditrencanaspp" size="" show="loadeditrencanaspp" title="" />
-<x-modal-form id="modalpembayaran" size="modal-lg" show="loadmodalpembayaran" title="" />
-<x-modal-form id="modalDetailbayar" size="modal-lg" show="loaddetailbayar" title="" />
-<x-modal-form id="modaleditbiaya" size="" show="loadeditbiaya" title="" />
+<x-modal-form id="modalrencanaspp" size="modal-lg" show="loadmodalrencanaspp" title="" />
+<x-modal-form id="modaleditrencanaspp" size="modal-lg" show="loadeditrencanaspp" title="" />
+<x-modal-form id="modalpembayaran" size="modal-xl" show="loadmodalpembayaran" title="" />
+<x-modal-form id="modalDetailbayar" size="modal-xl" show="loaddetailbayar" title="" />
+<x-modal-form id="modaleditbiaya" size="modal-lg" show="loadeditbiaya" title="" />
 
 <!-- Modal Proses Keluar Tabel -->
 <div class="modal fade" id="modalProsesKeluarTabel" tabindex="-1" aria-hidden="true">
@@ -1256,15 +1256,15 @@
                 return false;
             } else {
                 let data = `<tr id="index_${kode_biaya+kode_jenis_biaya}" class="hover:bg-slate-50/60 transition-colors">
-                    <td class="py-2.5 px-3.5 font-bold text-slate-800">${jenis_biaya}</td>
-                    <td class='text-end py-2.5 px-3.5 font-mono font-bold text-emerald-700 jmlbayar'>${convertToRupiah(jumlah)}</td>
-                    <td class="py-2.5 px-3.5 text-slate-600 text-xs">${keterangan || '-'}</td>
-                    <td class="py-2.5 px-3.5 text-center">
+                    <td class="py-2 px-3.5 font-bold text-slate-800">${jenis_biaya}</td>
+                    <td class='text-end py-2 px-3.5 font-mono font-bold text-emerald-700 jmlbayar'>${convertToRupiah(jumlah)}</td>
+                    <td class="py-2 px-3.5 text-slate-600 text-xs">${keterangan || '-'}</td>
+                    <td class="py-2 px-3.5 text-center">
                         <input type="hidden" name="kode_biaya[]" value="${kode_biaya}" />
                         <input type="hidden" name="kode_jenis_biaya[]" value="${kode_jenis_biaya}" />
                         <input type="hidden" name="keterangan[]" value="${keterangan}" />
                         <input type="hidden" name="jumlah[]" value="${jumlah}" />
-                        <a href="#" key="${kode_biaya+kode_jenis_biaya}" class="delete w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/80 inline-flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs" title="Hapus Item">
+                        <a href="#" key="${kode_biaya+kode_jenis_biaya}" class="delete w-6 h-6 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/80 inline-flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs" title="Hapus Item">
                             <i class="ti ti-trash text-xs"></i>
                         </a>
                     </td>
