@@ -214,6 +214,16 @@ class UnitController extends Controller
     public function landingSetting($kode_unit)
     {
         $kode_unit = Crypt::decrypt($kode_unit);
+        $user = auth()->user();
+
+        // Authorization check: Super Admin / Admin with unit.edit, or Admin Unit managing their own unit
+        $isSuperOrAdmin = $user->hasRole(['super admin', 'admin']) || $user->can('unit.edit');
+        $isAdminUnit = $user->hasRole(['admin unit', 'admin tu']) && ($user->kode_unit === $kode_unit);
+
+        if (!$isSuperOrAdmin && !$isAdminUnit) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengelola landing page unit ini.');
+        }
+
         $unit = Unit::with('landingSetting')->where('kode_unit', $kode_unit)->firstOrFail();
         $setting = $unit->landingSetting ?? new \App\Models\UnitLandingSetting(['kode_unit' => $kode_unit]);
 
@@ -226,6 +236,16 @@ class UnitController extends Controller
     public function updateLandingSetting(Request $request, $kode_unit)
     {
         $kode_unit = Crypt::decrypt($kode_unit);
+        $user = auth()->user();
+
+        // Authorization check
+        $isSuperOrAdmin = $user->hasRole(['super admin', 'admin']) || $user->can('unit.edit');
+        $isAdminUnit = $user->hasRole(['admin unit', 'admin tu']) && ($user->kode_unit === $kode_unit);
+
+        if (!$isSuperOrAdmin && !$isAdminUnit) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengelola landing page unit ini.');
+        }
+
         $unit = Unit::where('kode_unit', $kode_unit)->firstOrFail();
 
         try {

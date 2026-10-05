@@ -593,7 +593,8 @@
         <!-- ================= 8. WEBSITE & INFORMASI ================= -->
         @if (auth()->check() && (
             auth()->user()->hasAnyPermission(['kategori.index', 'post.index', 'sebaran-alumni.index', 'pages.index', 'tentang-pesantren.index', 'visimisi.index', 'ppdb-setting.index', 'testimonials.index', 'prestasisiswa.index', 'programunggulan.index', 'pilarpendidikan.index', 'gallery.index']) ||
-            auth()->user()->hasAnyPermission(['pengumuman.index', 'kategori-pengumuman.index', 'push-subscriptions.index'])
+            auth()->user()->hasAnyPermission(['pengumuman.index', 'kategori-pengumuman.index', 'push-subscriptions.index']) ||
+            auth()->user()->hasAnyRole(['admin unit', 'admin tu'])
         ))
             <div>
                 <div class="px-3 pb-1 text-[10.5px] font-bold text-emerald-300/80 uppercase tracking-wider">Website & Informasi</div>
@@ -661,6 +662,19 @@
                             </a>
                         </li>
                     @endcan
+
+                    @if (auth()->check() && (auth()->user()->hasAnyRole(['admin unit', 'admin tu']) || auth()->user()->can('unit.edit')) && auth()->user()->kode_unit)
+                        @php 
+                            $userUnitEnc = Crypt::encrypt(auth()->user()->kode_unit);
+                            $active = request()->is(['unit/*/landing-setting', 'unit/' . auth()->user()->kode_unit . '/landing-setting']);
+                        @endphp
+                        <li>
+                            <a href="{{ route('unit.landing-setting', $userUnitEnc) }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-browser text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Landing Page Unit</span>
+                            </a>
+                        </li>
+                    @endif
                     @can('testimonials.index')
                         @php $active = request()->is(['testimonials', 'testimonials/*']); @endphp
                         <li>

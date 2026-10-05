@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('titlepage', 'IT Admin Dashboard') - {{ $pengaturan->nama_aplikasi ?? 'SmartHR' }}</title>
+    <title>@yield('titlepage', 'IT Admin Dashboard') - {{ $pengaturan->nama_aplikasi ?? 'SIPREN' }}</title>
 
     <!-- Google Fonts: Plus Jakarta Sans & Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1268,7 +1268,7 @@
                 <!-- Footer -->
                 <footer class="px-6 py-4 border-t border-slate-200/80 bg-white text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2 mt-auto">
                     <div>
-                        2014-2026 © <span class="font-bold text-slate-700">{{ $pengaturan->nama_aplikasi ?? 'SmartHR' }}</span>.
+                        2014-2026 © <span class="font-bold text-slate-700">{{ $pengaturan->nama_aplikasi ?? 'SIPREN' }}</span>.
                     </div>
                     <div class="flex items-center gap-4 text-slate-400">
                         <span>Designed & Developed By <b class="text-slate-600">Dreams</b></span>
@@ -1277,6 +1277,9 @@
             </main>
         </div>
     </div>
+
+    <!-- Spotlight Command Palette (Mac-style Search) -->
+    @include('layouts.spotlight')
 
     <!-- Core JS (jQuery, Bootstrap 5, SweetAlert2 & Flatpickr) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

@@ -3,16 +3,27 @@
     <!-- Left: Brand Logo & Sidebar Toggle -->
     <div class="flex items-center gap-4">
         <!-- Logo Brand -->
-        <a href="{{ route('dashboard.index') }}" class="flex items-center gap-2 group">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-sm shadow-emerald-600/30">
-                <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 16a6 6 0 1 1 6-6 6 6 0 0 1-6 6z"/>
-                </svg>
-            </div>
-            <div class="flex items-center">
-                <span class="font-extrabold text-lg tracking-tight text-slate-900 leading-none">
-                    Smart<span class="text-emerald-600">HR</span>
+        <a href="{{ route('dashboard.index') }}" class="flex items-center gap-2.5 group">
+            @if(isset($pengaturan) && $pengaturan->logo)
+                <div class="w-9 h-9 rounded-xl bg-white border border-slate-200/80 shadow-2xs p-1 flex items-center justify-center overflow-hidden">
+                    <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="Logo" class="w-full h-full object-contain">
+                </div>
+            @else
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-sm shadow-emerald-600/30">
+                    <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 16a6 6 0 1 1 6-6 6 6 0 0 1-6 6z"/>
+                    </svg>
+                </div>
+            @endif
+            <div class="flex flex-col">
+                <span class="font-extrabold text-base sm:text-lg tracking-tight text-slate-900 leading-none">
+                    {{ $pengaturan->nama_aplikasi ?? 'SIPREN' }}
                 </span>
+                @if(isset($pengaturan) && $pengaturan->nama_sekolah)
+                    <span class="text-[10px] font-semibold text-slate-400 leading-tight truncate max-w-[140px] sm:max-w-[180px]">
+                        {{ $pengaturan->nama_sekolah }}
+                    </span>
+                @endif
             </div>
         </a>
 
@@ -31,19 +42,19 @@
         </button>
     </div>
 
-    <!-- Center: Search Input Bar -->
+    <!-- Center: Search Input Bar (Mac Spotlight Trigger) -->
     <div class="hidden md:flex items-center flex-1 max-w-sm mx-6">
-        <div class="relative w-full">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                <i class="ti ti-search text-sm"></i>
+        <button type="button" 
+                onclick="openSpotlight()"
+                class="w-full pl-3 pr-2.5 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/90 focus:bg-white border border-slate-200/90 hover:border-emerald-500/40 rounded-xl text-slate-500 hover:text-slate-800 transition duration-150 flex items-center justify-between cursor-pointer group shadow-2xs">
+            <div class="flex items-center gap-2 text-slate-400 group-hover:text-slate-600">
+                <i class="ti ti-search text-sm text-emerald-600"></i>
+                <span class="text-slate-400 group-hover:text-slate-600 text-xs font-medium">Cari menu cepat...</span>
             </div>
-            <input type="text" 
-                   placeholder="Search in HRMS" 
-                   class="w-full pl-8 pr-20 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-200/90 rounded-lg text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition duration-150">
-            <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center gap-1">
-                <kbd class="px-1.5 py-0.5 text-[9px] font-semibold text-slate-400 bg-white border border-slate-200 rounded shadow-2xs">CTRL + /</kbd>
+            <div class="flex items-center gap-1">
+                <kbd class="px-1.5 py-0.5 text-[9px] font-bold text-slate-400 bg-white border border-slate-200/90 rounded-md shadow-2xs group-hover:border-slate-300">⌘ K</kbd>
             </div>
-        </div>
+        </button>
     </div>
 
     <!-- Right: Action Icons & User Profile -->
