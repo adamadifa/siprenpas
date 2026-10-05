@@ -69,7 +69,10 @@
                     <i class="ti ti-receipt-2 text-slate-400 text-sm"></i>
                     <span>Pos / Jenis Biaya <span class="text-rose-500 font-bold">*</span></span>
                 </label>
-                <div>
+                <div class="relative select2-icon-wrapper">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 z-10">
+                        <i class="ti ti-receipt-2 text-base"></i>
+                    </div>
                     <select name="kode_biaya" id="kode_biaya" class="select2-biaya w-full">
                         <option value="">-- Pilih Pos / Jenis Biaya --</option>
                         @foreach ($biaya as $d)
@@ -226,6 +229,9 @@
         align-items: center !important;
         box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
         transition: all 0.2s ease !important;
+    }
+    .select2-icon-wrapper .select2-container--default .select2-selection--single {
+        padding-left: 28px !important;
     }
     .select2-container--default.select2-container--open .select2-selection--single,
     .select2-container--default.select2-container--focus .select2-selection--single {
