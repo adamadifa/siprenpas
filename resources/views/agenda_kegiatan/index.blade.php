@@ -2,354 +2,335 @@
 @section('titlepage', 'Agenda Kegiatan')
 
 @section('content')
-@section('navigasi')
-    <div class="card shadow-none bg-transparent border-0 mb-3">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
-                        <i class="ti ti-calendar-event fs-3"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Agenda Kegiatan</h4>
-                        <p class="text-muted mb-0 small">Manajemen perencanaan agenda dan kegiatan pesantren</p>
-                    </div>
-                </div>
-                <div class="d-flex flex-column align-items-end">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb breadcrumb-style1 mb-0">
-                            <li class="breadcrumb-item">
-                                <a href="javascript:void(0);" class="text-muted">
-                                    <i class="ti ti-home-2 me-1"></i> Dashboard
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active">
-                                <i class="ti ti-calendar-event me-1"></i> Agenda Kegiatan
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
+<div class="space-y-6">
+
+    <!-- ================= 1. PAGE HEADER & BREADCRUMB ================= -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Title & Subtitle -->
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl shrink-0 font-bold border border-emerald-200 shadow-2xs">
+                <i class="ti ti-calendar-event"></i>
+            </div>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                    Agenda Kegiatan
+                </h1>
+                <p class="text-xs text-slate-500 font-medium">
+                    Manajemen dan monitoring rencana agenda kegiatan seluruh unit & departemen pesantren
+                </p>
+            </div>
+        </div>
+
+        <!-- Breadcrumb & Top Actions -->
+        <div class="flex flex-col md:items-end gap-2.5">
+            <nav class="flex items-center text-xs text-slate-400 font-medium">
+                <a href="{{ route('dashboard.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="text-slate-500">MSDM & Layanan</span>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="font-bold text-slate-800">Agenda Kegiatan</span>
+            </nav>
+
+            <div class="flex flex-wrap items-center gap-2">
+                @can('agendakegiatan.create')
+                    <button type="button" 
+                            id="btncreateAgendaKegiatan"
+                            class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-xs transition active:scale-95 cursor-pointer">
+                        <i class="ti ti-plus text-sm"></i>
+                        <span>Tambah Agenda</span>
+                    </button>
+                @endcan
+
+                @if(auth()->check() && auth()->user()->hasRole('super admin'))
+                    <form method="POST" action="{{ route('agendakegiatan.reset') }}" class="inline-block m-0" id="formResetAgendaKegiatan">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" 
+                                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white font-bold rounded-lg text-xs border border-rose-200 transition active:scale-95 cursor-pointer btn-reset-confirm"
+                                title="Reset semua data agenda kegiatan">
+                            <i class="ti ti-rotate text-sm"></i>
+                            <span>Reset</span>
+                        </button>
+                    </form>
+                @endif
             </div>
         </div>
     </div>
-@endsection
 
-<div class="row">
-    <div class="col-lg-12">
-        <!-- Actions Section -->
-        <div class="d-flex justify-content-start mb-3 gap-2">
-            @can('agendakegiatan.create')
-                <button class="btn d-flex align-items-center gap-2 shadow-sm text-white" id="btncreateAgendaKegiatan"
-                    style="background-color: #064e3b">
-                    <i class="ti ti-plus fs-4"></i>
-                    <span>Tambah Agenda Kegiatan</span>
-                </button>
-            @endcan
+    <!-- ================= 2. FILTER & SEARCH TOOLBAR ================= -->
+    <form action="{{ route('agendakegiatan.index') }}" method="GET" id="myForm" class="w-full">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 {{ $user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris']) ? 'lg:grid-cols-6' : 'lg:grid-cols-3' }} gap-2.5 sm:gap-3 w-full items-center">
+            
+            <!-- Dari Tanggal -->
+            <div class="relative">
+                <i class="ti ti-calendar absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                <input type="text" 
+                       name="dari" 
+                       id="dari" 
+                       value="{{ request('dari') }}" 
+                       placeholder="Dari Tanggal" 
+                       class="w-full pl-9 pr-3.5 py-2.5 text-xs sm:text-sm bg-white border border-slate-300/90 rounded-lg text-slate-700 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition placeholder-slate-400 flatpickr-date">
+            </div>
 
-            @if(auth()->check() && auth()->user()->hasRole('super admin'))
-                <form method="POST" action="{{ route('agendakegiatan.reset') }}" class="d-inline-block" id="formResetAgendaKegiatan">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm btn-reset-confirm"
-                        style="border-radius: 8px;">
-                        <i class="ti ti-rotate fs-4"></i>
-                        <span class="fw-semibold">Reset Agenda Kegiatan</span>
-                    </button>
-                </form>
-            @endif
-        </div>
+            <!-- Sampai Tanggal -->
+            <div class="relative">
+                <i class="ti ti-calendar-due absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                <input type="text" 
+                       name="sampai" 
+                       id="sampai" 
+                       value="{{ request('sampai') }}" 
+                       placeholder="Sampai Tanggal" 
+                       class="w-full pl-9 pr-3.5 py-2.5 text-xs sm:text-sm bg-white border border-slate-300/90 rounded-lg text-slate-700 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition placeholder-slate-400 flatpickr-date">
+            </div>
 
-        <!-- Filter Form -->
-        @php
-            $isSuperAdmin = $user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris']);
-        @endphp
-        <div class="card shadow-none border bg-transparent border-0 mb-4">
-            <div class="card-body p-0">
-                <form action="{{ route('agendakegiatan.index') }}" id="myForm">
-                    <div class="row g-3 align-items-center">
-                        <div class="col-lg col-md-6 col-12">
-                            <x-input-with-icon label="" placeholder="Dari Tanggal" name="dari" id="dari" value="{{ Request('dari') }}" datepicker="flatpickr-date" icon="ti ti-calendar" />
-                        </div>
-                        <div class="col-lg col-md-6 col-12">
-                            <x-input-with-icon label="" placeholder="Sampai Tanggal" name="sampai" id="sampai" value="{{ Request('sampai') }}" datepicker="flatpickr-date" icon="ti ti-calendar" />
-                        </div>
-                        @if ($isSuperAdmin)
-                            <div class="col-lg col-md-6 col-12">
-                                <div class="form-group mb-3">
-                                    <div class="input-group input-group-merge">
-                                        <span class="input-group-text"><i class="ti ti-building-community text-muted"></i></span>
-                                        <select name="kode_unit" id="kode_unit" class="form-select select2">
-                                            <option value="">Pilih Unit</option>
-                                            @foreach ($unit as $u)
-                                                <option value="{{ $u->kode_unit }}"
-                                                    {{ Request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>
-                                                    {{ strtoupper($u->nama_unit) }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg col-md-6 col-12">
-                                <div class="form-group mb-3">
-                                    <div class="input-group input-group-merge">
-                                        <span class="input-group-text"><i class="ti ti-building text-muted"></i></span>
-                                        <select name="kode_dept" id="kode_dept" class="form-select select2">
-                                            <option value="">Pilih Departemen</option>
-                                            @if (!empty(Request('kode_unit')))
-                                                @foreach ($departemen as $d)
-                                                    <option value="{{ $d->kode_dept }}"
-                                                        {{ Request('kode_dept') == $d->kode_dept ? 'selected' : '' }}>
-                                                        {{ strtoUpper($d->nama_dept) }}</option>
-                                                @endforeach
-                                            @endif
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg col-md-6 col-12">
-                                <div class="form-group mb-3">
-                                    <div class="input-group input-group-merge">
-                                        <span class="input-group-text"><i class="ti ti-briefcase text-muted"></i></span>
-                                        <select name="kode_jabatan" id="kode_jabatan" class="form-select select2">
-                                            <option value="">Pilih Jabatan</option>
-                                            @if (!empty(Request('kode_unit')) && !empty(Request('kode_dept')))
-                                                @foreach ($jabatan as $d)
-                                                    <option value="{{ $d->kode_jabatan }}"
-                                                        {{ Request('kode_jabatan') == $d->kode_jabatan ? 'selected' : '' }}>
-                                                        {{ strtoUpper($d->nama_jabatan) }}</option>
-                                                @endforeach
-                                            @endif
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
+            @if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris']))
+                <!-- Unit Filter -->
+                <div class="relative">
+                    <i class="ti ti-building absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                    <select name="kode_unit" id="kode_unit" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm bg-white border border-slate-300/90 rounded-lg text-slate-700 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                        <option value="">Semua Unit</option>
+                        @foreach ($unit as $u)
+                            <option value="{{ $u->kode_unit }}" {{ request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>
+                                {{ strtoupper($u->nama_unit) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Departemen Filter -->
+                <div class="relative">
+                    <i class="ti ti-sitemap absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                    <select name="kode_dept" id="kode_dept" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm bg-white border border-slate-300/90 rounded-lg text-slate-700 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                        <option value="">Semua Departemen</option>
+                        @if (!empty(request('kode_unit')))
+                            @foreach ($departemen as $d)
+                                <option value="{{ $d->kode_dept }}" {{ request('kode_dept') == $d->kode_dept ? 'selected' : '' }}>
+                                    {{ strtoupper($d->nama_dept) }}
+                                </option>
+                            @endforeach
                         @endif
-                        <div class="col-auto">
-                            <div class="form-group mb-3">
-                                <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center gap-2"
-                                    style="background-color: #064e3b; border-color: #064e3b; height: 38px; padding-left: 20px; padding-right: 20px;">
-                                    <i class="ti ti-search fs-5"></i>
-                                    <span>Cari</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-auto">
-                            <div class="form-group mb-3">
-                                <div class="d-flex gap-2" style="height: 38px;">
-                                    <button type="submit" name="cetak" value="1" id="cetakButton" class="btn btn-warning shadow-sm border-0 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
-                                        <i class="ti ti-printer fs-5"></i>
-                                    </button>
-                                    <button type="submit" name="cetak_pdf" value="1" id="cetakPdfButton" class="btn btn-danger shadow-sm border-0 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
-                                        <i class="ti ti-file-text fs-5"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                    </select>
+                </div>
+
+                <!-- Jabatan Filter -->
+                <div class="relative">
+                    <i class="ti ti-briefcase absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                    <select name="kode_jabatan" id="kode_jabatan" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm bg-white border border-slate-300/90 rounded-lg text-slate-700 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                        <option value="">Semua Jabatan</option>
+                        @if (!empty(request('kode_unit')) && !empty(request('kode_dept')))
+                            @foreach ($jabatan as $j)
+                                <option value="{{ $j->kode_jabatan }}" {{ request('kode_jabatan') == $j->kode_jabatan ? 'selected' : '' }}>
+                                    {{ strtoupper($j->nama_jabatan) }}
+                                </option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
+            @endif
+
+            <!-- Action Buttons (Cari, Cetak Print, Cetak PDF, Reset) -->
+            <div class="flex items-center gap-1.5">
+                <button type="submit" 
+                        class="flex-1 py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm rounded-lg shadow-xs transition inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 whitespace-nowrap"
+                        title="Terapkan Filter">
+                    <i class="ti ti-search text-base"></i>
+                    <span>Cari</span>
+                </button>
+                <button type="submit" 
+                        name="cetak" 
+                        value="1" 
+                        id="cetakButton" 
+                        class="py-2.5 px-2.5 bg-white hover:bg-slate-50 text-slate-700 hover:text-emerald-700 border border-slate-300/90 font-bold rounded-lg text-xs sm:text-sm shadow-xs transition inline-flex items-center justify-center cursor-pointer active:scale-95 shrink-0"
+                        title="Cetak Laporan">
+                    <i class="ti ti-printer text-base"></i>
+                </button>
+                <button type="submit" 
+                        name="cetak_pdf" 
+                        value="1" 
+                        id="cetakPdfButton" 
+                        class="py-2.5 px-2.5 bg-white hover:bg-slate-50 text-slate-700 hover:text-rose-700 border border-slate-300/90 font-bold rounded-lg text-xs sm:text-sm shadow-xs transition inline-flex items-center justify-center cursor-pointer active:scale-95 shrink-0"
+                        title="Cetak PDF">
+                    <i class="ti ti-file-text text-base"></i>
+                </button>
+                @if(request('dari') || request('sampai') || request('kode_unit') || request('kode_dept') || request('kode_jabatan'))
+                    <a href="{{ route('agendakegiatan.index') }}" class="py-2.5 px-2.5 bg-white hover:bg-slate-100 text-slate-600 border border-slate-300/90 rounded-lg font-semibold text-xs sm:text-sm transition inline-flex items-center justify-center shrink-0 shadow-xs" title="Reset Filter">
+                        <i class="ti ti-refresh text-base"></i>
+                    </a>
+                @endif
+            </div>
+
+        </div>
+    </form>
+
+    <!-- ================= 3. DATA TABLE CONTAINER ================= -->
+    <div class="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
+        <!-- Table Header Bar -->
+        <div class="px-4 py-2.5 bg-emerald-600 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-white">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-lg bg-white/20 text-white flex items-center justify-center text-xs font-bold border border-white/20 shadow-2xs">
+                    <i class="ti ti-calendar-event"></i>
+                </div>
+                <h3 class="text-xs sm:text-sm font-bold text-white tracking-tight">Daftar Agenda Kegiatan Pesantren</h3>
+            </div>
+            <div class="text-[11px] font-semibold text-emerald-100">
+                Total: <span class="font-bold text-white">{{ $agenda_kegiatan->total() }}</span> Agenda Terdaftar
             </div>
         </div>
 
-        <style>
-            @media (min-width: 768px) {
-                .border-end-md {
-                    border-right: 1px solid #eef2f6 !important;
-                }
-            }
-            .text-truncate-2 {
-                display: -webkit-box;
-                -webkit-line-clamp: 2;
-                -webkit-box-orient: vertical;
-                overflow: hidden;
-            }
-            .card-agenda {
-                transition: all 0.2s ease-in-out;
-            }
-            .card-agenda:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 .5rem 1rem rgba(0,0,0,.08) !important;
-            }
-        </style>
-
-        <div class="d-flex flex-column gap-3 mb-4">
-            @forelse ($agenda_kegiatan as $d)
-                <div class="card border-0 border-start border-success border-4 shadow-sm card-agenda">
-                    <div class="card-body p-3">
-                        <div class="row align-items-center g-3">
-                            <!-- Left Column: Date & User -->
-                            <div class="col-12 col-md-3 border-end-md">
-                                <div class="d-flex flex-column">
-                                    <span class="text-muted small fw-medium mb-1"><i class="ti ti-calendar me-1 text-success"></i>Tanggal</span>
-                                    <span class="fw-bold text-dark mb-2">{{ date('d-m-Y', strtotime($d->tanggal)) }}</span>
-                                    
-                                    <span class="text-muted small fw-medium mb-1"><i class="ti ti-user me-1 text-success"></i>Oleh</span>
-                                    <span class="text-dark small text-truncate" title="{{ $d->name }}">{{ $d->name }}</span>
+        <!-- Table -->
+        <div class="overflow-x-auto bg-emerald-600">
+            <table class="w-full text-left text-xs border-0 border-collapse">
+                <thead class="bg-emerald-600 text-white font-bold uppercase tracking-wider text-[10.5px] border-0 border-t border-b border-emerald-700/80">
+                    <tr class="border-0">
+                        <th class="py-2 px-3 w-12 text-center text-emerald-100 whitespace-nowrap">No.</th>
+                        <th class="py-2 px-3 text-emerald-100 w-32 whitespace-nowrap">Tanggal & Waktu</th>
+                        <th class="py-2 px-3 text-emerald-100 min-w-[200px]">Agenda Kegiatan</th>
+                        <th class="py-2 px-3 text-emerald-100 min-w-[280px]">Uraian Kegiatan</th>
+                        <th class="py-2 px-3 text-center text-emerald-100 whitespace-nowrap">Unit</th>
+                        <th class="py-2 px-3 text-center text-emerald-100 whitespace-nowrap">Departemen</th>
+                        <th class="py-2 px-3 text-emerald-100 whitespace-nowrap">Dibuat Oleh</th>
+                        <th class="py-2 px-3 text-center w-24 text-emerald-100 whitespace-nowrap">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-700 font-medium bg-white text-xs">
+                    @forelse ($agenda_kegiatan as $d)
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                            <td class="py-2 px-3 text-center whitespace-nowrap font-mono text-slate-500 font-bold">
+                                {{ $loop->iteration + ($agenda_kegiatan->currentPage() - 1) * $agenda_kegiatan->perPage() }}
+                            </td>
+                            <td class="py-2 px-3 whitespace-nowrap">
+                                <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                                    <i class="ti ti-calendar text-emerald-600 text-sm"></i>
+                                    <span>{{ date('d-m-Y', strtotime($d->tanggal)) }}</span>
                                 </div>
-                            </div>
-                            
-                            <!-- Middle Column: Kegiatan & Uraian -->
-                            <div class="col-12 col-md-6 border-end-md">
-                                <div class="pe-md-3">
-                                    <span class="badge bg-label-success mb-2">Agenda</span>
-                                    <h6 class="fw-bold text-dark mb-1">{{ strip_tags($d->nama_kegiatan) }}</h6>
-                                    <p class="text-muted small mb-0 text-truncate-2">
-                                        {{ strip_tags($d->uraian_kegiatan) }}
+                                <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1 font-normal">
+                                    <i class="ti ti-clock text-xs shrink-0"></i>
+                                    <span>{{ date('H:i', strtotime($d->created_at)) }} WIB</span>
+                                </div>
+                            </td>
+                            <td class="py-2 px-3">
+                                <div class="font-bold text-slate-900 leading-snug">
+                                    {{ strip_tags($d->nama_kegiatan) }}
+                                </div>
+                            </td>
+                            <td class="py-2 px-3 leading-snug text-slate-800 font-medium whitespace-pre-line">
+                                <div class="bg-slate-50/70 p-2 rounded-lg border border-slate-100 text-xs">
+                                    {{ strip_tags($d->uraian_kegiatan) }}
+                                </div>
+                            </td>
+                            <td class="py-2 px-3 text-center whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                    {{ $d->nama_unit ?? 'UMUM' }}
+                                </span>
+                            </td>
+                            <td class="py-2 px-3 text-center whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                    {{ $d->kode_dept }}
+                                </span>
+                            </td>
+                            <td class="py-2 px-3 whitespace-nowrap">
+                                <div class="font-semibold text-slate-800 text-xs flex items-center gap-1.5">
+                                    <i class="ti ti-user text-xs text-slate-400"></i>
+                                    <span class="truncate max-w-[120px]" title="{{ $d->name }}">{{ $d->name }}</span>
+                                </div>
+                            </td>
+                            <td class="py-2 px-3 text-center whitespace-nowrap">
+                                <div class="inline-flex items-center gap-1">
+                                    @can('agendakegiatan.edit')
+                                        <button type="button" 
+                                                class="btnEdit inline-flex items-center justify-center w-6.5 h-6.5 rounded-md bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white border border-blue-200 font-bold transition-all duration-150 active:scale-95 cursor-pointer shadow-2xs"
+                                                id="{{ Crypt::encrypt($d->id) }}" 
+                                                title="Edit Agenda">
+                                            <i class="ti ti-edit text-xs"></i>
+                                        </button>
+                                    @endcan
+                                    @can('agendakegiatan.delete')
+                                        <form method="POST" 
+                                              action="{{ route('agendakegiatan.delete', Crypt::encrypt($d->id)) }}" 
+                                              class="inline-block m-0 deleteform">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="delete-confirm inline-flex items-center justify-center w-6.5 h-6.5 rounded-md bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white border border-rose-200 font-bold transition-all duration-150 active:scale-95 cursor-pointer shadow-2xs"
+                                                    title="Hapus Agenda">
+                                                <i class="ti ti-trash text-xs"></i>
+                                            </button>
+                                        </form>
+                                    @endcan
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="py-10 px-4 text-center bg-white">
+                                <div class="flex flex-col items-center justify-center max-w-sm mx-auto">
+                                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-2 border border-emerald-100 shadow-2xs">
+                                        <i class="ti ti-calendar-off"></i>
+                                    </div>
+                                    <h4 class="text-xs font-bold text-slate-800 mb-0.5">Belum Ada Agenda Kegiatan</h4>
+                                    <p class="text-[11px] text-slate-400 text-center leading-relaxed mb-2.5">
+                                        Tidak ada agenda kegiatan yang tercatat sesuai kriteria pencarian / filter tanggal.
                                     </p>
+                                    @can('agendakegiatan.create')
+                                        <button type="button" 
+                                                class="btncreateAgendaKegiatanDirect inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-xs transition active:scale-95 cursor-pointer">
+                                            <i class="ti ti-plus text-xs"></i>
+                                            <span>Tambah Agenda Kegiatan</span>
+                                        </button>
+                                    @endcan
                                 </div>
-                            </div>
-
-                            <!-- Right Column: Dept & Action -->
-                            <div class="col-12 col-md-3">
-                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                    <div>
-                                        <span class="text-muted small d-block mb-1">Departemen & Unit</span>
-                                        <div class="d-flex gap-1 flex-wrap">
-                                            <span class="badge bg-success bg-opacity-10 text-success px-2 py-1">{{ $d->kode_dept }}</span>
-                                            <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1">{{ $d->nama_unit ?? 'UMUM' }}</span>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="d-flex gap-1 align-items-center">
-                                        @can('agendakegiatan.edit')
-                                            <a href="#" class="btn btn-icon btn-label-success border btnEdit"
-                                                style="width: 32px; height: 32px;"
-                                                id="{{ Crypt::encrypt($d->id) }}"
-                                                data-bs-toggle="tooltip" title="Edit">
-                                                <i class="ti ti-edit fs-5"></i>
-                                            </a>
-                                        @endcan
-                                        @can('agendakegiatan.delete')
-                                            <form method="POST" name="deleteform" class="deleteform m-0"
-                                                action="{{ route('agendakegiatan.delete', Crypt::encrypt($d->id)) }}">
-                                                @csrf
-                                                @method('DELETE')
-                                                <a href="#" class="btn btn-icon btn-label-danger border delete-confirm"
-                                                    style="width: 32px; height: 32px;"
-                                                    data-bs-toggle="tooltip" title="Hapus">
-                                                    <i class="ti ti-trash fs-5"></i>
-                                                </a>
-                                            </form>
-                                        @endcan
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body text-center p-5">
-                        <div class="mb-3">
-                            <i class="ti ti-calendar-event fs-1 text-muted opacity-50"></i>
-                        </div>
-                        <h5 class="fw-bold">Belum Ada Agenda Kegiatan</h5>
-                        <p class="text-muted mb-0">Silahkan tambah agenda baru atau sesuaikan filter pencarian.</p>
-                    </div>
-                </div>
-            @endforelse
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
 
         @if ($agenda_kegiatan->hasPages())
-            <div class="card shadow-sm mb-4">
-                <div class="card-body p-3">
-                    {{ $agenda_kegiatan->links() }}
-                </div>
+            <div class="p-3 border-t border-slate-100 bg-white">
+                {{ $agenda_kegiatan->links() }}
             </div>
         @endif
     </div>
+
 </div>
 
+<!-- Modal Container -->
 <x-modal-form id="mdlAgendaKegiatan" size="" show="loadAgendaKegiatan" title="" />
 
 @endsection
+
 @push('myscript')
-{{-- <script src="{{ asset('assets/js/pages/roles/create.js') }}"></script> --}}
-<script>
-    $('#cetakButton').click(function(e) {
-        e.preventDefault();
-        // Ambil data form menggunakan jQuery
-        const formData = $('#myForm').serialize();
-        const url = "{{ URL::current() }}";
-        // URL tujuan untuk cetak menggunakan jQuery
-        const printUrl = url + '?' + formData + '&cetak=1';
-
-        const kode_dept = $('#kode_dept').val();
-        const dari = $('#dari').val();
-        const sampai = $('#sampai').val();
-
-        if (kode_dept == '') {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Oops...',
-                text: 'Departemen tidak boleh kosong!',
-                didClose: (e) => {
-                    $('#kode_dept').focus();
-                }
-            });
-            return false;
-        } else if (dari == '' || sampai == '') {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Oops...',
-                text: 'Tanggal tidak boleh kosong!',
-                didClose: (e) => {
-                    $('#dari').focus();
-                }
-            });
-            return false;
-        } else {
-            window.open(printUrl, '_blank');
-        }
-        // Buka tab baru untuk cetak menggunakan jQuery
-    });
-</script>
 <script>
     $(function() {
-        $("#btncreateAgendaKegiatan").click(function(e) {
-            e.preventDefault();
-            $('#mdlAgendaKegiatan').modal("show");
-            $("#mdlAgendaKegiatan").find(".modal-title").text("Tambah Agenda Kegiatan");
-            $("#loadAgendaKegiatan").load('/agendakegiatan/create');
+        const loadingSpinner = `
+            <div class="flex items-center justify-center p-8">
+                <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        `;
+
+        // Init flatpickr
+        $(".flatpickr-date").flatpickr({
+            dateFormat: "Y-m-d",
+            allowInput: true
         });
 
-        $(".btnEdit").click(function(e) {
-            var id = $(this).attr("id");
-            e.preventDefault();
-            $('#mdlAgendaKegiatan').modal("show");
-            $("#mdlAgendaKegiatan").find(".modal-title").text("Edit Agenda Kegiatan");
-            $("#loadAgendaKegiatan").load('/agendakegiatan/' + id + '/edit');
-        });
-
-        $(document).on('click', '.btn-reset-confirm', function(event) {
-            var form = $(this).closest("form");
-            event.preventDefault();
-            Swal.fire({
-                title: `Apakah Anda Yakin Ingin Mereset Semua Agenda Kegiatan ?`,
-                text: "Semua data agenda kegiatan akan dihapus secara permanen!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Ya, Reset Semua!"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
-        });
-
+        // Filter Options Cascade
         function updateFilterOptions() {
             let kode_unit = $('#kode_unit').val();
             let kode_dept = $('#kode_dept').val();
 
             if (kode_unit === "" || kode_unit === null) {
-                $('#kode_dept').html('<option value="">Pilih Departemen</option>').trigger('change.select2');
-                $('#kode_jabatan').html('<option value="">Pilih Jabatan</option>').trigger('change.select2');
+                $('#kode_dept').html('<option value="">Semua Departemen</option>');
+                $('#kode_jabatan').html('<option value="">Semua Jabatan</option>');
                 return;
             }
 
             if (kode_dept === "" || kode_dept === null) {
-                $('#kode_jabatan').html('<option value="">Pilih Jabatan</option>').trigger('change.select2');
+                $('#kode_jabatan').html('<option value="">Semua Jabatan</option>');
             }
 
             $.ajax({
@@ -361,35 +342,101 @@
                 },
                 success: function(response) {
                     let currentDept = $('#kode_dept').val();
-                    $('#kode_dept').html('<option value="">Pilih Departemen</option>');
+                    $('#kode_dept').html('<option value="">Semua Departemen</option>');
                     response.departments.forEach(function(d) {
                         let selected = d.kode_dept === currentDept ? 'selected' : '';
                         $('#kode_dept').append(`<option value="${d.kode_dept}" ${selected}>${d.nama_dept.toUpperCase()}</option>`);
                     });
-                    $('#kode_dept').trigger('change.select2');
 
                     let currentJabatan = $('#kode_jabatan').val();
-                    $('#kode_jabatan').html('<option value="">Pilih Jabatan</option>');
+                    $('#kode_jabatan').html('<option value="">Semua Jabatan</option>');
                     if (kode_dept !== "" && kode_dept !== null) {
                         response.jabatans.forEach(function(j) {
                             let selected = j.kode_jabatan === currentJabatan ? 'selected' : '';
                             $('#kode_jabatan').append(`<option value="${j.kode_jabatan}" ${selected}>${j.nama_jabatan.toUpperCase()}</option>`);
                         });
                     }
-                    $('#kode_jabatan').trigger('change.select2');
                 }
             });
         }
 
         $('#kode_unit').on('change', function() {
-            $('#kode_dept').val('').trigger('change.select2');
-            $('#kode_jabatan').val('').trigger('change.select2');
+            $('#kode_dept').val('');
+            $('#kode_jabatan').val('');
             updateFilterOptions();
         });
 
         $('#kode_dept').on('change', function() {
-            $('#kode_jabatan').val('').trigger('change.select2');
+            $('#kode_jabatan').val('');
             updateFilterOptions();
+        });
+
+        // Create Modal Trigger
+        $(document).on("click", "#btncreateAgendaKegiatan, .btncreateAgendaKegiatanDirect", function(e) {
+            e.preventDefault();
+            $('#mdlAgendaKegiatan').modal("show");
+            $("#mdlAgendaKegiatan").find(".modal-title").text("Tambah Agenda Kegiatan");
+            $("#loadAgendaKegiatan").html(loadingSpinner);
+            $("#loadAgendaKegiatan").load('/agendakegiatan/create');
+        });
+
+        // Edit Modal Trigger
+        $(document).on("click", ".btnEdit", function(e) {
+            e.preventDefault();
+            var id = $(this).attr("id");
+            $('#mdlAgendaKegiatan').modal("show");
+            $("#mdlAgendaKegiatan").find(".modal-title").text("Edit Agenda Kegiatan");
+            $("#loadAgendaKegiatan").html(loadingSpinner);
+            $("#loadAgendaKegiatan").load('/agendakegiatan/' + id + '/edit');
+        });
+
+        // Reset Confirmation
+        $(document).on('click', '.btn-reset-confirm', function(event) {
+            var form = $(this).closest("form");
+            event.preventDefault();
+            Swal.fire({
+                title: `Reset Semua Agenda Kegiatan?`,
+                text: "Seluruh data agenda kegiatan akan dihapus secara permanen dari sistem!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#e11d48",
+                cancelButtonColor: "#64748b",
+                confirmButtonText: "Ya, Reset Semua!",
+                cancelButtonText: "Batal"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+
+        // Cetak Validation
+        $('#cetakButton, #cetakPdfButton').on('click', function(e) {
+            const kode_dept = $('#kode_dept').val();
+            const dari = $('#dari').val();
+            const sampai = $('#sampai').val();
+
+            @if ($user->hasRole('super admin'))
+                if (kode_dept == '') {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Pilih Departemen',
+                        text: 'Silakan pilih departemen terlebih dahulu sebelum mencetak laporan.'
+                    });
+                    return false;
+                }
+            @endif
+
+            if (dari == '' || sampai == '') {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Pilih Rentang Tanggal',
+                    text: 'Silakan isi tanggal dari dan sampai terlebih dahulu.'
+                });
+                return false;
+            }
         });
     });
 </script>

@@ -12,8 +12,15 @@ class KategoriController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Category::query();
-        $kategori = $query->get();
+        $query = Category::query()->withCount('posts');
+
+        if (!empty($request->nama_kategori)) {
+            $query->where('name', 'like', '%' . $request->nama_kategori . '%');
+        }
+
+        $kategori = $query->latest('id')->paginate(10);
+        $kategori->appends($request->all());
+
         return view('website.kategori.index', compact('kategori'));
     }
 

@@ -14,9 +14,13 @@ class SiswaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Siswa::query();
+        $query = Siswa::with('pendaftaran');
         if (!empty($request->nama_lengkap)) {
-            $query->where('nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
+            $query->where(function($q) use ($request) {
+                $q->where('nama_lengkap', 'like', '%' . $request->nama_lengkap . '%')
+                  ->orWhere('id_siswa', 'like', '%' . $request->nama_lengkap . '%')
+                  ->orWhere('nisn', 'like', '%' . $request->nama_lengkap . '%');
+            });
         }
 
         if (!empty($request->tahun_masuk)) {

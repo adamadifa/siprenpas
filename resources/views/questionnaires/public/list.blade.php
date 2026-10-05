@@ -1,44 +1,56 @@
 @extends('questionnaires.public.layout')
-@section('title', 'Daftar Kuisioner Publik')
+@section('title', 'Daftar Kuisioner & Survei')
+
 @section('content')
-    <div class="flex-1 min-h-0 flex items-center justify-center px-2 mt-16">
-        <div class="max-w-2xl w-full mx-auto bg-white rounded-2xl shadow-2xl p-10 border border-gray-100 animate-fadein-card relative z-10">
-            <div class="flex flex-col items-center mb-8 animate-fadein-slide">
-                <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="Logo Persis Al-Amin" class="w-20 h-20 mb-2 rounded-full shadow border-2 border-sidebar-green bg-white object-contain" />
-                <h2 class="text-3xl font-extrabold mb-1 text-sidebar-green tracking-tight">Daftar Kuisioner Publik</h2>
-                <p class="text-gray-500 text-lg text-center">Pilih kuisioner yang ingin Anda isi di bawah ini.</p>
-            </div>
-            <ul class="space-y-4">
-                @foreach($questionnaires as $q)
-                    <li class="opacity-0 translate-y-4 animate-fadein-slide flex items-center bg-gray-50 hover:bg-sidebar-green hover:text-white transition-all duration-300 rounded-xl shadow-sm border border-gray-200 hover:border-sidebar-green px-4 py-3">
-                        <span class="flex-shrink-0 w-12 h-12 rounded-full bg-sidebar-green flex items-center justify-center mr-4 shadow-md">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 9.4A5 5 0 1 0 12 17v1m0 0v1m0-1h1m-1 0h-1"/></svg>
-                        </span>
-                        <a href="{{ route('questionnaire.form', $q->id) }}" class="flex-1 block font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-sidebar-green rounded">{{ $q->title }}</a>
-                    </li>
-                @endforeach
-            </ul>
-            <style>
-            @keyframes fadein-card {
-                0% { opacity:0; transform:scale(0.96) translateY(32px); }
-                100% { opacity:1; transform:scale(1) translateY(0); }
-            }
-            .animate-fadein-card {
-                animation: fadein-card 0.9s cubic-bezier(.4,2,.6,1) forwards;
-            }
-            @keyframes fadein-slide {
-                0% { opacity:0; transform:translateY(32px); }
-                100% { opacity:1; transform:translateY(0); }
-            }
-            .animate-fadein-slide {
-                animation: fadein-slide 0.7s cubic-bezier(.4,2,.6,1) forwards;
-            }
-            ul.space-y-4 > li { animation-delay: calc(var(--i, 0) * 0.08s); }
-            </style>
-            <script>
-            // Beri delay animasi per item agar efek staggered
-            document.querySelectorAll('ul.space-y-4 > li').forEach((li, i) => li.style.setProperty('--i', i));
-            </script>
+<div class="max-w-2xl w-full mx-auto space-y-6">
+
+    <!-- Header Card -->
+    <div class="text-center space-y-2">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200">
+            <i class="ti ti-clipboard-check text-sm"></i>
+            <span>Instrumen Survei & Evaluasi</span>
         </div>
+        <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            Daftar Kuisioner Publik
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto">
+            Silakan pilih kuisioner di bawah ini untuk memberikan penilaian dan masukan Anda demi peningkatan mutu kami.
+        </p>
     </div>
+
+    <!-- Questionnaire List -->
+    <div class="space-y-3">
+        @forelse($questionnaires as $q)
+            <a href="{{ route('questionnaire.form', $q->id) }}" class="group block p-4 sm:p-5 bg-white hover:bg-emerald-50/50 rounded-2xl border border-slate-200/90 hover:border-emerald-300 shadow-xs hover:shadow-md transition-all duration-200">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-start gap-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 group-hover:bg-emerald-600 text-emerald-700 group-hover:text-white flex items-center justify-center shrink-0 border border-emerald-200/80 transition shadow-2xs">
+                            <i class="ti ti-notes text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-emerald-700 transition">
+                                {{ $q->title }}
+                            </h2>
+                            <p class="text-xs text-slate-500 mt-1 line-clamp-2">
+                                {{ $q->description ?: 'Klik untuk mulai mengisi kuisioner ini.' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="shrink-0 flex items-center gap-2 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition">
+                        <span class="text-xs font-bold hidden sm:inline">Mulai Isi</span>
+                        <i class="ti ti-chevron-right text-lg"></i>
+                    </div>
+                </div>
+            </a>
+        @empty
+            <div class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-400">
+                <i class="ti ti-clipboard-off text-4xl mb-2 text-slate-300 block"></i>
+                <h3 class="text-sm font-bold text-slate-700">Belum Ada Kuisioner Aktif</h3>
+                <p class="text-xs text-slate-400 mt-1">Saat ini belum ada survei atau kuisioner yang dapat diisi.</p>
+            </div>
+        @endforelse
+    </div>
+
+</div>
 @endsection

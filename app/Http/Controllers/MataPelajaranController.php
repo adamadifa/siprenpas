@@ -12,14 +12,14 @@ class MataPelajaranController extends Controller
 {
     public function index(Request $request)
     {
-        $query = MataPelajaran::with('children')->root();
+        $query = MataPelajaran::with(['children.unit', 'unit'])->root();
 
         // Filter by Kelompok
         if ($request->has('kelompok') && $request->kelompok != '') {
             $query->where('kelompok', $request->kelompok);
         } else {
-             // Default Order: Kelompok A, then B..
-             $query->orderBy('kelompok');
+            // Default Order: Kelompok A, then B..
+            $query->orderBy('kelompok');
         }
 
         // Filter by Unit
@@ -33,9 +33,16 @@ class MataPelajaranController extends Controller
             $units = Unit::all();
         }
 
-        // Filter by Nama Mapel
+        // Filter by Nama Mapel or Kode Mapel
         if ($request->has('nama_matpel') && $request->nama_matpel != '') {
-            $query->where('nama_matpel', 'like', '%' . $request->nama_matpel . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('nama_matpel', 'like', '%' . $request->nama_matpel . '%')
+                    ->orWhere('kode_matpel', 'like', '%' . $request->nama_matpel . '%')
+                    ->orWhereHas('children', function ($cq) use ($request) {
+                        $cq->where('nama_matpel', 'like', '%' . $request->nama_matpel . '%')
+                            ->orWhere('kode_matpel', 'like', '%' . $request->nama_matpel . '%');
+                    });
+            });
         }
 
         $query->orderBy('urutan');
@@ -52,6 +59,7 @@ class MataPelajaranController extends Controller
         } else {
             $units = Unit::all();
         }
+
         // Get all parents for dropdown
         $parentsQuery = MataPelajaran::root()->orderBy('kelompok')->orderBy('nama_matpel');
         if (!auth()->user()->hasRole('super admin')) {
@@ -69,6 +77,12 @@ class MataPelajaranController extends Controller
             'kelompok' => 'required',
             'kode_unit' => 'required',
             'urutan' => 'required|numeric'
+        ], [
+            'nama_matpel.required' => 'Nama Mata Pelajaran wajib diisi',
+            'kelompok.required' => 'Kelompok Mata Pelajaran wajib dipilih',
+            'kode_unit.required' => 'Unit pendidikan wajib dipilih',
+            'urutan.required' => 'Urutan mata pelajaran wajib diisi',
+            'urutan.numeric' => 'Urutan harus berupa angka'
         ]);
 
         try {
@@ -80,13 +94,7 @@ class MataPelajaranController extends Controller
 
             $nextNumber = 1;
             if ($lastMapel && $lastMapel->kode_matpel) {
-                // Extract number from end
                 $lastCode = $lastMapel->kode_matpel;
-                // Asumsi format MP + U04 + XXX (total length variable depend on unit code len)
-                // MP = 2 chars
-                // Unit = 3 chars (U04)
-                // Total prefix = 5 chars
-                // Check if code matches pattern
                 if (preg_match('/^MP' . $request->kode_unit . '(\d+)$/', $lastCode, $matches)) {
                     $nextNumber = intval($matches[1]) + 1;
                 }
@@ -99,14 +107,14 @@ class MataPelajaranController extends Controller
                 'kode_matpel' => $kodeMatpel,
                 'nama_matpel' => $request->nama_matpel,
                 'kelompok' => $request->kelompok,
-                'parent_id' => $request->parent_id,
+                'parent_id' => $request->parent_id ?: null,
                 'urutan' => $request->urutan,
                 'aktif' => $request->has('aktif') ? 1 : 0
             ]);
 
-            return Redirect::route('mata-pelajaran.index')->with(['success' => 'Data Berhasil Disimpan']);
+            return Redirect::route('mata-pelajaran.index')->with(messageSuccess('Data Mata Pelajaran Berhasil Disimpan'));
         } catch (\Exception $e) {
-            return Redirect::back()->with(['warning' => 'Data Gagal Disimpan: ' . $e->getMessage()]);
+            return Redirect::back()->with(messageError('Data Gagal Disimpan: ' . $e->getMessage()));
         }
     }
 
@@ -114,7 +122,7 @@ class MataPelajaranController extends Controller
     {
         $id = Crypt::decrypt($id);
         $matapelajaran = MataPelajaran::findOrFail($id);
-        
+
         if (!auth()->user()->hasRole('super admin')) {
             $units = Unit::where('kode_unit', auth()->user()->kode_unit)->get();
         } else {
@@ -137,23 +145,28 @@ class MataPelajaranController extends Controller
             'nama_matpel' => 'required',
             'kelompok' => 'required',
             'urutan' => 'required|numeric'
+        ], [
+            'nama_matpel.required' => 'Nama Mata Pelajaran wajib diisi',
+            'kelompok.required' => 'Kelompok Mata Pelajaran wajib dipilih',
+            'urutan.required' => 'Urutan mata pelajaran wajib diisi',
+            'urutan.numeric' => 'Urutan harus berupa angka'
         ]);
 
         try {
             $matapelajaran = MataPelajaran::findOrFail($id);
             $matapelajaran->update([
-                'kode_unit' => $request->kode_unit,
-                'kode_matpel' => $request->kode_matpel,
+                'kode_unit' => $request->kode_unit ?? $matapelajaran->kode_unit,
+                'kode_matpel' => $request->kode_matpel ?? $matapelajaran->kode_matpel,
                 'nama_matpel' => $request->nama_matpel,
                 'kelompok' => $request->kelompok,
-                'parent_id' => $request->parent_id,
+                'parent_id' => $request->parent_id ?: null,
                 'urutan' => $request->urutan,
                 'aktif' => $request->has('aktif') ? 1 : 0
             ]);
 
-            return Redirect::route('mata-pelajaran.index')->with(['success' => 'Data Berhasil Diupdate']);
+            return Redirect::route('mata-pelajaran.index')->with(messageSuccess('Data Mata Pelajaran Berhasil Diupdate'));
         } catch (\Exception $e) {
-            return Redirect::back()->with(['warning' => 'Data Gagal Diupdate: ' . $e->getMessage()]);
+            return Redirect::back()->with(messageError('Data Gagal Diupdate: ' . $e->getMessage()));
         }
     }
 
@@ -162,10 +175,12 @@ class MataPelajaranController extends Controller
         $id = Crypt::decrypt($id);
         try {
             $matapelajaran = MataPelajaran::findOrFail($id);
+            // Delete child sub-matpel if any
+            $matapelajaran->children()->delete();
             $matapelajaran->delete();
-            return Redirect::back()->with(['success' => 'Data Berhasil Dihapus']);
+            return Redirect::back()->with(messageSuccess('Data Mata Pelajaran Berhasil Dihapus'));
         } catch (\Exception $e) {
-            return Redirect::back()->with(['warning' => 'Data Gagal Dihapus: ' . $e->getMessage()]);
+            return Redirect::back()->with(messageError('Data Gagal Dihapus: ' . $e->getMessage()));
         }
     }
 }

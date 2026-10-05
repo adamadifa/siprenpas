@@ -13,11 +13,14 @@ class JenissimpananController extends Controller
     {
         $query = Jenissimpanan::query();
         if (!empty($request->jenis_simpanan_search)) {
-            $query->where('jenis_simpanan', 'like', '%' . $request->jenis_simpanan_search . '%');
+            $query->where(function($q) use ($request) {
+                $q->where('jenis_simpanan', 'like', '%' . $request->jenis_simpanan_search . '%')
+                  ->orWhere('kode_simpanan', 'like', '%' . $request->jenis_simpanan_search . '%');
+            });
         }
-        $jenissimpan = $query->paginate(10);
-        $jenissimpan->appends($request->all());
-        $data['jenissimpanan'] = $jenissimpan;
+        $jenissimpanan = $query->orderBy('kode_simpanan', 'asc')->paginate(10);
+        $jenissimpanan->appends($request->all());
+        $data['jenissimpanan'] = $jenissimpanan;
         return view('koperasi.jenissimpanan.index', $data);
     }
 
@@ -31,17 +34,23 @@ class JenissimpananController extends Controller
         $request->validate([
             'kode_simpanan' => 'required|max:3|min:3|unique:koperasi_jenis_simpanan,kode_simpanan',
             'jenis_simpanan' => 'required',
+        ], [
+            'kode_simpanan.required' => 'Kode Simpanan wajib diisi',
+            'kode_simpanan.unique' => 'Kode Simpanan ' . strtoupper($request->kode_simpanan) . ' sudah digunakan. Silakan gunakan kode lain.',
+            'kode_simpanan.min' => 'Kode Simpanan harus tepat 3 karakter',
+            'kode_simpanan.max' => 'Kode Simpanan harus tepat 3 karakter',
+            'jenis_simpanan.required' => 'Nama Jenis Simpanan wajib diisi',
         ]);
 
         try {
             Jenissimpanan::create([
-                'kode_simpanan' => $request->kode_simpanan,
+                'kode_simpanan' => strtoupper($request->kode_simpanan),
                 'jenis_simpanan' => $request->jenis_simpanan,
             ]);
 
-            return Redirect::back()->with(messageSuccess('Data Berhasil Disimpan'));
+            return Redirect::back()->with(messageSuccess('Data Jenis Simpanan Berhasil Disimpan'));
         } catch (\Exception $e) {
-            return Redirect::back()->with(messageError($e->getMessage()));
+            return Redirect::back()->with(messageError('Gagal menyimpan: ' . $e->getMessage()));
         }
     }
 
@@ -58,6 +67,8 @@ class JenissimpananController extends Controller
         $kode_simpanan = Crypt::decrypt($kode_simpanan);
         $request->validate([
             'jenis_simpanan' => 'required',
+        ], [
+            'jenis_simpanan.required' => 'Nama Jenis Simpanan wajib diisi',
         ]);
 
         try {
@@ -65,9 +76,9 @@ class JenissimpananController extends Controller
                 'jenis_simpanan' => $request->jenis_simpanan,
             ]);
 
-            return Redirect::back()->with(messageSuccess('Data Berhasil Disimpan'));
+            return Redirect::back()->with(messageSuccess('Data Jenis Simpanan Berhasil Diupdate'));
         } catch (\Exception $e) {
-            return Redirect::back()->with(messageError($e->getMessage()));
+            return Redirect::back()->with(messageError('Gagal memperbarui: ' . $e->getMessage()));
         }
     }
     public function destroy($kode_simpanan)
@@ -75,9 +86,9 @@ class JenissimpananController extends Controller
         $kode_simpanan = Crypt::decrypt($kode_simpanan);
         try {
             Jenissimpanan::where('kode_simpanan', $kode_simpanan)->delete();
-            return Redirect::back()->with(['success' => 'Data Berhasil Dihapus']);
+            return Redirect::back()->with(messageSuccess('Data Jenis Simpanan Berhasil Dihapus'));
         } catch (\Exception $e) {
-            return Redirect::back()->with(['error' => $e->getMessage()]);
+            return Redirect::back()->with(messageError('Gagal menghapus: ' . $e->getMessage()));
         }
     }
 }

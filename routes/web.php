@@ -182,6 +182,7 @@ Route::middleware('auth')->group(function () {
             Route::post('/users/{id}/storeuserpermission', 'storeuserpermission')->name('users.storeuserpermission');
             Route::get('/users/{id}/createuserunitdept', 'createuserunitdept')->name('users.createuserunitdept');
             Route::post('/users/{id}/storeuserunitdept', 'storeuserunitdept')->name('users.storeuserunitdept');
+            Route::post('/users/reset-password-siswa', 'resetPasswordSiswa')->name('users.reset-password-siswa');
         });
     });
 
@@ -213,7 +214,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/karyawan/storejamkerjabydate', 'storejamkerjabydate')->name('karyawan.storejamkerjabydate');
         Route::get('/karyawan/getjamkerjabydate', 'getjamkerjabydate')->name('karyawan.getjamkerjabydate');
         Route::post('/karyawan/getjamkerjabydate', 'getjamkerjabydate')->name('karyawan.getjamkerjabydate');
-        Route::post('/karyawa/deletejamkerjabydate', 'deletejamkerjabydate')->name('karyawan.deletejamkerjabydate');
+        Route::post('/karyawan/deletejamkerjabydate', 'deletejamkerjabydate')->name('karyawan.deletejamkerjabydate');
 
         Route::get('/karyawan/{npp}/createuser', 'createuser')->name('karyawan.createuser');
         Route::get('/karyawan/{npp}/resetuser', 'resetuser')->name('karyawan.resetuser');
@@ -632,7 +633,7 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(AnggotaController::class)->group(function () {
         Route::get('/anggota', 'index')->name('anggota.index')->can('anggota.index');
-        Route::get('/anggota{id}/show', 'show')->name('anggota.show')->can('anggota.index');
+        Route::get('/anggota/{id}/show', 'show')->name('anggota.show')->can('anggota.index');
         Route::get('/anggota/create', 'create')->name('anggota.create')->can('anggota.create');
         Route::post('/anggota', 'store')->name('anggota.store')->can('anggota.create');
         Route::get('/anggota/{id}/edit', 'edit')->name('anggota.edit')->can('anggota.edit');
@@ -780,6 +781,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(App\Http\Controllers\JadwalPelajaranController::class)->group(function () {
+        Route::get('/jadwalpelajaran', fn() => redirect()->route('jadwal-pelajaran.index'));
         Route::get('/jadwal-pelajaran', 'index')->name('jadwal-pelajaran.index');
         Route::get('/jadwal-pelajaran/create', 'create')->name('jadwal-pelajaran.create')->can('jadwalpelajaran.create');
         Route::post('/jadwal-pelajaran/get-data-by-unit', 'getDataByUnit')->name('jadwal-pelajaran.get-data-by-unit');
@@ -791,6 +793,8 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(App\Http\Controllers\PenilaianController::class)->group(function () {
+        Route::get('/penialaian', fn() => redirect()->route('rapor.index'));
+        Route::get('/penilaian', 'rapor')->name('penilaian.catalog');
         Route::get('/penilaian/{jadwal_id}', 'index')->name('penilaian.index');
         Route::post('/penilaian/bobot', 'storeBobot')->name('penilaian.store-bobot');
         Route::post('/penilaian/rencana', 'storeRencana')->name('penilaian.store-rencana');
@@ -809,6 +813,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(App\Http\Controllers\RaporSiswaController::class)->group(function () {
+        Route::get('/raporsiswa', fn() => redirect()->route('rapor-siswa.index'));
         Route::get('/rapor-siswa', 'index')->name('rapor-siswa.index');
         Route::get('/rapor-siswa/detail/{kode_kelas}', 'show')->name('rapor-siswa.show');
         Route::get('/rapor-siswa/nilai/{jadwal_id}', 'detailNilai')->name('rapor-siswa.nilai');
@@ -842,6 +847,7 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(App\Http\Controllers\JabatanAkademikController::class)->group(function () {
         Route::get('/jabatan-akademik', 'index')->name('jabatan-akademik.index')->can('jabatanakademik.index');
+        Route::get('/jabatan-akademik/create', 'create')->name('jabatan-akademik.create')->can('jabatanakademik.store');
         Route::post('/jabatan-akademik', 'store')->name('jabatan-akademik.store')->can('jabatanakademik.store');
         Route::get('/jabatan-akademik/{kode_jabatan}/edit', 'edit')->name('jabatan-akademik.edit')->can('jabatanakademik.edit');
         Route::put('/jabatan-akademik/{kode_jabatan}/update', 'update')->name('jabatan-akademik.update')->can('jabatanakademik.update');
@@ -876,6 +882,7 @@ Route::middleware('auth')->group(function () {
 
     // Route untuk Presensi Mata Pelajaran
     Route::controller(PresensiMapelController::class)->group(function () {
+        Route::get('/presensimapel', fn() => redirect()->route('presensi-mapel.index'));
         Route::get('/presensi-mapel', 'index')->name('presensi-mapel.index');
         Route::get('/presensi-mapel/create', 'create')->name('presensi-mapel.create');
         Route::post('/presensi-mapel/get-jadwal', 'getJadwal')->name('presensi-mapel.get-jadwal');

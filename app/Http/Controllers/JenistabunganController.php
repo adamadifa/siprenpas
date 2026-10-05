@@ -14,9 +14,12 @@ class JenistabunganController extends Controller
     {
         $query = Jenistabungan::query();
         if (!empty($request->jenis_tabungan_search)) {
-            $query->where('jenis_tabungan', 'like', '%' . $request->jenis_tabungan_search . '%');
+            $query->where(function($q) use ($request) {
+                $q->where('jenis_tabungan', 'like', '%' . $request->jenis_tabungan_search . '%')
+                  ->orWhere('kode_tabungan', 'like', '%' . $request->jenis_tabungan_search . '%');
+            });
         }
-        $jenistabungan = $query->paginate(10);
+        $jenistabungan = $query->orderBy('kode_tabungan', 'asc')->paginate(10);
         $jenistabungan->appends($request->all());
         $data['jenistabungan'] = $jenistabungan;
         return view('koperasi.jenistabungan.index', $data);
@@ -32,17 +35,23 @@ class JenistabunganController extends Controller
         $request->validate([
             'kode_tabungan' => 'required|max:3|min:3|unique:koperasi_jenis_tabungan,kode_tabungan',
             'jenis_tabungan' => 'required',
+        ], [
+            'kode_tabungan.required' => 'Kode Tabungan wajib diisi',
+            'kode_tabungan.unique' => 'Kode Tabungan ' . strtoupper($request->kode_tabungan) . ' sudah digunakan. Silakan gunakan kode lain.',
+            'kode_tabungan.min' => 'Kode Tabungan harus tepat 3 karakter',
+            'kode_tabungan.max' => 'Kode Tabungan harus tepat 3 karakter',
+            'jenis_tabungan.required' => 'Nama Jenis Tabungan wajib diisi',
         ]);
 
         try {
             Jenistabungan::create([
-                'kode_tabungan' => $request->kode_tabungan,
+                'kode_tabungan' => strtoupper($request->kode_tabungan),
                 'jenis_tabungan' => $request->jenis_tabungan,
             ]);
 
-            return Redirect::back()->with(['success' => 'Data Berhasil Disimpan']);
+            return Redirect::back()->with(messageSuccess('Data Jenis Tabungan Berhasil Disimpan'));
         } catch (\Exception $e) {
-            return Redirect::back()->with(['error' => $e->getMessage()]);
+            return Redirect::back()->with(messageError('Gagal menyimpan: ' . $e->getMessage()));
         }
     }
 
@@ -59,6 +68,8 @@ class JenistabunganController extends Controller
         $kode_tabungan = Crypt::decrypt($kode_tabungan);
         $request->validate([
             'jenis_tabungan' => 'required',
+        ], [
+            'jenis_tabungan.required' => 'Nama Jenis Tabungan wajib diisi',
         ]);
 
         try {
@@ -66,9 +77,9 @@ class JenistabunganController extends Controller
                 'jenis_tabungan' => $request->jenis_tabungan,
             ]);
 
-            return Redirect::back()->with(['success' => 'Data Berhasil Disimpan']);
+            return Redirect::back()->with(messageSuccess('Data Jenis Tabungan Berhasil Diupdate'));
         } catch (\Exception $e) {
-            return Redirect::back()->with(['error' => $e->getMessage()]);
+            return Redirect::back()->with(messageError('Gagal memperbarui: ' . $e->getMessage()));
         }
     }
     public function destroy($kode_tabungan)
@@ -76,9 +87,9 @@ class JenistabunganController extends Controller
         $kode_tabungan = Crypt::decrypt($kode_tabungan);
         try {
             Jenistabungan::where('kode_tabungan', $kode_tabungan)->delete();
-            return Redirect::back()->with(['success' => 'Data Berhasil Dihapus']);
+            return Redirect::back()->with(messageSuccess('Data Jenis Tabungan Berhasil Dihapus'));
         } catch (\Exception $e) {
-            return Redirect::back()->with(['error' => $e->getMessage()]);
+            return Redirect::back()->with(messageError('Gagal menghapus: ' . $e->getMessage()));
         }
     }
 }

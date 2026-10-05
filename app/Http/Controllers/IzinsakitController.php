@@ -34,16 +34,47 @@ class IzinsakitController extends Controller
             $qizin->whereBetween('presensi_izinsakit.tanggal', [$request->dari, $request->sampai]);
         }
         if (!empty($request->nama_lengkap)) {
-            $qizin->where('karyawan.nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
+            $qizin->where(function ($q) use ($request) {
+                $q->where('karyawan.nama_lengkap', 'like', '%' . $request->nama_lengkap . '%')
+                    ->orWhere('presensi_izinsakit.npp', 'like', '%' . $request->nama_lengkap . '%')
+                    ->orWhere('presensi_izinsakit.kode_izin_sakit', 'like', '%' . $request->nama_lengkap . '%');
+            });
+        }
+        if (!empty($request->kode_unit)) {
+            $qizin->where('karyawan.kode_unit', $request->kode_unit);
         }
 
         if (!empty($request->status) || $request->status === '0') {
             $qizin->where('presensi_izinsakit.status', $request->status);
         }
+
+        if (auth()->user()->kode_unit != 'U06') {
+            $qizin->where('karyawan.kode_unit', auth()->user()->kode_unit);
+        }
+
         $qizin->orderBy('presensi_izinsakit.status');
         $qizin->orderBy('presensi_izinsakit.tanggal', 'desc');
         $izinsakit = $qizin->paginate(15);
         $izinsakit->appends($request->all());
+
+        // Statistics query
+        $statQuery = Izinsakit::query()
+            ->join('karyawan', 'presensi_izinsakit.npp', '=', 'karyawan.npp');
+
+        if (auth()->user()->kode_unit != 'U06') {
+            $statQuery->where('karyawan.kode_unit', auth()->user()->kode_unit);
+        }
+        if (!empty($request->kode_unit)) {
+            $statQuery->where('karyawan.kode_unit', $request->kode_unit);
+        }
+        if (!empty($request->dari) && !empty($request->sampai)) {
+            $statQuery->whereBetween('presensi_izinsakit.tanggal', [$request->dari, $request->sampai]);
+        }
+
+        $data['statTotal'] = (clone $statQuery)->count();
+        $data['statPending'] = (clone $statQuery)->where('presensi_izinsakit.status', 0)->count();
+        $data['statApproved'] = (clone $statQuery)->where('presensi_izinsakit.status', 1)->count();
+        $data['statRejected'] = (clone $statQuery)->where('presensi_izinsakit.status', 2)->count();
 
         $data['izinsakit'] = $izinsakit;
         $data['unit'] = Unit::orderBy('kode_unit')->get();

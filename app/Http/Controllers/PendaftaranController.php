@@ -419,14 +419,14 @@ class PendaftaranController extends Controller
             }
 
             foreach ($dokumen as $d) {
-                Storage::delete('/public/pendaftaran/persyaratan/' . $d->nama_file);
-                echo $d->nama_file . "<br>";
+                if ($d->nama_file && Storage::disk('public')->exists('/pendaftaran/persyaratan/' . $d->nama_file)) {
+                    Storage::disk('public')->delete('/pendaftaran/persyaratan/' . $d->nama_file);
+                }
             }
-
 
             Dokumenpersyaratan::where('no_pendaftaran', $no_pendaftaran)->delete();
             DB::commit();
-            return Redirect::back()->with(messageSuccess('Data Berhasil Di Hapus'));
+            return Redirect::back()->with(messageSuccess('Data Pendaftaran Berhasil Dihapus'));
         } catch (\Exception $e) {
             DB::rollBack();
             return Redirect::back()->with(messageError($e->getMessage()));

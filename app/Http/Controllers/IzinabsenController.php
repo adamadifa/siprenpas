@@ -34,7 +34,14 @@ class IzinabsenController extends Controller
             $qizin->whereBetween('presensi_izinabsen.tanggal', [$request->dari, $request->sampai]);
         }
         if (!empty($request->nama_lengkap)) {
-            $qizin->where('karyawan.nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
+            $qizin->where(function ($q) use ($request) {
+                $q->where('karyawan.nama_lengkap', 'like', '%' . $request->nama_lengkap . '%')
+                    ->orWhere('presensi_izinabsen.npp', 'like', '%' . $request->nama_lengkap . '%')
+                    ->orWhere('presensi_izinabsen.kode_izin', 'like', '%' . $request->nama_lengkap . '%');
+            });
+        }
+        if (!empty($request->kode_unit)) {
+            $qizin->where('karyawan.kode_unit', $request->kode_unit);
         }
 
         if (!empty($request->status) || $request->status === '0') {
@@ -49,6 +56,25 @@ class IzinabsenController extends Controller
         $qizin->orderBy('presensi_izinabsen.tanggal', 'desc');
         $izinabsen = $qizin->paginate(15);
         $izinabsen->appends($request->all());
+
+        // Statistics query
+        $statQuery = Izinabsen::query()
+            ->join('karyawan', 'presensi_izinabsen.npp', '=', 'karyawan.npp');
+
+        if (auth()->user()->kode_unit != 'U06') {
+            $statQuery->where('karyawan.kode_unit', auth()->user()->kode_unit);
+        }
+        if (!empty($request->kode_unit)) {
+            $statQuery->where('karyawan.kode_unit', $request->kode_unit);
+        }
+        if (!empty($request->dari) && !empty($request->sampai)) {
+            $statQuery->whereBetween('presensi_izinabsen.tanggal', [$request->dari, $request->sampai]);
+        }
+
+        $data['statTotal'] = (clone $statQuery)->count();
+        $data['statPending'] = (clone $statQuery)->where('presensi_izinabsen.status', 0)->count();
+        $data['statApproved'] = (clone $statQuery)->where('presensi_izinabsen.status', 1)->count();
+        $data['statRejected'] = (clone $statQuery)->where('presensi_izinabsen.status', 2)->count();
 
         $data['izinabsen'] = $izinabsen;
         $u = new Unit();

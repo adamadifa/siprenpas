@@ -1,57 +1,187 @@
 @extends('layouts.app')
-@section('titlepage', 'Agenda')
+@section('titlepage', 'Agenda Pesantren')
 
 @section('content')
-@section('navigasi')
-    <div class="card shadow-none bg-transparent border-0 mb-3">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
-                        <i class="ti ti-calendar fs-3 text-success"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Agenda Pesantren</h4>
-                        <p class="text-muted mb-0 small">Manajemen perencanaan agenda dan jadwal kegiatan pesantren</p>
-                    </div>
-                </div>
-                <div class="d-flex flex-column align-items-end">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb breadcrumb-style1 mb-0">
-                            <li class="breadcrumb-item">
-                                <a href="javascript:void(0);" class="text-muted">
-                                    <i class="ti ti-home-2 me-1"></i> Dashboard
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active">
-                                <i class="ti ti-calendar me-1"></i> Agenda
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
+<div class="space-y-6">
+
+    <!-- ================= 1. PAGE HEADER & BREADCRUMB ================= -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Title & Subtitle -->
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl shrink-0 font-bold border border-emerald-200 shadow-2xs">
+                <i class="ti ti-calendar-event"></i>
+            </div>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                    Agenda Pesantren
+                </h1>
+                <p class="text-xs text-slate-500 font-medium">
+                    Manajemen perencanaan agenda, jadwal kegiatan, dan kalender kegiatan terpadu pesantren
+                </p>
+            </div>
+        </div>
+
+        <!-- Breadcrumb & Top Actions -->
+        <div class="flex flex-col md:items-end gap-2.5">
+            <nav class="flex items-center text-xs text-slate-400 font-medium">
+                <a href="{{ route('dashboard.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="text-slate-500">Kegiatan & Pesantren</span>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="font-bold text-slate-800">Agenda Pesantren</span>
+            </nav>
+
+            <div class="flex flex-wrap items-center gap-2">
+                @can('agenda.create')
+                    <button type="button" 
+                            id="btncreateAgenda"
+                            class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-xs transition active:scale-95 cursor-pointer">
+                        <i class="ti ti-plus text-sm"></i>
+                        <span>Tambah Agenda</span>
+                    </button>
+                @endcan
+
+                @if(auth()->check() && auth()->user()->hasRole('super admin'))
+                    <form method="POST" action="{{ route('agenda.reset') }}" class="inline-block m-0" id="formResetAgenda">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" 
+                                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white font-bold rounded-lg text-xs border border-rose-200 transition active:scale-95 cursor-pointer btn-reset-confirm"
+                                title="Reset semua data agenda pesantren">
+                            <i class="ti ti-rotate text-sm"></i>
+                            <span>Reset</span>
+                        </button>
+                    </form>
+                @endif
             </div>
         </div>
     </div>
+
+    <!-- ================= 2. CALENDAR INFORMATION BANNER ================= -->
+    <div class="p-3.5 bg-emerald-50/70 border border-emerald-200/80 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-emerald-900">
+        <div class="flex items-center gap-2.5 font-medium">
+            <div class="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 text-sm shadow-2xs">
+                <i class="ti ti-bulb"></i>
+            </div>
+            <span><strong>Tips Navigasi:</strong> Klik tanggal untuk menambah agenda baru, klik event untuk detail/edit, atau seret (drag & drop) event untuk mengubah jadwal.</span>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border border-emerald-200 text-[11px] font-semibold text-emerald-800">
+                <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                <span>Agenda Terjadwal</span>
+            </span>
+        </div>
+    </div>
+
+    <!-- ================= 3. CALENDAR CARD CONTAINER ================= -->
+    <div class="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+        <div class="p-4 sm:p-6">
+            <div id="calendar" class="fc-modern-theme"></div>
+        </div>
+    </div>
+
+</div>
+
+<x-modal-form id="mdlAgenda" size="" show="loadAgenda" title="" />
+
 @endsection
 
 @push('styles')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" />
     <style>
-        #calendar {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        /* Modern FullCalendar Theme Overrides */
+        .fc-modern-theme {
+            font-family: inherit;
         }
-        /* Custom calendar event colors */
-        .fc-event {
-            cursor: pointer !important;
-            padding: 6px 10px !important;
-            border-radius: 6px !important;
+        .fc-theme-standard .fc-scrollgrid {
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 0.75rem !important;
+            overflow: hidden !important;
+        }
+        .fc-theme-standard th {
+            background-color: #f8fafc !important;
+            border-color: #e2e8f0 !important;
+            padding: 10px 0 !important;
+            font-size: 0.75rem !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.05em !important;
+            color: #475569 !important;
+        }
+        .fc-theme-standard td {
+            border-color: #f1f5f9 !important;
+        }
+        .fc-day-today {
+            background-color: #ecfdf5 !important;
+        }
+        .fc-daygrid-day-number {
+            font-size: 0.8rem !important;
+            font-weight: 700 !important;
+            color: #334155 !important;
+            padding: 6px 8px !important;
+        }
+        .fc .fc-button {
+            border-radius: 0.5rem !important;
+            font-size: 0.8rem !important;
+            font-weight: 700 !important;
+            padding: 0.45rem 0.85rem !important;
+            transition: all 0.15s ease-in-out !important;
+            text-transform: capitalize !important;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        }
+        .fc .fc-button-primary {
+            background-color: #059669 !important;
+            border-color: #059669 !important;
+            color: #ffffff !important;
+        }
+        .fc .fc-button-primary:hover {
+            background-color: #047857 !important;
+            border-color: #047857 !important;
+        }
+        .fc .fc-button-primary:focus {
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
+        }
+        .fc .fc-button-primary:disabled {
+            background-color: #94a3b8 !important;
+            border-color: #94a3b8 !important;
+            opacity: 0.6 !important;
+        }
+        .fc .fc-button-active, .fc .fc-button-primary:not(:disabled):active {
             background-color: #064e3b !important;
             border-color: #064e3b !important;
+        }
+        .fc-toolbar-title {
+            font-size: 1.2rem !important;
+            font-weight: 800 !important;
+            color: #0f172a !important;
+            letter-spacing: -0.02em !important;
+        }
+        .fc-header-toolbar {
+            margin-bottom: 1.25rem !important;
+            flex-wrap: wrap !important;
+            gap: 0.75rem !important;
+        }
+
+        /* Custom calendar event cards */
+        .fc-event {
+            cursor: pointer !important;
+            padding: 4px 8px !important;
+            border-radius: 6px !important;
+            background-color: #064e3b !important;
+            border: 1px solid #047857 !important;
+            border-left: 3.5px solid #10b981 !important;
             color: #ffffff !important;
-            border-left: 4px solid #ff8c00 !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+            margin: 2px 3px !important;
+            transition: transform 0.1s ease, box-shadow 0.1s ease !important;
+        }
+        .fc-event:hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.12) !important;
+            opacity: 0.96 !important;
         }
         .fc-daygrid-event {
             display: flex !important;
@@ -68,85 +198,22 @@
             width: 100% !important;
         }
         .fc-event-time {
-            font-size: 0.75rem !important;
-            font-weight: 500 !important;
-            color: rgba(255, 255, 255, 0.85) !important;
-            margin-bottom: 2px !important;
+            font-size: 0.7rem !important;
+            font-weight: 600 !important;
+            color: #a7f3d0 !important;
+            margin-bottom: 1px !important;
             white-space: nowrap !important;
         }
         .fc-event-title {
-            font-size: 0.85rem !important;
+            font-size: 0.78rem !important;
             font-weight: 700 !important;
             white-space: normal !important;
             word-break: break-word !important;
-            line-height: 1.2 !important;
-        }
-        .fc-event:hover {
-            opacity: 0.95;
-        }
-        .fc-header-toolbar {
-            margin-bottom: 1.5rem !important;
-        }
-        .fc-button-primary {
-            background-color: #064e3b !important;
-            border-color: #064e3b !important;
-        }
-        .fc-button-primary:hover {
-            background-color: #0b6e54 !important;
-            border-color: #0b6e54 !important;
-        }
-        .fc-button-primary:disabled {
-            background-color: #064e3b !important;
-            border-color: #064e3b !important;
-            opacity: 0.65;
-        }
-        .fc-button-active {
-            background-color: #ff8c00 !important;
-            border-color: #ff8c00 !important;
+            line-height: 1.25 !important;
+            color: #ffffff !important;
         }
     </style>
 @endpush
-
-<div class="row">
-    <div class="col-lg-12">
-        <!-- Actions Section -->
-        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
-            <div class="d-flex align-items-center gap-2">
-                @can('agenda.create')
-                    <button class="btn d-flex align-items-center gap-2 shadow-sm text-white" id="btncreateAgenda"
-                        style="background-color: #064e3b">
-                        <i class="ti ti-plus fs-4"></i>
-                        <span>Tambah Agenda</span>
-                    </button>
-                @endcan
-
-                @if(auth()->check() && auth()->user()->hasRole('super admin'))
-                    <form method="POST" action="{{ route('agenda.reset') }}" class="d-inline-block" id="formResetAgenda">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm btn-reset-confirm"
-                            style="border-radius: 8px;">
-                            <i class="ti ti-rotate fs-4"></i>
-                            <span class="fw-semibold">Reset Agenda</span>
-                        </button>
-                    </form>
-                @endif
-            </div>
-            <span class="text-muted small"><i class="ti ti-info-circle text-info me-1"></i>Anda dapat melakukan klik pada tanggal kosong untuk menambah agenda, klik event untuk edit, atau drag & drop untuk memindahkan agenda.</span>
-        </div>
-
-        <!-- Calendar Card -->
-        <div class="card shadow-sm border-0 rounded-3">
-            <div class="card-body p-4">
-                <div id="calendar"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<x-modal-form id="mdlAgenda" size="" show="loadAgenda" title="" />
-
-@endsection
 
 @push('myscript')
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>

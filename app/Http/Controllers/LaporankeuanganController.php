@@ -98,6 +98,14 @@ class LaporankeuanganController extends Controller
         $qrekaptagihan->groupBy('pendaftaran.nis', 'siswa.nama_lengkap');
         $data['rekaptagihan'] = $qrekaptagihan->get();
         $data['biaya'] = $biaya;
+        $data['unit'] = Unit::where('kode_unit', $request->kode_unit)->first();
+        $data['ta'] = Tahunajaran::where('kode_ta', $request->kode_ta)->first();
+        $data['tingkat'] = $request->tingkat;
+
+        if ($request->has('exportButton') || isset($_POST['exportButton'])) {
+            header("Content-type: application/vnd-ms-excel");
+            header("Content-Disposition: attachment; filename=Rekap Tagihan Santri " . date('YmdHis') . ".xls");
+        }
 
         return view('keuangan.laporan.rekaptagihan_cetak', $data);
     }
@@ -129,6 +137,14 @@ class LaporankeuanganController extends Controller
     
         $data['dari'] = $request->dari;
         $data['sampai'] = $request->sampai;
+        $data['unit'] = $request->kode_unit ? Unit::where('kode_unit', $request->kode_unit)->first() : null;
+        $data['tingkat'] = $request->tingkat;
+
+        if ($request->has('exportButton') || isset($_POST['exportButton'])) {
+            header("Content-type: application/vnd-ms-excel");
+            header("Content-Disposition: attachment; filename=Laporan Pembayaran Pendidikan " . date('YmdHis') . ".xls");
+        }
+
         return view('keuangan.laporan.pembayaran_cetak', $data);
     }
 }

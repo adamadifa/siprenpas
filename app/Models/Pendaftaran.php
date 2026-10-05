@@ -57,11 +57,15 @@ class Pendaftaran extends Model
             'regencies.name as kota',
             'unit.logo',
             'pendaftaran.nis',
-            'kelas_siswa.nama_kelas'
+            'kelas_siswa.nama_kelas',
+            'asal_sekolah.nama_sekolah as nama_asal_sekolah',
+            'asal_sekolah.kota as kota_asal_sekolah',
+            'penghasilan_orangtua.penghasilan as penghasilan_ortu'
         );
         $query->join('siswa', 'pendaftaran.id_siswa', 'siswa.id_siswa');
         $query->join('unit', 'pendaftaran.kode_unit', 'unit.kode_unit');
         $query->leftjoin('asal_sekolah', 'pendaftaran.kode_asal_sekolah', 'asal_sekolah.kode_asal_sekolah');
+        $query->leftJoin('penghasilan_orangtua', 'pendaftaran.kode_penghasilan_ortu', '=', 'penghasilan_orangtua.kode_penghasilan_ortu');
         $query->leftJoin('villages', 'siswa.id_village', '=', 'villages.id');
         $query->leftJoin('districts', 'siswa.id_district', '=', 'districts.id');
         $query->leftJoin('provinces', 'siswa.id_province', '=', 'provinces.id');
@@ -181,5 +185,10 @@ class Pendaftaran extends Model
     public function siswa()
     {
         return $this->belongsTo(Siswa::class, 'id_siswa', 'id_siswa');
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class, 'kode_unit', 'kode_unit');
     }
 }

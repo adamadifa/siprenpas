@@ -68,11 +68,13 @@ class PendaftaranonlineController extends Controller
             $qpendaftaran->where('pendaftaran_online.kode_unit', auth()->user()->kode_unit);
         }
 
-        $pendaftaran = $qpendaftaran->get();
+        $pendaftaran = $qpendaftaran->paginate(25);
+        $pendaftaran->appends($request->all());
         $data['pendaftaran'] = $pendaftaran;
         $data['unit'] = Unit::orderBy('kode_unit')->get();
         $data['jenis_kelamin'] = config('global.jenis_kelamin');
         $data['tahunajaran'] = Tahunajaranppdb::orderBy('kode_ta')->get();
+        $data['tahun_ajaran'] = $tahunajaran;
         $data['kode_ta'] = $kode_ta;
 
         // Rekap jumlah siswa per unit (termasuk unit yang kosong)

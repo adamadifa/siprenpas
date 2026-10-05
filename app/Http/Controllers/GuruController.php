@@ -20,6 +20,9 @@ class GuruController extends Controller
         $query->select(
             'guru.*',
             'karyawan.nama_lengkap',
+            'karyawan.foto',
+            'karyawan.no_hp',
+            'karyawan.jenis_kelamin',
             'unit.nama_unit',
             'jabatan_akademik.nama_jabatan'
         );
@@ -28,7 +31,12 @@ class GuruController extends Controller
         $query->leftJoin('jabatan_akademik', 'guru.kode_jabatan', '=', 'jabatan_akademik.kode_jabatan');
 
         if (!empty($request->nama_lengkap)) {
-            $query->where('karyawan.nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
+            $keyword = $request->nama_lengkap;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('karyawan.nama_lengkap', 'like', '%' . $keyword . '%')
+                  ->orWhere('guru.npp', 'like', '%' . $keyword . '%')
+                  ->orWhere('guru.nomor_kemenag_dinas', 'like', '%' . $keyword . '%');
+            });
         }
 
         if (!auth()->user()->hasRole('super admin')) {
@@ -39,12 +47,30 @@ class GuruController extends Controller
             }
         }
 
-        $guru = $query->paginate(15);
+        if ($request->filled('status_aktif_ajar')) {
+            $query->where('guru.status_aktif_ajar', $request->status_aktif_ajar);
+        }
+
+        $guru = $query->orderBy('karyawan.nama_lengkap', 'asc')->paginate(15);
         $guru->appends($request->all());
-        
+
+        // Compute stats
+        $statsQuery = Guru::query();
+        if (!auth()->user()->hasRole('super admin')) {
+            $statsQuery->where('guru.kode_unit', auth()->user()->kode_unit);
+        }
+
+        $stats = [
+            'total_guru' => (clone $statsQuery)->count(),
+            'aktif' => (clone $statsQuery)->where('status_aktif_ajar', 1)->count(),
+            'nonaktif' => (clone $statsQuery)->where('status_aktif_ajar', '!=', 1)->count(),
+            'ttd_ready' => (clone $statsQuery)->whereNotNull('file_ttd')->where('file_ttd', '!=', '')->count(),
+            'total_unit' => Unit::count()
+        ];
+
         $unit = Unit::orderBy('kode_unit')->get();
 
-        return view('akademik.guru.index', compact('guru', 'unit'));
+        return view('akademik.guru.index', compact('guru', 'unit', 'stats'));
     }
 
     public function create()

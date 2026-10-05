@@ -1,328 +1,756 @@
-<form action="{{ route('karyawan.update', Crypt::encrypt($karyawan->npp)) }}" id="formeditKaryawan" method="POST"
-    enctype="multipart/form-data">
+<form action="{{ route('karyawan.update', Crypt::encrypt($karyawan->npp)) }}" id="formeditKaryawan" method="POST" enctype="multipart/form-data" class="space-y-5" novalidate>
     @csrf
     @method('PUT')
-    <x-input-with-icon-label icon="ti ti-barcode" label="NPP" name="npp" value="{{ $karyawan->npp }}" required="true" />
-    <x-input-with-icon-label icon="ti ti-credit-card" label="No. KK" name="no_kk" value="{{ $karyawan->no_kk }}" />
-    <x-input-with-icon-label icon="ti ti-credit-card" label="No. KTP" name="no_ktp" value="{{ $karyawan->no_ktp }}" required="true" />
-    <x-input-with-icon-label icon="ti ti-user" label="Nama Lengkap" name="nama_lengkap" value="{{ $karyawan->nama_lengkap }}" required="true" />
 
-    <!-- Upload Foto -->
-    <div class="form-group mb-4">
-        <label style="font-weight: 600" class="form-label">
-            <i class="ti ti-camera me-2"></i>Foto Karyawan
-        </label>
-        <style>
-            .upload-area:hover {
-                border-color: #064e3b !important;
-                background-color: #f0fdf4 !important;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(6, 78, 59, 0.1);
-            }
+    <!-- ================= 1. IDENTITAS & FOTO PEGAWAI ================= -->
+    <div class="bg-slate-50/80 border border-slate-200/90 rounded-xl p-4 sm:p-5 space-y-4">
+        <div class="flex items-center gap-2.5 pb-2.5 border-b border-slate-200/80">
+            <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm font-bold shadow-2xs">
+                <i class="ti ti-user"></i>
+            </div>
+            <div>
+                <h3 class="text-sm font-bold text-slate-900 leading-tight">1. Identitas & Foto Pegawai</h3>
+                <p class="text-[11px] text-slate-500">Nomor pokok pegawai, identitas kependudukan, dan pas foto resmi</p>
+            </div>
+        </div>
 
-            .photo-preview-container:hover .btn-danger {
-                opacity: 1;
-            }
-
-            .photo-preview-container .btn-danger {
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            }
-
-            .photo-preview-container:hover {
-                transform: scale(1.02);
-                transition: transform 0.3s ease;
-            }
-        </style>
-        <div class="row">
-            <div class="col-lg-4 col-md-6 col-sm-12">
-                <!-- Preview Foto -->
-                <div class="card border-0 shadow-sm mb-3">
-                    <div class="card-body text-center p-3">
-                        <div class="photo-preview-container"
-                            style="position: relative; width: 150px; height: 200px; margin: 0 auto; border: 2px dashed #d4d4d8; border-radius: 12px; overflow: hidden; background: #f8fafc;">
-                            @if ($karyawan->foto)
-                                <img id="photoPreview" src="{{ getfotoKaryawan($karyawan->foto) }}"
-                                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;"
-                                    alt="Foto Karyawan"
-                                    onerror="this.style.display='none'; document.getElementById('photoPlaceholder').style.display='flex';">
-                                <div id="photoPlaceholder" style="display: none;">
-                                    <i class="ti ti-camera" style="font-size: 2.5rem; margin-bottom: 8px;"></i>
-                                    <span style="font-size: 0.875rem; text-align: center; padding: 0 10px;">Foto tidak ditemukan</span>
-                                </div>
-                            @else
-                                <div id="photoPlaceholder"
-                                    style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; color: #94a3b8;">
-                                    <i class="ti ti-camera" style="font-size: 2.5rem; margin-bottom: 8px;"></i>
-                                    <span style="font-size: 0.875rem; text-align: center; padding: 0 10px;">Belum ada foto</span>
-                                </div>
-                                <img id="photoPreview"
-                                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px; display: none;"
-                                    alt="Preview Foto">
-                            @endif
-                            <!-- Remove Photo Button -->
-                            <button type="button" id="removePhoto" class="btn btn-danger btn-sm"
-                                style="position: absolute; top: 5px; right: 5px; width: 30px; height: 30px; border-radius: 50%; padding: 0; display: {{ $karyawan->foto ? 'flex' : 'none' }}; align-items: center; justify-content: center;">
-                                <i class="ti ti-x" style="font-size: 0.875rem;"></i>
-                            </button>
+        <!-- Upload & Preview Foto Profil Pegawai -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-white border border-slate-200 rounded-xl">
+            <!-- Photo Frame / Preview -->
+            <div class="flex flex-col items-center justify-center text-center">
+                <div class="relative w-32 h-40 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 flex items-center justify-center overflow-hidden shadow-2xs group">
+                    @if ($karyawan->foto && Storage::disk('public')->exists('photos/karyawan/' . $karyawan->foto))
+                        <img id="photoPreview" src="{{ getfotoKaryawan($karyawan->foto) }}" alt="{{ $karyawan->nama_lengkap }}" class="w-full h-full object-cover">
+                        <div id="photoPlaceholder" style="display: none;" class="flex flex-col items-center justify-center text-slate-400 p-2">
+                            <i class="ti ti-user text-3xl mb-1"></i>
+                            <span class="text-[10px] font-bold">Belum Ada Foto</span>
                         </div>
+                    @else
+                        <img id="photoPreview" src="" alt="Preview" class="w-full h-full object-cover" style="display: none;">
+                        <div id="photoPlaceholder" class="flex flex-col items-center justify-center text-slate-400 p-2">
+                            <i class="ti ti-user text-3xl mb-1"></i>
+                            <span class="text-[10px] font-bold">Belum Ada Foto</span>
+                        </div>
+                    @endif
+
+                    <!-- Remove Photo Floating Button -->
+                    <button type="button" 
+                            id="removePhoto" 
+                            class="absolute top-2 right-2 w-7 h-7 bg-rose-600 hover:bg-rose-700 text-white rounded-full flex items-center justify-center shadow-md transition cursor-pointer active:scale-95"
+                            style="display: {{ $karyawan->foto ? 'flex' : 'none' }};"
+                            title="Hapus Foto">
+                        <i class="ti ti-x text-sm"></i>
+                    </button>
+                </div>
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-2">Pas Foto 3x4</span>
+            </div>
+
+            <!-- Upload Dropzone Box -->
+            <div class="md:col-span-3 flex flex-col justify-center">
+                <div id="uploadArea" 
+                     class="border-2 border-dashed border-slate-300 hover:border-emerald-500 bg-slate-50/50 hover:bg-emerald-50/30 rounded-xl p-5 text-center transition cursor-pointer flex flex-col items-center justify-center group"
+                     onclick="document.getElementById('photoInput').click()">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl mb-2 group-hover:scale-110 transition">
+                        <i class="ti ti-cloud-upload"></i>
+                    </div>
+                    <h5 class="text-xs font-bold text-slate-800 mb-0.5">Pilih Foto atau Tarik File ke Sini</h5>
+                    <p class="text-[11px] text-slate-500 mb-1">Format yang didukung: JPG, JPEG, PNG (Maks. 2MB)</p>
+                    <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-100/70 px-2.5 py-0.5 rounded-full">Gunakan foto formal dan jelas</span>
+                </div>
+                <input type="file" id="photoInput" name="foto" accept="image/jpeg,image/jpg,image/png" class="hidden">
+                <input type="hidden" id="delete_photo" name="delete_photo" value="0">
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            <!-- NPP -->
+            <div class="space-y-1">
+                <label for="npp" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-barcode text-sm text-slate-400"></i>
+                    <span>NPP (Nomor Pokok Pegawai) <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-barcode text-base"></i>
+                    </div>
+                    <input type="text" 
+                           id="npp" 
+                           name="npp" 
+                           value="{{ $karyawan->npp }}"
+                           placeholder="Contoh: 80.2024.001" 
+                           class="w-full pl-9 pr-3.5 py-2 text-sm font-bold text-slate-800 bg-white border border-slate-300 rounded-lg placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                </div>
+            </div>
+
+            <!-- No KTP -->
+            <div class="space-y-1">
+                <label for="no_ktp" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-credit-card text-sm text-slate-400"></i>
+                    <span>NIK / No. KTP <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-credit-card text-base"></i>
+                    </div>
+                    <input type="text" 
+                           id="no_ktp" 
+                           name="no_ktp" 
+                           maxlength="16"
+                           value="{{ $karyawan->no_ktp }}"
+                           placeholder="16 digit nomor KTP..." 
+                           class="w-full pl-9 pr-3.5 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                </div>
+            </div>
+
+            <!-- No KK -->
+            <div class="space-y-1">
+                <label for="no_kk" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-id-badge-2 text-sm text-slate-400"></i>
+                    <span>No. Kartu Keluarga (KK)</span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-id-badge-2 text-base"></i>
+                    </div>
+                    <input type="text" 
+                           id="no_kk" 
+                           name="no_kk" 
+                           maxlength="16"
+                           value="{{ $karyawan->no_kk }}"
+                           placeholder="16 digit nomor KK (opsional)..." 
+                           class="w-full pl-9 pr-3.5 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            <!-- Nama Lengkap -->
+            <div class="sm:col-span-2 space-y-1">
+                <label for="nama_lengkap" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-user text-sm text-slate-400"></i>
+                    <span>Nama Lengkap Pegawai <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-user text-base"></i>
+                    </div>
+                    <input type="text" 
+                           id="nama_lengkap" 
+                           name="nama_lengkap" 
+                           value="{{ $karyawan->nama_lengkap }}"
+                           placeholder="Nama lengkap beserta gelar..." 
+                           class="w-full pl-9 pr-3.5 py-2 text-sm font-bold text-slate-800 bg-white border border-slate-300 rounded-lg placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                </div>
+            </div>
+
+            <!-- Jenis Kelamin -->
+            <div class="space-y-1">
+                <label for="jenis_kelamin" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-gender-intergender text-sm text-slate-400"></i>
+                    <span>Jenis Kelamin <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-gender-intergender text-base"></i>
+                    </div>
+                    <select name="jenis_kelamin" 
+                            id="jenis_kelamin" 
+                            class="w-full appearance-none pl-9 pr-9 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition cursor-pointer">
+                        <option value="">-- Pilih Gender --</option>
+                        <option value="L" {{ $karyawan->jenis_kelamin == 'L' ? 'selected' : '' }}>Laki-Laki</option>
+                        <option value="P" {{ $karyawan->jenis_kelamin == 'P' ? 'selected' : '' }}>Perempuan</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                        <i class="ti ti-chevron-down text-sm"></i>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-8 col-md-6 col-sm-12">
-                <!-- Upload Input -->
-                <div class="upload-area"
-                    style="border: 2px dashed #e2e8f0; border-radius: 12px; padding: 2rem; text-align: center; background: #f8fafc; transition: all 0.3s ease; cursor: pointer;"
-                    onclick="document.getElementById('photoInput').click()">
-                    <i class="ti ti-cloud-upload" style="font-size: 3rem; color: #064e3b; margin-bottom: 1rem;"></i>
-                    <h6 style="color: #374151; margin-bottom: 0.5rem;">Klik untuk upload foto</h6>
-                    <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1rem;">atau drag & drop file di sini</p>
-                    <p style="color: #9ca3af; font-size: 0.75rem;">Format: JPG, JPEG, PNG (Max: 2MB)</p>
-                </div>
-                <input type="file" id="photoInput" name="foto" accept="image/jpeg,image/jpg,image/png"
-                    style="display: none;">
-                <input type="hidden" id="delete_photo" name="delete_photo" value="0">
+        </div>
 
-                <!-- Info Text -->
-                <div class="mt-2">
-                    <small class="text-muted">
-                        <i class="ti ti-info-circle me-1"></i>
-                        Foto akan digunakan untuk identitas karyawan. Pastikan foto jelas dan formal.
-                    </small>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <!-- Tempat Lahir -->
+            <div class="space-y-1">
+                <label for="tempat_lahir" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-map-pin text-sm text-slate-400"></i>
+                    <span>Tempat Lahir <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-map-pin text-base"></i>
+                    </div>
+                    <input type="text" 
+                           id="tempat_lahir" 
+                           name="tempat_lahir" 
+                           value="{{ $karyawan->tempat_lahir }}"
+                           placeholder="Kota kelahiran..." 
+                           class="w-full pl-9 pr-3.5 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                </div>
+            </div>
+
+            <!-- Tanggal Lahir -->
+            <div class="space-y-1">
+                <label for="tanggal_lahir" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-cake text-sm text-slate-400"></i>
+                    <span>Tanggal Lahir <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-cake text-base"></i>
+                    </div>
+                    <input type="text" 
+                           id="tanggal_lahir" 
+                           name="tanggal_lahir" 
+                           value="{{ $karyawan->tanggal_lahir }}"
+                           placeholder="Pilih tanggal lahir..." 
+                           autocomplete="off"
+                           class="flatpickr-date w-full pl-9 pr-9 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition cursor-pointer">
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                        <i class="ti ti-calendar-event text-sm"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Golongan Darah -->
+            <div class="space-y-1">
+                <label for="golongan_darah" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-droplet text-sm text-slate-400"></i>
+                    <span>Golongan Darah</span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-droplet text-base"></i>
+                    </div>
+                    <select name="golongan_darah" 
+                            id="golongan_darah" 
+                            class="w-full appearance-none pl-9 pr-9 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition cursor-pointer">
+                        <option value="">-- Golongan Darah --</option>
+                        <option value="A" {{ $karyawan->golongan_darah == 'A' ? 'selected' : '' }}>A</option>
+                        <option value="B" {{ $karyawan->golongan_darah == 'B' ? 'selected' : '' }}>B</option>
+                        <option value="AB" {{ $karyawan->golongan_darah == 'AB' ? 'selected' : '' }}>AB</option>
+                        <option value="O" {{ $karyawan->golongan_darah == 'O' ? 'selected' : '' }}>O</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                        <i class="ti ti-chevron-down text-sm"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="form-group mb-3">
-        <label for="exampleFormControlInput1" style="font-weight: 600" class="form-label">Jenis Kelamin <span class="text-danger">*</span></label>
-        <select name="jenis_kelamin" id="jenis_kelamin" class="form-select">
-            <option value="">Jenis Kelamin</option>
-            <option value="L" {{ $karyawan->jenis_kelamin == 'L' ? 'selected' : '' }}>Laki-Laki</option>
-            <option value="P" {{ $karyawan->jenis_kelamin == 'P' ? 'selected' : '' }}>Perempuan</option>
-        </select>
-    </div>
-    <div class="row">
-        <div class="col-lg-6 col-md-12 col-sm-12">
-            <x-input-with-icon-label icon="ti ti-map-pin" label="Tempat Lahir" name="tempat_lahir" value="{{ $karyawan->tempat_lahir }}" required="true" />
+    <!-- ================= 2. KONTAK & ALAMAT ================= -->
+    <div class="bg-slate-50/80 border border-slate-200/90 rounded-xl p-4 sm:p-5 space-y-4">
+        <div class="flex items-center gap-2.5 pb-2.5 border-b border-slate-200/80">
+            <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm font-bold shadow-2xs">
+                <i class="ti ti-phone-call"></i>
+            </div>
+            <div>
+                <h3 class="text-sm font-bold text-slate-900 leading-tight">2. Kontak & Alamat Domisili</h3>
+                <p class="text-[11px] text-slate-500">Nomor telepon aktif dan alamat tempat tinggal</p>
+            </div>
         </div>
-        <div class="col-lg-6 col-md-12 col-sm-12">
-            <x-input-with-icon-label icon="ti ti-calendar" label="Tanggal Lahir" name="tanggal_lahir" value="{{ $karyawan->tanggal_lahir }}" required="true" datepicker="flatpickr-date" />
+
+        <!-- No HP -->
+        <div class="space-y-1">
+            <label for="no_hp" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                <i class="ti ti-phone text-sm text-slate-400"></i>
+                <span>Nomor HP / WhatsApp <span class="text-rose-500 font-bold">*</span></span>
+            </label>
+            <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                    <i class="ti ti-phone text-base"></i>
+                </div>
+                <input type="text" 
+                       id="no_hp" 
+                       name="no_hp" 
+                       value="{{ $karyawan->no_hp }}"
+                       placeholder="Contoh: 081234567890" 
+                       class="w-full pl-9 pr-3.5 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+            </div>
         </div>
-    </div>
-    <div class="form-group mb-3">
-        <label for="exampleFormControlInput1" style="font-weight: 600" class="form-label">Golongan Darah</label>
-        <select name="golongan_darah" id="golongan_darah" class="form-select">
-            <option value="">Golongan Darah</option>
-            <option {{ $karyawan->golongan_darah == 'A' ? 'selected' : '' }} value="A">A</option>
-            <option {{ $karyawan->golongan_darah == 'B' ? 'selected' : '' }} value="B">B</option>
-            <option {{ $karyawan->golongan_darah == 'AB' ? 'selected' : '' }} value="AB">AB</option>
-            <option {{ $karyawan->golongan_darah == 'O' ? 'selected' : '' }} value="O">O</option>
-        </select>
-    </div>
-    <x-input-with-icon-label icon="ti ti-phone" label="No. HP" name="no_hp" value="{{ $karyawan->no_hp }}" required="true" />
-    <x-textarea-label name="alamat_ktp" label="Alamat KTP" value="{{ $karyawan->alamat_ktp }}" required="true" />
-    <x-textarea-label name="alamat_tinggal" label="Alamat Tinggal" value="{{ $karyawan->alamat_tinggal }}" required="true" />
-    <x-input-with-icon-label icon="ti ti-calendar" label="TMT" name="tmt" value="{{ $karyawan->tmt }}" required="true" datepicker="flatpickr-date" />
-    <div class="form-group mb-3">
-        <label for="exampleFormControlInput1" style="font-weight: 600" class="form-label">Status Karyawan <span class="text-danger">*</span></label>
-        <select name="status_karyawan" id="status_karyawan" class="form-select">
-            <option value="">Status Karyawan</option>
-            <option value="K" {{ $karyawan->status_karyawan == 'K' ? 'selected' : '' }}>Kontrak</option>
-            <option value="T" {{ $karyawan->status_karyawan == 'T' ? 'selected' : '' }}>Tetap</option>
-            <option value="O" {{ $karyawan->status_karyawan == 'O' ? 'selected' : '' }}>OJT</option>
-        </select>
-    </div>
-    <div class="form-group mb-3">
-        <label for="exampleFormControlInput1" style="font-weight: 600" class="form-label">Pendidikan Terakhir <span class="text-danger">*</span></label>
-        <select name="pendidikan_terakhir" id="pendidikan_terakhir" class="form-select">
-            <option value="">Pendidikan Terakhir</option>
-            <option value="SD" {{ $karyawan->pendidikan_terakhir == 'SD' ? 'selected' : '' }}>SD</option>
-            <option value="SMP" {{ $karyawan->pendidikan_terakhir == 'SMP' ? 'selected' : '' }}>SMP</option>
-            <option value="SMA" {{ $karyawan->pendidikan_terakhir == 'SMA' ? 'selected' : '' }}>SMA</option>
-            <option value="SMK" {{ $karyawan->pendidikan_terakhir == 'SMK' ? 'selected' : '' }}>SMK</option>
-            <option value="D1" {{ $karyawan->pendidikan_terakhir == 'D1' ? 'selected' : '' }}>D1</option>
-            <option value="D2" {{ $karyawan->pendidikan_terakhir == 'D2' ? 'selected' : '' }}>D2</option>
-            <option value="D3" {{ $karyawan->pendidikan_terakhir == 'D3' ? 'selected' : '' }}>D3</option>
-            <option value="D4" {{ $karyawan->pendidikan_terakhir == 'D4' ? 'selected' : '' }}>D4</option>
-            <option value="S1" {{ $karyawan->pendidikan_terakhir == 'S1' ? 'selected' : '' }}>S1</option>
-            <option value="S2" {{ $karyawan->pendidikan_terakhir == 'S2' ? 'selected' : '' }}>S2</option>
-            <option value="S3" {{ $karyawan->pendidikan_terakhir == 'S3' ? 'selected' : '' }}>S3</option>
-        </select>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <!-- Alamat KTP -->
+            <div class="space-y-1">
+                <label for="alamat_ktp" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-home text-sm text-slate-400"></i>
+                    <span>Alamat Sesuai KTP <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute top-2.5 left-0 flex items-start pl-3 text-slate-400">
+                        <i class="ti ti-home text-base"></i>
+                    </div>
+                    <textarea id="alamat_ktp" 
+                              name="alamat_ktp" 
+                              rows="2" 
+                              placeholder="Alamat lengkap sesuai identitas KTP..." 
+                              class="w-full pl-9 pr-3.5 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">{{ $karyawan->alamat_ktp }}</textarea>
+                </div>
+            </div>
+
+            <!-- Alamat Tinggal -->
+            <div class="space-y-1">
+                <label for="alamat_tinggal" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-building-community text-sm text-slate-400"></i>
+                    <span>Alamat Domisili / Tinggal Sekarang <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute top-2.5 left-0 flex items-start pl-3 text-slate-400">
+                        <i class="ti ti-building-community text-base"></i>
+                    </div>
+                    <textarea id="alamat_tinggal" 
+                              name="alamat_tinggal" 
+                              rows="2" 
+                              placeholder="Alamat tempat tinggal saat ini..." 
+                              class="w-full pl-9 pr-3.5 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">{{ $karyawan->alamat_tinggal }}</textarea>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <x-select-label label="Jabatan" name="kode_jabatan" selected="{{ $karyawan->kode_jabatan }}" :data="$jabatan"
-        key="kode_jabatan" textShow="nama_jabatan" required="true" />
-    <x-select-label label="Unit" name="kode_unit" selected="{{ $karyawan->kode_unit }}" :data="$unit"
-        key="kode_unit" textShow="nama_unit" upperCase="true" required="true" />
-    <x-select-label label="Departemen" name="kode_dept" selected="{{ $karyawan->kode_dept }}" :data="$departemen"
-        key="kode_dept" textShow="nama_dept" upperCase="true" required="true" />
-    <div class="form-group mb-3">
-        <label for="exampleFormControlInput1" style="font-weight: 600" class="form-label">Status <span class="text-danger">*</span></label>
-        <select name="status" id="status" class="form-select">
-            <option value="">Status</option>
-            <option value="1" {{ $karyawan->status == 1 ? 'selected' : '' }}>Aktif</option>
-            <option value="0" {{ $karyawan->status == 0 ? 'selected' : '' }}>Tidak Aktif</option>
-        </select>
+    <!-- ================= 3. STATUS & PENEMPATAN KERJA ================= -->
+    <div class="bg-slate-50/80 border border-slate-200/90 rounded-xl p-4 sm:p-5 space-y-4">
+        <div class="flex items-center gap-2.5 pb-2.5 border-b border-slate-200/80">
+            <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm font-bold shadow-2xs">
+                <i class="ti ti-briefcase"></i>
+            </div>
+            <div>
+                <h3 class="text-sm font-bold text-slate-900 leading-tight">3. Status Kepegawaian, Jabatan & Penempatan</h3>
+                <p class="text-[11px] text-slate-500">Status ikatan kerja, jabatan, unit kerja, dan departemen</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            <!-- TMT -->
+            <div class="space-y-1">
+                <label for="tmt" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-calendar text-sm text-slate-400"></i>
+                    <span>TMT <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-calendar text-base"></i>
+                    </div>
+                    <input type="text" 
+                           id="tmt" 
+                           name="tmt" 
+                           value="{{ $karyawan->tmt }}"
+                           placeholder="Pilih tanggal TMT..." 
+                           autocomplete="off"
+                           class="flatpickr-date w-full pl-9 pr-9 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition cursor-pointer">
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                        <i class="ti ti-calendar-event text-sm"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Karyawan -->
+            <div class="space-y-1">
+                <label for="status_karyawan" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-user-star text-sm text-slate-400"></i>
+                    <span>Status Ikatan <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-user-star text-base"></i>
+                    </div>
+                    <select name="status_karyawan" 
+                            id="status_karyawan" 
+                            class="w-full appearance-none pl-9 pr-9 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition cursor-pointer">
+                        <option value="">-- Status --</option>
+                        <option value="T" {{ $karyawan->status_karyawan == 'T' ? 'selected' : '' }}>Tetap</option>
+                        <option value="K" {{ $karyawan->status_karyawan == 'K' ? 'selected' : '' }}>Kontrak</option>
+                        <option value="O" {{ $karyawan->status_karyawan == 'O' ? 'selected' : '' }}>OJT (Magang)</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                        <i class="ti ti-chevron-down text-sm"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pendidikan Terakhir -->
+            <div class="space-y-1">
+                <label for="pendidikan_terakhir" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-certificate text-sm text-slate-400"></i>
+                    <span>Pendidikan <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-certificate text-base"></i>
+                    </div>
+                    <select name="pendidikan_terakhir" 
+                            id="pendidikan_terakhir" 
+                            class="w-full appearance-none pl-9 pr-9 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition cursor-pointer">
+                        <option value="">-- Pendidikan --</option>
+                        @foreach(['SD', 'SMP', 'SMA', 'SMK', 'D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3'] as $p)
+                            <option value="{{ $p }}" {{ $karyawan->pendidikan_terakhir == $p ? 'selected' : '' }}>{{ $p }}</option>
+                        @endforeach
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                        <i class="ti ti-chevron-down text-sm"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Aktif / Nonaktif -->
+            <div class="space-y-1">
+                <label for="status" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-toggle-left text-sm text-slate-400"></i>
+                    <span>Status Pegawai <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-toggle-left text-base"></i>
+                    </div>
+                    <select name="status" 
+                            id="status" 
+                            class="w-full appearance-none pl-9 pr-9 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition cursor-pointer">
+                        <option value="1" {{ $karyawan->status == 1 ? 'selected' : '' }}>Aktif</option>
+                        <option value="0" {{ $karyawan->status == 0 ? 'selected' : '' }}>Tidak Aktif (Off)</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                        <i class="ti ti-chevron-down text-sm"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <!-- Jabatan -->
+            <div class="space-y-1">
+                <label for="kode_jabatan" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-award text-sm text-slate-400"></i>
+                    <span>Jabatan <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-award text-base"></i>
+                    </div>
+                    <select name="kode_jabatan" 
+                            id="kode_jabatan" 
+                            class="w-full appearance-none pl-9 pr-9 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition cursor-pointer">
+                        <option value="">-- Pilih Jabatan --</option>
+                        @foreach ($jabatan as $j)
+                            <option value="{{ $j->kode_jabatan }}" {{ $karyawan->kode_jabatan == $j->kode_jabatan ? 'selected' : '' }}>
+                                {{ $j->nama_jabatan }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                        <i class="ti ti-chevron-down text-sm"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unit -->
+            <div class="space-y-1">
+                <label for="kode_unit" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-building text-sm text-slate-400"></i>
+                    <span>Unit Kerja <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-building text-base"></i>
+                    </div>
+                    <select name="kode_unit" 
+                            id="kode_unit" 
+                            class="w-full appearance-none pl-9 pr-9 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition cursor-pointer">
+                        <option value="">-- Pilih Unit --</option>
+                        @foreach ($unit as $u)
+                            <option value="{{ $u->kode_unit }}" {{ $karyawan->kode_unit == $u->kode_unit ? 'selected' : '' }}>
+                                {{ $u->nama_unit }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                        <i class="ti ti-chevron-down text-sm"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Departemen -->
+            <div class="space-y-1">
+                <label for="kode_dept" class="block text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                    <i class="ti ti-sitemap text-sm text-slate-400"></i>
+                    <span>Departemen <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-sitemap text-base"></i>
+                    </div>
+                    <select name="kode_dept" 
+                            id="kode_dept" 
+                            class="w-full appearance-none pl-9 pr-9 py-2 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition cursor-pointer">
+                        <option value="">-- Pilih Departemen --</option>
+                        @foreach ($departemen as $d)
+                            <option value="{{ $d->kode_dept }}" {{ $karyawan->kode_dept == $d->kode_dept ? 'selected' : '' }}>
+                                {{ $d->nama_dept }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                        <i class="ti ti-chevron-down text-sm"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="form-group mt-4">
-        <button class="btn btn-primary w-100" type="submit" style="background-color: #064e3b; border-color: #064e3b">
-            <i class="ti ti-device-floppy me-2"></i>
-            Update Data
+
+    <!-- ================= MODAL ACTIONS FOOTER ================= -->
+    <div class="pt-4 border-t border-slate-200/90 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5">
+        <button type="button" class="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer active:scale-95" data-bs-dismiss="modal">
+            Batal
+        </button>
+        <button type="submit" id="btnUpdateKaryawan" class="w-full sm:w-auto px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+            <i class="ti ti-device-floppy text-base"></i>
+            <span>Simpan Perubahan</span>
         </button>
     </div>
 </form>
 
-<script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
-<script src="{{ asset('/assets/vendor/libs/@form-validation/umd/bundle/popular.min.js') }}"></script>
-<script src="{{ asset('/assets/vendor/libs/@form-validation/umd/plugin-bootstrap5/index.min.js') }}"></script>
-<script src="{{ asset('/assets/vendor/libs/@form-validation/umd/plugin-auto-focus/index.min.js') }}"></script>
-<script src="{{ asset('assets/js/pages/karyawan/edit.js') }}"></script>
 <script>
     $(function() {
-        $(".flatpickr-date").flatpickr();
+        const form = $("#formEditKaryawan");
+        if (typeof window.initFlatpickr === 'function') {
+            window.initFlatpickr(form);
+        } else if (typeof flatpickr !== 'undefined') {
+            form.find(".flatpickr-date").each(function() {
+                $(this).attr('autocomplete', 'off');
+                flatpickr(this, {
+                    dateFormat: "Y-m-d",
+                    allowInput: true,
+                    disableMobile: "true"
+                });
+            });
+        }
 
-        // Photo Upload Functionality
         const photoInput = document.getElementById('photoInput');
         const photoPreview = document.getElementById('photoPreview');
         const photoPlaceholder = document.getElementById('photoPlaceholder');
         const removePhotoBtn = document.getElementById('removePhoto');
-        const uploadArea = document.querySelector('.upload-area');
-        const form = document.getElementById('formeditKaryawan');
+        const uploadArea = document.getElementById('uploadArea');
+        const deletePhotoInput = document.getElementById('delete_photo');
+        const form = $("#formeditKaryawan");
 
-        // Add loading state to upload area
-        function setUploadLoading(isLoading) {
-            if (isLoading) {
-                uploadArea.innerHTML = `
-                    <div class="d-flex justify-content-center align-items-center" style="height: 100px;">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <span class="ms-2">Memproses foto...</span>
-                    </div>
-                `;
-            } else {
-                uploadArea.innerHTML = `
-                    <i class="ti ti-cloud-upload" style="font-size: 3rem; color: #064e3b; margin-bottom: 1rem;"></i>
-                    <h6 style="color: #374151; margin-bottom: 0.5rem;">Klik untuk upload foto</h6>
-                    <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1rem;">atau drag & drop file di sini</p>
-                    <p style="color: #9ca3af; font-size: 0.75rem;">Format: JPG, JPEG, PNG (Max: 2MB)</p>
-                `;
-            }
+        if (photoInput) {
+            photoInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                    if (!allowedTypes.includes(file.type)) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Format File Tidak Valid',
+                            text: 'Hanya file format JPG, JPEG, dan PNG yang diperbolehkan!'
+                        });
+                        photoInput.value = '';
+                        return;
+                    }
+
+                    if (file.size > 2 * 1024 * 1024) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Ukuran Terlalu Besar',
+                            text: 'Ukuran file pas foto maksimal 2MB!'
+                        });
+                        photoInput.value = '';
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        photoPreview.src = evt.target.result;
+                        photoPreview.style.display = 'block';
+                        if (photoPlaceholder) photoPlaceholder.style.display = 'none';
+                        if (removePhotoBtn) removePhotoBtn.style.display = 'flex';
+                        if (deletePhotoInput) deletePhotoInput.value = '0';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
         }
 
-        // Handle file input change
-        photoInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                // Show loading state
-                setUploadLoading(true);
+        if (removePhotoBtn) {
+            removePhotoBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
 
-                // Validate file type
-                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-                if (!allowedTypes.includes(file.type)) {
-                    setUploadLoading(false);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Format File Tidak Valid',
-                        text: 'Hanya file JPG, JPEG, dan PNG yang diizinkan!'
-                    });
-                    photoInput.value = '';
-                    return;
-                }
-
-                // Validate file size (2MB)
-                if (file.size > 2 * 1024 * 1024) {
-                    setUploadLoading(false);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Ukuran File Terlalu Besar',
-                        text: 'Ukuran file maksimal 2MB!'
-                    });
-                    photoInput.value = '';
-                    return;
-                }
-
-                // Preview image
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    setTimeout(() => {
-                        photoPreview.src = e.target.result;
-                        photoPreview.style.display = 'block';
-                        if (photoPlaceholder) {
-                            photoPlaceholder.style.display = 'none';
+                Swal.fire({
+                    title: 'Hapus Pas Foto?',
+                    text: "Foto profil pegawai ini akan dihapus saat form disimpan.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e11d48',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Ya, Hapus Foto',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true,
+                    customClass: {
+                        popup: 'rounded-2xl shadow-2xl p-5',
+                        title: 'text-base font-bold text-slate-900',
+                        confirmButton: 'px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer',
+                        cancelButton: 'px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (photoInput) photoInput.value = '';
+                        if (photoPreview) {
+                            photoPreview.src = '';
+                            photoPreview.style.display = 'none';
                         }
-                        removePhotoBtn.style.display = 'flex';
-                        setUploadLoading(false);
+                        if (photoPlaceholder) photoPlaceholder.style.display = 'flex';
+                        removePhotoBtn.style.display = 'none';
+                        if (deletePhotoInput) deletePhotoInput.value = '1';
+                    }
+                });
+            });
+        }
 
-                        // Remove delete photo flag if uploading new photo
-                        const deleteInput = document.getElementById('delete_photo');
-                        if (deleteInput) {
-                            deleteInput.value = '0';
-                        }
-                    }, 500); // Small delay for better UX
-                };
-                reader.readAsDataURL(file);
-            } else {
-                setUploadLoading(false);
+        // Drag & drop support
+        if (uploadArea) {
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('border-emerald-500', 'bg-emerald-50/50');
+            });
+
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('border-emerald-500', 'bg-emerald-50/50');
+            });
+
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('border-emerald-500', 'bg-emerald-50/50');
+                if (e.dataTransfer.files.length > 0 && photoInput) {
+                    photoInput.files = e.dataTransfer.files;
+                    photoInput.dispatchEvent(new Event('change'));
+                }
+            });
+        }
+
+        // Validation Rules Map
+        const validationRules = {
+            'npp': { required: true, message: 'NPP (Nomor Pokok Pegawai) wajib diisi' },
+            'no_ktp': { required: true, message: 'NIK / No. KTP wajib diisi', maxLength: 16, maxMessage: 'No. KTP maksimal 16 digit' },
+            'no_kk': { required: false, maxLength: 16, maxMessage: 'No. KK maksimal 16 digit' },
+            'nama_lengkap': { required: true, message: 'Nama lengkap pegawai wajib diisi' },
+            'jenis_kelamin': { required: true, message: 'Jenis kelamin wajib dipilih' },
+            'tempat_lahir': { required: true, message: 'Tempat lahir wajib diisi' },
+            'tanggal_lahir': { required: true, message: 'Tanggal lahir wajib diisi' },
+            'no_hp': { required: true, message: 'Nomor WhatsApp / HP wajib diisi' },
+            'pendidikan_terakhir': { required: true, message: 'Pendidikan terakhir wajib dipilih' },
+            'alamat_ktp': { required: true, message: 'Alamat KTP wajib diisi' },
+            'alamat_tinggal': { required: true, message: 'Alamat domisili / tempat tinggal wajib diisi' },
+            'kode_unit': { required: true, message: 'Unit penempatan kerja wajib dipilih' },
+            'kode_dept': { required: true, message: 'Departemen kerja wajib dipilih' },
+            'kode_jabatan': { required: true, message: 'Jabatan pegawai wajib dipilih' },
+            'status_karyawan': { required: true, message: 'Status kepegawaian wajib dipilih' },
+            'tmt': { required: true, message: 'TMT mulai bertugas wajib diisi' },
+            'status': { required: true, message: 'Status keaktifan pegawai wajib dipilih' }
+        };
+
+        function showError(element, message) {
+            const $el = $(element);
+            const $container = $el.closest('.space-y-1, .space-y-1.5, .space-y-2');
+            
+            $el.addClass('border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20')
+               .removeClass('border-slate-300 focus:ring-emerald-500/20 focus:border-emerald-600');
+            
+            // Left icon highlight
+            $el.siblings('.pointer-events-none').find('i').addClass('text-rose-500').removeClass('text-slate-400');
+            
+            // Remove existing error msg
+            $container.find('.error-msg').remove();
+            
+            // Append error message
+            $container.append(`
+                <p class="error-msg text-[11px] font-semibold text-rose-500 mt-1 flex items-center gap-1 animate-in fade-in duration-200">
+                    <i class="ti ti-alert-circle text-xs shrink-0"></i>
+                    <span>${message}</span>
+                </p>
+            `);
+        }
+
+        function clearError(element) {
+            const $el = $(element);
+            const $container = $el.closest('.space-y-1, .space-y-1.5, .space-y-2');
+            
+            $el.removeClass('border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20')
+               .addClass('border-slate-300 focus:ring-emerald-500/20 focus:border-emerald-600');
+            
+            $el.siblings('.pointer-events-none').find('i').removeClass('text-rose-500').addClass('text-slate-400');
+            
+            $container.find('.error-msg').remove();
+        }
+
+        function validateSingleField(el) {
+            const $el = $(el);
+            const name = $el.attr('name') || $el.attr('id');
+            const val = ($el.val() || '').toString().trim();
+
+            const rule = validationRules[name];
+            if (!rule) {
+                clearError($el);
+                return true;
+            }
+
+            if (rule.required && !val) {
+                showError($el, rule.message);
+                return false;
+            }
+
+            if (rule.maxLength && val.length > rule.maxLength) {
+                showError($el, rule.maxMessage || `Maksimal ${rule.maxLength} karakter`);
+                return false;
+            }
+
+            clearError($el);
+            return true;
+        }
+
+        // Realtime validation trigger on blur, change, and input
+        form.on('input change blur', 'input, select, textarea', function(e) {
+            const $this = $(this);
+            const hasError = $this.hasClass('border-rose-500');
+            const val = ($this.val() || '').toString().trim();
+            
+            if (e.type === 'blur' || val !== '' || hasError) {
+                validateSingleField(this);
             }
         });
 
-        // Handle remove photo
-        removePhotoBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
+        // Form Submit Validation
+        form.on('submit', function(e) {
+            let isValid = true;
+            let firstInvalidEl = null;
 
-            Swal.fire({
-                title: 'Hapus Foto?',
-                text: "Apakah Anda yakin ingin menghapus foto ini?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, Hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    photoInput.value = '';
-                    photoPreview.style.display = 'none';
-                    if (photoPlaceholder) {
-                        photoPlaceholder.style.display = 'flex';
-                    }
-                    removePhotoBtn.style.display = 'none';
-
-                    // Set delete photo flag
-                    const deleteInput = document.getElementById('delete_photo');
-                    if (deleteInput) {
-                        deleteInput.value = '1';
+            // Validate all registered fields
+            Object.keys(validationRules).forEach(function(fieldName) {
+                const $el = form.find(`[name="${fieldName}"]`);
+                if ($el.length > 0 && $el.is(':visible')) {
+                    const valid = validateSingleField($el);
+                    if (!valid) {
+                        isValid = false;
+                        if (!firstInvalidEl) {
+                            firstInvalidEl = $el;
+                        }
                     }
                 }
             });
-        });
 
-        // Handle drag and drop
-        uploadArea.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            uploadArea.style.borderColor = '#064e3b';
-            uploadArea.style.backgroundColor = '#f0fdf4';
-        });
-
-        uploadArea.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            uploadArea.style.borderColor = '#e2e8f0';
-            uploadArea.style.backgroundColor = '#f8fafc';
-        });
-
-        uploadArea.addEventListener('drop', function(e) {
-            e.preventDefault();
-            uploadArea.style.borderColor = '#e2e8f0';
-            uploadArea.style.backgroundColor = '#f8fafc';
-
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                photoInput.files = files;
-                photoInput.dispatchEvent(new Event('change'));
+            if (!isValid) {
+                e.preventDefault();
+                if (firstInvalidEl) {
+                    firstInvalidEl.focus();
+                    if (firstInvalidEl[0].scrollIntoView) {
+                        firstInvalidEl[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+                return false;
             }
+
+            // If valid, disable submit button to prevent double submit
+            const submitBtn = form.find('#btnUpdateKaryawan');
+            submitBtn.prop('disabled', true).html('<div class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> <span>Menyimpan...</span>');
         });
     });
 </script>

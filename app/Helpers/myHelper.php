@@ -105,32 +105,49 @@ function formatAngkaDesimal3($nilai)
 
 
 function DateToIndo($date2)
-{ // fungsi atau method untuk mengubah tanggal ke format indonesia
-    // variabel BulanIndo merupakan variabel array yang menyimpan nama-nama bulan
+{
+    if (empty($date2) || $date2 == '-' || $date2 == '0000-00-00') {
+        return '-';
+    }
+
     $BulanIndo2 = array(
-        "Januari",
-        "Februari",
-        "Maret",
-        "April",
-        "Mei",
-        "Juni",
-        "Juli",
-        "Agustus",
-        "September",
-        "Oktober",
-        "November",
-        "Desember"
+        1 => "Januari",
+        2 => "Februari",
+        3 => "Maret",
+        4 => "April",
+        5 => "Mei",
+        6 => "Juni",
+        7 => "Juli",
+        8 => "Agustus",
+        9 => "September",
+        10 => "Oktober",
+        11 => "November",
+        12 => "Desember"
     );
 
-    $tahun2 = substr($date2, 0, 4); // memisahkan format tahun menggunakan substring
-    $bulan2 = substr($date2, 5, 2); // memisahkan format bulan menggunakan substring
-    $tgl2   = substr($date2, 8, 2); // memisahkan format tanggal menggunakan substring
-    if (empty($date2)) {
-        return '-';
-    } else {
-        $result = $tgl2 . " " . $BulanIndo2[(int)$bulan2 - 1] . " " . $tahun2;
+    // If valid date string that strtotime parses
+    $time = strtotime($date2);
+    if ($time !== false && $time > 0) {
+        $tgl = date('d', $time);
+        $bln = (int)date('m', $time);
+        $thn = date('Y', $time);
+        return $tgl . " " . ($BulanIndo2[$bln] ?? '') . " " . $thn;
     }
-    return ($result);
+
+    // Fallback for custom formatted dates
+    $parts = explode('-', $date2);
+    if (count($parts) >= 3) {
+        $thn = (int)$parts[0];
+        $bln = (int)$parts[1];
+        $tgl = str_pad($parts[2], 2, '0', STR_PAD_LEFT);
+        if ($bln > 12) {
+            $thn += intdiv($bln - 1, 12);
+            $bln = (($bln - 1) % 12) + 1;
+        }
+        return $tgl . " " . ($BulanIndo2[$bln] ?? '') . " " . $thn;
+    }
+
+    return $date2;
 }
 
 

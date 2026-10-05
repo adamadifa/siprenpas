@@ -219,7 +219,13 @@
         </li>
         @foreach ($rencanapembiayaan as $d)
             @php
-                $jatuhtempo = $d->tahun . '-' . $d->bulan . '-05';
+                $bulanCicilan = (int)$d->bulan;
+                $tahunCicilan = (int)$d->tahun;
+                if ($bulanCicilan > 12) {
+                    $tahunCicilan += intdiv($bulanCicilan - 1, 12);
+                    $bulanCicilan = (($bulanCicilan - 1) % 12) + 1;
+                }
+                $jatuhtempo = sprintf('%04d-%02d-05', $tahunCicilan, $bulanCicilan);
                 $tagihan = $d->jumlah ?? 0;
                 $bayar = $d->bayar ?? 0;
                 $sisa = $tagihan - $bayar;

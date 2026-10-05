@@ -19,7 +19,13 @@ class TestimonialController extends Controller
             $query->where('nama', 'like', '%' . $request->nama . '%');
         }
 
-        $testimonials = $query->orderBy('created_at', 'desc')->get();
+        if ($request->has('status') && $request->status !== null && $request->status !== '') {
+            $query->where('status', $request->status);
+        }
+
+        $testimonials = $query->latest('id')->paginate(10);
+        $testimonials->appends($request->all());
+
         return view('website.testimonials.index', compact('testimonials'));
     }
 

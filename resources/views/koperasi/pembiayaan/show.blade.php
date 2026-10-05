@@ -2,341 +2,463 @@
 @section('titlepage', 'Detail Pembiayaan')
 
 @section('content')
-@section('navigasi')
-    <div class="card shadow-none bg-transparent border-0 mb-3">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
-                        <i class="ti ti-cash fs-3"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Detail Pembiayaan</h4>
-                        <p class="text-muted mb-0 small">Rincian akad, rencana pembayaran, dan histori angsuran</p>
-                    </div>
-                </div>
-                <div class="d-flex flex-column align-items-end">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb breadcrumb-style1 mb-0">
-                            <li class="breadcrumb-item">
-                                <a href="javascript:void(0);" class="text-muted">
-                                    <i class="ti ti-building-bank me-1"></i> Koperasi
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active">
-                                <i class="ti ti-cash me-1"></i> Detail Pembiayaan
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
-
 @php
-    $jumlah_pembiayaan = $pembiayaan->jumlah + $pembiayaan->jumlah * ($pembiayaan->persentase / 100);
+    $margin_nominal = $pembiayaan->jumlah * ($pembiayaan->persentase / 100);
+    $jumlah_pembiayaan = $pembiayaan->jumlah + $margin_nominal;
+    $total_bayar_akumulasi = $histori->sum('jumlah');
+    $sisa_tagihan_total = max(0, $jumlah_pembiayaan - $total_bayar_akumulasi);
+    $progressPercent = $jumlah_pembiayaan > 0 ? min(100, round(($total_bayar_akumulasi / $jumlah_pembiayaan) * 100, 1)) : 0;
+    $isLunas = $sisa_tagihan_total <= 0;
 @endphp
 
-<div class="row">
-    <div class="col-12">
-        <div class="card mb-4 border-0 shadow-sm overflow-hidden" style="background-color: #064e3b">
-            <div class="user-profile-header-banner" style="background: linear-gradient(to right, rgba(0,0,0,0.1), rgba(0,0,0,0.3)); height: 80px;">
+<div class="space-y-6">
+
+    <!-- ================= 1. TOP HEADER & BREADCRUMB ================= -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <!-- Title & Subtitle -->
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl shrink-0 font-bold border border-emerald-200 shadow-2xs">
+                <i class="ti ti-cash"></i>
             </div>
-            <div class="user-profile-header d-flex flex-column flex-sm-row align-items-center align-items-sm-end text-sm-start text-center mb-4 px-4 pb-1">
-                <div class="flex-shrink-0 mt-n4 mx-sm-0 mx-auto">
-                    @if (Storage::disk('public')->exists('/anggota/' . $anggota->foto))
-                        <img src="{{ getfotoKaryawan($anggota->foto) }}" alt="user image" 
-                            class="d-block rounded border border-4 border-white shadow-sm user-profile-img"
-                            style="width: 110px; height: 110px; object-fit: cover;">
-                    @else
-                        <div class="bg-white d-flex align-items-center justify-content-center rounded border border-4 border-white shadow-sm user-profile-img" 
-                             style="width: 110px; height: 110px;">
-                            <i class="ti ti-user fs-1 text-muted"></i>
-                        </div>
-                    @endif
-                </div>
-                <div class="flex-grow-1 mt-3 mt-sm-0 ms-sm-4">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                        <div class="user-profile-info">
-                            <h4 class="mb-1 fw-bold text-white">{{ textCamelCase($anggota->nama_lengkap) }}</h4>
-                            <div class="d-flex align-items-center flex-wrap gap-2 justify-content-center justify-content-sm-start">
-                                <span class="text-white opacity-75 fw-medium small">
-                                    <i class="ti ti-id me-1"></i>{{ $anggota->no_anggota }}
-                                </span>
-                                <span class="text-white opacity-25">|</span>
-                                <span class="text-white opacity-75 fw-medium small">
-                                    <i class="ti ti-credit-card me-1"></i>{{ $anggota->nik }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="ms-auto d-none d-md-block">
-                            <span class="badge bg-white text-success px-3 py-2 rounded-pill shadow-sm">
-                                <i class="ti ti-circle-check me-1 small"></i> Akad Aktif
-                            </span>
-                        </div>
-                    </div>
-                </div>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                    Detail Pembiayaan
+                </h1>
+                <p class="text-xs text-slate-500 font-medium">
+                    Monitoring rincian akad, rencana angsuran cicilan, dan rekam histori pembayaran nasabah
+                </p>
             </div>
         </div>
-    </div>
-</div>
 
-<div class="row g-4">
-    <div class="col-xl-4 col-lg-5 col-md-12">
-        <!-- Redesigned Profil Lengkap Card -->
-        <div class="card mb-4 border-0 shadow-sm overflow-hidden">
-            <div class="card-header border-0 py-3 d-flex align-items-center gap-2" style="background-color: #064e3b">
-                <i class="ti ti-id-badge text-white"></i>
-                <h6 class="mb-0 fw-bold text-white">Profil Lengkap</h6>
-            </div>
-            <div class="card-body py-4">
-                <!-- Personal Info Group -->
-                <div class="mb-4">
-                    <small class="text-uppercase fw-bold text-muted opacity-50 mb-3 d-block" style="letter-spacing: 1px; font-size: 0.65rem;">Informasi Pribadi</small>
-                    <div class="d-flex align-items-start gap-3 mb-3">
-                        <div class="avatar avatar-sm flex-shrink-0">
-                            <span class="avatar-initial rounded bg-label-success"><i class="ti ti-calendar-event opacity-75"></i></span>
-                        </div>
-                        <div class="flex-grow-1">
-                            <span class="d-block text-muted small">Tempat, Tanggal Lahir</span>
-                            <span class="fw-bold text-dark small">{{ $anggota->tempat_lahir }}, {{ date('d M Y', strtotime($anggota->tanggal_lahir)) }}</span>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-start gap-3 mb-0">
-                        <div class="avatar avatar-sm flex-shrink-0">
-                            <span class="avatar-initial rounded bg-label-success"><i class="ti ti-users opacity-75"></i></span>
-                        </div>
-                        <div class="flex-grow-1">
-                            <span class="d-block text-muted small">Status Sipil & Tanggungan</span>
-                            @php $sm = ['M' => 'Menikah', 'BM' => 'Belum Menikah', 'JD' => 'Janda/Duda']; @endphp
-                            <span class="fw-bold text-dark small">{{ $sm[$anggota->status_pernikahan] ?? '-' }} | {{ $anggota->jml_tanggungan }} Tanggungan</span>
-                        </div>
-                    </div>
-                </div>
+        <!-- Breadcrumb & Back -->
+        <div class="flex flex-col sm:items-end gap-2">
+            <nav class="flex items-center text-xs text-slate-400 font-medium">
+                <a href="{{ route('dashboard.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <a href="{{ route('pembiayaan.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-cash-banknote text-sm"></i>
+                    <span>Pembiayaan</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="font-bold text-slate-800">Detail</span>
+            </nav>
 
-                <hr class="my-4 opacity-50">
-
-                <!-- Contact & Address Group -->
-                <div class="mb-4">
-                    <small class="text-uppercase fw-bold text-muted opacity-50 mb-3 d-block" style="letter-spacing: 1px; font-size: 0.65rem;">Kontak & Alamat</small>
-                    <div class="d-flex align-items-start gap-3 mb-3">
-                        <div class="avatar avatar-sm flex-shrink-0">
-                            <span class="avatar-initial rounded bg-label-success"><i class="ti ti-phone opacity-75"></i></span>
-                        </div>
-                        <div class="flex-grow-1">
-                            <span class="d-block text-muted small">Nomor Telepon</span>
-                            <span class="fw-bold text-dark small">{{ $anggota->no_hp ?? '-' }}</span>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-start gap-3 mb-0">
-                        <div class="avatar avatar-sm flex-shrink-0">
-                            <span class="avatar-initial rounded bg-label-success"><i class="ti ti-map-pin opacity-75"></i></span>
-                        </div>
-                        <div class="flex-grow-1">
-                            <span class="d-block text-muted small">Alamat Lengkap</span>
-                            <span class="fw-bold text-dark small" style="line-height: 1.4;">{{ $anggota->alamat ?: '-' }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="my-4 opacity-50">
-
-                <!-- Education Group -->
-                <div>
-                    <small class="text-uppercase fw-bold text-muted opacity-50 mb-3 d-block" style="letter-spacing: 1px; font-size: 0.65rem;">Pendidikan</small>
-                    <div class="d-flex align-items-start gap-3 mb-0">
-                        <div class="avatar avatar-sm flex-shrink-0">
-                            <span class="avatar-initial rounded bg-label-success"><i class="ti ti-school opacity-75"></i></span>
-                        </div>
-                        <div class="flex-grow-1">
-                            <span class="d-block text-muted small">Pendidikan Terakhir</span>
-                            <span class="fw-bold text-dark small">{{ $anggota->pendidikan_terakhir ?: '-' }}</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('pembiayaan.index') }}" 
+                   class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-lg text-xs border border-slate-200 shadow-2xs transition active:scale-95 cursor-pointer">
+                    <i class="ti ti-arrow-left text-sm"></i>
+                    <span>Kembali</span>
+                </a>
+                <a href="{{ route('anggota.show', Crypt::encrypt($anggota->no_anggota)) }}" 
+                   class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-lg text-xs border border-slate-200 shadow-2xs transition active:scale-95 cursor-pointer">
+                    <i class="ti ti-user text-sm"></i>
+                    <span>Profil Anggota</span>
+                </a>
             </div>
         </div>
     </div>
 
-    <div class="col-xl-8 col-lg-12 col-md-12 mt-3">
-        <!-- Financing Detail Prominent Card -->
-        <div class="card border-0 shadow-sm overflow-hidden mb-4" 
-            style="background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); border-radius: 16px;">
-            <div class="card-body p-4">
-                <div class="row align-items-center">
-                    <div class="col-md-7">
-                        <small class="text-white-50 text-uppercase fw-bold mb-1 d-block" style="letter-spacing: 1.5px; font-size: 0.7rem;">
-                            PEMBIAYAAN {{ strtoupper($pembiayaan->jenis_pembiayaan) }}
-                        </small>
-                        <h2 class="text-white fw-bold mb-1" style="letter-spacing: 1px;">
-                            Rp {{ formatAngka($jumlah_pembiayaan) }}
+    <!-- ================= 2. MEMBER PROFILE BANNER & QUICK ACTIONS (SOLID GREEN) ================= -->
+    <div class="bg-emerald-600 border border-emerald-500 rounded-2xl shadow-xs p-5 sm:p-6 text-white">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+            <!-- Left: Avatar & Identity -->
+            <div class="flex items-center gap-4 sm:gap-5 min-w-0">
+                <!-- Avatar -->
+                @if ($anggota->foto && Storage::disk('public')->exists('/anggota/' . $anggota->foto))
+                    <img src="{{ getfotoKaryawan($anggota->foto) }}" alt="{{ $anggota->nama_lengkap }}" 
+                         class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover shadow-xs shrink-0 ring-4 ring-white/20 border-2 border-white">
+                @else
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white text-emerald-800 flex items-center justify-center font-bold text-2xl sm:text-3xl shadow-xs shrink-0 ring-4 ring-white/20">
+                        {{ strtoupper(substr($anggota->nama_lengkap, 0, 1)) }}
+                    </div>
+                @endif
+
+                <!-- Info -->
+                <div class="space-y-1.5 min-w-0">
+                    <div class="flex items-center gap-2.5 flex-wrap">
+                        <h2 class="text-base sm:text-lg font-bold text-white uppercase tracking-tight truncate">
+                            {{ $anggota->nama_lengkap }}
                         </h2>
-                        <div class="d-flex align-items-center gap-3 mt-2">
-                            <span class="text-white opacity-75 small fw-medium">
-                                No. Akad: <span class="text-warning fw-bold">{{ $pembiayaan->no_akad }}</span>
-                            </span>
-                            <span class="text-white opacity-25">|</span>
-                            <span class="text-white opacity-75 small fw-medium">
-                                Margin: <span class="bg-label-warning px-2 rounded small fw-bold text-white">{{ $pembiayaan->persentase }}%</span>
-                            </span>
-                        </div>
+                        <span class="px-2.5 py-0.5 rounded-lg text-xs font-bold tracking-wider bg-white/20 text-white border border-white/30 shadow-2xs">
+                            {{ $anggota->no_anggota }}
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $isLunas ? 'bg-white text-emerald-800' : 'bg-amber-400 text-amber-950' }} shadow-2xs">
+                            <span class="w-1.5 h-1.5 rounded-full {{ $isLunas ? 'bg-emerald-600' : 'bg-amber-800' }}"></span> 
+                            {{ $isLunas ? 'Akad Lunas' : 'Akad Berjalan' }}
+                        </span>
                     </div>
-                    <div class="col-md-5 text-md-end mt-3 mt-md-0">
-                        <div class="d-inline-flex flex-column align-items-md-end">
-                            <small class="text-white-50 d-block" style="font-size: 0.6rem; letter-spacing: 1px;">KEPERLUAN</small>
-                            <span class="text-white fw-bold mt-1 text-uppercase small">{{ $pembiayaan->keperluan }}</span>
-                            <div class="mt-2 text-white-50 small">
-                                <i class="ti ti-calendar me-1"></i> Mulai: {{ date('d M Y', strtotime($pembiayaan->tanggal)) }}
-                            </div>
-                        </div>
+
+                    <div class="flex items-center gap-3 text-emerald-100 text-xs flex-wrap font-medium">
+                        <span class="inline-flex items-center gap-1">
+                            <i class="ti ti-id text-emerald-200"></i>
+                            <span class="text-emerald-200">NIK:</span>
+                            <strong class="text-white font-bold">{{ $anggota->nik ?: '-' }}</strong>
+                        </span>
+                        <span class="text-emerald-300">•</span>
+                        <span class="inline-flex items-center gap-1">
+                            @if ($anggota->no_hp)
+                                <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $anggota->no_hp)) }}" 
+                                   target="_blank" 
+                                   class="inline-flex items-center gap-1 text-white font-bold hover:text-emerald-100 hover:underline">
+                                    <i class="ti ti-brand-whatsapp text-emerald-200"></i>
+                                    <span>{{ $anggota->no_hp }}</span>
+                                </a>
+                            @else
+                                <i class="ti ti-phone text-emerald-200"></i>
+                                <span class="text-emerald-200">-</span>
+                            @endif
+                        </span>
+                        <span class="text-emerald-300">•</span>
+                        <span class="inline-flex items-center gap-1">
+                            <i class="ti ti-map-pin text-emerald-200"></i>
+                            <span class="text-emerald-100">{{ $anggota->regency_name ?: ($anggota->alamat ?: 'Alamat belum diisi') }}</span>
+                        </span>
                     </div>
                 </div>
             </div>
-            <div class="position-absolute" style="top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
-        </div>
 
-        <!-- Professional Action Row -->
-        <div class="row g-2 mb-4">
-            <div class="col-md-4 col-12">
+            <!-- Right: Quick Actions -->
+            <div class="flex flex-wrap items-center gap-2.5 shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-white/20">
                 <a href="{{ route('pembiayaan.updaterencana', Crypt::encrypt($pembiayaan->no_akad)) }}" 
-                    class="btn btn-primary w-100 py-2 shadow-sm d-flex align-items-center justify-content-center gap-2" 
-                    id="btnupdateRencana" style="background-color: #064e3b; border-color: #064e3b">
-                    <i class="ti ti-refresh fs-5"></i>
-                    <span class="fw-bold small">Update Rencana</span>
+                   id="btnupdateRencana"
+                   class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-white/20 hover:bg-white/30 text-white font-bold rounded-xl text-xs border border-white/30 shadow-2xs transition active:scale-95 cursor-pointer">
+                    <i class="ti ti-refresh text-sm"></i>
+                    <span>Update Rencana</span>
                 </a>
-            </div>
-            @if ($pembiayaan->jmlbayar == 0)
-                <div class="col-md-4 col-12">
-                    <a href="#" no_akad="{{ Crypt::encrypt($pembiayaan->no_akad) }}" 
-                        class="btn btn-warning w-100 py-2 shadow-sm d-flex align-items-center justify-content-center gap-2" 
-                        id="btnEditrencana" style="border-color: #fbbf24">
-                        <i class="ti ti-edit fs-5"></i>
-                        <span class="fw-bold small">Edit Rencana</span>
-                    </a>
-                </div>
-            @endif
-            <div class="{{ $pembiayaan->jmlbayar == 0 ? 'col-md-4' : 'col-md-8' }} col-12">
-                <a href="#" class="btn btn-outline-success w-100 py-2 shadow-none bg-white d-flex align-items-center justify-content-center gap-2 border-2" 
-                    id="btncreateBayar" style="color: #064e3b; border-color: #064e3b">
-                    <i class="ti ti-wallet fs-5"></i>
-                    <span class="fw-bold small">Input Pembayaran</span>
-                </a>
+
+                @if ($pembiayaan->jmlbayar == 0)
+                    <button type="button" 
+                            id="btnEditrencana" 
+                            no_akad="{{ Crypt::encrypt($pembiayaan->no_akad) }}"
+                            class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-white/20 hover:bg-white/30 text-white font-bold rounded-xl text-xs border border-white/30 shadow-2xs transition active:scale-95 cursor-pointer">
+                        <i class="ti ti-edit text-sm"></i>
+                        <span>Edit Rencana</span>
+                    </button>
+                @endif
+
+                @if (!$isLunas)
+                    <button type="button" 
+                            id="btncreateBayar"
+                            class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white hover:bg-emerald-50 text-emerald-800 font-bold rounded-xl text-xs shadow-sm hover:shadow-md transition active:scale-95 cursor-pointer border border-white">
+                        <i class="ti ti-wallet text-sm text-emerald-700"></i>
+                        <span>+ Input Pembayaran</span>
+                    </button>
+                @endif
             </div>
         </div>
 
-        <div class="row g-4">
-            <!-- Payment Plan Section -->
-            <div class="col-lg-7 col-md-12">
-                <div class="card shadow-sm border-0 overflow-hidden">
-                    <div class="card-header d-flex align-items-center gap-2 text-white py-2" style="background-color: #064e3b; border-radius: 0;">
-                        <i class="ti ti-list-check fs-5"></i>
-                        <h6 class="card-title mb-0 text-white small">Rencana Pembayaran</h6>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0 text-nowrap">
-                                <thead style="background-color: #064e3b">
-                                    <tr>
-                                        <th class="text-white py-2 small fw-bold">#</th>
-                                        <th class="text-white py-2 text-center small fw-bold">JATUH TEMPO</th>
-                                        <th class="text-white py-2 text-end small fw-bold">JUMLAH (Rp)</th>
-                                        <th class="text-white py-2 text-end small fw-bold">BAYAR (Rp)</th>
-                                        <th class="text-white py-2 text-end small fw-bold text-warning">SISA (Rp)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php $total_rencana = 0; $total_bayar = 0; $total_sisa = 0; @endphp
-                                    @foreach ($rencana as $d)
-                                        @php
-                                            $jatuh_tempo = $d->tahun . '-' . $d->bulan . '-05';
-                                            $sisa_tagihan = $d->jumlah - $d->bayar;
-                                            $total_rencana += $d->jumlah;
-                                            $total_bayar += $d->bayar;
-                                            $total_sisa += $sisa_tagihan;
-                                        @endphp
-                                        <tr>
-                                            <td class="py-2 text-dark small fw-bold text-center">{{ $d->cicilan_ke }}</td>
-                                            <td class="py-2 text-center small">{{ date('d M Y', strtotime($jatuh_tempo)) }}</td>
-                                            <td class="py-2 text-end fw-bold text-dark small">{{ formatAngka($d->jumlah) }}</td>
-                                            <td class="py-2 text-end text-success fw-bold small">{{ $d->bayar > 0 ? formatAngka($d->bayar) : '-' }}</td>
-                                            <td class="py-2 text-end fw-bold {{ $sisa_tagihan > 0 ? 'text-danger' : 'text-muted opacity-50' }} small">{{ formatAngka($sisa_tagihan) }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                                <tfoot class="bg-light">
-                                    <tr>
-                                        <td colspan="2" class="py-2 text-center fw-bold small">TOTAL ESTIMASI</td>
-                                        <td class="py-2 text-end fw-bold small">{{ formatAngka($total_rencana) }}</td>
-                                        <td class="py-2 text-end text-success fw-bold small">{{ formatAngka($total_bayar) }}</td>
-                                        <td class="py-2 text-end text-danger fw-bold small">{{ formatAngka($total_sisa) }}</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
+        <!-- Akad Metadata Strip inside Banner -->
+        <div class="mt-4 pt-4 border-t border-white/20 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-xs text-emerald-100">
+            <!-- No. Akad -->
+            <div class="flex items-center gap-2.5 min-w-0">
+                <i class="ti ti-file-certificate text-emerald-200 text-lg shrink-0"></i>
+                <div class="min-w-0">
+                    <span class="text-emerald-200 block text-[11px] font-medium leading-tight">No. Akad</span>
+                    <span class="font-bold text-white text-xs sm:text-sm truncate block mt-0.5">{{ $pembiayaan->no_akad }}</span>
                 </div>
             </div>
 
-            <!-- Payment History Section -->
-            <div class="col-lg-5 col-md-12">
-                <div class="card shadow-sm border-0 overflow-hidden">
-                    <div class="card-header d-flex align-items-center gap-2 text-white py-2" style="background-color: #064e3b; border-radius: 0;">
-                        <i class="ti ti-history fs-5"></i>
-                        <h6 class="card-title mb-0 text-white small">Histori Bayar</h6>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0 text-nowrap">
-                                <thead style="background-color: #064e3b">
-                                    <tr>
-                                        <th class="text-white py-2 small fw-bold">TANGGAL</th>
-                                        <th class="text-white py-2 text-end small fw-bold">JUMLAH (Rp)</th>
-                                        <th class="text-white py-2 text-center small fw-bold">#</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($histori as $d)
-                                        <tr>
-                                            <td class="py-2 small">{{ date('d M Y', strtotime($d->tanggal)) }}</td>
-                                            <td class="py-2 text-end fw-bold text-success small">{{ formatAngka($d->jumlah) }}</td>
-                                            <td class="py-2 text-center">
-                                                <div class="d-flex justify-content-center gap-1">
-                                                    <a href="{{ route('pembiayaan.cetakkwitansi', Crypt::encrypt($d->no_transaksi)) }}" 
-                                                        class="btn btn-icon btn-label-secondary border-0 btn-sm" target="_blank" title="Kwitansi">
-                                                        <i class="ti ti-printer fs-6"></i>
-                                                    </a>
-                                                    @can('pembiayaan.delete')
-                                                        @if ($d->no_transaksi == $lasttransaksi->no_transaksi && date('Y-m-d', strtotime($d->created_at)) == date('Y-m-d'))
-                                                            <form method="POST" class="deleteform m-0"
-                                                                action="{{ route('pembiayaan.deletebayar', Crypt::encrypt($d->no_transaksi)) }}">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <a class="btn btn-icon btn-label-danger border-0 btn-sm delete-confirm" href="#">
-                                                                    <i class="ti ti-trash fs-6"></i>
-                                                                </a>
-                                                            </form>
-                                                        @endif
-                                                    @endcan
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                    @if(count($histori) == 0)
-                                        <tr>
-                                            <td colspan="3" class="py-4 text-center text-muted italic small">Belum ada transaksi pembayaran.</td>
-                                        </tr>
-                                    @endif
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+            <!-- Jenis Pembiayaan -->
+            <div class="flex items-center gap-2.5 min-w-0">
+                <i class="ti ti-tags text-emerald-200 text-lg shrink-0"></i>
+                <div class="min-w-0">
+                    <span class="text-emerald-200 block text-[11px] font-medium leading-tight">Jenis Pembiayaan</span>
+                    <span class="font-bold text-white text-xs sm:text-sm truncate block mt-0.5">{{ $pembiayaan->jenis_pembiayaan }}</span>
+                </div>
+            </div>
+
+            <!-- Tanggal Akad -->
+            <div class="flex items-center gap-2.5 min-w-0">
+                <i class="ti ti-calendar-event text-emerald-200 text-lg shrink-0"></i>
+                <div class="min-w-0">
+                    <span class="text-emerald-200 block text-[11px] font-medium leading-tight">Tanggal Akad</span>
+                    <span class="font-bold text-white text-xs sm:text-sm truncate block mt-0.5">{{ DateToIndo($pembiayaan->tanggal) }}</span>
+                </div>
+            </div>
+
+            <!-- Keperluan & Jaminan -->
+            <div class="flex items-center gap-2.5 min-w-0">
+                <i class="ti ti-shield-check text-emerald-200 text-lg shrink-0"></i>
+                <div class="min-w-0">
+                    <span class="text-emerald-200 block text-[11px] font-medium leading-tight">Keperluan & Jaminan</span>
+                    <span class="font-bold text-white text-xs sm:text-sm truncate block mt-0.5" title="{{ $pembiayaan->keperluan }}">
+                        {{ $pembiayaan->keperluan ?: '-' }} ({{ $pembiayaan->jaminan ?: '-' }})
+                    </span>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- ================= 3. SOLID FINANCIAL METRICS CARDS WITH SUBTLE ORNAMENTS ================= -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Metric 1: Pokok Pembiayaan -->
+        <div class="bg-emerald-600 border border-emerald-500 rounded-2xl p-5 text-white shadow-xs flex flex-col justify-between relative overflow-hidden group">
+            <!-- Subtle Clean Watermark & Ring Ornaments -->
+            <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full border border-white/10 pointer-events-none"></div>
+            <i class="ti ti-coin text-white/10 text-6xl absolute -right-2 -bottom-2 pointer-events-none"></i>
+
+            <div class="flex items-center justify-between relative z-10">
+                <span class="text-xs font-bold text-emerald-100 uppercase tracking-wider">Pokok Pembiayaan</span>
+                <div class="w-8 h-8 rounded-lg bg-white/20 text-white flex items-center justify-center text-base border border-white/20 shadow-2xs">
+                    <i class="ti ti-coin"></i>
+                </div>
+            </div>
+            <div class="mt-3 relative z-10">
+                <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                    Rp {{ formatRupiah($pembiayaan->jumlah) }}
+                </div>
+                <div class="text-[11px] text-emerald-200 mt-1.5 font-medium flex items-center gap-1.5">
+                    <span>Margin: <strong class="text-white">{{ $pembiayaan->persentase }}%</strong></span>
+                    <span class="text-emerald-300">•</span>
+                    <span>Tenor: <strong class="text-white">{{ $pembiayaan->jangka_waktu }} Bln</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric 2: Total Tagihan (+Margin) -->
+        <div class="bg-emerald-600 border border-emerald-500 rounded-2xl p-5 text-white shadow-xs flex flex-col justify-between relative overflow-hidden group">
+            <!-- Subtle Clean Watermark & Ring Ornaments -->
+            <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full border border-white/10 pointer-events-none"></div>
+            <i class="ti ti-receipt text-white/10 text-6xl absolute -right-2 -bottom-2 pointer-events-none"></i>
+
+            <div class="flex items-center justify-between relative z-10">
+                <span class="text-xs font-bold text-emerald-100 uppercase tracking-wider">Total Tagihan</span>
+                <div class="w-8 h-8 rounded-lg bg-white/20 text-white flex items-center justify-center text-base border border-white/20 shadow-2xs">
+                    <i class="ti ti-receipt"></i>
+                </div>
+            </div>
+            <div class="mt-3 relative z-10">
+                <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                    Rp {{ formatRupiah($jumlah_pembiayaan) }}
+                </div>
+                <div class="text-[11px] text-emerald-200 mt-1.5 font-medium">
+                    Pokok + Jasa Koperasi (Rp {{ formatRupiah($margin_nominal) }})
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric 3: Total Terbayar -->
+        <div class="bg-emerald-600 border border-emerald-500 rounded-2xl p-5 text-white shadow-xs flex flex-col justify-between relative overflow-hidden group">
+            <!-- Subtle Clean Watermark & Ring Ornaments -->
+            <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full border border-white/10 pointer-events-none"></div>
+            <i class="ti ti-wallet text-white/10 text-6xl absolute -right-2 -bottom-2 pointer-events-none"></i>
+
+            <div class="flex items-center justify-between relative z-10">
+                <span class="text-xs font-bold text-emerald-100 uppercase tracking-wider">Total Terbayar</span>
+                <div class="w-8 h-8 rounded-lg bg-white/20 text-white flex items-center justify-center text-base border border-white/20 shadow-2xs">
+                    <i class="ti ti-wallet"></i>
+                </div>
+            </div>
+            <div class="mt-3 relative z-10">
+                <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                    Rp {{ formatRupiah($total_bayar_akumulasi) }}
+                </div>
+                <!-- Mini Progress Bar -->
+                <div class="mt-2.5 space-y-1">
+                    <div class="flex items-center justify-between text-[11px] text-emerald-200 font-medium">
+                        <span>Progress</span>
+                        <span class="font-bold text-white">{{ $progressPercent }}%</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-emerald-800/60 rounded-full overflow-hidden">
+                        <div class="h-full bg-white rounded-full transition-all duration-300" style="width: {{ $progressPercent }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric 4: Sisa Tagihan -->
+        <div class="bg-emerald-600 border border-emerald-500 rounded-2xl p-5 text-white shadow-xs flex flex-col justify-between relative overflow-hidden group">
+            <!-- Subtle Clean Watermark & Ring Ornaments -->
+            <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full border border-white/10 pointer-events-none"></div>
+            <i class="ti {{ $isLunas ? 'ti-check' : 'ti-hourglass-empty' }} text-white/10 text-6xl absolute -right-2 -bottom-2 pointer-events-none"></i>
+
+            <div class="flex items-center justify-between relative z-10">
+                <span class="text-xs font-bold text-emerald-100 uppercase tracking-wider">Sisa Tagihan</span>
+                <div class="w-8 h-8 rounded-lg bg-white/20 text-white flex items-center justify-center text-base border border-white/20 shadow-2xs">
+                    <i class="ti {{ $isLunas ? 'ti-check' : 'ti-alert-circle' }}"></i>
+                </div>
+            </div>
+            <div class="mt-3 relative z-10">
+                <div class="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                    Rp {{ formatRupiah($sisa_tagihan_total) }}
+                </div>
+                <div class="text-[11px] mt-1.5 font-medium text-emerald-200">
+                    {{ $isLunas ? 'Semua cicilan lunas' : count($rencana->where('bayar', '<', 'jumlah')) . ' angsuran tersisa' }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= 4. RENCANA ANGSURAN & HISTORI PEMBAYARAN TABLES ================= -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left: Rencana Angsuran Table Card (7 cols) -->
+        <div class="lg:col-span-7 space-y-3">
+            <div class="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
+                <!-- Card Header -->
+                <div class="px-5 py-3.5 bg-emerald-600 flex items-center justify-between text-white">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center text-xs font-bold border border-white/20 shadow-2xs">
+                            <i class="ti ti-list-check"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-white tracking-tight">Rencana Angsuran Cicilan</h3>
+                    </div>
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/20 text-white border border-white/30">
+                        {{ count($rencana) }} cicilan
+                    </span>
+                </div>
+
+                <!-- Responsive Table -->
+                <div class="overflow-x-auto bg-emerald-600">
+                    <table class="w-full text-left text-xs sm:text-sm border-0 border-collapse whitespace-nowrap">
+                        <thead class="bg-emerald-600 text-white font-bold uppercase tracking-wider text-[11px] border-0 border-t border-b border-emerald-700/80">
+                            <tr class="border-0">
+                                <th class="py-2.5 px-3.5 w-12 text-center text-emerald-100 whitespace-nowrap">Ke</th>
+                                <th class="py-2.5 px-3.5 text-emerald-100 whitespace-nowrap">Jatuh Tempo</th>
+                                <th class="py-2.5 px-3.5 text-right text-emerald-100 whitespace-nowrap">Tagihan (Rp)</th>
+                                <th class="py-2.5 px-3.5 text-right text-emerald-100 whitespace-nowrap">Bayar (Rp)</th>
+                                <th class="py-2.5 px-3.5 text-right text-emerald-100 whitespace-nowrap">Sisa (Rp)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700 font-medium bg-white text-xs">
+                            @php $total_rencana = 0; $total_bayar = 0; $total_sisa = 0; @endphp
+                            @forelse ($rencana as $d)
+                                @php
+                                    $bulanCicilan = (int)$d->bulan;
+                                    $tahunCicilan = (int)$d->tahun;
+                                    if ($bulanCicilan > 12) {
+                                        $tahunCicilan += intdiv($bulanCicilan - 1, 12);
+                                        $bulanCicilan = (($bulanCicilan - 1) % 12) + 1;
+                                    }
+                                    $jatuh_tempo = sprintf('%04d-%02d-05', $tahunCicilan, $bulanCicilan);
+                                    $sisa_tagihan = $d->jumlah - $d->bayar;
+                                    $total_rencana += $d->jumlah;
+                                    $total_bayar += $d->bayar;
+                                    $total_sisa += $sisa_tagihan;
+                                    $isRowLunas = ($sisa_tagihan <= 0);
+                                @endphp
+                                <tr class="hover:bg-slate-50/80 transition-colors {{ $isRowLunas ? 'bg-emerald-50/20' : '' }}">
+                                    <td class="py-2.5 px-3.5 text-center font-bold text-slate-500 whitespace-nowrap">
+                                        {{ $d->cicilan_ke }}
+                                    </td>
+                                    <td class="py-2.5 px-3.5 whitespace-nowrap text-slate-700 font-medium">
+                                        {{ DateToIndo($jatuh_tempo) }}
+                                    </td>
+                                    <td class="py-2.5 px-3.5 text-right font-bold text-slate-800 whitespace-nowrap">
+                                        {{ formatRupiah($d->jumlah) }}
+                                    </td>
+                                    <td class="py-2.5 px-3.5 text-right font-bold text-emerald-700 whitespace-nowrap">
+                                        {{ $d->bayar > 0 ? formatRupiah($d->bayar) : '-' }}
+                                    </td>
+                                    <td class="py-2.5 px-3.5 text-right font-bold {{ $sisa_tagihan > 0 ? 'text-rose-600' : 'text-slate-400' }} whitespace-nowrap">
+                                        {{ formatRupiah($sisa_tagihan) }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="py-8 text-center text-slate-400 text-xs">Belum ada rencana angsuran yang digenerate.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                        @if(count($rencana) > 0)
+                            <tfoot class="bg-slate-50 font-bold border-t border-slate-200 text-xs text-slate-800">
+                                <tr>
+                                    <td colspan="2" class="py-2.5 px-3.5 text-center uppercase tracking-wider text-[11px] text-slate-600">Total</td>
+                                    <td class="py-2.5 px-3.5 text-right text-slate-900">{{ formatRupiah($total_rencana) }}</td>
+                                    <td class="py-2.5 px-3.5 text-right text-emerald-700">{{ formatRupiah($total_bayar) }}</td>
+                                    <td class="py-2.5 px-3.5 text-right text-rose-600">{{ formatRupiah($total_sisa) }}</td>
+                                </tr>
+                            </tfoot>
+                        @endif
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Histori Bayar Table Card (5 cols) -->
+        <div class="lg:col-span-5 space-y-3">
+            <div class="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
+                <!-- Card Header -->
+                <div class="px-5 py-3.5 bg-emerald-600 flex items-center justify-between text-white">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center text-xs font-bold border border-white/20 shadow-2xs">
+                            <i class="ti ti-history"></i>
+                        </div>
+                        <h3 class="text-sm font-bold text-white tracking-tight">Histori Pembayaran</h3>
+                    </div>
+                    <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/20 text-white border border-white/30">
+                        {{ count($histori) }} data
+                    </span>
+                </div>
+
+                <!-- Responsive Table -->
+                <div class="overflow-x-auto bg-emerald-600">
+                    <table class="w-full text-left text-xs sm:text-sm border-0 border-collapse whitespace-nowrap">
+                        <thead class="bg-emerald-600 text-white font-bold uppercase tracking-wider text-[11px] border-0 border-t border-b border-emerald-700/80">
+                            <tr class="border-0">
+                                <th class="py-2.5 px-3.5 text-emerald-100 whitespace-nowrap">Tanggal</th>
+                                <th class="py-2.5 px-3.5 text-right text-emerald-100 whitespace-nowrap">Jumlah (Rp)</th>
+                                <th class="py-2.5 px-3.5 text-center w-20 text-emerald-100 whitespace-nowrap">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-slate-700 font-medium bg-white text-xs">
+                            @forelse ($histori as $d)
+                                <tr class="hover:bg-slate-50/80 transition-colors">
+                                    <td class="py-2.5 px-3.5 whitespace-nowrap text-slate-700 font-medium">
+                                        {{ DateToIndo($d->tanggal) }}
+                                    </td>
+                                    <td class="py-2.5 px-3.5 text-right font-bold text-emerald-700 whitespace-nowrap">
+                                        Rp {{ formatRupiah($d->jumlah) }}
+                                    </td>
+                                    <td class="py-2.5 px-3.5 text-center whitespace-nowrap">
+                                        <div class="flex items-center justify-center gap-1.5">
+                                            <!-- Cetak Kwitansi -->
+                                            <a href="{{ route('pembiayaan.cetakkwitansi', Crypt::encrypt($d->no_transaksi)) }}" 
+                                               target="_blank" 
+                                               class="w-6.5 h-6.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition active:scale-95 shadow-2xs" 
+                                               title="Cetak Kwitansi">
+                                                <i class="ti ti-printer text-xs"></i>
+                                            </a>
+
+                                            <!-- Delete Payment (If today and last transaction) -->
+                                            @can('pembiayaan.delete')
+                                                @if ($lasttransaksi && $d->no_transaksi == $lasttransaksi->no_transaksi && date('Y-m-d', strtotime($d->created_at)) == date('Y-m-d'))
+                                                    <form method="POST" class="deleteform m-0"
+                                                          action="{{ route('pembiayaan.deletebayar', Crypt::encrypt($d->no_transaksi)) }}">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="button" 
+                                                                class="delete-confirm w-6.5 h-6.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs" 
+                                                                title="Hapus Pembayaran">
+                                                            <i class="ti ti-trash text-xs"></i>
+                                                        </button>
+                                                    </form>
+                                                @endif
+                                            @endcan
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="py-8 text-center text-slate-400 text-xs">Belum ada histori transaksi pembayaran.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </div>
 
+<!-- Modals -->
 <x-modal-form id="mdlBerita" size="" show="loadmodalberita" title="" />
 <x-modal-form id="mdlPembiayaan" size="" show="loadmodalPembiayaan" title="" />
 <x-modal-form id="mdlRencanapembiayaan" size="" show="loadrencanapembiayaan" title="" />
@@ -345,18 +467,23 @@
 @push('myscript')
 <script>
     $(function() {
-        const loading = `<div class="d-flex justify-content-center p-5">
-            <div class="spinner-border text-primary" role="status">
-                <span style="border-color: #064e3b" class="visually-hidden">Loading...</span>
+        const loading = `
+            <div class="flex items-center justify-center p-8">
+                <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
             </div>
-        </div>`;
+        `;
 
         $(document).on('click', '.btnShowberita', function(e) {
             e.preventDefault();
             var berita = $(this).attr("berita");
             $("#mdlBerita").modal("show");
             $("#mdlBerita").find(".modal-title").text("Keterangan");
-            $("#loadmodalberita").html(`<div class="p-3 text-dark">${berita || 'Tidak ada keterangan.'}</div>`);
+            $("#loadmodalberita").html(`
+                <div class="p-4 text-slate-800 text-sm leading-relaxed bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Isi Berita:</div>
+                    <div>${berita || 'Tidak ada keterangan tambahan.'}</div>
+                </div>
+            `);
         });
 
         $(document).on('click', '#btncreateBayar', function(e) {
@@ -383,15 +510,17 @@
             var form = $(this).closest('form');
             Swal.fire({
                 title: 'Hapus Pembayaran?',
-                text: "Data pembayaran terakhir akan dihapus permanen!",
+                text: "Data pembayaran terakhir akan dihapus secara permanen!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#064e3b',
-                cancelButtonColor: '#d33',
+                cancelButtonColor: '#e11d48',
                 confirmButtonText: 'Ya, Hapus',
                 cancelButtonText: 'Batal'
             }).then((result) => {
-                if (result.isConfirmed) { form.submit(); }
+                if (result.isConfirmed) {
+                    form.submit();
+                }
             });
         });
     });

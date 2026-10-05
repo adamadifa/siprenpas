@@ -1,308 +1,551 @@
 @extends('layouts.app')
-@section('titlepage', 'Izin Sakit')
+@section('titlepage', 'Pengajuan Izin Sakit')
 
 @section('content')
-@section('navigasi')
-    <div class="card shadow-none bg-transparent border-0 mb-3">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
-                        <i class="ti ti-first-aid-kit fs-3"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Data Izin Sakit</h4>
-                        <p class="text-muted mb-0 small">Manajemen pengajuan izin sakit karyawan</p>
-                    </div>
+<div class="space-y-6">
+
+    <!-- ================= 1. PAGE HEADER & BREADCRUMB ================= -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Title & Subtitle -->
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl shrink-0 font-bold border border-emerald-200 shadow-2xs">
+                <i class="ti ti-first-aid-kit"></i>
+            </div>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                    Pengajuan Izin Sakit
+                </h1>
+                <p class="text-xs text-slate-500 font-medium">
+                    Manajemen dan verifikasi surat izin dokter (SID) & ketidakhadiran sakit karyawan
+                </p>
+            </div>
+        </div>
+
+        <!-- Breadcrumb & Top Actions -->
+        <div class="flex flex-col md:items-end gap-2.5">
+            <nav class="flex items-center text-xs text-slate-400 font-medium">
+                <a href="{{ route('dashboard.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="text-slate-500">MSDM & Layanan</span>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="font-bold text-slate-800">Izin Sakit</span>
+            </nav>
+
+            @can('izinsakit.create')
+                <button type="button" 
+                        id="btnCreate"
+                        class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-xs transition active:scale-95 cursor-pointer">
+                    <i class="ti ti-plus text-sm"></i>
+                    <span>Tambah Pengajuan</span>
+                </button>
+            @endcan
+        </div>
+    </div>
+
+    <!-- ================= 2. TAB MENU NAVIGATION ================= -->
+    @include('layouts.navigation.nav_pengajuan_absen')
+
+    <!-- ================= 3. EXECUTIVE STATISTICS SUMMARY CARDS (SOLID STATUS THEMED) ================= -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        
+        <!-- Total Pengajuan (Solid Slate/Dark) -->
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl p-4 sm:p-5 text-white shadow-xs flex flex-col justify-between relative overflow-hidden group">
+            <div class="absolute -right-6 -bottom-6 w-20 h-20 rounded-full border border-white/10 pointer-events-none"></div>
+            <i class="ti ti-first-aid-kit text-white/10 text-5xl absolute -right-2 -bottom-2 pointer-events-none"></i>
+
+            <div class="flex items-center justify-between relative z-10">
+                <span class="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Total Izin Sakit</span>
+                <div class="w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center text-sm font-bold border border-white/20 shadow-2xs">
+                    <i class="ti ti-first-aid-kit"></i>
                 </div>
-                <div class="d-flex flex-column align-items-end">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb breadcrumb-style1 mb-0">
-                            <li class="breadcrumb-item">
-                                <a href="javascript:void(0);" class="text-muted">
-                                    <i class="ti ti-database me-1"></i> MSDM
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active text-dark fw-bold">
-                                <i class="ti ti-first-aid-kit me-1"></i> Izin Sakit
-                            </li>
-                        </ol>
-                    </nav>
+            </div>
+            <div class="mt-2.5 relative z-10">
+                <div class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                    {{ $statTotal ?? $izinsakit->total() }}
+                </div>
+                <div class="text-[11px] text-slate-300 mt-0.5 font-medium">
+                    Seluruh permohonan sakit
                 </div>
             </div>
         </div>
-    </div>
-@endsection
 
-@section('action_button')
-    @can('izinsakit.create')
-        <button class="btn btn-primary d-flex align-items-center gap-2 shadow-sm" id="btnCreate"
-            style="background-color: #064e3b; border-color: #064e3b; border-radius: 10px;">
-            <i class="ti ti-plus fs-4"></i>
-            <span>Tambah Data</span>
-        </button>
-    @endcan
-@endsection
-<div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12">
-        <div class="nav-align-top mb-4">
-            @include('layouts.navigation.nav_pengajuan_absen')
-            <div class="tab-content p-0 bg-transparent shadow-none border-0">
-                <div class="tab-pane fade active show" id="navs-justified-home" role="tabpanel">
-                    <div class="row mt-1 mb-1">
-                        <div class="col-12">
-                            <form action="{{ route('izinsakit.index') }}" class="form-filter">
-                                <!-- Row 1: Date Period -->
-                                <!-- Row 1: Date Period -->
-                                <div class="row g-2 mb-0">
-                                    <div class="col-lg-6 col-md-6 mb-1">
-                                        <x-input-with-icon label="" value="{{ Request('dari') }}" name="dari"
-                                            icon="ti ti-calendar" datepicker="flatpickr-date" placeholder="Dari Tanggal" />
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 mb-1">
-                                        <x-input-with-icon label="" value="{{ Request('sampai') }}" name="sampai"
-                                            icon="ti ti-calendar" datepicker="flatpickr-date" placeholder="Sampai Tanggal" />
-                                    </div>
-                                </div>
-                                <!-- Row 2: Categories, Name & Search -->
-                                <div class="row g-2 align-items-center mb-0">
-                                    <div class="col-lg-3 col-md-4 mb-1">
-                                        <div class="form-group mb-0">
-                                            <select name="kode_unit" id="kode_unit" class="form-select">
-                                                <option value=""> Unit</option>
-                                                @foreach ($unit as $d)
-                                                    <option value="{{ $d->kode_unit }}"
-                                                        {{ Request('kode_unit') == $d->kode_unit ? 'selected' : '' }}>
-                                                        {{ textUpperCase($d->nama_unit) }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3 col-md-4 mb-1">
-                                        <div class="form-group mb-0">
-                                            <select name="status" id="status" class="form-select">
-                                                <option value="">Status</option>
-                                                <option value="0" {{ Request('status') === '0' ? 'selected' : '' }}>Pending</option>
-                                                <option value="1" {{ Request('status') == '1' ? 'selected' : '' }}>Disetujui</option>
-                                                <option value="2" {{ Request('status') == '2' ? 'selected' : '' }}>Ditolak</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-5 col-md-10 mb-1">
-                                        <x-input-with-icon label="" name="nama_lengkap"
-                                            value="{{ Request('nama_lengkap') }}" icon="ti ti-user" placeholder="Nama Karyawan..." />
-                                    </div>
-                                    <div class="col-lg-1 col-md-2 mb-1">
-                                        <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center" style="background-color: #064e3b; border-color: #064e3b; height: 38px;">
-                                            <i class="ti ti-search fs-5"></i>
+        <!-- Menunggu Persetujuan (Solid Amber/Orange) -->
+        <div class="bg-amber-500 border border-amber-400 rounded-2xl p-4 sm:p-5 text-white shadow-xs flex flex-col justify-between relative overflow-hidden group">
+            <div class="absolute -right-6 -bottom-6 w-20 h-20 rounded-full border border-white/10 pointer-events-none"></div>
+            <i class="ti ti-hourglass-high text-white/10 text-5xl absolute -right-2 -bottom-2 pointer-events-none"></i>
+
+            <div class="flex items-center justify-between relative z-10">
+                <span class="text-[11px] font-bold text-amber-100 uppercase tracking-wider">Menunggu (Pending)</span>
+                <div class="w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center text-sm font-bold border border-white/20 shadow-2xs">
+                    <i class="ti ti-hourglass-high"></i>
+                </div>
+            </div>
+            <div class="mt-2.5 relative z-10">
+                <div class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                    {{ $statPending ?? 0 }}
+                </div>
+                <div class="text-[11px] text-amber-100 mt-0.5 font-medium">
+                    Perlu verifikasi surat dokter
+                </div>
+            </div>
+        </div>
+
+        <!-- Disetujui (Solid Emerald) -->
+        <div class="bg-emerald-600 border border-emerald-500 rounded-2xl p-4 sm:p-5 text-white shadow-xs flex flex-col justify-between relative overflow-hidden group">
+            <div class="absolute -right-6 -bottom-6 w-20 h-20 rounded-full border border-white/10 pointer-events-none"></div>
+            <i class="ti ti-circle-check text-white/10 text-5xl absolute -right-2 -bottom-2 pointer-events-none"></i>
+
+            <div class="flex items-center justify-between relative z-10">
+                <span class="text-[11px] font-bold text-emerald-100 uppercase tracking-wider">Disetujui</span>
+                <div class="w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center text-sm font-bold border border-white/20 shadow-2xs">
+                    <i class="ti ti-circle-check"></i>
+                </div>
+            </div>
+            <div class="mt-2.5 relative z-10">
+                <div class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                    {{ $statApproved ?? 0 }}
+                </div>
+                <div class="text-[11px] text-emerald-100 mt-0.5 font-medium">
+                    Tercatat dalam presensi (Sakit)
+                </div>
+            </div>
+        </div>
+
+        <!-- Ditolak (Solid Rose/Red) -->
+        <div class="bg-rose-600 border border-rose-500 rounded-2xl p-4 sm:p-5 text-white shadow-xs flex flex-col justify-between relative overflow-hidden group">
+            <div class="absolute -right-6 -bottom-6 w-20 h-20 rounded-full border border-white/10 pointer-events-none"></div>
+            <i class="ti ti-circle-x text-white/10 text-5xl absolute -right-2 -bottom-2 pointer-events-none"></i>
+
+            <div class="flex items-center justify-between relative z-10">
+                <span class="text-[11px] font-bold text-rose-100 uppercase tracking-wider">Ditolak</span>
+                <div class="w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center text-sm font-bold border border-white/20 shadow-2xs">
+                    <i class="ti ti-circle-x"></i>
+                </div>
+            </div>
+            <div class="mt-2.5 relative z-10">
+                <div class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                    {{ $statRejected ?? 0 }}
+                </div>
+                <div class="text-[11px] text-rose-100 mt-0.5 font-medium">
+                    Permohonan ditolak
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= 4. CONSISTENT HORIZONTAL FILTER TOOLBAR ================= -->
+    <form action="{{ route('izinsakit.index') }}" method="GET" class="w-full">
+        <div class="flex flex-col lg:flex-row gap-2.5 sm:gap-3 w-full">
+            
+            <!-- Dari Tanggal Input -->
+            <div class="w-full lg:w-44 relative">
+                <i class="ti ti-calendar absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none"></i>
+                <input type="text" 
+                       name="dari" 
+                       value="{{ Request('dari') }}" 
+                       placeholder="Dari Tanggal..." 
+                       class="flatpickr-date w-full pl-11 pr-4 py-2.5 sm:py-3 text-sm bg-white border border-slate-300/90 rounded-xl text-slate-800 font-medium placeholder-slate-400 shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+            </div>
+
+            <!-- Sampai Tanggal Input -->
+            <div class="w-full lg:w-44 relative">
+                <i class="ti ti-calendar absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none"></i>
+                <input type="text" 
+                       name="sampai" 
+                       value="{{ Request('sampai') }}" 
+                       placeholder="Sampai Tanggal..." 
+                       class="flatpickr-date w-full pl-11 pr-4 py-2.5 sm:py-3 text-sm bg-white border border-slate-300/90 rounded-xl text-slate-800 font-medium placeholder-slate-400 shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+            </div>
+
+            <!-- Unit Kerja Dropdown -->
+            <div class="w-full lg:w-48 relative">
+                <select name="kode_unit" 
+                        id="kode_unit" 
+                        class="w-full py-2.5 sm:py-3 px-3 text-sm bg-white border border-slate-300/90 rounded-xl text-slate-800 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                    <option value="">Semua Unit Kerja</option>
+                    @foreach ($unit as $u)
+                        <option value="{{ $u->kode_unit }}" {{ Request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>
+                            {{ strtoupper($u->nama_unit) }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Status Dropdown -->
+            <div class="w-full lg:w-44 relative">
+                <select name="status" 
+                        id="status" 
+                        class="w-full py-2.5 sm:py-3 px-3 text-sm bg-white border border-slate-300/90 rounded-xl text-slate-800 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                    <option value="">Semua Status</option>
+                    <option value="0" {{ Request('status') === '0' ? 'selected' : '' }}>Pending (Menunggu)</option>
+                    <option value="1" {{ Request('status') == '1' ? 'selected' : '' }}>Disetujui</option>
+                    <option value="2" {{ Request('status') == '2' ? 'selected' : '' }}>Ditolak</option>
+                </select>
+            </div>
+
+            <!-- Search Nama / NPP / Kode Izin -->
+            <div class="flex-1 min-w-0 w-full relative">
+                <i class="ti ti-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none"></i>
+                <input type="text" 
+                       name="nama_lengkap" 
+                       value="{{ Request('nama_lengkap') }}" 
+                       placeholder="Cari Nama Karyawan, NPP, Kode..." 
+                       class="w-full pl-11 pr-4 py-2.5 sm:py-3 text-sm bg-white border border-slate-300/90 rounded-xl text-slate-800 font-medium placeholder-slate-400 shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-2 shrink-0 w-full lg:w-auto">
+                <button type="submit" class="w-full lg:w-auto px-5 py-2.5 sm:py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-xs transition inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95 whitespace-nowrap">
+                    <i class="ti ti-search text-base"></i>
+                    <span>Cari</span>
+                </button>
+                @if(Request('dari') || Request('sampai') || Request('kode_unit') || Request('status') !== null && Request('status') !== '' || Request('nama_lengkap'))
+                    <a href="{{ route('izinsakit.index') }}" class="py-2.5 sm:py-3 px-3 bg-white hover:bg-slate-100 text-slate-600 border border-slate-300/90 rounded-xl font-semibold text-sm transition inline-flex items-center justify-center shrink-0 shadow-xs cursor-pointer" title="Reset Pencarian">
+                        <i class="ti ti-refresh text-base"></i>
+                    </a>
+                @endif
+            </div>
+
+        </div>
+    </form>
+
+    <!-- ================= 5. FULL-WIDTH DATA CARDS LIST ================= -->
+    <div class="space-y-3">
+        
+        <!-- List Header Bar -->
+        <div class="px-5 py-3.5 bg-emerald-600 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-white shadow-xs">
+            <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center text-xs font-bold border border-white/20 shadow-2xs">
+                    <i class="ti ti-layout-list"></i>
+                </div>
+                <h3 class="text-sm font-bold text-white tracking-tight">Daftar Pengajuan Izin Sakit</h3>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/20 text-white border border-white/30">
+                    {{ $izinsakit->total() }} total data
+                </span>
+            </div>
+
+            <div class="text-xs text-emerald-100 font-medium">
+                Halaman: <span class="font-bold text-white">{{ $izinsakit->currentPage() }}</span> dari <span class="font-bold text-white">{{ $izinsakit->lastPage() }}</span>
+            </div>
+        </div>
+
+        <!-- Cards List -->
+        @forelse ($izinsakit as $d)
+            @php
+                $lama = hitungHari($d->dari, $d->sampai);
+                $statusConfig = [
+                    '0' => [
+                        'badge' => 'bg-amber-50 text-amber-700 border-amber-200',
+                        'dot' => 'bg-amber-500',
+                        'label' => 'Menunggu Persetujuan',
+                        'icon' => 'ti-hourglass-high'
+                    ],
+                    '1' => [
+                        'badge' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                        'dot' => 'bg-emerald-500',
+                        'label' => 'Disetujui',
+                        'icon' => 'ti-circle-check'
+                    ],
+                    '2' => [
+                        'badge' => 'bg-rose-50 text-rose-700 border-rose-200',
+                        'dot' => 'bg-rose-500',
+                        'label' => 'Ditolak',
+                        'icon' => 'ti-circle-x'
+                    ],
+                ];
+                $status = $statusConfig[$d->status] ?? $statusConfig['0'];
+            @endphp
+            
+            <div class="w-full bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col gap-3.5 relative">
+                
+                <!-- Main Header: Identity + Status & Actions -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                    
+                    <!-- Left: Employee Info -->
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200/80 flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
+                            {{ strtoupper(substr($d->nama_lengkap, 0, 1)) }}
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-center gap-2 mb-0.5">
+                                <h4 class="text-sm sm:text-base font-bold text-slate-900 truncate">
+                                    {{ $d->nama_lengkap }}
+                                </h4>
+                                <span class="font-mono font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded text-[11px] border border-slate-200">
+                                    {{ $d->kode_izin_sakit }}
+                                </span>
+                                @if (!empty($d->doc_sid) && Storage::disk('public')->exists('/uploads/sid/' . $d->doc_sid))
+                                    <a href="{{ getSid($d->doc_sid) }}" 
+                                       target="_blank" 
+                                       class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 shadow-2xs transition"
+                                       title="Lihat Surat Izin Dokter">
+                                        <i class="ti ti-paperclip text-xs"></i>
+                                        <span>Surat Dokter (SID)</span>
+                                    </a>
+                                @endif
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                                <span class="font-mono font-semibold text-slate-700">{{ $d->npp }}</span>
+                                <span>•</span>
+                                <span>{{ $d->nama_jabatan ?: '-' }}</span>
+                                <span>•</span>
+                                <span class="text-emerald-700 font-semibold">{{ $d->nama_unit ?: '-' }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Status Badge & Action Group -->
+                    <div class="flex flex-wrap items-center justify-between md:justify-end gap-2.5 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-2xs {{ $status['badge'] }}">
+                            <span class="w-2 h-2 rounded-full {{ $status['dot'] }}"></span>
+                            <i class="ti {{ $status['icon'] }}"></i>
+                            <span>{{ $status['label'] }}</span>
+                        </span>
+
+                        <div class="flex items-center gap-1.5">
+                            
+                            <!-- Approve Button (If Pending) -->
+                            @can('izinsakit.approve')
+                                @if ($d->status == 0)
+                                    <button type="button" 
+                                            class="btnApprove inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-all duration-150 active:scale-95 cursor-pointer shadow-2xs"
+                                            kode_izin="{{ Crypt::encrypt($d->kode_izin_sakit) }}" 
+                                            title="Verifikasi & Persetujuan">
+                                        <i class="ti ti-check text-sm"></i>
+                                        <span>Proses</span>
+                                    </button>
+                                @elseif($d->status == 1)
+                                    <form method="POST" 
+                                          action="{{ route('izinsakit.cancelapprove', Crypt::encrypt($d->kode_izin_sakit)) }}" 
+                                          class="inline-block m-0 formCancelApprove">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" 
+                                                class="btnCancelApprove inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-600 text-amber-800 hover:text-white border border-amber-300 font-bold text-xs transition-all duration-150 active:scale-95 cursor-pointer shadow-2xs"
+                                                title="Batalkan Persetujuan">
+                                            <i class="ti ti-rotate-clockwise text-sm"></i>
+                                            <span>Batalkan</span>
                                         </button>
-                                    </div>
-                                </div>
-                            </form>
+                                    </form>
+                                @endif
+                            @endcan
+
+                            <!-- Detail Modal Button -->
+                            <button type="button" 
+                                    class="btnShow inline-flex items-center justify-center w-8 h-8 rounded-xl bg-slate-50 hover:bg-slate-700 text-slate-600 hover:text-white border border-slate-200 font-bold transition-all duration-150 active:scale-95 cursor-pointer shadow-2xs"
+                                    kode_izin="{{ Crypt::encrypt($d->kode_izin_sakit) }}" 
+                                    title="Lihat Detail Permohonan">
+                                <i class="ti ti-file-text text-base"></i>
+                            </button>
+
+                            <!-- Edit Button (If Pending) -->
+                            @can('izinsakit.edit')
+                                @if ($d->status == 0)
+                                    <button type="button" 
+                                            class="btnEdit inline-flex items-center justify-center w-8 h-8 rounded-xl bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white border border-blue-200 font-bold transition-all duration-150 active:scale-95 cursor-pointer shadow-2xs"
+                                            kode_izin="{{ Crypt::encrypt($d->kode_izin_sakit) }}" 
+                                            title="Edit Pengajuan">
+                                        <i class="ti ti-edit text-base"></i>
+                                    </button>
+                                @endif
+                            @endcan
+
+                            <!-- Delete Button (If Pending) -->
+                            @can('izinsakit.delete')
+                                @if ($d->status == 0)
+                                    <form method="POST" 
+                                          action="{{ route('izinsakit.delete', Crypt::encrypt($d->kode_izin_sakit)) }}" 
+                                          class="inline-block m-0 formDeleteIzin">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" 
+                                                class="btnDeleteIzin inline-flex items-center justify-center w-8 h-8 rounded-xl bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white border border-rose-200 font-bold transition-all duration-150 active:scale-95 cursor-pointer shadow-2xs"
+                                                title="Hapus Permohonan">
+                                            <i class="ti ti-trash text-base"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                            @endcan
+
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="izinsakit-list">
-                                @forelse ($izinsakit as $d)
-                                    @php
-                                        $lama = hitungHari($d->dari, $d->sampai);
-                                        $statusConfig = [
-                                            '0' => [
-                                                'bg' => 'rgba(255, 159, 67, 0.12)',
-                                                'color' => '#ff9f43',
-                                                'label' => 'PENDING',
-                                                'icon' => 'hourglass-high',
-                                            ],
-                                            '1' => [
-                                                'bg' => 'rgba(40, 199, 111, 0.12)',
-                                                'color' => '#28c76f',
-                                                'label' => 'DISETUJUI',
-                                                'icon' => 'checks',
-                                            ],
-                                            '2' => [
-                                                'bg' => 'rgba(234, 84, 85, 0.12)',
-                                                'color' => '#ea5455',
-                                                'label' => 'DITOLAK',
-                                                'icon' => 'square-x',
-                                            ],
-                                        ];
-                                        $status = $statusConfig[$d->status] ?? $statusConfig['0'];
-                                    @endphp
-                                    <div class="card modern-card shadow-none mb-2">
-                                        <div class="card-body p-3">
-                                            <!-- Row 1: Identity & Actions -->
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <div class="d-flex align-items-center gap-2 overflow-hidden">
-                                                    <div class="avatar-initial-modern">
-                                                        {{ substr($d->nama_lengkap, 0, 1) }}
-                                                    </div>
-                                                    <div class="overflow-hidden">
-                                                        <div class="d-flex align-items-center gap-2">
-                                                            <h6 class="mb-0 fw-bold text-dark text-truncate"
-                                                                style="font-size: 0.85rem">{{ $d->nama_lengkap }}</h6>
-                                                            @if (!empty($d->doc_sid) && Storage::disk('public')->exists('/uploads/sid/' . $d->doc_sid))
-                                                                <a href="{{ getSid($d->doc_sid) }}" target="_blank"
-                                                                    class="badge bg-label-info p-1 py-0 rounded-pill"
-                                                                    title="Lihat SID">
-                                                                    <i class="ti ti-paperclip fs-6"></i>
-                                                                </a>
-                                                            @endif
-                                                        </div>
-                                                        <div class="d-flex align-items-center gap-2">
-                                                            <span class="text-muted extra-small fw-bold">{{ $d->npp }}</span>
-                                                            <span class="status-badge"
-                                                                style="background: {{ $status['bg'] }}; color: {{ $status['color'] }}">
-                                                                <i class="ti ti-{{ $status['icon'] }} me-1"
-                                                                    style="font-size: 0.7rem"></i>{{ $status['label'] }}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="d-flex align-items-center gap-1 ms-2">
-                                                    @can('izinsakit.approve')
-                                                        @if ($d->status == 0)
-                                                            <button class="btn btn-icon btn-sm btn-label-primary btnApprove border-0"
-                                                                kode_izin="{{ Crypt::encrypt($d->kode_izin_sakit) }}"
-                                                                style="width: 28px; height: 28px;">
-                                                                <i class="ti ti-check fs-5"></i>
-                                                            </button>
-                                                        @elseif($d->status == 1)
-                                                            <form method="POST" name="deleteform" class="deleteform m-0"
-                                                                action="{{ route('izinsakit.cancelapprove', Crypt::encrypt($d->kode_izin_sakit)) }}">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit"
-                                                                    class="btn btn-icon btn-sm btn-label-danger cancel-confirm border-0"
-                                                                    style="width: 28px; height: 28px;">
-                                                                    <i class="ti ti-rotate-clockwise fs-5"></i>
-                                                                </button>
-                                                            </form>
-                                                        @endif
-                                                    @endcan
 
-                                                    <button class="btn btn-icon btn-sm btn-label-info btnShow border-0"
-                                                        kode_izin="{{ Crypt::encrypt($d->kode_izin_sakit) }}"
-                                                        style="width: 28px; height: 28px;">
-                                                        <i class="ti ti-file-text fs-5"></i>
-                                                    </button>
+                </div>
 
-                                                    @can('izinsakit.edit')
-                                                        @if ($d->status == 0)
-                                                            <button class="btn btn-icon btn-sm btn-label-success btnEdit border-0"
-                                                                kode_izin="{{ Crypt::encrypt($d->kode_izin_sakit) }}"
-                                                                style="width: 28px; height: 28px;">
-                                                                <i class="ti ti-edit fs-5"></i>
-                                                            </button>
-                                                        @endif
-                                                    @endcan
-
-                                                    @can('izinsakit.delete')
-                                                        @if ($d->status == 0)
-                                                            <form method="POST" name="deleteform" class="deleteform m-0"
-                                                                action="{{ route('izinsakit.delete', Crypt::encrypt($d->kode_izin_sakit)) }}">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit"
-                                                                    class="btn btn-icon btn-sm btn-label-danger delete-confirm border-0"
-                                                                    style="width: 28px; height: 28px;">
-                                                                    <i class="ti ti-trash fs-5"></i>
-                                                                </button>
-                                                            </form>
-                                                        @endif
-                                                    @endcan
-                                                </div>
-                                            </div>
-
-                                            <div class="border-top pt-2 mt-2">
-                                                <div class="row g-2">
-                                                    <div class="col-7">
-                                                        <div class="compact-label">Tanggal Pengajuan</div>
-                                                        <div class="compact-value text-primary">
-                                                            <i class="ti ti-calendar-event me-1"></i>
-                                                            {{ date('d/m/y', strtotime($d->dari)) }} -
-                                                            {{ date('d/m/y', strtotime($d->sampai)) }}
-                                                            <span class="badge bg-label-info ms-1"
-                                                                style="font-size: 0.6rem">{{ $lama }} Hari</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-5 text-end">
-                                                        <div class="compact-label">Unit & Jabatan</div>
-                                                        <div class="compact-value text-muted text-truncate"
-                                                            title="{{ $d->nama_unit }} / {{ $d->nama_jabatan }}">
-                                                            {{ $d->nama_unit }} / {{ $d->nama_jabatan }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @empty
-                                    <div class="card shadow-none border-0 text-center p-5 mt-4"
-                                        style="background: #f8fafc; border-radius: 20px;">
-                                        <img src="{{ asset('assets/img/illustrations/empty.png') }}" width="120"
-                                            alt="Empty" class="mb-3 mx-auto opacity-50">
-                                        <h5 class="text-muted fw-bold">Belum Ada Pengajuan Izin Sakit</h5>
-                                    </div>
-                                @endforelse
+                <!-- Card Body: Date Metadata & Keterangan / Alasan -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-start">
+                    
+                    <!-- Left info: Dates & Duration -->
+                    <div class="md:col-span-4 lg:col-span-3 space-y-2 text-xs">
+                        <div class="flex items-center justify-between sm:justify-start gap-2 text-slate-500">
+                            <span class="text-slate-400 font-medium flex items-center gap-1.5 shrink-0">
+                                <i class="ti ti-calendar"></i> Pengajuan:
+                            </span>
+                            <span class="font-semibold text-slate-800">
+                                {{ DateToIndo($d->tanggal) }}
+                            </span>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="text-slate-400 font-medium flex items-center gap-1.5">
+                                <i class="ti ti-calendar-event text-emerald-600"></i> Periode Sakit:
                             </div>
-                            <div class="mt-3">
-                                {{ $izinsakit->links() }}
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <span class="font-bold text-slate-900">{{ DateToIndo($d->dari) }}</span>
+                                <span class="text-slate-400 text-[11px]">s/d</span>
+                                <span class="font-bold text-slate-900">{{ DateToIndo($d->sampai) }}</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                    {{ $lama }} Hari
+                                </span>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Right info: Keterangan / Alasan -->
+                    <div class="md:col-span-8 lg:col-span-9">
+                        <div class="bg-slate-50/80 border border-slate-200/80 rounded-xl p-3 text-xs">
+                            <div class="flex items-center gap-1.5 text-slate-400 font-semibold mb-1">
+                                <i class="ti ti-notes text-emerald-600"></i>
+                                <span>Diagnosa / Keterangan Sakit:</span>
+                            </div>
+                            <p class="text-slate-700 font-medium leading-relaxed whitespace-pre-line">
+                                {{ $d->keterangan }}
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        @empty
+            <div class="bg-white border border-slate-200/90 rounded-2xl p-12 text-center shadow-xs">
+                <div class="flex flex-col items-center justify-center max-w-sm mx-auto">
+                    <div class="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-3xl mb-3 border border-emerald-100 shadow-2xs">
+                        <i class="ti ti-first-aid-kit-off"></i>
+                    </div>
+                    <h4 class="text-sm font-bold text-slate-800 mb-1">
+                        Belum Ada Pengajuan Izin Sakit
+                    </h4>
+                    <p class="text-xs text-slate-400 text-center leading-relaxed">
+                        Data pengajuan izin sakit karyawan untuk kriteria pencarian ini belum ditemukan.
+                    </p>
                 </div>
             </div>
+        @endforelse
+
+        <!-- Pagination Bar -->
+        <div class="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div class="text-slate-500 font-medium">
+                Menampilkan <span class="font-bold text-slate-800">{{ $izinsakit->firstItem() ?? 0 }}</span> - <span class="font-bold text-slate-800">{{ $izinsakit->lastItem() ?? 0 }}</span> dari <span class="font-bold text-slate-800">{{ $izinsakit->total() }}</span> data
+            </div>
+            <div>
+                {{ $izinsakit->links() }}
+            </div>
         </div>
+
     </div>
+
 </div>
 
+<!-- Modal Container -->
 <x-modal-form id="modal" size="" show="loadmodal" title="" />
+
 @endsection
+
 @push('myscript')
 <script>
     $(function() {
-        function loading() {
-            $("#loadmodal").html(
-                `<div class="sk-wave sk-primary" style="margin:auto">
-            <div class="sk-wave-rect"></div>
-            <div class="sk-wave-rect"></div>
-            <div class="sk-wave-rect"></div>
-            <div class="sk-wave-rect"></div>
-            <div class="sk-wave-rect"></div>
-            </div>`
-            );
-        }
-        $("#btnCreate").click(function() {
+        const loadingSpinner = `
+            <div class="flex items-center justify-center p-8">
+                <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        `;
+
+        $(".flatpickr-date").flatpickr({
+            dateFormat: "Y-m-d",
+            allowInput: true
+        });
+
+        // Tambah Pengajuan
+        $("#btnCreate").click(function(e) {
+            e.preventDefault();
             $("#modal").modal("show");
-            loading();
-            $("#modal").find(".modal-title").text("Buat Izin Sakit");
+            $("#modal").find(".modal-title").text("Tambah Pengajuan Izin Sakit");
+            $("#loadmodal").html(loadingSpinner);
             $("#loadmodal").load("/izinsakit/create");
         });
 
-        $(".btnApprove").click(function() {
+        // Approve Modal
+        $(document).on("click", ".btnApprove", function(e) {
+            e.preventDefault();
             const kode_izin = $(this).attr("kode_izin");
             $("#modal").modal("show");
-            loading();
-            $("#modal").find(".modal-title").text("Approve Izin Sakit");
+            $("#modal").find(".modal-title").text("Verifikasi & Persetujuan Izin Sakit");
+            $("#loadmodal").html(loadingSpinner);
             $("#loadmodal").load(`/izinsakit/${kode_izin}/approve`);
         });
 
-        $(".btnShow").click(function() {
+        // Detail Modal
+        $(document).on("click", ".btnShow", function(e) {
+            e.preventDefault();
             const kode_izin = $(this).attr("kode_izin");
             $("#modal").modal("show");
-            loading();
-            $("#modal").find(".modal-title").text("Detail Izin Sakit");
+            $("#modal").find(".modal-title").text("Detail Pengajuan Izin Sakit");
+            $("#loadmodal").html(loadingSpinner);
             $("#loadmodal").load(`/izinsakit/${kode_izin}/show`);
         });
 
-        $(".btnEdit").click(function() {
+        // Edit Modal
+        $(document).on("click", ".btnEdit", function(e) {
+            e.preventDefault();
             const kode_izin = $(this).attr("kode_izin");
             $("#modal").modal("show");
-            loading();
-            $("#modal").find(".modal-title").text("Edit Izin Sakit");
+            $("#modal").find(".modal-title").text("Edit Pengajuan Izin Sakit");
+            $("#loadmodal").html(loadingSpinner);
             $("#loadmodal").load(`/izinsakit/${kode_izin}/edit`);
+        });
+
+        // Batalkan Persetujuan Confirmation
+        $(document).on("click", ".btnCancelApprove", function(e) {
+            e.preventDefault();
+            const form = $(this).closest("form");
+            Swal.fire({
+                title: "Batalkan Persetujuan?",
+                text: "Status izin sakit akan dikembalikan ke pending dan presensi terkait akan dibatalkan!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#064e3b",
+                cancelButtonColor: "#e11d48",
+                confirmButtonText: "Ya, Batalkan!",
+                cancelButtonText: "Tutup"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+
+        // Hapus Pengajuan Confirmation
+        $(document).on("click", ".btnDeleteIzin", function(e) {
+            e.preventDefault();
+            const form = $(this).closest("form");
+            Swal.fire({
+                title: "Hapus Pengajuan Izin Sakit?",
+                text: "Data pengajuan izin sakit ini akan dihapus secara permanen!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#e11d48",
+                cancelButtonColor: "#64748b",
+                confirmButtonText: "Ya, Hapus!",
+                cancelButtonText: "Batal"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
     });
 </script>

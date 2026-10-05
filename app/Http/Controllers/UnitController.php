@@ -20,7 +20,7 @@ class UnitController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Unit::query();
+        $query = Unit::query()->where('kode_unit', '!=', 'U00');
         if (!empty($request->nama_unit_search)) {
             $query->where('nama_unit', 'like', '%' . $request->nama_unit_search . '%');
         }
@@ -152,8 +152,9 @@ class UnitController extends Controller
 
     public function gettingkatbyunit(Request $request)
     {
-        $tingkat = config('global.tingkat');
-        $jml_tingkat = $tingkat[$request->kode_unit];
+        $tingkat = config('global.tingkat', []);
+        $kode_unit = $request->kode_unit;
+        $jml_tingkat = !empty($kode_unit) && isset($tingkat[$kode_unit]) ? $tingkat[$kode_unit] : 0;
         $selected = $request->selected;
         echo "<option value=''>Tingkat</option>";
         for ($i = 1; $i <= $jml_tingkat; $i++) {

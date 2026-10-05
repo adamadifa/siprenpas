@@ -2,324 +2,538 @@
 @section('titlepage', 'Pembayaran Pendidikan')
 
 @section('content')
-@section('navigasi')
-    <div class="card shadow-none bg-transparent border-0 mb-3">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
-                        <i class="ti ti-moneybag fs-3"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Pembayaran Pendidikans</h4>
-                        <p class="text-muted mb-0 small">Manajemen pembayaran SPP dan biaya lainnya</p>
-                    </div>
-                </div>
-                <div class="d-flex flex-column align-items-end">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb breadcrumb-style1 mb-0">
-                            <li class="breadcrumb-item">
-                                <a href="javascript:void(0);" class="text-muted">
-                                    <i class="ti ti-school me-1"></i> Akademik
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active">
-                                <i class="ti ti-moneybag me-1"></i> Pembayaran
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
+<div class="space-y-5">
+
+    <!-- ================= 1. PAGE HEADER (NO CARD) WITH RIGHT BREADCRUMB ================= -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-1">
+        <!-- Title & Subtitle -->
+        <div>
+            <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+                <i class="ti ti-wallet text-emerald-600 text-2xl"></i>
+                <span>Pembayaran Pendidikan</span>
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">
+                Manajemen tagihan, pembayaran SPP, kenaikan kelas, dan administrasi keuangan siswa
+            </p>
+        </div>
+
+        <!-- Right Side: Breadcrumb Navigation -->
+        <div class="flex flex-col md:items-end">
+            <nav class="flex items-center text-xs text-slate-400 font-medium">
+                <a href="{{ route('dashboard.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="text-slate-500 flex items-center gap-1">
+                    <i class="ti ti-wallet text-sm"></i>
+                    <span>Keuangan</span>
+                </span>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="font-bold text-slate-800">Pembayaran Pendidikan</span>
+            </nav>
         </div>
     </div>
-@endsection
 
-<!-- Filter Section -->
-<div class="mb-4">
-    <form action="{{ route('pembayaranpendidikan.index') }}">
-        <div class="row g-2">
-            <div class="col-lg-2 col-md-6 col-12">
-                <x-input-with-icon label="" placeholder="Cari Nama Siswa" value="{{ Request('nama_lengkap') }}"
-                    name="nama_lengkap" icon="ti ti-search" />
+    <!-- ================= 2. STATISTIC SUMMARY (SINGLE SEAMLESS EMERALD CARD WITH TAPERED DIVIDERS) ================= -->
+    <div class="rounded-2xl shadow-sm bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-700 text-white p-5 sm:p-6 border border-emerald-900/30 relative overflow-hidden">
+        <!-- Background watermark -->
+        <div class="absolute -right-8 -bottom-10 text-white/5 pointer-events-none">
+            <i class="ti ti-wallet text-[200px]"></i>
+        </div>
+
+        <div class="relative z-10 flex flex-wrap sm:flex-nowrap items-stretch justify-between gap-y-6">
+            
+            <!-- Segment 1: Total Data Siswa -->
+            <div class="flex-1 min-w-[140px] sm:min-w-[160px] px-3 sm:px-4 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-black uppercase tracking-wider text-emerald-200 truncate">
+                            Total Data Siswa
+                        </span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-white/20 text-white border border-white/25">
+                            Semua
+                        </span>
+                    </div>
+                    <div class="text-3xl sm:text-4xl font-black text-white tracking-tight mt-1.5">
+                        {{ number_format($pendaftaran->total(), 0, ',', '.') }}
+                    </div>
+                </div>
+                <div class="mt-3.5 pt-2 flex items-center justify-between text-xs text-emerald-200/90">
+                    <span class="font-medium text-[11px] flex items-center gap-1">
+                        <i class="ti ti-file-analytics text-xs opacity-70"></i>
+                        <span>Hal {{ $pendaftaran->currentPage() }} dari {{ max(1, $pendaftaran->lastPage()) }}</span>
+                    </span>
+                    <span class="font-black text-white text-[10px] bg-white/20 px-2 py-0.5 rounded-md">
+                        {{ $pendaftaran->perPage() }} / hal
+                    </span>
+                </div>
             </div>
-            <div class="col-lg-2 col-md-6 col-12">
-                <select name="kode_unit" id="kode_unit_search" class="form-select">
-                    <option value="">Unit</option>
+
+            <!-- Tapered Vertical Divider Line -->
+            <div class="hidden sm:block w-[1px] bg-gradient-to-b from-transparent via-white/35 to-transparent self-center h-16 shrink-0"></div>
+
+            <!-- Segment 2: Tahun Ajaran Aktif -->
+            <div class="flex-1 min-w-[140px] sm:min-w-[160px] px-3 sm:px-4 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-black uppercase tracking-wider text-emerald-200 truncate">
+                            TA Aktif
+                        </span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-white/15 text-emerald-100 border border-white/20">
+                            Aktif
+                        </span>
+                    </div>
+                    <div class="text-3xl sm:text-4xl font-black text-white tracking-tight mt-1.5">
+                        {{ $tahun_ajaran->tahun_ajaran ?? '-' }}
+                    </div>
+                </div>
+                <div class="mt-3.5 pt-2 flex items-center justify-between text-xs text-emerald-200/90">
+                    <span class="font-medium text-[11px] flex items-center gap-1">
+                        <i class="ti ti-calendar-event text-xs opacity-70"></i>
+                        <span>Status Sistem</span>
+                    </span>
+                    <span class="font-black text-white text-[10px] bg-white/15 px-2 py-0.5 rounded-md">
+                        Berjalan
+                    </span>
+                </div>
+            </div>
+
+            <!-- Tapered Vertical Divider Line -->
+            <div class="hidden sm:block w-[1px] bg-gradient-to-b from-transparent via-white/35 to-transparent self-center h-16 shrink-0"></div>
+
+            <!-- Segment 3: TA Siswa Baru (PPDB) -->
+            <div class="flex-1 min-w-[140px] sm:min-w-[160px] px-3 sm:px-4 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-black uppercase tracking-wider text-emerald-200 truncate">
+                            TA Siswa Baru
+                        </span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-white/15 text-emerald-100 border border-white/20">
+                            PPDB
+                        </span>
+                    </div>
+                    <div class="text-3xl sm:text-4xl font-black text-white tracking-tight mt-1.5">
+                        {{ optional($ta_ppdb)->tahun_ajaran ?? '-' }}
+                    </div>
+                </div>
+                <div class="mt-3.5 pt-2 flex items-center justify-between text-xs text-emerald-200/90">
+                    <span class="font-medium text-[11px] flex items-center gap-1">
+                        <i class="ti ti-user-plus text-xs opacity-70"></i>
+                        <span>Kenaikan Kelas</span>
+                    </span>
+                    <span class="font-black text-white text-[10px] bg-white/15 px-2 py-0.5 rounded-md">
+                        Siswa Baru
+                    </span>
+                </div>
+            </div>
+
+            <!-- Tapered Vertical Divider Line -->
+            <div class="hidden sm:block w-[1px] bg-gradient-to-b from-transparent via-white/35 to-transparent self-center h-16 shrink-0"></div>
+
+            <!-- Segment 4: Unit Terdaftar -->
+            <div class="flex-1 min-w-[140px] sm:min-w-[160px] px-3 sm:px-4 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-black uppercase tracking-wider text-emerald-200 truncate">
+                            Unit Terdaftar
+                        </span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-white/15 text-emerald-100 border border-white/20">
+                            Jenjang
+                        </span>
+                    </div>
+                    <div class="text-3xl sm:text-4xl font-black text-white tracking-tight mt-1.5">
+                        {{ count($unit) }}
+                    </div>
+                </div>
+                <div class="mt-3.5 pt-2 flex items-center justify-between text-xs text-emerald-200/90">
+                    <span class="font-medium text-[11px] flex items-center gap-1">
+                        <i class="ti ti-building-community text-xs opacity-70"></i>
+                        <span>Modul Keuangan</span>
+                    </span>
+                    <span class="font-black text-white text-[10px] bg-white/15 px-2 py-0.5 rounded-md">
+                        SPP &amp; Biaya
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ================= 3. FILTER & SEARCH TOOLBAR ================= -->
+    <form action="{{ route('pembayaranpendidikan.index') }}" method="GET" class="w-full">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3 w-full items-center">
+            <!-- Search Name -->
+            <div class="relative">
+                <i class="ti ti-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                <input type="text" name="nama_lengkap" value="{{ Request('nama_lengkap') }}" placeholder="Cari Siswa / NIS..." class="w-full pl-9 pr-3.5 py-2.5 text-xs sm:text-sm bg-white border border-slate-300/90 rounded-lg text-slate-700 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition placeholder-slate-400">
+            </div>
+
+            <!-- Unit -->
+            <div class="relative">
+                <i class="ti ti-building-community absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                <select name="kode_unit" id="kode_unit_search" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm bg-white border border-slate-300/90 rounded-lg text-slate-700 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                    <option value="">Semua Unit</option>
                     @foreach ($unit as $d)
-                        <option value="{{ $d->kode_unit }}"
-                            {{ Request('kode_unit') == $d->kode_unit ? 'selected' : '' }}>
-                            {{ $d->nama_unit }}</option>
+                        <option value="{{ $d->kode_unit }}" {{ Request('kode_unit') == $d->kode_unit ? 'selected' : '' }}>
+                            {{ $d->nama_unit }}
+                        </option>
                     @endforeach
                 </select>
             </div>
-            <div class="col-lg-2 col-md-6 col-12">
-                <select name="tingkat" id="tingkat" class="form-select">
-                    <option value="">Tingkat</option>
+
+            <!-- Tingkat -->
+            <div class="relative">
+                <i class="ti ti-chart-bar absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                <select name="tingkat" id="tingkat" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm bg-white border border-slate-300/90 rounded-lg text-slate-700 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                    <option value="">Semua Tingkat</option>
                 </select>
             </div>
-            <div class="col-lg-2 col-md-6 col-12">
-                <select name="asrama" id="asrama" class="form-select">
-                    <option value="">Asrama/Reguler</option>
+
+            <!-- Asrama / Reguler -->
+            <div class="relative">
+                <i class="ti ti-home-check absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                <select name="asrama" id="asrama" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm bg-white border border-slate-300/90 rounded-lg text-slate-700 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                    <option value="">Semua Tipe</option>
                     <option value="1" {{ Request('asrama') == '1' ? 'selected' : '' }}>Asrama</option>
-                    <option value="0" {{ Request('asrama') == '0' ? 'selected' : '' }}>Reguler/Non-Asrama</option>
+                    <option value="0" {{ Request('asrama') == '0' ? 'selected' : '' }}>Reguler / Non-Asrama</option>
                 </select>
             </div>
-            <div class="col-lg-2 col-md-6 col-12">
-                <select name="kode_ta" id="kode_ta_search" class="form-select">
-                    <option value="">Tahun Ajaran</option>
+
+            <!-- Tahun Ajaran -->
+            <div class="relative">
+                <i class="ti ti-calendar-event absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                <select name="kode_ta" id="kode_ta_search" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm bg-white border border-slate-300/90 rounded-lg text-slate-700 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                    <option value="">Semua TA</option>
                     @foreach ($tahunajaran as $d)
                         <option value="{{ $d->kode_ta }}"
-                            @if (!empty(Request('kode_ta'))) @if (Request('kode_ta') == $d->kode_ta)
-                                    selected @endif
-                        @else @if ($kode_ta == $d->kode_ta) selected @endif
+                            @if (!empty(Request('kode_ta'))) @if (Request('kode_ta') == $d->kode_ta) selected @endif
+                            @else @if ($kode_ta == $d->kode_ta) selected @endif
                             @endif
-                            >
+                        >
                             {{ $d->tahun_ajaran }}
                         </option>
                     @endforeach
                 </select>
             </div>
-            <div class="col-lg-2 col-md-12 col-12">
-                <button class="btn shadow-sm d-flex align-items-center justify-content-center gap-2 text-white w-100" 
-                    style="background-color: #064e3b; height: 38px;">
-                    <i class="ti ti-search fs-5"></i> Cari
+
+            <!-- Submit & Reset Buttons -->
+            <div class="flex items-center gap-2">
+                <button type="submit" class="flex-1 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm rounded-lg shadow-xs transition inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 whitespace-nowrap">
+                    <i class="ti ti-search text-base"></i>
+                    <span>Cari</span>
                 </button>
+                <a href="{{ route('pembayaranpendidikan.index') }}" class="py-2.5 px-3 bg-white hover:bg-slate-100 text-slate-600 border border-slate-300/90 rounded-lg font-semibold text-sm transition inline-flex items-center justify-center shrink-0 shadow-xs" title="Reset Filter">
+                    <i class="ti ti-refresh text-base"></i>
+                </a>
             </div>
         </div>
     </form>
-</div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header d-flex align-items-center justify-content-between text-white py-3" style="background-color: #064e3b">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="ti ti-list fs-5"></i>
-                    <h6 class="card-title mb-0 text-white">Data Siswa & Status Pembayaran</h6>
+    <!-- Success & Error Alerts -->
+    @if(session('success'))
+        <div class="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-sm flex items-center gap-3">
+            <i class="ti ti-circle-check text-emerald-600 text-xl shrink-0"></i>
+            <span class="font-medium">{{ session('success') }}</span>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="p-4 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl text-sm flex items-center gap-3">
+            <i class="ti ti-alert-circle text-rose-600 text-xl shrink-0"></i>
+            <span class="font-medium">{{ session('error') }}</span>
+        </div>
+    @endif
+
+    <!-- ================= 4. MAIN DATA TABLE CONTAINER ================= -->
+    <div class="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
+        <!-- Solid Green Table Header -->
+        <div class="px-5 pt-4 pb-3 bg-emerald-600 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
+            <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center text-xs font-bold border border-white/20 shadow-2xs">
+                    <i class="ti ti-list-check"></i>
                 </div>
-                @php
-                    $anyCanPromote = false;
-                    foreach ($pendaftaran as $d) {
-                        if ($d->kode_ta != optional($ta_ppdb)->kode_ta && $d->status_naik_kelas != 1) {
-                            $anyCanPromote = true;
-                            break;
-                        }
-                    }
-                @endphp
-                @if ($anyCanPromote)
-                    <button type="button" class="btn btn-sm btn-warning" id="btnBulkNaikKelas">
-                        <i class="ti ti-arrow-up me-1"></i> Naik Kelas Massal
-                    </button>
-                @endif
+                <h3 class="text-sm font-extrabold text-white tracking-tight">Data Siswa &amp; Status Pembayaran</h3>
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white/20 text-white border border-white/30 shadow-2xs">
+                    TA: {{ $tahun_ajaran->tahun_ajaran ?? '-' }}
+                </span>
             </div>
-            <div class="card-body p-0">
-                <style>
-                    .table-sticky {
-                        border-collapse: separate;
-                        border-spacing: 0;
-                    }
-                    .table-sticky tbody tr {
-                        background-color: #ffffff;
-                    }
-                    .table-sticky thead tr {
-                        background-color: #064e3b;
-                    }
-                    .table-sticky thead th {
-                        background-color: #064e3b !important;
-                        color: #fff !important;
-                    }
-                    
-                    /* Explicit solid background-color for sticky columns */
-                    .table-sticky td.sticky-col-left-1,
-                    .table-sticky td.sticky-col-left-2,
-                    .table-sticky td.sticky-col-left-3,
-                    .table-sticky td.sticky-col-left-4,
-                    .table-sticky td.sticky-col-left-5,
-                    .table-sticky td.sticky-col-left-6,
-                    .table-sticky td.sticky-col-right {
-                        background-color: #ffffff !important;
-                    }
 
-                    /* Hover states */
-                    .table-sticky tbody tr:hover td {
-                        background-color: #f8f9fa !important;
+            @php
+                $anyCanPromote = false;
+                foreach ($pendaftaran as $d) {
+                    if ($d->kode_ta != optional($ta_ppdb)->kode_ta && $d->status_naik_kelas != 1 && $d->status_siswa == 1) {
+                        $anyCanPromote = true;
+                        break;
                     }
+                }
+            @endphp
+            @if ($anyCanPromote)
+                <button type="button" id="btnBulkNaikKelas" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold rounded-lg text-xs shadow-xs transition active:scale-95 cursor-pointer">
+                    <i class="ti ti-arrow-up text-sm"></i>
+                    <span>Naik Kelas Massal</span>
+                </button>
+            @endif
+        </div>
 
-                    /* Row danger / inactive status states */
-                    .table-sticky tr.row-danger td {
-                        background-color: #fef5f5 !important;
-                    }
-                    .table-sticky tr.row-danger td.sticky-col-left-1,
-                    .table-sticky tr.row-danger td.sticky-col-left-2,
-                    .table-sticky tr.row-danger td.sticky-col-left-3,
-                    .table-sticky tr.row-danger td.sticky-col-left-4,
-                    .table-sticky tr.row-danger td.sticky-col-left-5,
-                    .table-sticky tr.row-danger td.sticky-col-left-6,
-                    .table-sticky tr.row-danger td.sticky-col-right {
-                        background-color: #fef5f5 !important;
-                    }
+        <style>
+            .table-sticky {
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+            .table-sticky thead tr {
+                background-color: #059669;
+            }
+            .table-sticky thead th {
+                background-color: #059669 !important;
+                color: #ffffff !important;
+            }
+            .table-sticky td.sticky-col-left-1,
+            .table-sticky td.sticky-col-left-2,
+            .table-sticky td.sticky-col-left-3,
+            .table-sticky td.sticky-col-left-4,
+            .table-sticky td.sticky-col-left-5,
+            .table-sticky td.sticky-col-left-6 {
+                background-color: #ffffff;
+            }
+            .table-sticky tr:nth-child(even) td.sticky-col-left-1,
+            .table-sticky tr:nth-child(even) td.sticky-col-left-2,
+            .table-sticky tr:nth-child(even) td.sticky-col-left-3,
+            .table-sticky tr:nth-child(even) td.sticky-col-left-4,
+            .table-sticky tr:nth-child(even) td.sticky-col-left-5,
+            .table-sticky tr:nth-child(even) td.sticky-col-left-6 {
+                background-color: #f8fafc;
+            }
+            .table-sticky td.sticky-col-right {
+                background-color: #ffffff;
+            }
+            .table-sticky tr:nth-child(even) td.sticky-col-right {
+                background-color: #f8fafc;
+            }
+            .table-sticky tbody tr:hover td,
+            .table-sticky tbody tr:hover td.sticky-col-left-1,
+            .table-sticky tbody tr:hover td.sticky-col-left-2,
+            .table-sticky tbody tr:hover td.sticky-col-left-3,
+            .table-sticky tbody tr:hover td.sticky-col-left-4,
+            .table-sticky tbody tr:hover td.sticky-col-left-5,
+            .table-sticky tbody tr:hover td.sticky-col-left-6,
+            .table-sticky tbody tr:hover td.sticky-col-right {
+                background-color: #ecfdf5 !important;
+            }
+            .table-sticky tr.row-danger td,
+            .table-sticky tr.row-danger td.sticky-col-left-1,
+            .table-sticky tr.row-danger td.sticky-col-left-2,
+            .table-sticky tr.row-danger td.sticky-col-left-3,
+            .table-sticky tr.row-danger td.sticky-col-left-4,
+            .table-sticky tr.row-danger td.sticky-col-left-5,
+            .table-sticky tr.row-danger td.sticky-col-left-6,
+            .table-sticky tr.row-danger td.sticky-col-right {
+                background-color: #fff1f2 !important;
+            }
+            .table-sticky tr.row-danger:hover td,
+            .table-sticky tr.row-danger:hover td.sticky-col-left-1,
+            .table-sticky tr.row-danger:hover td.sticky-col-left-2,
+            .table-sticky tr.row-danger:hover td.sticky-col-left-3,
+            .table-sticky tr.row-danger:hover td.sticky-col-left-4,
+            .table-sticky tr.row-danger:hover td.sticky-col-left-5,
+            .table-sticky tr.row-danger:hover td.sticky-col-left-6,
+            .table-sticky tr.row-danger:hover td.sticky-col-right {
+                background-color: #ffe4e6 !important;
+            }
+            .sticky-col-left-1 { position: sticky; left: 0; z-index: 2; width: 44px; min-width: 44px; max-width: 44px; }
+            .sticky-col-left-2 { position: sticky; left: 44px; z-index: 2; width: 44px; min-width: 44px; max-width: 44px; }
+            .sticky-col-left-3 { position: sticky; left: 88px; z-index: 2; width: 135px; min-width: 135px; max-width: 135px; }
+            .sticky-col-left-4 { position: sticky; left: 223px; z-index: 2; width: 85px; min-width: 85px; max-width: 85px; }
+            .sticky-col-left-5 { position: sticky; left: 308px; z-index: 2; width: 90px; min-width: 90px; max-width: 90px; }
+            .sticky-col-left-6 { position: sticky; left: 398px; z-index: 2; width: 220px; min-width: 220px; max-width: 220px; box-shadow: 2px 0 5px -2px rgba(0,0,0,0.06); }
+            .sticky-col-right { position: sticky; right: 0; z-index: 2; width: 110px; min-width: 110px; max-width: 110px; box-shadow: -2px 0 5px -2px rgba(0,0,0,0.06); }
+            .table-sticky thead th.sticky-col-left-1,
+            .table-sticky thead th.sticky-col-left-2,
+            .table-sticky thead th.sticky-col-left-3,
+            .table-sticky thead th.sticky-col-left-4,
+            .table-sticky thead th.sticky-col-left-5,
+            .table-sticky thead th.sticky-col-left-6,
+            .table-sticky thead th.sticky-col-right {
+                z-index: 3;
+            }
+        </style>
 
-                    /* Row danger hover states */
-                    .table-sticky tr.row-danger:hover td {
-                        background-color: #fde8e8 !important;
-                    }
-                    
-                    .sticky-col-left-1 { position: sticky; left: 0; z-index: 2; width: 45px; min-width: 45px; max-width: 45px; }
-                    .sticky-col-left-2 { position: sticky; left: 45px; z-index: 2; width: 45px; min-width: 45px; max-width: 45px; }
-                    .sticky-col-left-3 { position: sticky; left: 90px; z-index: 2; width: 140px; min-width: 140px; max-width: 140px; }
-                    .sticky-col-left-4 { position: sticky; left: 230px; z-index: 2; width: 90px; min-width: 90px; max-width: 90px; }
-                    .sticky-col-left-5 { position: sticky; left: 320px; z-index: 2; width: 95px; min-width: 95px; max-width: 95px; }
-                    .sticky-col-left-6 { 
-                        position: sticky; 
-                        left: 415px; 
-                        z-index: 2; 
-                        width: 300px; 
-                        min-width: 300px; 
-                        max-width: 300px; 
-                    }
-                    .sticky-col-right { position: sticky; right: 0; z-index: 2; width: 120px; min-width: 120px; max-width: 120px; border-left: 1px solid #e0e0e0; }
-                    
-                    .table-sticky thead th.sticky-col-left-1,
-                    .table-sticky thead th.sticky-col-left-2,
-                    .table-sticky thead th.sticky-col-left-3,
-                    .table-sticky thead th.sticky-col-left-4,
-                    .table-sticky thead th.sticky-col-left-5,
-                    .table-sticky thead th.sticky-col-left-6,
-                    .table-sticky thead th.sticky-col-right {
-                        z-index: 3;
-                    }
-                </style>
-                <div class="table-responsive">
-                    <form action="{{ route('pembayaranpendidikan.bulknaikkelas') }}" method="POST" id="formBulkNaikKelas">
-                        @csrf
-                        <table class="table table-hover mb-0 text-nowrap table-sticky">
-                        <thead style="background-color: #064e3b">
-                            <tr>
-                                <th class="text-white py-3 sticky-col-left-1">
-                                    <input type="checkbox" class="form-check-input" id="checkAll">
-                                </th>
-                                <th class="text-white py-3 sticky-col-left-2">NO.</th>
-                                <th class="text-white py-3 sticky-col-left-3">NO. PENDAFTARAN</th>
-                                <th class="text-white py-3 sticky-col-left-4">ID SISWA</th>
-                                <th class="text-white py-3 sticky-col-left-5">NIS</th>
-                                <th class="text-white py-3 sticky-col-left-6">NAMA LENGKAP</th>
-                                <th class="text-white py-3">TIPE BIAYA</th>
-                                <th class="text-white py-3">UNIT</th>
-                                <th class="text-white py-3">TNGKT</th>
-                                <th class="text-white py-3">KELAS</th>
-                                <th class="text-white py-3">STATUS</th>
-                                <th class="text-white py-3 text-end sticky-col-right" style="width: 100px;">#</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($pendaftaran as $d)
-                                <tr class="@if(in_array($d->status_siswa, [3, 4, 5])) row-danger @endif">
-                                    <td class="py-1 text-center sticky-col-left-1">
-                                        @if ($d->kode_ta != optional($ta_ppdb)->kode_ta && $d->status_naik_kelas != 1 && $d->status_siswa == 1)
-                                            <input type="checkbox" name="no_pendaftaran[]" value="{{ $d->no_pendaftaran }}" class="form-check-input checkItem">
-                                        @elseif($d->status_naik_kelas == 1)
-                                            <i class="ti ti-arrow-up text-success fs-4" data-bs-toggle="tooltip" title="Sudah Naik Kelas"></i>
+        <div class="overflow-x-auto bg-emerald-600">
+            <form action="{{ route('pembayaranpendidikan.bulknaikkelas') }}" method="POST" id="formBulkNaikKelas">
+                @csrf
+                <table class="w-full text-left text-xs border-0 border-collapse table-sticky">
+                    <thead class="bg-emerald-600 text-white font-bold uppercase tracking-wider text-[11px] border-0 border-b border-emerald-700/80">
+                        <tr>
+                            <th class="py-2 px-3 text-center sticky-col-left-1 text-white">
+                                <input type="checkbox" id="checkAll" class="w-3.5 h-3.5 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer accent-emerald-600">
+                            </th>
+                            <th class="py-2 px-3 text-center sticky-col-left-2 text-white">NO.</th>
+                            <th class="py-2 px-3 sticky-col-left-3 text-white">NO. DAFTAR</th>
+                            <th class="py-2 px-3 sticky-col-left-4 text-white">ID SISWA</th>
+                            <th class="py-2 px-3 sticky-col-left-5 text-white">NIS</th>
+                            <th class="py-2 px-3 sticky-col-left-6 text-white">NAMA LENGKAP</th>
+                            <th class="py-2 px-3 text-white">TIPE BIAYA</th>
+                            <th class="py-2 px-3 text-white">UNIT</th>
+                            <th class="py-2 px-3 text-center text-white">TNGKT</th>
+                            <th class="py-2 px-3 text-white">KELAS</th>
+                            <th class="py-2 px-3 text-center text-white">STATUS</th>
+                            <th class="py-2 px-3 text-end sticky-col-right text-white">AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white text-slate-700 font-medium">
+                        @forelse ($pendaftaran as $d)
+                            <tr class="odd:bg-white even:bg-slate-50/40 hover:bg-emerald-50/50 transition-colors @if(in_array($d->status_siswa, [3, 4, 5])) row-danger @endif">
+                                <td class="py-2 px-3 text-center sticky-col-left-1">
+                                    @if ($d->kode_ta != optional($ta_ppdb)->kode_ta && $d->status_naik_kelas != 1 && $d->status_siswa == 1)
+                                        <input type="checkbox" name="no_pendaftaran[]" value="{{ $d->no_pendaftaran }}" class="checkItem w-3.5 h-3.5 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer accent-emerald-600">
+                                    @elseif($d->status_naik_kelas == 1)
+                                        <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold" title="Sudah Naik Kelas">
+                                            <i class="ti ti-arrow-up"></i>
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="py-2 px-3 text-center text-slate-400 font-bold sticky-col-left-2">
+                                    {{ $loop->iteration + ($pendaftaran->currentPage() - 1) * $pendaftaran->perPage() }}
+                                </td>
+                                <td class="py-2 px-3 font-mono font-bold text-slate-800 sticky-col-left-3 whitespace-nowrap">
+                                    {{ $d->no_pendaftaran }}
+                                </td>
+                                <td class="py-2 px-3 font-mono text-slate-500 sticky-col-left-4 whitespace-nowrap">
+                                    {{ $d->id_siswa }}
+                                </td>
+                                <td class="py-2 px-3 font-mono font-bold text-slate-800 sticky-col-left-5 whitespace-nowrap">
+                                    {{ $d->nis ?? '-' }}
+                                </td>
+                                <td class="py-2 px-3 sticky-col-left-6">
+                                    <span class="font-bold text-slate-900 block truncate max-w-[200px]" title="{{ $d->nama_lengkap }}">{{ $d->nama_lengkap }}</span>
+                                </td>
+                                <td class="py-2 px-3 whitespace-nowrap">
+                                    @if($d->asrama == 1)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/70">
+                                            Asrama {{ $d->is_pindahan == 1 ? '(Pindahan)' : '' }}
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+                                            Reguler {{ $d->is_pindahan == 1 ? '(Pindahan)' : '' }}
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="py-2 px-3 whitespace-nowrap font-medium text-slate-700">
+                                    {{ $d->nama_unit }}
+                                </td>
+                                <td class="py-2 px-3 text-center whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200/60">
+                                        {{ $d->tingkat }}
+                                    </span>
+                                </td>
+                                <td class="py-2 px-3 whitespace-nowrap">
+                                    @if (!empty($d->nama_kelas))
+                                        <span class="font-semibold text-slate-800">{{ $d->nama_kelas }}</span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200/70">
+                                            Belum diploting
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="py-2 px-3 text-center whitespace-nowrap">
+                                    @if($d->status_siswa == 1)
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
+                                        </span>
+                                    @elseif($d->status_siswa == 2)
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-50 text-sky-700 border border-sky-200/70">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span> Lulus / Naik
+                                        </span>
+                                    @elseif($d->status_siswa == 3)
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200/70" title="Alasan: {{ $d->alasan_keluar }}">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Mengundurkan Diri
+                                        </span>
+                                    @elseif($d->status_siswa == 4)
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200/70" title="Alasan: {{ $d->alasan_keluar }}">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Pindah
+                                        </span>
+                                    @elseif($d->status_siswa == 5)
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200/70" title="Alasan: {{ $d->alasan_keluar }}">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Dikeluarkan
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="py-2 px-3 text-end sticky-col-right">
+                                    <div class="inline-flex items-center gap-1 justify-end">
+                                        @can('pembayaranpdd.show')
+                                            <a href="#" class="btnShow w-6.5 h-6.5 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/80 flex items-center justify-center text-xs transition cursor-pointer"
+                                                no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}"
+                                                title="Pembayaran SPP & Tagihan">
+                                                <i class="ti ti-wallet text-xs"></i>
+                                            </a>
+                                        @endcan
+                                        @if ($d->kode_ta != optional($ta_ppdb)->kode_ta)
+                                            @if ($d->status_naik_kelas == 1)
+                                                <a href="{{ route('pembayaranpendidikan.batalkannaikkelas', Crypt::encrypt($d->no_pendaftaran)) }}"
+                                                    class="w-6.5 h-6.5 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/80 flex items-center justify-center text-xs transition"
+                                                    onclick="return confirm('Apakah Anda yakin ingin membatalkan kenaikan kelas ini?')"
+                                                    title="Batalkan Kenaikan Kelas">
+                                                    <i class="ti ti-arrow-back-up text-xs"></i>
+                                                </a>
+                                            @else
+                                                <a href="#"
+                                                    class="btnNaikKelasTrigger w-6.5 h-6.5 rounded-md bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/80 flex items-center justify-center text-xs transition cursor-pointer"
+                                                    no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}"
+                                                    title="Proses Naik Kelas">
+                                                    <i class="ti ti-arrow-up text-xs"></i>
+                                                </a>
+                                            @endif
                                         @endif
-                                    </td>
-                                    <td class="py-1 sticky-col-left-2">{{ $loop->iteration + ($pendaftaran->currentPage() - 1) * $pendaftaran->perPage() }}</td>
-                                    <td class="py-1 sticky-col-left-3">{{ $d->no_pendaftaran }}</td>
-                                    <td class="py-1 sticky-col-left-4">{{ $d->id_siswa }}</td>
-                                    <td class="py-1 sticky-col-left-5">{{ $d->nis }}</td>
-                                    <td class="py-1 sticky-col-left-6">
-                                        <div class="fw-bold">{{ $d->nama_lengkap }}</div>
-                                    </td>
-                                    <td class="py-1">
-                                        @if($d->asrama == 1)
-                                            <span class="badge bg-label-primary">Asrama {{ $d->is_pindahan == 1 ? '(Pindahan)' : '' }}</span>
-                                        @else
-                                            <span class="badge bg-label-success">Reguler {{ $d->is_pindahan == 1 ? '(Pindahan)' : '' }}</span>
-                                        @endif
-                                    </td>
-                                    <td class="py-1">{{ $d->nama_unit }}</td>
-                                    <td class="py-1">{{ $d->tingkat }}</td>
-                                    <td class="py-1">
-                                        @if (!empty($d->nama_kelas))
-                                            {{ $d->nama_kelas }}
-                                        @else
-                                            <span class="badge bg-label-warning">Belum diploting</span>
-                                        @endif
-                                    </td>
-                                    <td class="py-1">
+
+                                        {{-- Tombol Aksi Keluar --}}
                                         @if($d->status_siswa == 1)
-                                            <span class="badge bg-label-success">Aktif</span>
-                                        @elseif($d->status_siswa == 2)
-                                            <span class="badge bg-label-info">Lulus / Naik</span>
-                                        @elseif($d->status_siswa == 3)
-                                            <span class="badge bg-label-danger" data-bs-toggle="tooltip" title="Alasan: {{ $d->alasan_keluar }}">Mengundurkan Diri</span>
-                                        @elseif($d->status_siswa == 4)
-                                            <span class="badge bg-label-danger" data-bs-toggle="tooltip" title="Alasan: {{ $d->alasan_keluar }}">Pindah</span>
-                                        @elseif($d->status_siswa == 5)
-                                            <span class="badge bg-label-danger" data-bs-toggle="tooltip" title="Alasan: {{ $d->alasan_keluar }}">Dikeluarkan</span>
+                                            <a href="#" class="btnProsesKeluarTabel w-6.5 h-6.5 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/80 flex items-center justify-center text-xs transition cursor-pointer"
+                                                no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}"
+                                                title="Proses Siswa Keluar">
+                                                <i class="ti ti-user-x text-xs"></i>
+                                            </a>
+                                        @elseif(in_array($d->status_siswa, [3, 4, 5]))
+                                            <form action="{{ route('pembayaranpendidikan.batalkankeluar', Crypt::encrypt($d->no_pendaftaran)) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan status keluar siswa ini?')">
+                                                @csrf
+                                                <button type="submit" class="w-6.5 h-6.5 rounded-md bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/80 flex items-center justify-center text-xs transition cursor-pointer"
+                                                    title="Batalkan Keluar">
+                                                    <i class="ti ti-rotate-clockwise text-xs"></i>
+                                                </button>
+                                            </form>
                                         @endif
-                                    </td>
-                                    <td class="py-1 text-end sticky-col-right">
-                                        <div class="d-flex justify-content-end gap-1">
-                                            @can('pembayaranpdd.show')
-                                                <a href="#" class="btn btn-icon btn-label-info border btnShow"
-                                                    no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}"
-                                                    style="width: 28px; height: 28px;">
-                                                    <i class="ti ti-moneybag fs-6"></i>
-                                                </a>
-                                            @endcan
-                                            @if ($d->kode_ta != optional($ta_ppdb)->kode_ta)
-                                                @if ($d->status_naik_kelas == 1)
-                                                    <a href="{{ route('pembayaranpendidikan.batalkannaikkelas', Crypt::encrypt($d->no_pendaftaran)) }}"
-                                                        class="btn btn-icon btn-label-danger border"
-                                                        style="width: 28px; height: 28px;"
-                                                        onclick="return confirm('Apakah Anda yakin ingin membatalkan kenaikan kelas ini?')">
-                                                        <i class="ti ti-arrow-back-up fs-6"></i>
-                                                    </a>
-                                                @else
-                                                    <a href="#"
-                                                        class="btn btn-icon btn-label-warning border btnNaikKelasTrigger"
-                                                        no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}"
-                                                        style="width: 28px; height: 28px;"
-                                                        data-bs-toggle="tooltip" title="Proses Naik Kelas">
-                                                        <i class="ti ti-arrow-up fs-6"></i>
-                                                    </a>
-                                                @endif
-                                            @endif
-
-                                            {{-- Tombol Aksi Keluar --}}
-                                            @if($d->status_siswa == 1)
-                                                <a href="#" class="btn btn-icon btn-label-danger border btnProsesKeluarTabel"
-                                                    no_pendaftaran="{{ Crypt::encrypt($d->no_pendaftaran) }}"
-                                                    style="width: 28px; height: 28px;"
-                                                    data-bs-toggle="tooltip" title="Proses Siswa Keluar">
-                                                    <i class="ti ti-user-x fs-6"></i>
-                                                </a>
-                                            @elseif(in_array($d->status_siswa, [3, 4, 5]))
-                                                <form action="{{ route('pembayaranpendidikan.batalkankeluar', Crypt::encrypt($d->no_pendaftaran)) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan status keluar siswa ini?')">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-icon btn-label-warning border"
-                                                        style="width: 28px; height: 28px;"
-                                                        data-bs-toggle="tooltip" title="Batalkan Keluar">
-                                                        <i class="ti ti-rotate-clockwise fs-6"></i>
-                                                    </button>
-                                                </form>
-                                            @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="12" class="text-center py-10">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-1.5">
+                                            <i class="ti ti-receipt-off text-xl"></i>
                                         </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                        </table>
-                    </form>
-                </div>
-            </div>
-            <div class="card-footer px-4 py-3">
-                <div style="float: right;">
-                    {{ $pendaftaran->links() }}
-                </div>
+                                        <p class="text-xs font-bold text-slate-700">Tidak ada data siswa ditemukan</p>
+                                        <p class="text-[11px] text-slate-400 mt-0.5">Silakan sesuaikan filter pencarian, unit, atau tahun ajaran di atas.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </form>
+        </div>
+
+        <!-- Pagination Footer -->
+        <div class="p-4 bg-white border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <span class="text-xs text-slate-500 font-medium">
+                Menampilkan <strong>{{ $pendaftaran->firstItem() ?? 0 }}</strong> - <strong>{{ $pendaftaran->lastItem() ?? 0 }}</strong> dari <strong>{{ $pendaftaran->total() }}</strong> siswa
+            </span>
+            <div>
+                {{ $pendaftaran->appends(request()->all())->links('vendor.pagination.custom-tailwind') }}
             </div>
         </div>
     </div>
 </div>
+
 <x-modal-form id="modal" size="modal-xl" show="loadmodal" title="" />
 <x-modal-form id="modalpotongan" size="" show="loadmodalpotongan" title="" />
 <x-modal-form id="modalmutasi" size="" show="loadmodalmutasi" title="" />
@@ -330,36 +544,74 @@
 <x-modal-form id="modaleditbiaya" size="" show="loadeditbiaya" title="" />
 
 <!-- Modal Proses Keluar Tabel -->
-<div class="modal fade" id="modalProsesKeluarTabel" tabindex="-1" aria-hidden="true" style="z-index: 1150;">
+<div class="modal fade" id="modalProsesKeluarTabel" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Proses Siswa Keluar / Mengundur Diri</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content border border-slate-200/90 shadow-2xl rounded-2xl bg-white overflow-hidden">
+            <!-- Modal Header (Clean White / Rose Icon) -->
+            <div class="px-6 py-4 bg-white border-b border-slate-200/90 flex items-center justify-between text-slate-900">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 border border-rose-100 flex items-center justify-center text-base shrink-0 font-bold">
+                        <i class="ti ti-user-x"></i>
+                    </div>
+                    <h5 class="modal-title text-base font-bold text-slate-900 tracking-tight truncate mb-0">Proses Siswa Keluar</h5>
+                </div>
+                <button type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer shrink-0" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ti ti-x text-lg"></i>
+                </button>
             </div>
-            <form action="" method="POST" id="formProsesKeluarTabel">
+
+            <form action="" method="POST" id="formProsesKeluarTabel" class="p-6 space-y-4">
                 @csrf
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Status Siswa Baru <span class="text-danger">*</span></label>
-                        <select name="status_siswa" class="form-select" required>
+                <!-- Status Siswa Baru -->
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                        <i class="ti ti-user-exclamation text-sm text-slate-400"></i>
+                        <span>Status Siswa Baru <span class="text-rose-500 font-bold">*</span></span>
+                    </label>
+                    <div class="relative">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <i class="ti ti-user-exclamation text-base"></i>
+                        </div>
+                        <select name="status_siswa" class="w-full pl-9 pr-8 py-2.5 text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-rose-500/20 focus:border-rose-600 transition cursor-pointer" required>
                             <option value="3">Mengundurkan Diri</option>
                             <option value="4">Pindah Sekolah</option>
                             <option value="5">Dikeluarkan</option>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Tanggal Keluar <span class="text-danger">*</span></label>
-                        <input type="text" name="tanggal_keluar" id="tanggal_keluar" class="form-control flatpickr-date" value="{{ date('Y-m-d') }}" required placeholder="Pilih Tanggal">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Alasan Keluar <span class="text-danger">*</span></label>
-                        <textarea name="alasan_keluar" class="form-control" rows="3" required placeholder="Tuliskan alasan detail siswa keluar..."></textarea>
+                </div>
+
+                <!-- Tanggal Keluar -->
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                        <i class="ti ti-calendar text-sm text-slate-400"></i>
+                        <span>Tanggal Keluar <span class="text-rose-500 font-bold">*</span></span>
+                    </label>
+                    <div class="relative">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <i class="ti ti-calendar text-base"></i>
+                        </div>
+                        <input type="text" name="tanggal_keluar" id="tanggal_keluar" class="flatpickr-date w-full pl-9 pr-3.5 py-2.5 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-xl placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-rose-500/20 focus:border-rose-600 transition" value="{{ date('Y-m-d') }}" required placeholder="Pilih Tanggal...">
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-danger">Simpan Perubahan</button>
+
+                <!-- Alasan Keluar -->
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                        <i class="ti ti-notes text-sm text-slate-400"></i>
+                        <span>Alasan Keluar <span class="text-rose-500 font-bold">*</span></span>
+                    </label>
+                    <textarea name="alasan_keluar" rows="3" required placeholder="Tuliskan alasan detail siswa keluar..." class="w-full px-3.5 py-2.5 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-xl placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-rose-500/20 focus:border-rose-600 transition"></textarea>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="pt-4 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5">
+                    <button type="button" class="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer active:scale-95" data-bs-dismiss="modal">
+                        Batal
+                    </button>
+                    <button type="submit" class="w-full sm:w-auto px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                        <i class="ti ti-device-floppy text-base"></i>
+                        <span>Simpan Perubahan</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -367,22 +619,25 @@
 </div>
 
 <!-- Modal Pilihan Biaya Naik Kelas -->
-<div class="modal fade" id="modalPilihanBiayaNaikKelas" tabindex="-1" aria-hidden="true" style="z-index: 1160;">
+<div class="modal fade" id="modalPilihanBiayaNaikKelas" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white py-3">
-                <h5 class="modal-title text-white">Pilih Konfigurasi Biaya Tingkat Baru</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content rounded-2xl border-0 shadow-xl overflow-hidden">
+            <div class="bg-emerald-600 px-5 py-4 text-white flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="ti ti-arrow-up text-lg"></i>
+                    <h5 class="modal-title font-bold text-sm text-white">Pilih Konfigurasi Biaya Tingkat Baru</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white text-white/80 hover:text-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <div class="alert alert-info py-2 small d-flex align-items-center mb-4">
-                    <i class="ti ti-info-circle fs-4 me-2"></i>
+            <div class="p-5 space-y-4">
+                <div class="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-900 flex items-start gap-2.5">
+                    <i class="ti ti-info-circle text-emerald-600 text-base shrink-0 mt-0.5"></i>
                     <div>
                         Siswa <strong id="naik-kelas-nama-siswa">Siswa</strong> akan dinaikkan ke <strong>Tingkat <span id="naik-kelas-tingkat-baru">X</span></strong>. 
-                        Silakan pilih salah satu opsi biaya di bawah untuk melanjutkan.
+                        Silakan pilih salah satu opsi konfigurasi biaya di bawah untuk melanjutkan.
                     </div>
                 </div>
-                <div class="row" id="container-pilihan-biaya">
+                <div class="row g-3" id="container-pilihan-biaya">
                     <!-- Cards will be loaded here via Ajax -->
                 </div>
             </div>
@@ -511,11 +766,33 @@
             $('#modalProsesKeluarTabel').modal('show');
         });
 
+        // Multi-modal stacking & backdrop handler
         $(document).on('show.bs.modal', '.modal', function() {
-            const zIndex = 1090 + 10 * $('.modal:visible').length;
-            $(this).css('z-index', zIndex);
-            setTimeout(() => $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1)
-                .addClass('modal-stack'));
+            const numOpen = $('.modal.show').not(this).length;
+            const modalZIndex = 1060 + (20 * numOpen);
+            $(this).css('z-index', modalZIndex);
+        });
+
+        $(document).on('shown.bs.modal', '.modal', function() {
+            // Re-assign z-index so backdrops layer precisely between modals
+            $('.modal-backdrop').each(function(index) {
+                $(this).css('z-index', 1050 + (20 * index));
+            });
+            $('.modal.show').each(function(index) {
+                $(this).css('z-index', 1060 + (20 * index));
+            });
+        });
+
+        $(document).on('hidden.bs.modal', '.modal', function() {
+            if ($('.modal.show').length > 0) {
+                $('body').addClass('modal-open');
+                $('.modal-backdrop').each(function(index) {
+                    $(this).css('z-index', 1050 + (20 * index));
+                });
+                $('.modal.show').each(function(index) {
+                    $(this).css('z-index', 1060 + (20 * index));
+                });
+            }
         });
 
         const loading = `<div class="sk-wave sk-primary" style="margin:auto">
@@ -536,23 +813,36 @@
                 url: `/pembayaranpendidikan/${no_pendaftaran}/show`,
                 type: 'GET',
                 success: function(response) {
-
                     $('#loadmodal').html(response);
                     getbiaya(no_pendaftaran);
                     getrencanaspp(no_pendaftaran);
                     gethistoribayar(no_pendaftaran);
-
                 },
                 error: function(error) {
                     console.error('Error loading modal content', error);
                 }
             });
-            // $("#modal").modal("show");
-            // $("#modal").find("#loadmodal").html(loading);
-            // $("#modal").find(".modal-title").text("Data Pembayaran Pendidikan");
-            // $("#loadmodal").load(`/pembayaranpendidikan/${no_pendaftaran}/show`);
-            // getbiaya(no_pendaftaran);
+        });
 
+        // Tab Switching Delegation for Modal
+        $(document).on('click', '.custom-pembayaran-tabs .tab-btn, .custom-pembayaran-tabs .nav-link', function(e) {
+            e.preventDefault();
+            var target = $(this).attr('data-target') || $(this).attr('data-bs-target');
+            if (!target) return;
+
+            // Activate current tab button
+            $(this).closest('.custom-pembayaran-tabs').find('.tab-btn, .nav-link').removeClass('active').attr('aria-selected', 'false');
+            $(this).addClass('active').attr('aria-selected', 'true');
+
+            // Switch active pane
+            var container = $(this).closest('.nav-pembayaran-container');
+            if (container.length) {
+                container.find('.custom-tab-content > .tab-pane').removeClass('active').css('display', 'none');
+                container.find('.custom-tab-content > ' + target).addClass('active').css('display', 'block');
+            } else {
+                $('.tab-content .tab-pane').removeClass('show active').css('display', 'none');
+                $(target).addClass('show active').css('display', 'block');
+            }
         });
 
 
@@ -965,18 +1255,20 @@
                 });
                 return false;
             } else {
-                let data = `<tr id="index_${kode_biaya+kode_jenis_biaya}">
-                <td>${jenis_biaya}</td>
-                <td class='text-end jmlbayar'>${convertToRupiah(jumlah)}</td>
-                <td>${keterangan}</td>
-                <td>
-                    <input type="hidden" name="kode_biaya[]" value="${kode_biaya}" />
-                    <input type="hidden" name="kode_jenis_biaya[]" value="${kode_jenis_biaya}" />
-                    <input type="hidden" name="keterangan[]" value="${keterangan}" />
-                    <input type="hidden" name="jumlah[]" value="${jumlah}" />
-                    <a href="#" key="${kode_biaya+kode_jenis_biaya}" class="delete"><i class="ti ti-trash text-danger"></i></a>
-                </td>
-            </tr>`;
+                let data = `<tr id="index_${kode_biaya+kode_jenis_biaya}" class="hover:bg-slate-50/60 transition-colors">
+                    <td class="py-2.5 px-3.5 font-bold text-slate-800">${jenis_biaya}</td>
+                    <td class='text-end py-2.5 px-3.5 font-mono font-bold text-emerald-700 jmlbayar'>${convertToRupiah(jumlah)}</td>
+                    <td class="py-2.5 px-3.5 text-slate-600 text-xs">${keterangan || '-'}</td>
+                    <td class="py-2.5 px-3.5 text-center">
+                        <input type="hidden" name="kode_biaya[]" value="${kode_biaya}" />
+                        <input type="hidden" name="kode_jenis_biaya[]" value="${kode_jenis_biaya}" />
+                        <input type="hidden" name="keterangan[]" value="${keterangan}" />
+                        <input type="hidden" name="jumlah[]" value="${jumlah}" />
+                        <a href="#" key="${kode_biaya+kode_jenis_biaya}" class="delete w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200/80 inline-flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs" title="Hapus Item">
+                            <i class="ti ti-trash text-xs"></i>
+                        </a>
+                    </td>
+                </tr>`;
 
                 $(document).find("#detailbayar").append(data);
                 no++;
@@ -1211,7 +1503,9 @@
             getTingkatByUnit(kode_unit);
         });
 
-        getTingkatByUnit("{{ Request('kode_unit') }}");
+        if ("{{ Request('kode_unit') }}") {
+            getTingkatByUnit("{{ Request('kode_unit') }}");
+        }
 
         // Bulk Naik Kelas Logic
         $("#checkAll").click(function() {

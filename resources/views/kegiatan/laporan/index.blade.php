@@ -2,285 +2,414 @@
 @section('titlepage', 'Laporan Kegiatan')
 
 @section('content')
+<div class="space-y-6">
 
-@section('navigasi')
-    <div class="card shadow-none bg-transparent border-0 mb-3">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
-                        <i class="ti ti-printer fs-3 text-success"></i>
+    <!-- ================= 1. PAGE HEADER & BREADCRUMB ================= -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Title & Subtitle -->
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl shrink-0 font-bold border border-emerald-200 shadow-2xs">
+                <i class="ti ti-printer"></i>
+            </div>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                    Laporan Kegiatan
+                </h1>
+                <p class="text-xs text-slate-500 font-medium">
+                    Cetak dan export data rekapitulasi realisasi serta agenda kegiatan kerja
+                </p>
+            </div>
+        </div>
+
+        <!-- Breadcrumb Navigation -->
+        <div class="flex flex-col md:items-end">
+            <nav class="flex items-center text-xs text-slate-400 font-medium">
+                <a href="{{ route('dashboard.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="text-slate-500">MSDM & Layanan</span>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="font-bold text-slate-800">Laporan Kegiatan</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- ================= 2. MAIN REPORT CONTAINER WITH TABS ================= -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- Left Tab Selection Nav -->
+        <div class="lg:col-span-4 xl:col-span-3 space-y-2">
+            <div class="bg-white p-2 border border-slate-200/90 rounded-2xl shadow-xs space-y-1">
+                <button type="button" 
+                        class="tab-btn active w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-bold text-xs transition-all duration-200 text-left cursor-pointer active:scale-98" 
+                        data-target="#tab-realisasi">
+                    <div class="tab-icon w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-base shrink-0 font-bold">
+                        <i class="ti ti-activity"></i>
                     </div>
                     <div>
-                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Laporan Kegiatan</h4>
-                        <p class="text-muted mb-0 small">Cetak dan export data realisasi kegiatan karyawan</p>
+                        <span class="block text-slate-900 text-xs font-bold leading-tight">Realisasi Kegiatan</span>
+                        <span class="block text-[11px] text-slate-400 font-normal mt-0.5">Laporan hasil kegiatan kerja</span>
                     </div>
+                </button>
+
+                <button type="button" 
+                        class="tab-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-bold text-xs transition-all duration-200 text-left cursor-pointer active:scale-98" 
+                        data-target="#tab-agenda">
+                    <div class="tab-icon w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center text-base shrink-0 font-bold">
+                        <i class="ti ti-calendar-event"></i>
+                    </div>
+                    <div>
+                        <span class="block text-slate-900 text-xs font-bold leading-tight">Agenda Kegiatan</span>
+                        <span class="block text-[11px] text-slate-400 font-normal mt-0.5">Laporan jadwal rencana agenda</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Helpful Tip Box -->
+            <div class="p-4 bg-emerald-50/70 border border-emerald-200/70 rounded-2xl text-xs space-y-1.5">
+                <div class="flex items-center gap-2 font-bold text-emerald-900">
+                    <i class="ti ti-info-circle text-base text-emerald-600"></i>
+                    <span>Informasi Cetak</span>
                 </div>
-                <div class="d-flex flex-column align-items-end">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb breadcrumb-style1 mb-0">
-                            <li class="breadcrumb-item">
-                                <a href="javascript:void(0);" class="text-muted">
-                                    <i class="ti ti-activity me-1"></i> Kegiatan
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active">
-                                <i class="ti ti-printer me-1"></i> Laporan
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
+                <p class="text-[11px] text-emerald-800 leading-relaxed">
+                    Pilih periode bulan dan tahun, serta filter unit kerja atau karyawan jika diperlukan. Dokumen dapat langsung dicetak atau diunduh format Excel.
+                </p>
             </div>
         </div>
-    </div>
-@endsection
 
-<div class="row">
-    <div class="col-xl-9 col-md-11 col-sm-12">
-        <div class="nav-align-left card border-0 shadow-none bg-transparent">
-            <!-- Minimalist Sidebar -->
-            <ul class="nav nav-tabs border-0 pe-4" role="tablist" style="min-width: 240px; background: transparent;">
-                <li class="nav-item w-100 mb-2" role="presentation">
-                    <button type="button" class="nav-link active py-2 px-3 rounded-3 d-flex align-items-center gap-3 border-0 w-100"
-                        role="tab" data-bs-toggle="tab" data-bs-target="#realisasi" aria-controls="realisasi"
-                        aria-selected="true" style="background: transparent;">
-                        <i class="ti ti-clipboard-list fs-4"></i>
-                        <span class="fw-medium">Realisasi Kegiatan</span>
-                    </button>
-                </li>
-                <li class="nav-item w-100 mb-0" role="presentation">
-                    <button type="button" class="nav-link py-2 px-3 rounded-3 d-flex align-items-center gap-3 border-0 w-100"
-                        role="tab" data-bs-toggle="tab" data-bs-target="#agenda" aria-controls="agenda"
-                        aria-selected="false" style="background: transparent;">
-                        <i class="ti ti-calendar-event fs-4"></i>
-                        <span class="fw-medium">Agenda Kegiatan</span>
-                    </button>
-                </li>
-            </ul>
-
-            <!-- Report Card with Dark Header -->
-            <div class="tab-content ms-4 p-0 border-0 shadow-sm rounded-3 overflow-hidden" style="flex-grow: 1; background: #fff;">
-                {{-- TAB REALISASI KEGIATAN --}}
-                <div class="tab-pane fade show active" id="realisasi" role="tabpanel">
-                    <div class="card-header border-0 d-flex align-items-center gap-2 py-3 px-4" style="background: #064e3b">
-                        <i class="ti ti-clipboard-list text-white fs-4"></i>
-                        <h6 class="mb-0 fw-bold text-white">Laporan Realisasi Kegiatan</h6>
+        <!-- Right Form Content Box -->
+        <div class="lg:col-span-8 xl:col-span-9">
+            
+            {{-- TAB 1: LAPORAN REALISASI KEGIATAN --}}
+            <div id="tab-realisasi" class="tab-pane-content bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
+                <!-- Header Card -->
+                <div class="px-5 py-3.5 bg-emerald-600 flex items-center justify-between text-white">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center text-xs font-bold border border-white/20 shadow-2xs">
+                            <i class="ti ti-activity"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-white tracking-tight">Form Cetak Laporan Realisasi Kegiatan</h3>
+                            <p class="text-[11px] text-emerald-100 font-medium">Rekapitulasi pelaksanaan dan capaian kegiatan kerja karyawan</p>
+                        </div>
                     </div>
-                    <div class="card-body p-4">
-                        <form action="{{ route('kegiatan.laporan.cetak') }}" method="POST" target="_blank">
-                            @csrf
-                            
-                            @if($can_filter_all)
-                                 <!-- Unit Filter -->
-                                 <div class="form-group mb-3">
-                                     <select name="kode_unit" id="kode_unit" class="form-select select2">
-                                         <option value="">Pilih Unit</option>
-                                         @foreach($unit as $u)
-                                             <option value="{{ $u->kode_unit }}">{{ strtoupper($u->nama_unit) }}</option>
-                                         @endforeach
-                                     </select>
-                                 </div>
+                </div>
 
-                                 <!-- Department Filter -->
-                                 <div class="form-group mb-3">
-                                     <select name="kode_dept" id="kode_dept" class="form-select select2">
-                                         <option value="">Pilih Departemen</option>
-                                     </select>
-                                 </div>
-
-                                 <!-- Jabatan Filter -->
-                                 <div class="form-group mb-3">
-                                     <select name="kode_jabatan" id="kode_jabatan" class="form-select select2">
-                                         <option value="">Pilih Jabatan</option>
-                                     </select>
-                                 </div>
-
-                                 <!-- Karyawan Filter -->
-                                 <div class="form-group mb-3">
-                                     <select name="npp" id="npp" class="form-select select2">
-                                         <option value="">Pilih Karyawan</option>
-                                     </select>
-                                 </div>
-                             @endif
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group mb-3">
-                                        <select name="bulan" id="bulan" class="form-select">
-                                            <option value="">Bulan</option>
-                                            @foreach ($list_bulan as $d)
-                                                <option {{ date('m') == $d['kode_bulan'] ? 'selected' : '' }} value="{{ $d['kode_bulan'] }}">
-                                                    {{ $d['nama_bulan'] }}
-                                                </option>
+                <!-- Form Body -->
+                <div class="p-5 sm:p-6">
+                    <form action="{{ route('kegiatan.laporan.cetak') }}" method="POST" target="_blank" class="space-y-4" id="formLaporanRealisasi">
+                        @csrf
+                        
+                        @if($can_filter_all)
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <!-- Unit Filter -->
+                                <div class="space-y-1.5">
+                                    <label for="kode_unit" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                        <i class="ti ti-building text-sm text-slate-400"></i>
+                                        <span>Unit Kerja <span class="text-slate-400 font-normal text-[11px]">(Opsional)</span></span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                            <i class="ti ti-building text-base"></i>
+                                        </div>
+                                        <select name="kode_unit" id="kode_unit" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                                            <option value="">Semua Unit</option>
+                                            @foreach($unit as $u)
+                                                <option value="{{ $u->kode_unit }}">{{ strtoupper($u->nama_unit) }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group mb-3">
-                                        <select name="tahun" id="tahun" class="form-select">
-                                            <option value="">Tahun</option>
-                                            @for ($t = $start_year; $t <= date('Y'); $t++)
-                                                <option {{ date('Y') == $t ? 'selected' : '' }} value="{{ $t }}">{{ $t }}</option>
-                                            @endfor
+
+                                <!-- Department Filter -->
+                                <div class="space-y-1.5">
+                                    <label for="kode_dept" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                        <i class="ti ti-sitemap text-sm text-slate-400"></i>
+                                        <span>Departemen <span class="text-slate-400 font-normal text-[11px]">(Opsional)</span></span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                            <i class="ti ti-sitemap text-base"></i>
+                                        </div>
+                                        <select name="kode_dept" id="kode_dept" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                                            <option value="">Semua Departemen</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Jabatan Filter -->
+                                <div class="space-y-1.5">
+                                    <label for="kode_jabatan" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                        <i class="ti ti-briefcase text-sm text-slate-400"></i>
+                                        <span>Jabatan <span class="text-slate-400 font-normal text-[11px]">(Opsional)</span></span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                            <i class="ti ti-briefcase text-base"></i>
+                                        </div>
+                                        <select name="kode_jabatan" id="kode_jabatan" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                                            <option value="">Semua Jabatan</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Karyawan Filter -->
+                                <div class="space-y-1.5">
+                                    <label for="npp" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                        <i class="ti ti-user text-sm text-slate-400"></i>
+                                        <span>Karyawan Spesifik <span class="text-slate-400 font-normal text-[11px]">(Opsional)</span></span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                            <i class="ti ti-user text-base"></i>
+                                        </div>
+                                        <select name="npp" id="npp" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                                            <option value="">Semua Karyawan</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
+                        @endif
 
-                            <div class="row mt-4">
-                                <div class="col-lg-10 col-md-12 col-sm-12 mb-2">
-                                    <button type="submit" class="btn btn-primary w-100 shadow-sm border-0 d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b !important;">
-                                        <i class="ti ti-printer fs-5"></i>
-                                        <span>Cetak Laporan</span>
-                                    </button>
-                                </div>
-                                <div class="col-lg-2 col-md-12 col-sm-12 mb-2">
-                                    <button type="submit" name="export_excel" value="true" class="btn btn-success w-100 shadow-none border-0 d-flex align-items-center justify-content-center" title="Export Excel">
-                                        <i class="ti ti-download"></i>
-                                    </button>
+                        <!-- Periode Bulan & Tahun -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                            <!-- Bulan -->
+                            <div class="space-y-1.5">
+                                <label for="bulan" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                    <i class="ti ti-calendar text-sm text-slate-400"></i>
+                                    <span>Bulan <span class="text-rose-500 font-bold">*</span></span>
+                                </label>
+                                <div class="relative">
+                                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                        <i class="ti ti-calendar text-base"></i>
+                                    </div>
+                                    <select name="bulan" id="bulan" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition" required>
+                                        <option value="">-- Pilih Bulan --</option>
+                                        @foreach ($list_bulan as $d)
+                                            <option {{ date('m') == $d['kode_bulan'] ? 'selected' : '' }} value="{{ $d['kode_bulan'] }}">
+                                                {{ $d['nama_bulan'] }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
-                        </form>
+
+                            <!-- Tahun -->
+                            <div class="space-y-1.5">
+                                <label for="tahun" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                    <i class="ti ti-calendar-event text-sm text-slate-400"></i>
+                                    <span>Tahun <span class="text-rose-500 font-bold">*</span></span>
+                                </label>
+                                <div class="relative">
+                                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                        <i class="ti ti-calendar-event text-base"></i>
+                                    </div>
+                                    <select name="tahun" id="tahun" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition" required>
+                                        <option value="">-- Pilih Tahun --</option>
+                                        @for ($t = $start_year; $t <= date('Y'); $t++)
+                                            <option {{ date('Y') == $t ? 'selected' : '' }} value="{{ $t }}">{{ $t }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="pt-4 mt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3">
+                            <button type="submit" class="w-full sm:flex-1 py-2.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                                <i class="ti ti-printer text-base"></i>
+                                <span>Cetak Laporan Realisasi</span>
+                            </button>
+                            <button type="submit" name="export_excel" value="true" class="w-full sm:w-auto py-2.5 px-5 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold text-xs sm:text-sm rounded-xl shadow-2xs transition inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                                <i class="ti ti-file-spreadsheet text-base"></i>
+                                <span>Export Excel</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {{-- TAB 2: LAPORAN AGENDA KEGIATAN --}}
+            <div id="tab-agenda" class="tab-pane-content hidden bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
+                <!-- Header Card -->
+                <div class="px-5 py-3.5 bg-emerald-600 flex items-center justify-between text-white">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center text-xs font-bold border border-white/20 shadow-2xs">
+                            <i class="ti ti-calendar-event"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-white tracking-tight">Form Cetak Laporan Agenda Kegiatan</h3>
+                            <p class="text-[11px] text-emerald-100 font-medium">Rekapitulasi jadwal rencana agenda kegiatan kerja</p>
+                        </div>
                     </div>
                 </div>
 
-                {{-- TAB AGENDA KEGIATAN --}}
-                <div class="tab-pane fade" id="agenda" role="tabpanel">
-                    <div class="card-header border-0 d-flex align-items-center gap-2 py-3 px-4" style="background: #064e3b">
-                        <i class="ti ti-calendar-event text-white fs-4"></i>
-                        <h6 class="mb-0 fw-bold text-white">Laporan Agenda Kegiatan</h6>
-                    </div>
-                    <div class="card-body p-4">
-                        <form action="{{ route('kegiatan.laporan.cetak-agenda') }}" method="POST" target="_blank">
-                            @csrf
-                            
-                            @if($can_filter_all)
-                                 <!-- Unit Filter -->
-                                 <div class="form-group mb-3">
-                                     <select name="kode_unit" id="agenda_kode_unit" class="form-select select2">
-                                         <option value="">Pilih Unit</option>
-                                         @foreach($unit as $u)
-                                             <option value="{{ $u->kode_unit }}">{{ strtoupper($u->nama_unit) }}</option>
-                                         @endforeach
-                                     </select>
-                                 </div>
-
-                                 <!-- Department Filter -->
-                                 <div class="form-group mb-3">
-                                     <select name="kode_dept" id="agenda_kode_dept" class="form-select select2">
-                                         <option value="">Pilih Departemen</option>
-                                     </select>
-                                 </div>
-
-                                 <!-- Jabatan Filter -->
-                                 <div class="form-group mb-3">
-                                     <select name="kode_jabatan" id="agenda_kode_jabatan" class="form-select select2">
-                                         <option value="">Pilih Jabatan</option>
-                                     </select>
-                                 </div>
-
-                                 <!-- Karyawan Filter -->
-                                 <div class="form-group mb-3">
-                                     <select name="npp" id="agenda_npp" class="form-select select2">
-                                         <option value="">Pilih Karyawan</option>
-                                     </select>
-                                 </div>
-                             @endif
-
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group mb-3">
-                                        <select name="bulan" id="agenda_bulan" class="form-select">
-                                            <option value="">Bulan</option>
-                                            @foreach ($list_bulan as $d)
-                                                <option {{ date('m') == $d['kode_bulan'] ? 'selected' : '' }} value="{{ $d['kode_bulan'] }}">
-                                                    {{ $d['nama_bulan'] }}
-                                                </option>
+                <!-- Form Body -->
+                <div class="p-5 sm:p-6">
+                    <form action="{{ route('kegiatan.laporan.cetak-agenda') }}" method="POST" target="_blank" class="space-y-4" id="formLaporanAgenda">
+                        @csrf
+                        
+                        @if($can_filter_all)
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <!-- Unit Filter -->
+                                <div class="space-y-1.5">
+                                    <label for="agenda_kode_unit" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                        <i class="ti ti-building text-sm text-slate-400"></i>
+                                        <span>Unit Kerja <span class="text-slate-400 font-normal text-[11px]">(Opsional)</span></span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                            <i class="ti ti-building text-base"></i>
+                                        </div>
+                                        <select name="kode_unit" id="agenda_kode_unit" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                                            <option value="">Semua Unit</option>
+                                            @foreach($unit as $u)
+                                                <option value="{{ $u->kode_unit }}">{{ strtoupper($u->nama_unit) }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group mb-3">
-                                        <select name="tahun" id="agenda_tahun" class="form-select">
-                                            <option value="">Tahun</option>
-                                            @for ($t = $start_year; $t <= date('Y'); $t++)
-                                                <option {{ date('Y') == $t ? 'selected' : '' }} value="{{ $t }}">{{ $t }}</option>
-                                            @endfor
+
+                                <!-- Department Filter -->
+                                <div class="space-y-1.5">
+                                    <label for="agenda_kode_dept" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                        <i class="ti ti-sitemap text-sm text-slate-400"></i>
+                                        <span>Departemen <span class="text-slate-400 font-normal text-[11px]">(Opsional)</span></span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                            <i class="ti ti-sitemap text-base"></i>
+                                        </div>
+                                        <select name="kode_dept" id="agenda_kode_dept" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                                            <option value="">Semua Departemen</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Jabatan Filter -->
+                                <div class="space-y-1.5">
+                                    <label for="agenda_kode_jabatan" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                        <i class="ti ti-briefcase text-sm text-slate-400"></i>
+                                        <span>Jabatan <span class="text-slate-400 font-normal text-[11px]">(Opsional)</span></span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                            <i class="ti ti-briefcase text-base"></i>
+                                        </div>
+                                        <select name="kode_jabatan" id="agenda_kode_jabatan" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                                            <option value="">Semua Jabatan</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Karyawan Filter -->
+                                <div class="space-y-1.5">
+                                    <label for="agenda_npp" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                        <i class="ti ti-user text-sm text-slate-400"></i>
+                                        <span>Karyawan Spesifik <span class="text-slate-400 font-normal text-[11px]">(Opsional)</span></span>
+                                    </label>
+                                    <div class="relative">
+                                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                            <i class="ti ti-user text-base"></i>
+                                        </div>
+                                        <select name="npp" id="agenda_npp" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                                            <option value="">Semua Karyawan</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
+                        @endif
 
-                            <div class="row mt-4">
-                                <div class="col-lg-10 col-md-12 col-sm-12 mb-2">
-                                    <button type="submit" class="btn btn-primary w-100 shadow-sm border-0 d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b !important;">
-                                        <i class="ti ti-printer fs-5"></i>
-                                        <span>Cetak Laporan Agenda</span>
-                                    </button>
-                                </div>
-                                <div class="col-lg-2 col-md-12 col-sm-12 mb-2">
-                                    <button type="submit" name="export_excel" value="true" class="btn btn-success w-100 shadow-none border-0 d-flex align-items-center justify-content-center" title="Export Excel">
-                                        <i class="ti ti-download"></i>
-                                    </button>
+                        <!-- Periode Bulan & Tahun -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                            <!-- Bulan -->
+                            <div class="space-y-1.5">
+                                <label for="agenda_bulan" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                    <i class="ti ti-calendar text-sm text-slate-400"></i>
+                                    <span>Bulan <span class="text-rose-500 font-bold">*</span></span>
+                                </label>
+                                <div class="relative">
+                                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                        <i class="ti ti-calendar text-base"></i>
+                                    </div>
+                                    <select name="bulan" id="agenda_bulan" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition" required>
+                                        <option value="">-- Pilih Bulan --</option>
+                                        @foreach ($list_bulan as $d)
+                                            <option {{ date('m') == $d['kode_bulan'] ? 'selected' : '' }} value="{{ $d['kode_bulan'] }}">
+                                                {{ $d['nama_bulan'] }}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
-                        </form>
-                    </div>
+
+                            <!-- Tahun -->
+                            <div class="space-y-1.5">
+                                <label for="agenda_tahun" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                                    <i class="ti ti-calendar-event text-sm text-slate-400"></i>
+                                    <span>Tahun <span class="text-rose-500 font-bold">*</span></span>
+                                </label>
+                                <div class="relative">
+                                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                        <i class="ti ti-calendar-event text-base"></i>
+                                    </div>
+                                    <select name="tahun" id="agenda_tahun" class="w-full pl-9 pr-8 py-2.5 text-xs sm:text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition" required>
+                                        <option value="">-- Pilih Tahun --</option>
+                                        @for ($t = $start_year; $t <= date('Y'); $t++)
+                                            <option {{ date('Y') == $t ? 'selected' : '' }} value="{{ $t }}">{{ $t }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="pt-4 mt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center gap-3">
+                            <button type="submit" class="w-full sm:flex-1 py-2.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                                <i class="ti ti-printer text-base"></i>
+                                <span>Cetak Laporan Agenda</span>
+                            </button>
+                            <button type="submit" name="export_excel" value="true" class="w-full sm:w-auto py-2.5 px-5 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold text-xs sm:text-sm rounded-xl shadow-2xs transition inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                                <i class="ti ti-file-spreadsheet text-base"></i>
+                                <span>Export Excel</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
+
         </div>
+
     </div>
+
 </div>
-
-<style>
-    .nav-tabs .nav-link {
-        color: #8e959d;
-        transition: all 0.2s ease;
-    }
-
-    .nav-tabs .nav-link.active {
-        color: #064e3b !important;
-        background: rgba(6, 78, 59, 0.05) !important;
-    }
-
-    .nav-tabs .nav-link:hover:not(.active) {
-        color: #064e3b;
-        background: rgba(6, 78, 59, 0.02);
-    }
-
-    .nav-tabs .nav-link i {
-        font-size: 1.25rem;
-    }
-
-    /* Layout Ajustments */
-    .nav-align-left.card {
-        flex-direction: row;
-        align-items: flex-start;
-    }
-    
-    .nav-align-left .nav-tabs {
-        border-right: none !important;
-    }
-
-    .tab-content {
-        min-height: auto;
-    }
-</style>
 
 @endsection
 
 @push('myscript')
 <script>
     $(function() {
-        $('.select2').each(function() {
-            var $this = $(this);
-            $this.wrap('<div class="position-relative"></div>').select2({
-                dropdownParent: $this.parent(),
-                allowClear: true
-            });
+        // Tab switching behavior
+        $('.tab-btn').on('click', function(e) {
+            e.preventDefault();
+            const targetId = $(this).data('target');
+
+            // Set active state on button
+            $('.tab-btn').removeClass('active bg-emerald-50/70 text-emerald-800 border-emerald-200');
+            $('.tab-btn .tab-icon').removeClass('bg-emerald-100 text-emerald-700').addClass('bg-slate-100 text-slate-500');
+
+            $(this).addClass('active bg-emerald-50/70 text-emerald-800');
+            $(this).find('.tab-icon').removeClass('bg-slate-100 text-slate-500').addClass('bg-emerald-100 text-emerald-700');
+
+            // Show target pane
+            $('.tab-pane-content').addClass('hidden');
+            $(targetId).removeClass('hidden');
         });
+
+        // Initialize active tab styling
+        $('.tab-btn.active').addClass('bg-emerald-50/70 text-emerald-800');
 
         function setupCascadingFilters(prefix) {
             let unitSelect = $('#' + (prefix ? prefix + '_' : '') + 'kode_unit');
@@ -294,15 +423,15 @@
                 let kode_jabatan = jabatanSelect.val();
 
                 if (kode_unit === "" || kode_unit === null) {
-                    deptSelect.html('<option value="">Pilih Departemen</option>').trigger('change.select2');
-                    jabatanSelect.html('<option value="">Pilih Jabatan</option>').trigger('change.select2');
-                    nppSelect.html('<option value="">Pilih Karyawan</option>').trigger('change.select2');
+                    deptSelect.html('<option value="">Semua Departemen</option>');
+                    jabatanSelect.html('<option value="">Semua Jabatan</option>');
+                    nppSelect.html('<option value="">Semua Karyawan</option>');
                     return;
                 }
 
                 if (kode_dept === "" || kode_dept === null) {
-                    jabatanSelect.html('<option value="">Pilih Jabatan</option>').trigger('change.select2');
-                    nppSelect.html('<option value="">Pilih Karyawan</option>').trigger('change.select2');
+                    jabatanSelect.html('<option value="">Semua Jabatan</option>');
+                    nppSelect.html('<option value="">Semua Karyawan</option>');
                 }
 
                 $.ajax({
@@ -315,49 +444,46 @@
                     },
                     success: function(response) {
                         let currentDept = deptSelect.val();
-                        deptSelect.html('<option value="">Pilih Departemen</option>');
+                        deptSelect.html('<option value="">Semua Departemen</option>');
                         response.departments.forEach(function(d) {
                             let selected = d.kode_dept === currentDept ? 'selected' : '';
                             deptSelect.append(`<option value="${d.kode_dept}" ${selected}>${d.nama_dept.toUpperCase()}</option>`);
                         });
-                        deptSelect.trigger('change.select2');
 
                         let currentJabatan = jabatanSelect.val();
-                        jabatanSelect.html('<option value="">Pilih Jabatan</option>');
+                        jabatanSelect.html('<option value="">Semua Jabatan</option>');
                         if (kode_dept !== "" && kode_dept !== null) {
                             response.jabatans.forEach(function(j) {
                                 let selected = j.kode_jabatan === currentJabatan ? 'selected' : '';
                                 jabatanSelect.append(`<option value="${j.kode_jabatan}" ${selected}>${j.nama_jabatan.toUpperCase()}</option>`);
                             });
                         }
-                        jabatanSelect.trigger('change.select2');
 
                         let currentKaryawan = nppSelect.val();
-                        nppSelect.html('<option value="">Pilih Karyawan</option>');
+                        nppSelect.html('<option value="">Semua Karyawan</option>');
                         response.karyawans.forEach(function(k) {
                             let selected = k.npp === currentKaryawan ? 'selected' : '';
                             nppSelect.append(`<option value="${k.npp}" ${selected}>${k.nama_lengkap.toUpperCase()}</option>`);
                         });
-                        nppSelect.trigger('change.select2');
                     }
                 });
             }
 
             unitSelect.on('change', function() {
-                deptSelect.val('').trigger('change.select2');
-                jabatanSelect.val('').trigger('change.select2');
-                nppSelect.val('').trigger('change.select2');
+                deptSelect.val('');
+                jabatanSelect.val('');
+                nppSelect.val('');
                 update();
             });
 
             deptSelect.on('change', function() {
-                jabatanSelect.val('').trigger('change.select2');
-                nppSelect.val('').trigger('change.select2');
+                jabatanSelect.val('');
+                nppSelect.val('');
                 update();
             });
 
             jabatanSelect.on('change', function() {
-                nppSelect.val('').trigger('change.select2');
+                nppSelect.val('');
                 update();
             });
         }

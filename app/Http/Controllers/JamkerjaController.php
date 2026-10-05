@@ -11,7 +11,15 @@ class JamkerjaController extends Controller
 {
     public function index(Request $request)
     {
-        $jamkerja = Jamkerja::orderBy('kode_jam_kerja')->get();
+        $query = Jamkerja::query();
+
+        if ($request->filled('nama_jam_kerja')) {
+            $search = $request->nama_jam_kerja;
+            $query->where('nama_jam_kerja', 'like', "%{$search}%")
+                  ->orWhere('kode_jam_kerja', 'like', "%{$search}%");
+        }
+
+        $jamkerja = $query->orderBy('kode_jam_kerja')->get();
         return view('konfigurasi.jamkerja.index', compact('jamkerja'));
     }
 

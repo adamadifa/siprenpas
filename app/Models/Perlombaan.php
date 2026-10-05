@@ -15,4 +15,9 @@ class Perlombaan extends Model
     {
         return $this->belongsTo(JenjangPendidikan::class, 'id_jenjang', 'id');
     }
+
+    public function pendaftaran()
+    {
+        return $this->belongsToMany(PendaftaranGotTalent::class, 'pendaftaran_lomba', 'id_perlombaan', 'id_pendaftaran');
+    }
 }

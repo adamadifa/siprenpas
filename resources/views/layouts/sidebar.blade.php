@@ -1,1118 +1,930 @@
-<!-- Menu -->
-<style>
-    /* Responsive sidebar collapse fix: hilangkan bg active/hover di collapse */
-    .layout-menu.layout-menu-collapsed .menu-inner .menu-link,
-    .layout-menu.layout-menu-collapsed .menu-inner .menu-link:hover,
-    .layout-menu.layout-menu-collapsed .menu-inner .menu-item.active>.menu-link {
-        background: transparent !important;
-        color: #fff !important;
-        font-weight: normal !important;
-        box-shadow: none !important;
-        border-radius: 8px !important;
-        transition: none !important;
+@php
+    $isGuru = false;
+    $isWaliKelas = false;
+    $isKoordinator = false;
+    if (auth()->check()) {
+        $user = auth()->user();
+        $isGuru = $user->hasRole('guru') || \App\Models\Guru::where('npp', $user->npp)->exists();
+        if ($isGuru) {
+            $guruModel = \App\Models\Guru::where('npp', $user->npp)->first();
+            if ($guruModel) {
+                $activeTa = \App\Models\Tahunajaran::where('status', '1')->first();
+                if ($activeTa) {
+                    $isWaliKelas = \App\Models\Kelas::where('guru_id', $guruModel->id)
+                        ->where('kode_ta', $activeTa->kode_ta)
+                        ->exists();
+                    $isKoordinator = \App\Models\Ekstrakurikuler::where('guru_id', $guruModel->id)
+                        ->where('kode_ta', $activeTa->kode_ta)
+                        ->exists();
+                }
+            }
+        }
     }
+@endphp
 
-    .layout-menu.layout-menu-collapsed .menu-inner .menu-link .menu-icon {
-        color: #fff !important;
-    }
+<!-- Sidebar Aside (Modern Emerald Green Sidebar with Fixed User Profile) -->
+<aside id="main-sidebar"
+       :class="{
+           'translate-x-0 w-[260px]': mobileSidebarOpen,
+           '-translate-x-full lg:translate-x-0': !mobileSidebarOpen,
+           'lg:w-[260px]': sidebarOpen,
+           'lg:w-0 lg:overflow-hidden': !sidebarOpen
+       }" 
+       class="fixed top-16 left-0 z-50 lg:z-30 h-[calc(100vh-4rem)] bg-emerald-900 border-r border-emerald-950/60 shadow-lg transition-all duration-300 ease-in-out flex flex-col justify-between overflow-hidden">
+    
+    <!-- Scrollable Menu Navigation Area -->
+    <div id="sidebar-menu-scroll" class="flex-1 overflow-y-auto px-3 py-3 space-y-3.5 scrollbar-thin scrollbar-thumb-emerald-700/60 hover:scrollbar-thumb-emerald-600/80">
 
-    .layout-menu.layout-menu-collapsed .menu-inner .menu-link:hover .menu-icon,
-    .layout-menu.layout-menu-collapsed .menu-inner .menu-item.active>.menu-link .menu-icon {
-        color: #ff8c00 !important;
-    }
-
-    /* Responsive sidebar collapse */
-    .layout-menu.layout-menu-collapsed .app-brand {
-        justify-content: center !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-    }
-
-    .layout-menu.layout-menu-collapsed .app-brand-logo img {
-        width: 36px !important;
-        height: 36px !important;
-        object-fit: contain;
-        margin: 0 auto;
-    }
-
-    .sidebar-user-info {
-        padding: 1rem 1.5rem;
-        margin: 0.5rem 0.75rem;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-        border-radius: 0.75rem;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        transition: all 0.3s ease;
-    }
-
-    .sidebar-user-info:hover {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
-        transform: translateY(-2px);
-    }
-
-    .sidebar-user-info-content {
-        display: flex;
-        align-items: center;
-        gap: 0.875rem;
-    }
-
-    .sidebar-user-avatar {
-        position: relative;
-        flex-shrink: 0;
-    }
-
-    .sidebar-user-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.12);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: #ffffff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-        transition: transform 0.3s ease;
-    }
-
-    .sidebar-user-info:hover .sidebar-user-icon {
-        transform: scale(1.05);
-        background: rgba(255, 255, 255, 0.18);
-    }
-
-    .sidebar-user-status {
-        position: absolute;
-        bottom: -2px;
-        right: -2px;
-        width: 12px;
-        height: 12px;
-        background: #4caf50;
-        border: 2px solid #fff;
-        border-radius: 50%;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    .sidebar-user-details {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .sidebar-user-name {
-        font-size: 0.9375rem;
-        font-weight: 600;
-        color: #fff;
-        margin-bottom: 0.25rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        line-height: 1.3;
-    }
-
-    .sidebar-user-role {
-        font-size: 0.8125rem;
-        color: rgba(255, 255, 255, 0.7);
-        display: flex;
-        align-items: center;
-        gap: 0.375rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .sidebar-user-role i {
-        font-size: 0.75rem;
-        color: rgba(255, 255, 255, 0.6);
-    }
-
-    .layout-menu.layout-menu-collapsed .sidebar-user-info {
-        padding: 0.75rem 0.5rem !important;
-        margin: 0.5rem 0.25rem !important;
-        justify-content: center !important;
-    }
-
-    .layout-menu.layout-menu-collapsed .sidebar-user-info-content {
-        flex-direction: column !important;
-        align-items: center !important;
-        gap: 0.5rem !important;
-    }
-
-    .layout-menu.layout-menu-collapsed .sidebar-user-details {
-        display: none !important;
-    }
-
-    .layout-menu.layout-menu-collapsed .sidebar-user-avatar img {
-        width: 40px !important;
-        height: 40px !important;
-    }
-
-    .layout-menu.layout-menu-collapsed .sidebar-user-status {
-        width: 10px !important;
-        height: 10px !important;
-        border-width: 1.5px !important;
-    }
-
-    .layout-menu.layout-menu-collapsed .menu-inner .menu-link {
-        justify-content: center !important;
-        padding-left: 0.3rem !important;
-        padding-right: 0.3rem !important;
-    }
-
-    .layout-menu.layout-menu-collapsed .menu-inner .menu-icon {
-        margin: 0 auto !important;
-        font-size: 1.3rem !important;
-        display: block;
-    }
-
-    /* Menu utama (parent) */
-    /* .menu-inner>.menu-item>.menu-link,
-    .menu-inner>.menu-item.active>.menu-link,
-    .menu-inner>.menu-item>.menu-link:hover {
-        transition: none !important;
-        margin: 0 !important;
-        padding: 0.625rem 0.625rem !important;
-        border-radius: 4px;
-        font-size: 1rem !important;
-        line-height: 1.5 !important;
-        box-shadow: none !important;
-    }
-    .menu-inner>.menu-item>.menu-link:hover,
-    .menu-inner>.menu-item.active>.menu-link {
-        background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%) !important;
-        color: white !important;
-        font-weight: 600;
-    } */
-
-    .menu-inner>.menu-item>.menu-link:hover i,
-    .menu-inner>.menu-item.active>.menu-link i {
-        color: white !important;
-    }
-
-    /* Tambahan: Parent menu (seperti Data Master) jadi orange saat open/active */
-    .menu-item.open>.menu-link,
-    .menu-item.active>.menu-link.menu-toggle {
-        background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%) !important;
-        color: #fff !important;
-        font-weight: 600;
-        border-radius: 4px;
-        padding: 0.625rem 0.625rem !important;
-        margin: 0.5rem 0.5rem 0.5rem 0.5rem !important;
-        box-shadow: none !important;
-        font-size: 1rem !important;
-        line-height: 1.5 !important;
-        transition: background 0.2s, color 0.2s;
-    }
-
-    .menu-item.open>.menu-link i,
-    .menu-item.active>.menu-link.menu-toggle i {
-        color: #fff !important;
-    }
-
-    /* Submenu (child) */
-    .menu-sub .menu-item>.menu-link {
-        background: transparent !important;
-        color: inherit !important;
-    }
-
-    .menu-sub .menu-item>.menu-link:hover,
-    .menu-sub .menu-item.active>.menu-link {
-        background: rgba(255, 140, 0, 0.1) !important;
-        color: #ff8c00 !important;
-    }
-
-    .menu-sub .menu-item>.menu-link:hover i,
-    .menu-sub .menu-item.active>.menu-link i {
-        color: #ff8c00 !important;
-    }
-</style>
-
-<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
-    <div class="app-brand demo">
-        <a href="{{ route('dashboard.index') }}" class="app-brand-link">
-            <span class="app-brand-logo demo" style="width:auto !important; height: 46px !important;">
-                @if ($pengaturan && $pengaturan->logo)
-                    <img src="{{ asset('storage/' . $pengaturan->logo) }}" alt="" width="32">
-                @else
-                    <img src="{{ asset('assets/img/logo/persisalamin.png') }}" alt="" width="32">
+        <!-- ================= 1. MENU UTAMA ================= -->
+        <div>
+            <ul class="space-y-0.5">
+                <!-- Dashboard -->
+                <li>
+                    @php
+                        $isDashActive = request()->is(['dashboard', 'dashboard/*']) && !request()->is(['dashboard/guru']);
+                    @endphp
+                    <a href="{{ route('dashboard.index') }}" 
+                       class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $isDashActive ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                        <i class="ti ti-layout-grid text-[17px] {{ $isDashActive ? 'text-white' : 'text-emerald-300' }}"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                @if ($isGuru)
+                    <li>
+                        @php
+                            $isGuruDashActive = request()->is(['dashboard/guru']);
+                        @endphp
+                        <a href="{{ route('dashboard.guru') }}" 
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $isGuruDashActive ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                            <i class="ti ti-presentation text-[17px] {{ $isGuruDashActive ? 'text-white' : 'text-emerald-300' }}"></i>
+                            <span>Dashboard Guru</span>
+                        </a>
+                    </li>
                 @endif
-            </span>
-            <span
-                class="app-brand-text demo menu-text fw-bold"><i><b></b></i>{{ $pengaturan && $pengaturan->nama_aplikasi ? $pengaturan->nama_aplikasi : 'SIP 80' }}</span>
-        </a>
-
-        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
-            <i class="ti menu-toggle-icon d-none d-xl-block ti-sm align-middle"></i>
-            <i class="ti ti-x d-block d-xl-none ti-sm align-middle"></i>
-        </a>
-    </div>
-
-    <!-- User Info Section -->
-    <div class="sidebar-user-info">
-        <div class="sidebar-user-info-content">
-            <div class="sidebar-user-avatar">
-                <div class="sidebar-user-icon">
-                    <i class="ti ti-user fs-4"></i>
-                </div>
-                <span class="sidebar-user-status"></span>
-            </div>
-            <div class="sidebar-user-details">
-                <div class="sidebar-user-name">{{ auth()->user()->name }}</div>
-                <div class="sidebar-user-role">
-                    <i class="ti ti-shield-check"></i>
-                    <span>{{ auth()->user()->getRoleNames()->first() ?? 'User' }}</span>
-                </div>
-            </div>
+                @can('pendaftaran.index')
+                    <li>
+                        @php
+                            $isPendaftaranActive = request()->is(['pendaftaran']);
+                        @endphp
+                        <a href="{{ route('pendaftaran.index') }}" 
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $isPendaftaranActive ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                            <i class="ti ti-user-plus text-[17px] {{ $isPendaftaranActive ? 'text-white' : 'text-emerald-300' }}"></i>
+                            <span>Pendaftaran</span>
+                        </a>
+                    </li>
+                    <li>
+                        @php
+                            $isPendaftaranOnlineActive = request()->is(['pendaftaranonline']);
+                        @endphp
+                        <a href="{{ route('pendaftaranonline.index') }}" 
+                           class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $isPendaftaranOnlineActive ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                            <i class="ti ti-device-laptop text-[17px] {{ $isPendaftaranOnlineActive ? 'text-white' : 'text-emerald-300' }}"></i>
+                            <span>Pendaftaran Online</span>
+                        </a>
+                    </li>
+                @endcan
+            </ul>
         </div>
-    </div>
 
-    <ul class="menu-inner py-1">
-        <li class="menu-item {{ request()->is(['dashboard', 'dashboard/*']) ? 'active' : '' }}">
-            <a href="{{ route('dashboard.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons ti ti-home"></i>
-                <div>Dashboard</div>
-            </a>
-        </li>
-        <li
-            class="menu-item {{ request()->is([
-                'karyawan',
-                'karyawan/*',
-                'jabatan',
-                'jabatan/*',
-                'unit',
-                'unit/*',
-                'siswa',
-                'siswa/*',
-                'jenisbiaya',
-                'departemen',
-                'ledger',
-                'jenissimpanan',
-                'jenistabungan',
-                'jenispembiayaan',
-                'kategoriibadah',
-                'kegiatanibadah',
-            ])
-                ? 'open'
-                : '' }}">
-            @if (auth()->check() &&
-                    auth()->user()->hasAnyPermission([
-                            'karyawan.index',
-                            'jabatan.index',
-                            'unit.index',
-                            'jenisbiaya.index',
-                            'departemen.index',
-                            'ledger.index',
-                            'siswa.index',
-                            'jenissimpanan.index',
-                            'jenistabungan.index',
-                            'jenispembiayaan.index',
-                            'kategoriibadah.index',
-                            'kegiatanibadah.index',
-                        ]))
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-database"></i>
-                    <div>Data Master</div>
-                </a>
-                <ul class="menu-sub">
+        <!-- ================= 2. MASTER DATA ================= -->
+        @if (auth()->check() && auth()->user()->hasAnyPermission([
+            'karyawan.index', 'jabatan.index', 'unit.index', 'biaya.index', 
+            'departemen.index', 'siswa.index', 'kategoriibadah.index', 'kegiatanibadah.index'
+        ]))
+            <div>
+                <div class="px-3 pb-1 text-[10.5px] font-bold text-emerald-300/80 uppercase tracking-wider">Master Data</div>
+                <ul class="space-y-0.5">
                     @can('karyawan.index')
-                        <li class="menu-item {{ request()->is(['karyawan', 'karyawan/*']) ? 'active' : '' }}">
-                            <a href="{{ route('karyawan.index') }}" class="menu-link">
-                                <div>Karyawan</div>
+                        @php $active = request()->is(['karyawan', 'karyawan/*']); @endphp
+                        <li>
+                            <a href="{{ route('karyawan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-id-badge text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Karyawan</span>
                             </a>
                         </li>
                     @endcan
                     @can('jabatan.index')
-                        <li class="menu-item {{ request()->is(['jabatan', 'jabatan/*']) ? 'active' : '' }}">
-                            <a href="{{ route('jabatan.index') }}" class="menu-link">
-                                <div>Jabatan</div>
+                        @php $active = request()->is(['jabatan', 'jabatan/*']); @endphp
+                        <li>
+                            <a href="{{ route('jabatan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-briefcase text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Jabatan</span>
                             </a>
                         </li>
                     @endcan
                     @can('siswa.index')
-                        <li class="menu-item {{ request()->is(['siswa', 'siswa/*']) ? 'active' : '' }}">
-                            <a href="{{ route('siswa.index') }}" class="menu-link">
-                                <div>Siswa</div>
+                        @php $active = request()->is(['siswa', 'siswa/*']); @endphp
+                        <li>
+                            <a href="{{ route('siswa.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-users-group text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Siswa</span>
                             </a>
                         </li>
                     @endcan
-
                     @can('unit.index')
-                        <li class="menu-item {{ request()->is(['unit', 'unit/*']) ? 'active' : '' }}">
-                            <a href="{{ route('unit.index') }}" class="menu-link">
-                                <div>Unit</div>
+                        @php $active = request()->is(['unit', 'unit/*']); @endphp
+                        <li>
+                            <a href="{{ route('unit.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-building-community text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Unit</span>
                             </a>
                         </li>
                     @endcan
                     @can('biaya.index')
-                        <li class="menu-item {{ request()->is(['jenisbiaya', 'jenisbiaya/*']) ? 'active' : '' }}">
-                            <a href="{{ route('jenisbiaya.index') }}" class="menu-link">
-                                <div>Jenis Biaya</div>
+                        @php $active = request()->is(['jenisbiaya', 'jenisbiaya/*']); @endphp
+                        <li>
+                            <a href="{{ route('jenisbiaya.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-receipt-2 text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Jenis Biaya</span>
                             </a>
                         </li>
                     @endcan
                     @can('departemen.index')
-                        <li class="menu-item {{ request()->is(['departemen', 'departemen/*']) ? 'active' : '' }}">
-                            <a href="{{ route('departemen.index') }}" class="menu-link">
-                                <div>Departemen</div>
-                            </a>
-                        </li>
-                    @endcan
-
-                    @can('ledger.index')
-                        <li class="menu-item {{ request()->is(['ledger', 'ledger/*']) ? 'active' : '' }}">
-                            <a href="{{ route('ledger.index') }}" class="menu-link">
-                                <div>Ledger</div>
-                            </a>
-                        </li>
-                    @endcan
-                    @can('jenissimpanan.index')
-                        <li class="menu-item {{ request()->is(['jenissimpanan', 'jenissimpanan/*']) ? 'active' : '' }}">
-                            <a href="{{ route('jenissimpanan.index') }}" class="menu-link">
-                                <div>Jenis Simpanan</div>
-                            </a>
-                        </li>
-                    @endcan
-                    @can('jenistabungan.index')
-                        <li class="menu-item {{ request()->is(['jenistabungan', 'jenistabungan/*']) ? 'active' : '' }}">
-                            <a href="{{ route('jenistabungan.index') }}" class="menu-link">
-                                <div>Jenis Tabungan</div>
-                            </a>
-                        </li>
-                    @endcan
-                    @can('jenispembiayaan.index')
-                        <li class="menu-item {{ request()->is(['jenispembiayaan', 'jenispembiayaan/*']) ? 'active' : '' }}">
-                            <a href="{{ route('jenispembiayaan.index') }}" class="menu-link">
-                                <div>Jenis Pembiayaan</div>
+                        @php $active = request()->is(['departemen', 'departemen/*']); @endphp
+                        <li>
+                            <a href="{{ route('departemen.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-sitemap text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Departemen</span>
                             </a>
                         </li>
                     @endcan
                     @can('kategoriibadah.index')
-                        <li class="menu-item {{ request()->is(['kategoriibadah', 'kategoriibadah/*']) ? 'active' : '' }}">
-                            <a href="{{ route('kategoriibadah.index') }}" class="menu-link">
-                                <div>Kategori Ibadah</div>
+                        @php $active = request()->is(['kategoriibadah', 'kategoriibadah/*']); @endphp
+                        <li>
+                            <a href="{{ route('kategoriibadah.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-tags text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Kategori Ibadah</span>
                             </a>
                         </li>
                     @endcan
                     @can('kegiatanibadah.index')
-                        <li class="menu-item {{ request()->is(['kegiatanibadah', 'kegiatanibadah/*']) ? 'active' : '' }}">
-                            <a href="{{ route('kegiatanibadah.index') }}" class="menu-link">
-                                <div>Kegiatan Ibadah</div>
+                        @php $active = request()->is(['kegiatanibadah', 'kegiatanibadah/*']); @endphp
+                        <li>
+                            <a href="{{ route('kegiatanibadah.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-sun-moon text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Kegiatan Ibadah</span>
                             </a>
                         </li>
                     @endcan
                 </ul>
-            @endif
-        </li>
-        @if (auth()->check() &&
-                auth()->user()->hasAnyPermission(['pendaftaran.index']))
-            <li class="menu-item {{ request()->is(['pendaftaran', 'pendaftaran/*', 'pendaftaranonline', 'pendaftaranonline/*']) ? 'open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-file-description"></i>
-                    <div>Pendaftaran</div>
-                </a>
-                <ul class="menu-sub">
-                    <li class="menu-item {{ request()->is(['pendaftaran']) ? 'active' : '' }}">
-                        <a href="{{ route('pendaftaran.index') }}" class="menu-link">
-                            <div>Pendaftaran </div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ request()->is(['pendaftaranonline']) ? 'active' : '' }}">
-                        <a href="{{ route('pendaftaranonline.index') }}" class="menu-link">
-                            <div>Pendaftaran Online</div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
+            </div>
         @endif
 
-        @php
-            $isGuru = false;
-            $isWaliKelas = false;
-            $isKoordinator = false;
-            if (auth()->check()) {
-                $user = auth()->user();
-                $isGuru = $user->hasRole('guru') || \App\Models\Guru::where('npp', $user->npp)->exists();
-                if ($isGuru) {
-                    $guruModel = \App\Models\Guru::where('npp', $user->npp)->first();
-                    if ($guruModel) {
-                        $activeTa = \App\Models\Tahunajaran::where('status', '1')->first();
-                        if ($activeTa) {
-                            $isWaliKelas = \App\Models\Kelas::where('guru_id', $guruModel->id)
-                                ->where('kode_ta', $activeTa->kode_ta)
-                                ->exists();
-                            $isKoordinator = \App\Models\Ekstrakurikuler::where('guru_id', $guruModel->id)
-                                ->where('kode_ta', $activeTa->kode_ta)
-                                ->exists();
-                        }
-                    }
-                }
-            }
-        @endphp
-
-        <!-- Menu Akademik -->
-        @if (auth()->check() &&
-                (auth()->user()->hasAnyPermission(['presensisiswa.index', 'guru.index', 'akademiksiswa.index', 'jabatanakademik.index', 'matapelajaran.index', 'kelas.index', 'jadwalpelajaran.index']) || $isWaliKelas || $isKoordinator || $isGuru))
-            <li class="menu-item {{ request()->is(['akademik', 'akademik/*', 'presensisiswa', 'presensisiswa/*', 'guru', 'guru/*', 'jabatan-akademik', 'jabatan-akademik/*', 'mata-pelajaran', 'mata-pelajaran/*', 'kelas', 'kelas/*', 'jadwal-pelajaran', 'jadwal-pelajaran/*', 'rapor', 'rapor/*', 'penilaian', 'penilaian/*', 'presensi-mapel', 'presensi-mapel/*', 'wali-kelas', 'wali-kelas/*', 'rapor-siswa', 'rapor-siswa/*']) ? 'open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-school"></i>
-                    <div>Akademik</div>
-                </a>
-                <ul class="menu-sub">
-                    @if ($isGuru)
-                        <li class="menu-item {{ request()->is(['dashboard/guru']) ? 'active' : '' }}">
-                            <a href="{{ route('dashboard.guru') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-layout-dashboard"></i>
-                                <div>Dashboard Guru</div>
-                            </a>
-                        </li>
-                    @endif
+        <!-- ================= 3. AKADEMIK & PEMBELAJARAN ================= -->
+        @if (auth()->check() && (auth()->user()->hasAnyPermission(['presensisiswa.index', 'guru.index', 'akademiksiswa.index', 'jabatanakademik.index', 'matapelajaran.index', 'kelas.index', 'jadwalpelajaran.index']) || $isWaliKelas || $isKoordinator || $isGuru))
+            <div>
+                <div class="px-3 pb-1 text-[10.5px] font-bold text-emerald-300/80 uppercase tracking-wider">Akademik & Siswa</div>
+                <ul class="space-y-0.5">
                     @can('guru.index')
-                        <li class="menu-item {{ request()->is(['guru', 'guru/*']) ? 'active' : '' }}">
-                            <a href="{{ route('guru.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-users"></i>
-                                <div>Data Guru</div>
+                        @php $active = request()->is(['guru', 'guru/*']); @endphp
+                        <li>
+                            <a href="{{ route('guru.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-users text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Data Guru</span>
                             </a>
                         </li>
                     @endcan
                     @can('akademiksiswa.index')
-                        <li class="menu-item {{ request()->is(['akademik/siswa', 'akademik/siswa/*']) ? 'active' : '' }}">
-                            <a href="{{ route('akademiksiswa.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-users-group"></i>
-                                <div>Data Siswa</div>
+                        @php $active = request()->is(['akademik/siswa', 'akademik/siswa/*']); @endphp
+                        <li>
+                            <a href="{{ route('akademiksiswa.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-school text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Data Siswa Akademik</span>
                             </a>
                         </li>
                     @endcan
                     @can('jabatanakademik.index')
-                        <li class="menu-item {{ request()->is(['jabatan-akademik', 'jabatan-akademik/*']) ? 'active' : '' }}">
-                            <a href="{{ route('jabatan-akademik.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-badge"></i>
-                                <div>Jabatan Akademik</div>
+                        @php $active = request()->is(['jabatan-akademik', 'jabatan-akademik/*']); @endphp
+                        <li>
+                            <a href="{{ route('jabatan-akademik.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-award text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Jabatan Akademik</span>
                             </a>
                         </li>
                     @endcan
-                    @if (auth()->check() &&
-                            (auth()->user()->hasAnyPermission(['presensisiswa.index']) || $isGuru))
-                        <li class="menu-item {{ request()->is(['presensisiswa', 'presensisiswa/*']) ? 'active' : '' }}">
-                            <a href="{{ route('presensisiswa.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-heart-rate-monitor"></i>
-                                <div>Monitoring Presensi</div>
+                    @if (auth()->check() && (auth()->user()->hasAnyPermission(['presensisiswa.index']) || $isGuru))
+                        @php $active = request()->is(['presensisiswa', 'presensisiswa/*']); @endphp
+                        <li>
+                            <a href="{{ route('presensisiswa.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-activity-heartbeat text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Monitoring Presensi Siswa</span>
                             </a>
                         </li>
                     @endif
                     @can('matapelajaran.index')
-                        <li class="menu-item {{ request()->is(['mata-pelajaran', 'mata-pelajaran/*']) ? 'active' : '' }}">
-                            <a href="{{ route('mata-pelajaran.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-book"></i>
-                                <div>Data Mata Pelajaran</div>
+                        @php $active = request()->is(['mata-pelajaran', 'mata-pelajaran/*']); @endphp
+                        <li>
+                            <a href="{{ route('mata-pelajaran.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-books text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Data Mata Pelajaran</span>
                             </a>
                         </li>
                     @endcan
                     @can('kelas.index')
-                        <li class="menu-item {{ request()->is(['kelas', 'kelas/*']) ? 'active' : '' }}">
-                            <a href="{{ route('kelas.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-chalkboard"></i>
-                                <div>Kelas</div>
+                        @php $active = request()->is(['kelas', 'kelas/*']); @endphp
+                        <li>
+                            <a href="{{ route('kelas.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-chalkboard text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Kelas</span>
                             </a>
                         </li>
                     @endcan
                     @if (auth()->check() && (auth()->user()->can('jadwalpelajaran.index') || $isGuru))
-                        <li class="menu-item {{ request()->is(['jadwal-pelajaran', 'jadwal-pelajaran/*']) ? 'active' : '' }}">
-                            <a href="{{ route('jadwal-pelajaran.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-calendar"></i>
-                                <div>Jadwal Pelajaran</div>
+                        @php $active = request()->is(['jadwal-pelajaran', 'jadwal-pelajaran/*']); @endphp
+                        <li>
+                            <a href="{{ route('jadwal-pelajaran.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-calendar-time text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Jadwal Pelajaran</span>
                             </a>
                         </li>
                     @endif
                     @if ($isWaliKelas)
-                        <li class="menu-item {{ request()->is(['wali-kelas', 'wali-kelas/*']) ? 'active' : '' }}">
-                            <a href="{{ route('wali-kelas.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-presentation"></i>
-                                <div>Wali Kelas</div>
+                        @php $active = request()->is(['wali-kelas', 'wali-kelas/*']); @endphp
+                        <li>
+                            <a href="{{ route('wali-kelas.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-user-shield text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Wali Kelas</span>
                             </a>
                         </li>
                     @endif
-                    <li class="menu-item {{ request()->is(['presensi-mapel', 'presensi-mapel/*']) ? 'active' : '' }}">
-                        <a href="{{ route('presensi-mapel.index') }}" class="menu-link">
-                            <i class="menu-icon tf-icons ti ti-checklist"></i>
-                            <div>Presensi Mata Pelajaran</div>
-                        </a>
-                    </li>
                     @if (auth()->check() && (auth()->user()->can('jadwalpelajaran.index') || $isGuru))
-                        <li class="menu-item {{ request()->is(['rapor', 'rapor/*', 'penilaian', 'penilaian/*']) ? 'active' : '' }}">
-                            <a href="{{ route('rapor.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-file-report"></i>
-                                <div>Penilaian</div>
+                        @php $active = request()->is(['presensi-mapel', 'presensi-mapel/*']); @endphp
+                        <li>
+                            <a href="{{ route('presensi-mapel.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-clipboard-check text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Presensi Mata Pelajaran</span>
+                            </a>
+                        </li>
+                        @php $active = request()->is(['rapor', 'rapor/*', 'penilaian', 'penilaian/*']); @endphp
+                        <li>
+                            <a href="{{ route('rapor.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-star text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Penilaian</span>
                             </a>
                         </li>
                     @endif
                     @if (auth()->check() && (auth()->user()->hasAnyRole(['super admin', 'admin']) || auth()->user()->can('jadwalpelajaran.index') || $isKoordinator || $isWaliKelas))
-                        <li class="menu-item {{ request()->is(['rapor-siswa', 'rapor-siswa/*']) ? 'active' : '' }}">
-                            <a href="{{ route('rapor-siswa.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-file-analytics"></i>
-                                <div>{{ $isKoordinator && !$isWaliKelas && !auth()->user()->hasAnyRole(['super admin', 'admin']) ? 'Ekstrakurikuler' : 'Rapor Siswa' }}</div>
+                        @php $active = request()->is(['rapor-siswa', 'rapor-siswa/*']); @endphp
+                        <li>
+                            <a href="{{ route('rapor-siswa.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-certificate text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>{{ $isKoordinator && !$isWaliKelas && !auth()->user()->hasAnyRole(['super admin', 'admin']) ? 'Ekstrakurikuler' : 'Rapor Siswa' }}</span>
                             </a>
                         </li>
                     @endif
                 </ul>
-            </li>
+            </div>
         @endif
 
-        @if (auth()->check() &&
-                auth()->user()->hasAnyPermission(['simpanan.index', 'pembiayaan.index', 'tabungan.index', 'anggota.index']))
-            <li
-                class="menu-item {{ request()->is(['anggota', 'anggota/*', 'simpanan', 'pembiayaan', 'tabungan', 'tabungan/*', 'simpanan/*', 'pembiayaan/*', 'laporankoperasi', 'laporankoperasi/*']) ? 'open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-moneybag"></i>
-                    <div>Koperasi</div>
-                </a>
-                <ul class="menu-sub">
+        <!-- ================= 4. KEUANGAN ================= -->
+        @if (auth()->check() && (
+            auth()->user()->hasAnyPermission(['pembayaranpdd.index', 'lk.index', 'lk.pembayaran', 'lk.rekaptagihan']) ||
+            auth()->user()->hasRole('super admin')
+        ))
+            <div>
+                <div class="px-3 pb-1 text-[10.5px] font-bold text-emerald-300/80 uppercase tracking-wider">Keuangan</div>
+                <ul class="space-y-0.5">
+                    @if (auth()->user()->can('pembayaranpdd.index') || auth()->user()->hasRole('super admin'))
+                        @php $active = request()->is(['pembayaranpendidikan', 'pembayaranpendidikan/*']); @endphp
+                        <li>
+                            <a href="{{ route('pembayaranpendidikan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-wallet text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Pembayaran Pendidikan</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if (auth()->user()->hasAnyPermission(['pembayaranpdd.index', 'lk.index', 'lk.pembayaran', 'lk.rekaptagihan']) || auth()->user()->hasRole('super admin'))
+                        @php $active = request()->is(['laporankeuangan', 'laporankeuangan/*', 'lk', 'lk/*']); @endphp
+                        <li>
+                            <a href="{{ route('lk.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-report-money text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Laporan Keuangan</span>
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </div>
+        @endif
+
+        <!-- ================= 5. KOPERASI ================= -->
+        @if (auth()->check() && (
+            auth()->user()->hasAnyPermission([
+                'anggota.index', 
+                'jenissimpanan.index', 'simpanan.index', 
+                'jenistabungan.index', 'tabungan.index', 
+                'jenispembiayaan.index', 'pembiayaan.index', 
+                'laporankoperasi.index'
+            ]) ||
+            auth()->user()->hasRole('super admin')
+        ))
+            <div>
+                <div class="px-3 pb-1 text-[10.5px] font-bold text-emerald-300/80 uppercase tracking-wider">Koperasi</div>
+                <ul class="space-y-0.5">
                     @can('anggota.index')
-                        <li class="menu-item {{ request()->is(['anggota', 'anggota/*']) ? 'active' : '' }}">
-                            <a href="{{ route('anggota.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-file-description"></i>
-                                <div>Anggota</div>
+                        @php $active = request()->is(['anggota', 'anggota/*']); @endphp
+                        <li>
+                            <a href="{{ route('anggota.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-user-check text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Anggota Koperasi</span>
                             </a>
                         </li>
                     @endcan
-                    @if (auth()->check() &&
-                            auth()->user()->hasAnyPermission(['simpanan.index']))
-                        <li class="menu-item {{ request()->is(['simpanan', 'simpanan/*']) ? 'active' : '' }}">
-                            <a href="{{ route('simpanan.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-file-description"></i>
-                                <div>Simpanan</div>
+                    @can('jenissimpanan.index')
+                        @php $active = request()->is(['jenissimpanan', 'jenissimpanan/*']); @endphp
+                        <li>
+                            <a href="{{ route('jenissimpanan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-vault text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Jenis Simpanan</span>
                             </a>
                         </li>
-                    @endif
-                    @if (auth()->check() &&
-                            auth()->user()->hasAnyPermission(['tabungan.index']))
-                        <li class="menu-item {{ request()->is(['tabungan', 'tabungan/*']) ? 'active' : '' }}">
-                            <a href="{{ route('tabungan.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-file-description"></i>
-                                <div>Tabungan</div>
-
+                    @endcan
+                    @can('simpanan.index')
+                        @php $active = request()->is(['simpanan', 'simpanan/*']) && !request()->is(['simpanan/simpanansaya*']); @endphp
+                        <li>
+                            <a href="{{ route('simpanan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-building-bank text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Data Simpanan</span>
                             </a>
                         </li>
-                    @endif
-                    @if (auth()->check() &&
-                            auth()->user()->hasAnyPermission(['pembiayaan.index']))
-                        <li class="menu-item {{ request()->is(['pembiayaan', 'pembiayaan/*']) ? 'active' : '' }}">
-                            <a href="{{ route('pembiayaan.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-file-description"></i>
-                                <div>Pembiayaan</div>
+                    @endcan
+                    @can('jenistabungan.index')
+                        @php $active = request()->is(['jenistabungan', 'jenistabungan/*']); @endphp
+                        <li>
+                            <a href="{{ route('jenistabungan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-coin text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Jenis Tabungan</span>
                             </a>
                         </li>
-                    @endif
-                    <li class="menu-item {{ request()->is(['laporankoperasi', 'laporankoperasi/*']) ? 'active' : '' }}">
-                        <a href="{{ route('laporankoperasi.index') }}" class="menu-link">
-                            <i class="menu-icon tf-icons ti ti-file-description"></i>
-                            <div>Laporan</div>
-                        </a>
-                    </li>
-
+                    @endcan
+                    @can('tabungan.index')
+                        @php $active = request()->is(['tabungan', 'tabungan/*']); @endphp
+                        <li>
+                            <a href="{{ route('tabungan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-wallet text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Data Tabungan</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('jenispembiayaan.index')
+                        @php $active = request()->is(['jenispembiayaan', 'jenispembiayaan/*']); @endphp
+                        <li>
+                            <a href="{{ route('jenispembiayaan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-cash text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Jenis Pembiayaan</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('pembiayaan.index')
+                        @php $active = request()->is(['pembiayaan', 'pembiayaan/*']) && !request()->is(['pembiayaan/pinjamansaya*']); @endphp
+                        <li>
+                            <a href="{{ route('pembiayaan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-cash-banknote text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Data Pembiayaan</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('laporankoperasi.index')
+                        @php $active = request()->is(['laporankoperasi', 'laporankoperasi/*']); @endphp
+                        <li>
+                            <a href="{{ route('laporankoperasi.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-file-analytics text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Laporan Koperasi</span>
+                            </a>
+                        </li>
+                    @endcan
                 </ul>
-
-            </li>
+            </div>
         @endif
-        @if (auth()->check() &&
-                auth()->user()->hasAnyPermission(['pembayaranpdd.index']))
-            <li class="menu-item {{ request()->is(['pembayaranpendidikan', 'pembayaranpendidikan/*', 'ledgertransaksi', 'ledgertransaksi/*', 'laporankeuangan', 'laporankeuangan/*']) ? 'open' : '' }}">
 
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-moneybag"></i>
-                    <div>Keuangan</div>
-                </a>
-                <ul class="menu-sub">
-                    @if (auth()->check() &&
-                            auth()->user()->hasAnyPermission(['pembayaranpdd.index']))
-                        <li class="menu-item {{ request()->is(['pembayaranpendidikan', 'pembayaranpendidikan/*']) ? 'active' : '' }}">
-                            <a href="{{ route('pembayaranpendidikan.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-file-description"></i>
-                                <div>Pembayaran </div>
+        <!-- ================= 6. MSDM & LAYANAN KARYAWAN ================= -->
+        @if (auth()->check() && (
+            auth()->user()->hasAnyPermission([
+                'presensi.index', 'izinabsen.index', 'laporanmsdm.index',
+                'jobdesk.index', 'programkerja.index', 'agendakegiatan.index', 
+                'realkegiatan.index', 'realkegiatan.laporan'
+            ]) ||
+            auth()->user()->hasRole('karyawan')
+        ))
+            <div>
+                <div class="px-3 pb-1 text-[10.5px] font-bold text-emerald-300/80 uppercase tracking-wider">MSDM & Layanan</div>
+                <ul class="space-y-0.5">
+                    @can('presensi.index')
+                        @php $active = request()->is(['presensi']); @endphp
+                        <li>
+                            <a href="{{ route('presensi.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-fingerprint text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Monitoring Presensi</span>
                             </a>
                         </li>
-                    @endif
-                    @if (auth()->check() &&
-                            auth()->user()->hasAnyPermission(['ledgertransaksi.index']))
-                        <li class="menu-item {{ request()->is(['ledgertransaksi', 'ledgertransaksi/*']) ? 'active' : '' }}">
-                            <a href="{{ route('ledgertransaksi.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-file-description"></i>
-                                <div>Mutasi Kas dan Bank </div>
+                    @endcan
+                    @can('izinabsen.index')
+                        @php $active = request()->is(['izinabsen', 'izinabsen/*']); @endphp
+                        <li>
+                            <a href="{{ route('izinabsen.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-calendar-minus text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Pengajuan Absen & Izin</span>
                             </a>
                         </li>
-                    @endif
-
-                    @if (auth()->check() &&
-                            auth()->user()->hasAnyPermission(['pembayaranpdd.index']))
-                        <li class="menu-item {{ request()->is(['laporankeuangan', 'laporankeuangan/*']) ? 'active' : '' }}">
-                            <a href="{{ route('lk.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-file-description"></i>
-                                <div>Laporan </div>
-                            </a>
-                        </li>
-                    @endif
-
-                </ul>
-
-            </li>
-        @endif
-        @if (auth()->check() &&
-                auth()->user()->hasAnyPermission(['izinabsen.index', 'izinsakit.index', 'presensi.index']))
-            <li class="menu-item {{ request()->is(['izinabsen', 'izinsakit', 'presensi', 'laporanmsdm']) ? 'open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-moneybag"></i>
-                    <div>MSDM</div>
-                </a>
-                <ul class="menu-sub">
-                    @if (auth()->check() &&
-                            auth()->user()->hasAnyPermission(['presensi.index']))
-                        <li class="menu-item {{ request()->is(['presensi']) ? 'active' : '' }}">
-                            <a href="{{ route('presensi.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-heart-rate-monitor"></i>
-                                <div>Monitoring Presensi </div>
-                            </a>
-                        </li>
-                    @endif
-                    @if (auth()->check() &&
-                            auth()->user()->hasAnyPermission(['izinabsen.index']))
-                        <li class="menu-item {{ request()->is(['izinabsen']) ? 'active' : '' }}">
-                            <a href="{{ route('izinabsen.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-file-description"></i>
-                                <div>Pengajuan Absen </div>
-                            </a>
-                        </li>
-                    @endif
-                    @if (auth()->check() &&
-                            auth()->user()->hasAnyPermission(['presensi.index']))
-                        <li class="menu-item {{ request()->is(['laporanmsdm']) ? 'active' : '' }}">
-                            <a href="{{ route('laporanmsdm.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-file-description"></i>
-                                <div>Laporan</div>
-                            </a>
-                        </li>
-                    @endif
-                </ul>
-            </li>
-        @endif
-        @if (auth()->check() && auth()->user()->hasRole('karyawan'))
-            <li class="menu-item {{ request()->is(['checklistibadah/create']) ? 'active' : '' }}">
-                <a href="{{ route('checklistibadah.create') }}" class="menu-link">
-                    <i class="menu-icon tf-icons ti ti-heart-handshake"></i>
-                    <div>Checklist Ibadah</div>
-                </a>
-            </li>
-        @endif
-
-        @if (auth()->check() && auth()->user()->hasRole('karyawan'))
-            <li class="menu-item {{ request()->is(['simpanansaya', 'simpanansaya/*']) ? 'active' : '' }}">
-                <a href="{{ route('simpanan.simpanansaya') }}" class="menu-link">
-                    <i class="menu-icon tf-icons ti ti-wallet"></i>
-                    <div>Simpanan</div>
-                </a>
-            </li>
-        @endif
-
-        @if (auth()->check() && auth()->user()->hasRole('karyawan'))
-            <li class="menu-item {{ request()->is(['pinjamansaya', 'pinjamansaya/*']) ? 'active' : '' }}">
-                <a href="{{ route('pembiayaan.pinjamansaya') }}" class="menu-link">
-                    <i class="menu-icon tf-icons ti ti-cash"></i>
-                    <div>Pinjaman</div>
-                </a>
-            </li>
-        @endif
-
-        @if (auth()->check() && auth()->user()->hasRole('karyawan'))
-            <li class="menu-item {{ request()->is(['absensikaryawan', 'absensikaryawan/*']) ? 'active' : '' }}">
-                <a href="{{ route('presensi.absensikaryawan') }}" class="menu-link">
-                    <i class="menu-icon tf-icons ti ti-calendar-event"></i>
-                    <div>Absensi</div>
-                </a>
-            </li>
-        @endif
-
-        @if (auth()->check() &&
-                (auth()->user()->can('agenda.index') || auth()->user()->hasRole('karyawan')))
-            <li class="menu-item {{ request()->is(['agenda', 'agenda/*']) ? 'active' : '' }}">
-                <a href="{{ route('agenda.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons ti ti-calendar"></i>
-                    <div>Agenda Pesantren</div>
-                </a>
-            </li>
-        @endif
-
-        @if (auth()->check() &&
-                (auth()->user()->hasAnyPermission(['realkegiatan.index', 'programkerja.index', 'jobdesk.index', 'agendakegiatan.index']) ||
-                 auth()->user()->hasRole('karyawan')))
-            <li class="menu-item {{ request()->is(['realisasikegiatan', 'programkerja', 'jobdesk', 'kegiatan/laporan', 'agendakegiatan', 'agendakegiatan/*']) ? 'open' : '' }}">
-
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-activity"></i>
-                    <div>Kegiatan</div>
-                </a>
-                <ul class="menu-sub">
+                    @endcan
                     @if (auth()->user()->can('jobdesk.index') || auth()->user()->hasRole('karyawan'))
-                        <li class="menu-item {{ request()->is(['jobdesk', 'jobdesk/*']) ? 'active' : '' }}">
-                            <a href="{{ route('jobdesk.index') }}" class="menu-link">
-                                <div>Jobdesk</div>
+                        @php $active = request()->is(['jobdesk', 'jobdesk/*']); @endphp
+                        <li>
+                            <a href="{{ route('jobdesk.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-list-check text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Jobdesk</span>
                             </a>
                         </li>
                     @endif
                     @if (auth()->user()->can('programkerja.index') || auth()->user()->hasRole('karyawan'))
-                        <li class="menu-item {{ request()->is(['programkerja']) ? 'active' : '' }}">
-                            <a href="{{ route('programkerja.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-file-description"></i>
-                                <div>Program Kerja </div>
+                        @php $active = request()->is(['programkerja', 'programkerja/*']); @endphp
+                        <li>
+                            <a href="{{ route('programkerja.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-target-arrow text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Program Kerja</span>
                             </a>
                         </li>
                     @endif
                     @if (auth()->user()->can('agendakegiatan.index') || auth()->user()->hasRole('karyawan'))
-                        <li class="menu-item {{ request()->is(['agendakegiatan', 'agendakegiatan/*']) ? 'active' : '' }}">
-                            <a href="{{ route('agendakegiatan.index') }}" class="menu-link">
-                                <div>Agenda Kegiatan </div>
+                        @php $active = request()->is(['agendakegiatan', 'agendakegiatan/*']); @endphp
+                        <li>
+                            <a href="{{ route('agendakegiatan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-calendar-month text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Agenda Kegiatan</span>
                             </a>
                         </li>
                     @endif
                     @if (auth()->user()->can('realkegiatan.index') || auth()->user()->hasRole('karyawan'))
-                        <li class="menu-item {{ request()->is(['realisasikegiatan']) ? 'active' : '' }}">
-                            <a href="{{ route('realisasikegiatan.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-file-description"></i>
-                                <div>Realisasi Kegiatan </div>
+                        @php $active = request()->is(['realisasikegiatan', 'realisasikegiatan/*']); @endphp
+                        <li>
+                            <a href="{{ route('realisasikegiatan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-circle-check text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Realisasi Kegiatan</span>
                             </a>
                         </li>
                     @endif
                     @if (auth()->user()->can('realkegiatan.laporan') || auth()->user()->hasRole('karyawan'))
-                        <li class="menu-item {{ request()->is(['kegiatan/laporan']) ? 'active' : '' }}">
-                            <a href="{{ route('kegiatan.laporan.index') }}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-printer"></i>
-                                <div>Laporan </div>
+                        @php $active = request()->is(['kegiatan/laporan', 'kegiatan/laporan/*']); @endphp
+                        <li>
+                            <a href="{{ route('kegiatan.laporan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-report text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Laporan Kegiatan</span>
+                            </a>
+                        </li>
+                    @endif
+                    @can('laporanmsdm.index')
+                        @php $active = request()->is(['laporanmsdm', 'laporanmsdm/*']); @endphp
+                        <li>
+                            <a href="{{ route('laporanmsdm.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-file-text text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Laporan MSDM</span>
+                            </a>
+                        </li>
+                    @endcan
+
+                    <!-- Khusus Karyawan -->
+                    @if (auth()->check() && auth()->user()->hasRole('karyawan'))
+                        @php $active = request()->is(['checklistibadah', 'checklistibadah/*']); @endphp
+                        <li>
+                            <a href="{{ route('checklistibadah.create') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-checkbox text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Checklist Ibadah</span>
+                            </a>
+                        </li>
+                        @php $active = request()->is(['simpanansaya', 'simpanansaya/*']); @endphp
+                        <li>
+                            <a href="{{ route('simpanan.simpanansaya') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-vault text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Simpanan Saya</span>
+                            </a>
+                        </li>
+                        @php $active = request()->is(['pinjamansaya', 'pinjamansaya/*']); @endphp
+                        <li>
+                            <a href="{{ route('pembiayaan.pinjamansaya') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-credit-card text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Pinjaman Saya</span>
+                            </a>
+                        </li>
+                        @php $active = request()->is(['absensikaryawan', 'absensikaryawan/*']); @endphp
+                        <li>
+                            <a href="{{ route('presensi.absensikaryawan') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-device-watch-stats text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Presensi & Absensi</span>
                             </a>
                         </li>
                     @endif
                 </ul>
-
-            </li>
+            </div>
         @endif
 
-        <!-- Menu Asrama -->
-        @if (auth()->check() && auth()->user()->hasAnyPermission(['asramasiswa.index']))
-            <li class="menu-item {{ request()->is(['asrama', 'asrama/*']) ? 'open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-home-check"></i>
-                    <div>Asrama</div>
-                </a>
-                <ul class="menu-sub">
-                    <li class="menu-item {{ request()->is(['asrama/siswa', 'asrama/siswa/*']) ? 'active' : '' }}">
-                        <a href="{{ route('asramasiswa.index') }}" class="menu-link">
-                            <i class="menu-icon tf-icons ti ti-users-group"></i>
-                            <div>Data Siswa</div>
-                        </a>
-                    </li>
+        <!-- ================= 7. KEGIATAN & PESANTREN ================= -->
+        @if (auth()->check() && (
+            auth()->user()->hasAnyPermission(['agenda.index', 'asramasiswa.index'])
+        ))
+            <div>
+                <div class="px-3 pb-1 text-[10.5px] font-bold text-emerald-300/80 uppercase tracking-wider">Kegiatan & Pesantren</div>
+                <ul class="space-y-0.5">
+                    @can('agenda.index')
+                        @php $active = request()->is(['agenda', 'agenda/*']); @endphp
+                        <li>
+                            <a href="{{ route('agenda.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-calendar-event text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Agenda Pesantren</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('asramasiswa.index')
+                        @php $active = request()->is(['asramasiswa', 'asramasiswa/*']); @endphp
+                        <li>
+                            <a href="{{ route('asramasiswa.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-home-check text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Data Siswa Asrama</span>
+                            </a>
+                        </li>
+                    @endcan
                 </ul>
-            </li>
+            </div>
         @endif
 
-        <!-- Menu Al Amin Got Talent -->
-        @if (auth()->check() &&
-                auth()->user()->hasAnyPermission(['perlombaan.index', 'pendaftarangottalent.index', 'jenjangpendidikan.index']))
-            <li
-                class="menu-item {{ request()->is(['perlombaan', 'perlombaan/*', 'pendaftaran-got-talent', 'pendaftaran-got-talent/*', 'konfirmasi-pembayaran-got-talent', 'konfirmasi-pembayaran-got-talent/*', 'jenjang-pendidikan', 'jenjang-pendidikan/*']) ? 'open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-award"></i>
-                    <div>Al Amin Got Talent</div>
-                </a>
-                <ul class="menu-sub">
+        <!-- ================= AL AMIN GOT TALENT ================= -->
+        @if (auth()->check() && (
+            auth()->user()->hasAnyPermission(['perlombaan.index', 'pendaftarangottalent.index', 'jenjangpendidikan.index'])
+        ))
+            <div>
+                <div class="px-3 pb-1 text-[10.5px] font-bold text-emerald-300/80 uppercase tracking-wider">Al Amin Got Talent</div>
+                <ul class="space-y-0.5">
                     @can('perlombaan.index')
-                        <li class="menu-item {{ request()->is(['perlombaan', 'perlombaan/*']) ? 'active' : '' }}">
-                            <a href="{{ route('perlombaan.index') }}" class="menu-link">
-                                <div>Perlombaan</div>
+                        @php $active = request()->is(['perlombaan', 'perlombaan/*']); @endphp
+                        <li>
+                            <a href="{{ route('perlombaan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-trophy text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Perlombaan Got Talent</span>
                             </a>
                         </li>
                     @endcan
                     @can('pendaftarangottalent.index')
-                        <li class="menu-item {{ request()->is(['pendaftaran-got-talent', 'pendaftaran-got-talent/*']) ? 'active' : '' }}">
-                            <a href="{{ route('pendaftarangottalent.index') }}" class="menu-link">
-                                <div>Pendaftaran Got Talent</div>
+                        @php $active = request()->is(['pendaftaran-got-talent', 'pendaftaran-got-talent/*', 'pendaftarangottalent', 'pendaftarangottalent/*']); @endphp
+                        <li>
+                            <a href="{{ route('pendaftarangottalent.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-sparkles text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Pendaftaran Got Talent</span>
                             </a>
                         </li>
-                    @endcan
-                    @can('pendaftarangottalent.index')
-                        <li
-                            class="menu-item {{ request()->is(['konfirmasi-pembayaran-got-talent', 'konfirmasi-pembayaran-got-talent/*']) ? 'active' : '' }}">
-                            <a href="{{ route('konfirmasi-pembayaran-got-talent.index') }}" class="menu-link">
-                                <div>Konfirmasi Pembayaran</div>
+                        @php $active = request()->is(['konfirmasi-pembayaran-got-talent', 'konfirmasi-pembayaran-got-talent/*']); @endphp
+                        <li>
+                            <a href="{{ route('konfirmasi-pembayaran-got-talent.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-receipt-tax text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Konfirmasi Got Talent</span>
                             </a>
                         </li>
                     @endcan
                     @can('jenjangpendidikan.index')
-                        <li class="menu-item {{ request()->is(['jenjang-pendidikan', 'jenjang-pendidikan/*']) ? 'active' : '' }}">
-                            <a href="{{ route('jenjang-pendidikan.index') }}" class="menu-link">
-                                <div>Jenjang Pendidikan</div>
+                        @php $active = request()->is(['jenjang-pendidikan', 'jenjang-pendidikan/*']); @endphp
+                        <li>
+                            <a href="{{ route('jenjang-pendidikan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-stairs text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Jenjang Pendidikan</span>
                             </a>
                         </li>
                     @endcan
                 </ul>
-            </li>
+            </div>
         @endif
 
-        @if (auth()->check() &&
-                auth()->user()->hasAnyPermission([
-                        'kategori.index',
-                        'post.index',
-                        'pages.index',
-                        'tentang-pesantren.index',
-                        'visimisi.index',
-                        'ppdb-setting.index',
-                        'testimonials.index',
-                        'prestasisiswa.index',
-                        'programunggulan.index',
-                        'pilarpendidikan.index',
-                        'sebaran-alumni.index',
-                        'gallery.index',
-                    ]))
-            <li
-                class="menu-item {{ request()->is(['kategori', 'kategori/*', 'post', 'post/*', 'sebaran-alumni', 'sebaran-alumni/*', 'pages', 'pages/*', 'page/*', 'visimisi', 'ppdb-setting', 'ppdb-setting/*', 'testimonials', 'testimonials/*', 'prestasisiswa', 'prestasisiswa/*', 'program-unggulan', 'program-unggulan/*', 'pilar-pendidikan', 'pilar-pendidikan/*']) ? 'open' : '' }}">
-
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-globe"></i>
-                    <div>Website</div>
-                </a>
-                <ul class="menu-sub">
-                    @can('kategori.index')
-                        <li class="menu-item {{ request()->is(['kategori', 'kategori/*']) ? 'active' : '' }}">
-                            <a href="{{ route('kategori.index') }}" class="menu-link">
-                                <div>Kategori</div>
+        <!-- ================= 8. WEBSITE & INFORMASI ================= -->
+        @if (auth()->check() && (
+            auth()->user()->hasAnyPermission(['kategori.index', 'post.index', 'sebaran-alumni.index', 'pages.index', 'tentang-pesantren.index', 'visimisi.index', 'ppdb-setting.index', 'testimonials.index', 'prestasisiswa.index', 'programunggulan.index', 'pilarpendidikan.index', 'gallery.index']) ||
+            auth()->user()->hasAnyPermission(['pengumuman.index', 'kategori-pengumuman.index', 'push-subscriptions.index'])
+        ))
+            <div>
+                <div class="px-3 pb-1 text-[10.5px] font-bold text-emerald-300/80 uppercase tracking-wider">Website & Informasi</div>
+                <ul class="space-y-0.5">
+                    @can('post.index')
+                        @php $active = request()->is(['post', 'post/*']); @endphp
+                        <li>
+                            <a href="{{ route('post.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-news text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Post / Berita</span>
                             </a>
                         </li>
                     @endcan
-                    @can('post.index')
-                        <li class="menu-item {{ request()->is(['post', 'post/*']) ? 'active' : '' }}">
-                            <a href="{{ route('post.index') }}" class="menu-link">
-                                <div>Post</div>
+                    @can('kategori.index')
+                        @php $active = request()->is(['kategori', 'kategori/*']); @endphp
+                        <li>
+                            <a href="{{ route('kategori.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-category-2 text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Kategori Berita</span>
                             </a>
                         </li>
                     @endcan
                     @can('sebaran-alumni.index')
-                        <li class="menu-item {{ request()->is(['sebaran-alumni', 'sebaran-alumni/*']) ? 'active' : '' }}">
-                            <a href="{{ route('sebaran-alumni.index') }}" class="menu-link">
-                                <div>Sebaran Alumni</div>
+                        @php $active = request()->is(['sebaran-alumni', 'sebaran-alumni/*']); @endphp
+                        <li>
+                            <a href="{{ route('sebaran-alumni.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-map-pin text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Sebaran Alumni</span>
                             </a>
                         </li>
                     @endcan
                     @can('pages.index')
-                        <li class="menu-item {{ request()->is(['pages', 'pages/*']) ? 'active' : '' }}">
-                            <a href="{{ route('pages.index') }}" class="menu-link">
-                                <div>Pages</div>
+                        @php $active = request()->is(['pages', 'pages/*']); @endphp
+                        <li>
+                            <a href="{{ route('pages.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-file-text text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Halaman (Pages)</span>
                             </a>
                         </li>
                     @endcan
                     @can('tentang-pesantren.index')
-                        <li class="menu-item {{ request()->is(['tentang-pesantren']) || request()->routeIs('tentang-pesantren.*') ? 'active' : '' }}">
-                            <a href="{{ route('tentang-pesantren.index') }}" class="menu-link">
-                                <div>Tentang Pesantren</div>
+                        @php $active = request()->is(['tentang-pesantren', 'tentang-pesantren/*']); @endphp
+                        <li>
+                            <a href="{{ route('tentang-pesantren.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-info-square-rounded text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Tentang Pesantren</span>
                             </a>
                         </li>
                     @endcan
                     @can('visimisi.index')
-                        <li class="menu-item {{ request()->is(['visimisi']) ? 'active' : '' }}">
-                            <a href="{{ route('visimisi.index') }}" class="menu-link">
-                                <div>Visi & Misi</div>
+                        @php $active = request()->is(['visimisi', 'visimisi/*']); @endphp
+                        <li>
+                            <a href="{{ route('visimisi.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-flag-3 text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Visi & Misi</span>
                             </a>
                         </li>
                     @endcan
                     @can('ppdb-setting.index')
-                        <li class="menu-item {{ request()->is(['ppdb-setting', 'ppdb-setting/*']) ? 'active' : '' }}">
-                            <a href="{{ route('ppdb-setting.index') }}" class="menu-link">
-                                <div>PPDB</div>
+                        @php $active = request()->is(['ppdb-setting', 'ppdb-setting/*']); @endphp
+                        <li>
+                            <a href="{{ route('ppdb-setting.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-forms text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>PPDB Setting</span>
                             </a>
                         </li>
                     @endcan
                     @can('testimonials.index')
-                        <li class="menu-item {{ request()->is(['testimonials', 'testimonials/*']) ? 'active' : '' }}">
-                            <a href="{{ route('testimonials.index') }}" class="menu-link">
-                                <div>Testimoni</div>
+                        @php $active = request()->is(['testimonials', 'testimonials/*']); @endphp
+                        <li>
+                            <a href="{{ route('testimonials.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-message-2 text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Testimoni</span>
                             </a>
                         </li>
                     @endcan
                     @can('prestasisiswa.index')
-                        <li class="menu-item {{ request()->is(['prestasisiswa', 'prestasisiswa/*']) ? 'active' : '' }}">
-                            <a href="{{ route('prestasisiswa.index') }}" class="menu-link">
-                                <div>Prestasi Siswa</div>
+                        @php $active = request()->is(['prestasisiswa', 'prestasisiswa/*']); @endphp
+                        <li>
+                            <a href="{{ route('prestasisiswa.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-medal text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Prestasi Siswa</span>
                             </a>
                         </li>
                     @endcan
                     @can('programunggulan.index')
-                        <li class="menu-item {{ request()->is(['program-unggulan', 'program-unggulan/*']) ? 'active' : '' }}">
-                            <a href="{{ route('program-unggulan.index') }}" class="menu-link">
-                                <div>Program Unggulan</div>
+                        @php $active = request()->is(['program-unggulan', 'program-unggulan/*']); @endphp
+                        <li>
+                            <a href="{{ route('program-unggulan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-flame text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Program Unggulan</span>
                             </a>
                         </li>
                     @endcan
                     @can('pilarpendidikan.index')
-                        <li class="menu-item {{ request()->is(['pilar-pendidikan', 'pilar-pendidikan/*']) ? 'active' : '' }}">
-                            <a href="{{ route('pilar-pendidikan.index') }}" class="menu-link">
-                                <div>Pilar Pendidikan</div>
+                        @php $active = request()->is(['pilar-pendidikan', 'pilar-pendidikan/*']); @endphp
+                        <li>
+                            <a href="{{ route('pilar-pendidikan.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-columns text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Pilar Pendidikan</span>
                             </a>
                         </li>
                     @endcan
                     @can('gallery.index')
-                        <li class="menu-item {{ request()->is(['gallery', 'gallery/*']) ? 'active' : '' }}">
-                            <a href="{{ route('gallery.index') }}" class="menu-link">
-                                <div>Galeri Kegiatan</div>
+                        @php $active = request()->is(['gallery', 'gallery/*']); @endphp
+                        <li>
+                            <a href="{{ route('gallery.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-photo text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Galeri Kegiatan</span>
                             </a>
                         </li>
                     @endcan
-                </ul>
-
-            </li>
-        @endif
-
-        <!-- Menu Pengumuman -->
-        @if (auth()->check() &&
-                auth()->user()->hasAnyPermission(['pengumuman.index', 'kategori-pengumuman.index', 'push-subscriptions.index']))
-            <li class="menu-item {{ request()->is(['pengumuman*', 'kategori-pengumuman*']) ? 'open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-speakerphone"></i>
-                    <div>Pengumuman</div>
-                </a>
-                <ul class="menu-sub">
                     @can('pengumuman.index')
-                        <li class="menu-item {{ request()->is(['pengumuman*']) ? 'active' : '' }}">
-                            <a href="{{ route('pengumuman.index') }}" class="menu-link">
-                                <div>Daftar Pengumuman</div>
+                        @php $active = request()->is(['pengumuman', 'pengumuman/*']); @endphp
+                        <li>
+                            <a href="{{ route('pengumuman.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-speakerphone text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Daftar Pengumuman</span>
                             </a>
                         </li>
                     @endcan
                     @can('kategori-pengumuman.index')
-                        <li class="menu-item {{ request()->is(['kategori-pengumuman*']) ? 'active' : '' }}">
-                            <a href="{{ route('kategori-pengumuman.index') }}" class="menu-link">
-                                <div>Kategori Pengumuman</div>
+                        @php $active = request()->is(['kategori-pengumuman', 'kategori-pengumuman/*']); @endphp
+                        <li>
+                            <a href="{{ route('kategori-pengumuman.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-tag text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Kategori Pengumuman</span>
                             </a>
                         </li>
                     @endcan
                     @can('push-subscriptions.index')
-                        <li class="menu-item {{ request()->is(['push-subscriptions*']) ? 'active' : '' }}">
-                            <a href="{{ route('push-subscriptions.index') }}" class="menu-link">
-                                <div>Push Subscription</div>
+                        @php $active = request()->is(['push-subscriptions', 'push-subscriptions/*']); @endphp
+                        <li>
+                            <a href="{{ route('push-subscriptions.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-bell-ringing text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Push Notification</span>
                             </a>
                         </li>
                     @endcan
                 </ul>
-            </li>
+            </div>
         @endif
-        <!-- KONFIGURASI-->
-        <li
-            class="menu-item {{ request()->is(['jamkerja', 'jamkerja/*', 'tahunajaran', 'biaya', 'tahunajaranppdb', 'tahunajaranppdb/*', 'mesinfingerprint', 'mesinfingerprint/*']) ? 'open' : '' }}">
-            @if (auth()->check() &&
-                    auth()->user()->hasAnyPermission(['jamkerja.index', 'biaya.index', 'tahunajaran.index', 'tahunajaranppdb.index']))
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-adjustments"></i>
-                    <div>Konfigurasi</div>
-                </a>
-                <ul class="menu-sub">
+
+        <!-- ================= 9. SISTEM & PENGATURAN ================= -->
+        @if (auth()->check() && (
+            auth()->user()->hasAnyPermission(['jamkerja.index', 'biaya.index', 'tahunajaran.index', 'tahunajaranppdb.index', 'migrasi-siswa.index']) ||
+            auth()->user()->hasRole('super admin') ||
+            auth()->user()->hasAnyPermission(['questionnaires.index', 'questionnaires.create'])
+        ))
+            <div>
+                <div class="px-3 pb-1 text-[10.5px] font-bold text-emerald-300/80 uppercase tracking-wider">Sistem & Pengaturan</div>
+                <ul class="space-y-0.5">
                     @can('jamkerja.index')
-                        <li class="menu-item {{ request()->is(['jamkerja', 'jamkerja/*']) ? 'active' : '' }}">
-                            <a href="{{ route('jamkerja.index') }}" class="menu-link">
-                                <div>Jam Kerja</div>
+                        @php $active = request()->is(['jamkerja', 'jamkerja/*']); @endphp
+                        <li>
+                            <a href="{{ route('jamkerja.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-clock-cog text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Jam Kerja</span>
                             </a>
                         </li>
                     @endcan
                     @can('tahunajaran.index')
-                        <li class="menu-item {{ request()->is(['tahunajaran', 'tahunajaran/*']) ? 'active' : '' }}">
-                            <a href="{{ route('tahunajaran.index') }}" class="menu-link">
-                                <div>Tahun Ajaran</div>
+                        @php $active = request()->is(['tahunajaran', 'tahunajaran/*']); @endphp
+                        <li>
+                            <a href="{{ route('tahunajaran.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-calendar-stats text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Tahun Ajaran</span>
                             </a>
                         </li>
                     @endcan
                     @can('tahunajaranppdb.index')
-                        <li class="menu-item {{ request()->is(['tahunajaranppdb', 'tahunajaranppdb/*']) ? 'active' : '' }}">
-                            <a href="{{ route('tahunajaranppdb.index') }}" class="menu-link">
-                                <div>Tahun Ajaran PPDB</div>
+                        @php $active = request()->is(['tahunajaranppdb', 'tahunajaranppdb/*']); @endphp
+                        <li>
+                            <a href="{{ route('tahunajaranppdb.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-calendar-plus text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Tahun Ajaran PPDB</span>
                             </a>
                         </li>
                     @endcan
                     @can('biaya.index')
-                        <li class="menu-item {{ request()->is(['biaya', 'biaya/*']) ? 'active' : '' }}">
-                            <a href="{{ route('biaya.index') }}" class="menu-link">
-                                <div>Biaya</div>
+                        @php $active = request()->is(['biaya', 'biaya/*']); @endphp
+                        <li>
+                            <a href="{{ route('biaya.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-coins text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Biaya Pendidikan</span>
                             </a>
                         </li>
                     @endcan
-                    <li class="menu-item {{ request()->is(['mesinfingerprint', 'mesinfingerprint/*']) ? 'active' : '' }}">
-                        <a href="{{ route('mesinfingerprint.index') }}" class="menu-link">
-                            <div>Mesin Fingerprint</div>
+                    @php $active = request()->is(['mesinfingerprint', 'mesinfingerprint/*']); @endphp
+                    <li>
+                        <a href="{{ route('mesinfingerprint.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                            <i class="ti ti-device-desktop-analytics text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                            <span>Mesin Fingerprint</span>
                         </a>
                     </li>
                     @can('migrasi-siswa.index')
-                    <li class="menu-item {{ request()->is(['migrasi-siswa', 'migrasi-siswa/*']) ? 'active' : '' }}">
-                        <a href="{{ route('migrasi-siswa.index') }}" class="menu-link">
-                            <div>Migrasi Siswa</div>
-                        </a>
-                    </li>
+                        @php $active = request()->is(['migrasi-siswa', 'migrasi-siswa/*']); @endphp
+                        <li>
+                            <a href="{{ route('migrasi-siswa.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-arrows-transfer-down text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Migrasi Siswa</span>
+                            </a>
+                        </li>
                     @endcan
-                </ul>
-            @endif
-        </li>
-        <!-- Setting -->
-        @hasrole('super admin')
-            <li
-                class="menu-item {{ request()->is(['roles', 'roles/*', 'permissiongroups', 'permissiongroups/*', 'permissions', 'permissions/*', 'users', 'users/*', 'pengaturan-umum', 'pengaturan-umum/*']) ? 'open' : '' }} ">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-settings"></i>
-                    <div>Settings</div>
 
-                </a>
-                <ul class="menu-sub">
-                    <li class="menu-item {{ request()->is(['users', 'users/*']) ? 'active' : '' }}">
-                        <a href="{{ route('users.index') }}" class="menu-link">
-                            <div>User</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ request()->is(['roles', 'roles/*']) ? 'active' : '' }}">
-                        <a href="{{ route('roles.index') }}" class="menu-link">
-                            <div>Role</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ request()->is(['permissions', 'permissions/*']) ? 'active' : '' }}"">
-                        <a href=" {{ route('permissions.index') }}" class="menu-link">
-                            <div>Permission</div>
-                        </a>
-                    </li>
-                    <li class="menu-item  {{ request()->is(['permissiongroups', 'permissiongroups/*']) ? 'active' : '' }}">
-                        <a href="{{ route('permissiongroups.index') }}" class="menu-link">
-                            <div>Group Permission</div>
-                        </a>
-                    </li>
-                    <li class="menu-item {{ request()->is(['pengaturan-umum', 'pengaturan-umum/*']) ? 'active' : '' }}">
-                        <a href="{{ route('pengaturan-umum.index') }}" class="menu-link">
-                            <div>Pengaturan Umum</div>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        @endhasrole
+                    <!-- Khusus Super Admin -->
+                    @hasrole('super admin')
+                        @php $active = request()->is(['users', 'users/*']); @endphp
+                        <li>
+                            <a href="{{ route('users.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-users-group text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>User Management</span>
+                            </a>
+                        </li>
+                        @php $active = request()->is(['roles', 'roles/*']); @endphp
+                        <li>
+                            <a href="{{ route('roles.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-shield-lock text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Role</span>
+                            </a>
+                        </li>
+                        @php $active = request()->is(['permissions', 'permissions/*']); @endphp
+                        <li>
+                            <a href="{{ route('permissions.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-key text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Permission</span>
+                            </a>
+                        </li>
+                        @php $active = request()->is(['permissiongroups', 'permissiongroups/*']); @endphp
+                        <li>
+                            <a href="{{ route('permissiongroups.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-folders text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Group Permission</span>
+                            </a>
+                        </li>
+                        @php $active = request()->is(['pengaturan-umum', 'pengaturan-umum/*']); @endphp
+                        <li>
+                            <a href="{{ route('pengaturan-umum.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-settings-2 text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Pengaturan Umum</span>
+                            </a>
+                        </li>
+                    @endhasrole
 
-        @if (auth()->check() &&
-                auth()->user()->hasAnyPermission(['questionnaires.index', 'questionnaires.create']))
-            <li class="menu-item {{ request()->is(['admin/questionnaires*']) ? 'open active' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-clipboard-list"></i>
-                    <div>Kuisioner</div>
-                </a>
-                <ul class="menu-sub">
                     @can('questionnaires.index')
-                        <li class="menu-item {{ request()->is('admin/questionnaires') ? 'active' : '' }}">
-                            <a href="{{ route('admin.questionnaires.index') }}" class="menu-link">
-                                <div>Daftar Kuisioner</div>
-                            </a>
-                        </li>
-                    @endcan
-                    @can('questionnaires.create')
-                        <li class="menu-item {{ request()->is('admin/questionnaires/create') ? 'active' : '' }}">
-                            <a href="{{ route('admin.questionnaires.create') }}" class="menu-link">
-                                <div>Tambah Kuisioner</div>
+                        @php $active = request()->is(['admin/questionnaires*']); @endphp
+                        <li>
+                            <a href="{{ route('admin.questionnaires.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-clipboard-list text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>Kuisioner</span>
                             </a>
                         </li>
                     @endcan
                 </ul>
-            </li>
+            </div>
         @endif
-    </ul>
+
+    </div>
+
+    <!-- Bottom User Info Card -->
+    <div class="p-3 border-t border-emerald-950/80 bg-emerald-950/70 backdrop-blur-xs">
+        <div class="flex items-center gap-3">
+            <div class="relative w-9 h-9 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white font-bold text-xs shadow-xs overflow-hidden flex-shrink-0">
+                @if (auth()->check() && auth()->user()->foto)
+                    <img src="{{ asset('storage/' . auth()->user()->foto) }}" alt="Avatar" class="w-full h-full object-cover">
+                @else
+                    <span>{{ auth()->check() ? strtoupper(substr(auth()->user()->name, 0, 2)) : 'AD' }}</span>
+                @endif
+                <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-emerald-950 rounded-full"></span>
+            </div>
+            <div class="min-w-0 flex-1">
+                <p class="text-xs font-bold text-emerald-50 truncate leading-tight">
+                    {{ auth()->check() ? auth()->user()->name : 'Administrator' }}
+                </p>
+                <p class="text-[10px] text-emerald-300/80 truncate flex items-center gap-1">
+                    <i class="ti ti-shield-check text-emerald-600"></i>
+                    {{ auth()->check() ? (auth()->user()->getRoleNames()->first() ?? 'User') : 'Super Admin' }}
+                </p>
+            </div>
+            @if (session()->has('impersonator_id'))
+                <a href="{{ route('users.stop-impersonate') }}" 
+                   class="w-7 h-7 flex items-center justify-center rounded-xl bg-amber-500/30 text-amber-300 hover:bg-amber-500 hover:text-white transition" 
+                   title="Keluar Mode View As (Kembali ke Admin)">
+                    <i class="ti ti-door-exit text-[16px]"></i>
+                </a>
+            @else
+                <form action="{{ route('logout') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" 
+                            class="w-7 h-7 flex items-center justify-center rounded-xl text-emerald-300 hover:text-rose-400 hover:bg-emerald-900/80 transition" 
+                            title="Logout">
+                        <i class="ti ti-logout text-[16px]"></i>
+                    </button>
+                </form>
+            @endif
+        </div>
+    </div>
+
 </aside>
-<!-- / Menu -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar-menu-scroll');
+        if (!sidebar) return;
+
+        // 1. Restore scroll position from sessionStorage
+        const savedPos = sessionStorage.getItem('sidebar_scroll_position');
+        if (savedPos !== null) {
+            sidebar.scrollTop = parseInt(savedPos, 10);
+        }
+
+        // 2. Ensure active menu item stays in view
+        const activeLink = sidebar.querySelector('a.bg-emerald-600');
+        if (activeLink) {
+            const rect = activeLink.getBoundingClientRect();
+            const sidebarRect = sidebar.getBoundingClientRect();
+            if (rect.top < sidebarRect.top || rect.bottom > sidebarRect.bottom) {
+                activeLink.scrollIntoView({ block: 'center', behavior: 'instant' });
+            }
+        }
+
+        // 3. Save scroll position on scroll
+        sidebar.addEventListener('scroll', function() {
+            sessionStorage.setItem('sidebar_scroll_position', sidebar.scrollTop);
+        }, { passive: true });
+
+        // 4. Save scroll position immediately when any link is clicked
+        sidebar.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                sessionStorage.setItem('sidebar_scroll_position', sidebar.scrollTop);
+            });
+        });
+    });
+</script>

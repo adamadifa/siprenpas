@@ -72,7 +72,7 @@
          toastr.options.showEasing = 'swing';
          toastr.options.hideEasing = 'linear';
          toastr.options.progressBar = true;
-         toastr.success("Berhasil", "{{ $message }}", {
+         toastr.success("{{ $message }}", "Berhasil", {
              timeOut: 3000
          });
      </script>
@@ -83,8 +83,16 @@
          toastr.options.showEasing = 'swing';
          toastr.options.hideEasing = 'linear';
          toastr.options.progressBar = true;
-         toastr.error("Gagal", "{{ $message }}", {
-             timeOut: 3000
+         toastr.error("{{ $message }}", "Gagal", {
+             timeOut: 4000
+         });
+         Swal.fire({
+             icon: 'error',
+             title: 'Gagal Menyimpan Data',
+             text: "{{ $message }}",
+             confirmButtonColor: '#e11d48',
+             confirmButtonText: 'Tutup',
+             customClass: { popup: 'rounded-2xl shadow-2xl' }
          });
      </script>
  @endif
@@ -94,7 +102,7 @@
          toastr.options.showEasing = 'swing';
          toastr.options.hideEasing = 'linear';
          toastr.options.progressBar = true;
-         toastr.warning("Warning", "{{ $message }}", {
+         toastr.warning("{{ $message }}", "Perhatian", {
              timeOut: 3000
          });
      </script>
@@ -102,19 +110,16 @@
 
  @if ($errors->any())
      @php
-         $err = '';
+         $err = implode('<br>', $errors->all());
      @endphp
-     @foreach ($errors->all() as $error)
-         @php
-             $err .= $error;
-         @endphp
-     @endforeach
      <script>
-         toastr.options.showEasing = 'swing';
-         toastr.options.hideEasing = 'linear';
-         toastr.options.progressBar = true;
-         toastr.error("Gagal", "{{ $err }}", {
-             timeOut: 3000
+         Swal.fire({
+             icon: 'error',
+             title: 'Gagal Menyimpan Data',
+             html: `<div class="text-center text-xs sm:text-sm text-slate-700 mt-2">{!! $err !!}</div>`,
+             confirmButtonColor: '#e11d48',
+             confirmButtonText: 'Tutup',
+             customClass: { popup: 'rounded-2xl shadow-2xl' }
          });
      </script>
  @endif

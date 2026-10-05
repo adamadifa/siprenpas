@@ -1,95 +1,281 @@
-<form action="{{ route('simpanan.store', ['no_anggota' => Crypt::encrypt($no_anggota), 'jenis_transaksi' => $jenis_transaksi]) }}" id="formSimpanan"
-    method="POST">
+<form action="{{ route('simpanan.store', ['no_anggota' => Crypt::encrypt($no_anggota), 'jenis_transaksi' => $jenis_transaksi]) }}" 
+      id="formSimpanan" 
+      method="POST" 
+      class="space-y-4 sm:space-y-5" 
+      novalidate>
     @csrf
-    <x-input-with-icon icon="ti ti-barcode" label="No. Transaksi (Auto)" name="no_transaksi" disabled="true" />
-    <x-input-with-icon icon="ti ti-calendar" label="Tanggal Transaksi" name="tanggal" datepicker="flatpickr-date" />
-    <div class="form-group">
-        <select name="kode_simpanan" id="kode_simpanan" class="form-select select2Kodesimpanan">
-            <option value="">Jenis Simpanan</option>
-            @foreach ($jenis_simpanan as $d)
-                <option value="{{ $d->kode_simpanan }}">{{ $d->kode_simpanan }} - {{ $d->jenis_simpanan }}</option>
-            @endforeach
-        </select>
+
+    <!-- Transaction Badge / Type Notice -->
+    <div class="p-3.5 sm:p-4 {{ $jenis_transaksi == 'S' ? 'bg-emerald-50/90 border-emerald-200 text-emerald-900' : 'bg-rose-50/90 border-rose-200 text-rose-900' }} border rounded-xl flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg {{ $jenis_transaksi == 'S' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700' }} flex items-center justify-center text-base font-bold shadow-2xs shrink-0">
+                <i class="ti {{ $jenis_transaksi == 'S' ? 'ti-download' : 'ti-upload' }}"></i>
+            </div>
+            <div>
+                <div class="text-xs sm:text-sm font-bold">{{ $jenis_transaksi == 'S' ? 'Pencatatan Setoran Simpanan' : 'Pencatatan Penarikan Simpanan' }}</div>
+                <div class="text-[11px] opacity-75">No. Anggota: <span class="font-mono font-bold">{{ $no_anggota }}</span></div>
+            </div>
+        </div>
+        <span class="px-2.5 py-1 rounded-lg text-[11px] font-black uppercase tracking-wider {{ $jenis_transaksi == 'S' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white' }} shadow-2xs">
+            {{ $jenis_transaksi == 'S' ? 'Setoran (+)' : 'Penarikan (-)' }}
+        </span>
     </div>
-    <x-input-with-icon label="Jumlah" icon="ti ti-moneybag" name="jumlah" money="true" textalign="right" />
-    <x-textarea label="Berita" name="berita" />
-    <div class="form-group">
-        <button class="btn btn-primary w-100" type="submit" id="btnSimpan"><i class="ti ti-send me-1"></i>Submit</button>
+
+    <!-- Form Section Block -->
+    <div class="bg-slate-50/80 border border-slate-200/90 rounded-xl p-4 sm:p-5 space-y-4">
+        
+        <!-- Tanggal & Jenis Simpanan Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            <!-- Tanggal Transaksi -->
+            <div class="space-y-1.5">
+                <label for="tanggal_transaksi" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <i class="ti ti-calendar text-sm text-slate-400"></i>
+                    <span>Tanggal Transaksi <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                        <i class="ti ti-calendar-event text-base"></i>
+                    </div>
+                    <input type="text" 
+                           id="tanggal_transaksi" 
+                           name="tanggal" 
+                           value="{{ date('Y-m-d') }}"
+                           class="flatpickr-date w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition" 
+                           placeholder="Pilih Tanggal Transaksi" 
+                           required>
+                </div>
+            </div>
+
+            <!-- Jenis Simpanan -->
+            <div class="space-y-1.5">
+                <label for="kode_simpanan" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <i class="ti ti-category text-sm text-slate-400"></i>
+                    <span>Jenis Simpanan <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 z-10">
+                        <i class="ti ti-wallet text-base"></i>
+                    </div>
+                    <select name="kode_simpanan" 
+                            id="kode_simpanan" 
+                            class="w-full pl-10 pr-8 py-2.5 text-xs sm:text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition appearance-none cursor-pointer" 
+                            required>
+                        <option value="">-- Pilih Jenis Simpanan --</option>
+                        @foreach ($jenis_simpanan as $d)
+                            <option value="{{ $d->kode_simpanan }}">{{ $d->kode_simpanan }} - {{ $d->jenis_simpanan }}</option>
+                        @endforeach
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                        <i class="ti ti-chevron-down text-xs"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Nominal Jumlah (Rp) -->
+        <div class="space-y-1.5">
+            <label for="jumlah" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <i class="ti ti-cash text-sm text-slate-400"></i>
+                <span>Nominal Jumlah (Rp) <span class="text-rose-500 font-bold">*</span></span>
+            </label>
+            <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-emerald-700 font-bold text-xs sm:text-sm">
+                    Rp
+                </div>
+                <input type="text" 
+                       id="jumlah" 
+                       name="jumlah" 
+                       class="money w-full pl-10 pr-3.5 py-2.5 text-xs sm:text-sm font-bold font-mono text-slate-900 bg-white border border-slate-300 rounded-lg placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition text-right" 
+                       placeholder="0" 
+                       required>
+            </div>
+        </div>
+
+        <!-- Keterangan / Berita Transaksi -->
+        <div class="space-y-1.5">
+            <label for="berita" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <i class="ti ti-note text-sm text-slate-400"></i>
+                <span>Berita / Keterangan Transaksi <span class="text-rose-500 font-bold">*</span></span>
+            </label>
+            <textarea id="berita" 
+                      name="berita" 
+                      rows="3" 
+                      class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-lg placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition" 
+                      placeholder="Contoh: Setoran Simpanan Wajib Bulan Oktober 2026" 
+                      required>{{ $jenis_transaksi == 'S' ? 'Setoran Simpanan' : 'Penarikan Simpanan' }}</textarea>
+        </div>
+
+    </div>
+
+    <!-- Actions Footer -->
+    <div class="pt-4 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5">
+        <button type="button" 
+                class="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg transition cursor-pointer active:scale-95" 
+                data-bs-dismiss="modal">
+            Batal
+        </button>
+        <button type="submit" 
+                id="btnSimpan" 
+                class="w-full sm:w-auto px-6 py-2.5 {{ $jenis_transaksi == 'S' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-rose-600 hover:bg-rose-700' }} text-white font-bold text-xs rounded-lg shadow-xs transition flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+            <i class="ti ti-device-floppy text-base"></i>
+            <span>{{ $jenis_transaksi == 'S' ? 'Simpan Setoran' : 'Simpan Penarikan' }}</span>
+        </button>
     </div>
 </form>
 
 <script>
     $(function() {
         const formSimpanan = $('#formSimpanan');
-        const select2Kodesimpanan = $('.select2Kodesimpanan');
-        if (select2Kodesimpanan.length) {
-            select2Kodesimpanan.each(function() {
-                var $this = $(this);
-                $this.wrap('<div class="position-relative"></div>').select2({
-                    placeholder: 'Jenis Simpanan',
-                    dropdownParent: $this.parent(),
-                    allowClear: true
-                });
-            });
+
+        $(".flatpickr-date").flatpickr({
+            dateFormat: "Y-m-d",
+            allowInput: true
+        });
+
+        $("#jumlah").maskMoney({
+            thousands: '.',
+            decimal: ',',
+            precision: 0
+        });
+
+        // Validation Rules Map
+        const validationRules = {
+            'tanggal': {
+                required: true,
+                message: 'Tanggal transaksi wajib diisi'
+            },
+            'kode_simpanan': {
+                required: true,
+                message: 'Silahkan pilih jenis simpanan terlebih dahulu'
+            },
+            'jumlah': {
+                required: true,
+                message: 'Nominal jumlah wajib diisi dan harus lebih besar dari Rp 0',
+                custom: function(val) {
+                    if (!val) return false;
+                    const num = parseInt(val.toString().replace(/\./g, '')) || 0;
+                    return num > 0;
+                }
+            },
+            'berita': {
+                required: true,
+                message: 'Berita atau keterangan transaksi wajib diisi',
+                minLength: 3,
+                lengthMessage: 'Berita / keterangan minimal 3 karakter'
+            }
+        };
+
+        function showError(element, message) {
+            const $el = $(element);
+            const $container = $el.closest('.space-y-1\\.5').length ? $el.closest('.space-y-1\\.5') : ($el.closest('.space-y-1').length ? $el.closest('.space-y-1') : $el.parent());
+            
+            $el.addClass('border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20')
+               .removeClass('border-slate-300 focus:ring-emerald-500/20 focus:border-emerald-600');
+            
+            // Highlight icon
+            $el.siblings('.pointer-events-none').find('i').addClass('text-rose-500').removeClass('text-slate-400');
+            
+            // Remove existing error message
+            $container.find('.error-msg').remove();
+            
+            // Append formatted error message
+            $container.append(`
+                <p class="error-msg text-[11px] font-semibold text-rose-500 mt-1 flex items-center gap-1 animate-in fade-in duration-200">
+                    <i class="ti ti-alert-circle text-xs shrink-0"></i>
+                    <span>${message}</span>
+                </p>
+            `);
         }
 
-        $(".flatpickr-date").flatpickr();
+        function clearError(element) {
+            const $el = $(element);
+            const $container = $el.closest('.space-y-1\\.5').length ? $el.closest('.space-y-1\\.5') : ($el.closest('.space-y-1').length ? $el.closest('.space-y-1') : $el.parent());
+            
+            $el.removeClass('border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20')
+               .addClass('border-slate-300 focus:ring-emerald-500/20 focus:border-emerald-600');
+            
+            $el.siblings('.pointer-events-none').find('i').removeClass('text-rose-500').addClass('text-slate-400');
+            
+            $container.find('.error-msg').remove();
+        }
 
-        $("#jumlah").maskMoney();
+        function validateSingleField(el) {
+            const $el = $(el);
+            const name = $el.attr('name') || $el.attr('id');
+            const val = ($el.val() || '').toString().trim();
 
-        formSimpanan.submit(function(e) {
-            // e.preventDefault();
-            let tanggal = $(this).find('input[name="tanggal"]').val();
-            let kode_simpanan = $(this).find('select[name="kode_simpanan"]').val();
-            let jumlah = $(this).find('input[name="jumlah"]').val();
-            let berita = $(this).find('textarea[name="berita"]').val();
-
-            if (!tanggal) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Oops...',
-                    text: 'Tanggal Transaksi tidak boleh kosong!',
-                    didClose: () => {
-                        $(this).find('input[name="tanggal"]').focus();
-                    }
-                });
-                return false;
-            } else if (!kode_simpanan) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Oops...',
-                    text: 'Jenis Simpanan harus dipilih!',
-                    didClose: () => {
-                        $(this).find('select[name="kode_simpanan"]').focus();
-                    }
-                });
-                return false;
-            } else if (!jumlah || parseInt(jumlah) <= 0) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Oops...',
-                    text: 'Jumlah tidak boleh kosong!',
-                    didClose: () => {
-                        $(this).find('input[name="jumlah"]').focus();
-                    }
-                });
-                return false;
-            } else if (berita == "") {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Oops...',
-                    text: 'Berita tidak boleh kosong!',
-                    didClose: () => {
-                        $(this).find('textarea[name="berita"]').focus();
-                    },
-                });
-                return false;
-
-            } else {
-                $(this).find("#btnSimpan").prop("disabled", true);
-                $(this).find("#btnSimpan").html(
-                    `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Loading...`);
+            const rule = validationRules[name];
+            if (!rule) {
+                clearError($el);
+                return true;
             }
+
+            if (rule.required && !val) {
+                showError($el, rule.message);
+                return false;
+            }
+
+            if (rule.custom && typeof rule.custom === 'function') {
+                if (!rule.custom(val)) {
+                    showError($el, rule.message);
+                    return false;
+                }
+            }
+
+            if (rule.minLength && val.length < rule.minLength) {
+                showError($el, rule.lengthMessage || `Minimal ${rule.minLength} karakter`);
+                return false;
+            }
+
+            clearError($el);
+            return true;
+        }
+
+        // Realtime validation triggers on input, change, and blur
+        formSimpanan.on('input change blur', 'input, select, textarea', function(e) {
+            const $this = $(this);
+            const hasError = $this.hasClass('border-rose-500');
+            const val = ($this.val() || '').toString().trim();
+            
+            if (e.type === 'blur' || val !== '' || hasError) {
+                validateSingleField(this);
+            }
+        });
+
+        // Form Submit Validation
+        formSimpanan.on('submit', function(e) {
+            let isValid = true;
+            let firstInvalidEl = null;
+
+            Object.keys(validationRules).forEach(function(fieldName) {
+                const $el = formSimpanan.find(`[name="${fieldName}"]`);
+                if ($el.length > 0 && $el.is(':visible')) {
+                    const valid = validateSingleField($el);
+                    if (!valid) {
+                        isValid = false;
+                        if (!firstInvalidEl) {
+                            firstInvalidEl = $el;
+                        }
+                    }
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                if (firstInvalidEl) {
+                    firstInvalidEl.focus();
+                }
+                return false;
+            }
+
+            // Loading state on submit button
+            const submitBtn = formSimpanan.find('#btnSimpan');
+            submitBtn.prop("disabled", true).html(`
+                <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Menyimpan...</span>
+            `);
         });
     });
 </script>

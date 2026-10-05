@@ -16,16 +16,24 @@ class PerlombaanController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Perlombaan::with('jenjangPendidikan');
+        $query = Perlombaan::with('jenjangPendidikan')->withCount('pendaftaran');
         if (!empty($request->jenis_perlombaan_search)) {
             $query->where('jenis_perlombaan', 'like', '%' . $request->jenis_perlombaan_search . '%');
         }
         if (!empty($request->id_jenjang_search)) {
             $query->where('id_jenjang', $request->id_jenjang_search);
         }
-        $perlombaan = $query->get();
+        $perlombaan = $query->latest()->get();
         $jenjangPendidikan = JenjangPendidikan::orderBy('jenjang_pendidikan')->get();
-        return view('perlombaan.index', compact('perlombaan', 'jenjangPendidikan'));
+
+        $stats = [
+            'total_lomba' => Perlombaan::count(),
+            'total_jenjang' => JenjangPendidikan::has('perlombaan')->count(),
+            'total_peserta' => \DB::table('pendaftaran_lomba')->distinct('id_pendaftaran')->count('id_pendaftaran'),
+            'total_juknis' => Perlombaan::whereNotNull('juknis_juklak')->where('juknis_juklak', '!=', '')->count(),
+        ];
+
+        return view('perlombaan.index', compact('perlombaan', 'jenjangPendidikan', 'stats'));
     }
 
     /**

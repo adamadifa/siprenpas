@@ -2,38 +2,6 @@
 @section('titlepage', 'Jobdesk')
 
 @section('content')
-@section('navigasi')
-    <div class="card shadow-none bg-transparent border-0 mb-3">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
-                        <i class="ti ti-briefcase fs-3"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Data Jobdesk</h4>
-                        <p class="text-muted mb-0 small">Manajemen data tugas pokok dan fungsi (jobdesk)</p>
-                    </div>
-                </div>
-                <div class="d-flex flex-column align-items-end">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb breadcrumb-style1 mb-0">
-                            <li class="breadcrumb-item">
-                                <a href="javascript:void(0);" class="text-muted">
-                                    <i class="ti ti-database me-1"></i> Data Master
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active">
-                                <i class="ti ti-briefcase me-1"></i> Jobdesk
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
-
 @php
     function getDeptIcon($kode) {
         $icons = [
@@ -48,342 +16,402 @@
     }
 @endphp
 
-<style>
-    .drilldown-card {
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        cursor: pointer;
-        border: 1px solid rgba(0, 0, 0, 0.08) !important;
-        border-radius: 12px;
-    }
-    .drilldown-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 20px rgba(6, 78, 59, 0.1) !important;
-        border-color: #064e3b !important;
-    }
-    .step-section {
-        display: none;
-    }
-    .step-section.active {
-        display: block;
-        animation: slideIn 0.35s ease-out;
-    }
-    @keyframes slideIn {
-        from { opacity: 0; transform: translateY(12px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .badge-dept {
-        background-color: rgba(6, 78, 59, 0.1);
-        color: #064e3b;
-        font-weight: 600;
-    }
-    .jobdesk-item-card {
-        transition: all 0.2s ease-in-out;
-        border: 1px solid rgba(0, 0, 0, 0.08) !important;
-        border-radius: 8px;
-    }
-    .jobdesk-item-card:hover {
-        box-shadow: 0 4px 12px rgba(6, 78, 59, 0.05) !important;
-        border-color: rgba(6, 78, 59, 0.3) !important;
-    }
-</style>
+<div class="space-y-6">
 
-<div class="row">
-    <div class="col-lg-12 col-sm-12 col-xs-12">
-        <!-- Actions & Navigation Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-            <div class="d-flex align-items-center gap-2">
+    <!-- ================= 1. PAGE HEADER & BREADCRUMB ================= -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Title & Subtitle -->
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl shrink-0 font-bold border border-emerald-200 shadow-2xs">
+                <i class="ti ti-list-check"></i>
+            </div>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                    Manajemen Jobdesk
+                </h1>
+                <p class="text-xs text-slate-500 font-medium">
+                    @if (!$selected_unit && empty(request('jobdesk_search')))
+                        Pilih unit kerja untuk melihat daftar jabatan & rincian uraian tugas (jobdesk)
+                    @elseif ($selected_unit && !$selected_jabatan && empty(request('jobdesk_search')))
+                        Pilih jabatan pada <strong>{{ strtoupper($selected_unit->nama_unit) }}</strong> untuk melihat atau mengelola rincian tugas
+                    @else
+                        Rincian tugas pokok & fungsi (tupoksi) jabatan
+                    @endif
+                </p>
+            </div>
+        </div>
+
+        <!-- Breadcrumb & Top Actions -->
+        <div class="flex flex-col md:items-end gap-2.5">
+            <nav class="flex items-center text-xs text-slate-400 font-medium flex-wrap">
+                <a href="{{ route('dashboard.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="text-slate-500">MSDM & Layanan</span>
+                <span class="mx-2 text-slate-300">/</span>
+                <a href="{{ route('jobdesk.index') }}" class="hover:text-slate-700 transition {{ !$selected_unit ? 'font-bold text-slate-800' : 'text-slate-500' }}">Jobdesk</a>
+
+                @if ($selected_unit)
+                    <span class="mx-2 text-slate-300">/</span>
+                    <a href="{{ route('jobdesk.index', ['kode_unit' => $selected_unit->kode_unit]) }}" class="hover:text-slate-700 transition {{ !$selected_jabatan ? 'font-bold text-slate-800' : 'text-slate-500' }}">
+                        {{ strtoupper($selected_unit->nama_unit) }}
+                    </a>
+                @endif
+
+                @if ($selected_jabatan)
+                    <span class="mx-2 text-slate-300">/</span>
+                    <span class="font-bold text-slate-800">{{ strtoupper($selected_jabatan->nama_jabatan) }}</span>
+                @endif
+            </nav>
+
+            <div class="flex flex-wrap items-center gap-2">
                 @can('jobdesk.create')
-                    <button class="btn d-flex align-items-center gap-2 shadow-sm text-white px-3 py-2" id="btncreateJobdesk"
-                        style="background-color: #064e3b; border-radius: 8px;">
-                        <i class="ti ti-plus fs-5"></i>
-                        <span class="fw-semibold">Tambah Jobdesk</span>
+                    <button type="button" 
+                            id="btncreateJobdesk"
+                            class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-xs transition active:scale-95 cursor-pointer">
+                        <i class="ti ti-plus text-sm"></i>
+                        <span>Tambah Jobdesk</span>
                     </button>
-                    <button class="btn btn-outline-success d-flex align-items-center gap-2 shadow-sm px-3 py-2" id="btnimportJobdesk"
-                        style="border-radius: 8px; border-color: #064e3b; color: #064e3b;">
-                        <i class="ti ti-file-import fs-5"></i>
-                        <span class="fw-semibold">Import Jobdesk</span>
+                    <button type="button" 
+                            id="btnimportJobdesk"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-lg text-xs border border-slate-200 shadow-2xs transition active:scale-95 cursor-pointer">
+                        <i class="ti ti-file-import text-sm text-emerald-600"></i>
+                        <span>Import Excel</span>
                     </button>
                 @endcan
 
                 @if(auth()->check() && auth()->user()->hasRole('super admin'))
-                    <form method="POST" action="{{ route('jobdesk.reset') }}" class="d-inline-block" id="formResetJobdesk">
+                    <form method="POST" action="{{ route('jobdesk.reset') }}" class="inline-block m-0" id="formResetJobdesk">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm px-3 py-2 btn-reset-confirm"
-                            style="border-radius: 8px;">
-                            <i class="ti ti-rotate fs-5"></i>
-                            <span class="fw-semibold">Reset Jobdesk</span>
+                        <button type="submit" 
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white font-bold rounded-lg text-xs border border-rose-200 transition active:scale-95 cursor-pointer btn-reset-confirm"
+                                title="Reset semua data jobdesk">
+                            <i class="ti ti-rotate text-sm"></i>
+                            <span>Reset</span>
                         </button>
                     </form>
                 @endif
 
                 @can('jobdesk.delete')
-                    <button id="btnDeleteSelected" class="btn btn-danger d-none align-items-center gap-2 shadow-sm px-3 py-2"
-                        style="border-radius: 8px;">
-                        <i class="ti ti-trash fs-5"></i>
-                        <span class="fw-semibold">Hapus Terpilih (<span id="selected-count">0</span>)</span>
+                    <button type="button" 
+                            id="btnDeleteSelected" 
+                            class="hidden inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg text-xs shadow-xs transition active:scale-95 cursor-pointer">
+                        <i class="ti ti-trash text-sm"></i>
+                        <span>Hapus (<span id="selected-count">0</span>)</span>
                     </button>
-                    <form id="formBulkDelete" method="POST" action="{{ route('jobdesk.delete-multiple') }}" class="d-none">
+                    <form id="formBulkDelete" method="POST" action="{{ route('jobdesk.delete-multiple') }}" class="hidden">
                         @csrf
                     </form>
                 @endcan
             </div>
-            
-            <!-- Breadcrumbs Navigation -->
-            @if ($selected_unit)
-                <div id="flow-breadcrumbs" class="bg-white px-3 py-2 rounded shadow-xs border">
-                    <nav aria-label="breadcrumb" class="mb-0">
-                        <ol class="breadcrumb mb-0">
-                            <li class="breadcrumb-item"><a href="{{ route('jobdesk.index') }}" class="text-decoration-none fw-semibold" style="color: #064e3b;"><i class="ti ti-layout-grid me-1"></i>Unit</a></li>
-                            <li class="breadcrumb-item {{ !$selected_dept ? 'active' : '' }}">
-                                @if ($selected_dept)
-                                    <a href="{{ route('jobdesk.index', ['kode_unit' => $selected_unit->kode_unit]) }}" class="text-decoration-none fw-semibold" style="color: #064e3b;">{{ strtoupper($selected_unit->nama_unit) }}</a>
-                                @else
-                                    {{ strtoupper($selected_unit->nama_unit) }}
-                                @endif
-                            </li>
-                            @if ($selected_dept)
-                                <li class="breadcrumb-item {{ !$selected_jabatan ? 'active' : '' }}">
-                                    @if ($selected_jabatan)
-                                        <a href="{{ route('jobdesk.index', ['kode_unit' => $selected_unit->kode_unit, 'kode_dept' => $selected_dept->kode_dept]) }}" class="text-decoration-none fw-semibold" style="color: #064e3b;">{{ strtoupper($selected_dept->nama_dept) }}</a>
-                                    @else
-                                        {{ strtoupper($selected_dept->nama_dept) }}
-                                    @endif
-                                </li>
-                            @endif
-                            @if ($selected_jabatan)
-                                <li class="breadcrumb-item active">{{ strtoupper($selected_jabatan->nama_jabatan) }}</li>
-                            @endif
-                        </ol>
-                    </nav>
+        </div>
+    </div>
+
+
+    {{-- ========================================================================= --}}
+    {{-- ====================== SCREEN 1: PILIHAN UNIT KERJA ====================== --}}
+    {{-- ========================================================================= --}}
+    @if (!$selected_unit && empty(request('jobdesk_search')))
+        <div class="space-y-4">
+            <!-- Unit Header Toolbar -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 border border-slate-200/90 rounded-2xl shadow-xs">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200/80 flex items-center justify-center text-base font-bold">
+                        <i class="ti ti-building"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Langkah 1: Pilih Unit Kerja</h2>
+                        <p class="text-[11px] text-slate-400 font-medium">Klik salah satu unit kerja di bawah untuk membuka daftar jabatan</p>
+                    </div>
                 </div>
-            @endif
-        </div>
 
-        <!-- Filter Form (Integrated search) -->
-        <div class="mb-4">
-            <div class="input-group input-group-merge border shadow-xs rounded-3 bg-white p-1" style="border-color: #e0e0e0 !important;">
-                <span class="input-group-text bg-white border-0"><i class="ti ti-search text-muted fs-4"></i></span>
-                <input type="text" id="jobdesk-local-search" class="form-control bg-white border-0 ps-2 py-2"
-                    placeholder="Cari jobdesk secara instan di sini...">
+                <!-- Global Search Form -->
+                <form action="{{ route('jobdesk.index') }}" method="GET" class="relative w-full sm:w-80 m-0">
+                    <i class="ti ti-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                    <input type="text" 
+                           name="jobdesk_search" 
+                           value="{{ request('jobdesk_search') }}"
+                           placeholder="Cari kata kunci jobdesk langsung..." 
+                           class="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                </form>
             </div>
-        </div>
 
-        <!-- 0. UNIT SECTION -->
-        <div class="step-section {{ !$selected_unit ? 'active' : '' }}" id="unit-section">
-            <div class="row g-3">
+            <!-- Unit Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 @forelse ($unit as $u)
                     @php
-                        $unitJobdesksCount = $jobdesk->where('kode_unit', $u->kode_unit)->count();
-                        $unitDeptsCount = $jobdesk->where('kode_unit', $u->kode_unit)->pluck('kode_dept')->unique()->count();
+                        $unitJobdesksCount = isset($jobdesk_summary) ? $jobdesk_summary->where('kode_unit', $u->kode_unit)->sum('total_jobdesk') : $jobdesk->where('kode_unit', $u->kode_unit)->count();
+                        $unitJabatansCount = isset($jobdesk_summary) ? $jobdesk_summary->where('kode_unit', $u->kode_unit)->pluck('kode_jabatan')->unique()->count() : $jobdesk->where('kode_unit', $u->kode_unit)->pluck('kode_jabatan')->unique()->count();
                     @endphp
-                    <a href="{{ route('jobdesk.index', ['kode_unit' => $u->kode_unit]) }}" class="col-xl-4 col-md-6 col-sm-12 text-decoration-none">
-                        <div class="card drilldown-card shadow-sm h-100">
-                            <div class="card-body p-4 d-flex align-items-start gap-3">
-                                <div class="avatar avatar-lg rounded-circle d-flex align-items-center justify-content-center"
-                                     style="width: 50px; height: 50px; background-color: rgba(6, 78, 59, 0.08); color: #064e3b;">
-                                    <i class="ti ti-building fs-3"></i>
+                    <a href="{{ route('jobdesk.index', ['kode_unit' => $u->kode_unit]) }}" 
+                       class="group block bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs hover:shadow-md hover:border-emerald-400 transition-all duration-200 text-decoration-none">
+                        <div class="flex items-start gap-4">
+                            <div class="w-13 h-13 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200/80 flex items-center justify-center font-bold text-2xl shrink-0 group-hover:scale-105 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-200 shadow-2xs">
+                                <i class="ti ti-building"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between gap-2 mb-1.5">
+                                    <span class="font-mono font-bold text-[11px] text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                                        {{ $u->kode_unit }}
+                                    </span>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {{ $unitJobdesksCount > 0 ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200' }}">
+                                        {{ $unitJobdesksCount }} Jobdesk
+                                    </span>
                                 </div>
-                                <div class="flex-grow-1">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <span class="badge bg-label-primary fs-xs px-2 py-1 rounded">{{ $u->kode_unit }}</span>
-                                        <span class="text-muted small fw-medium">{{ $unitJobdesksCount }} Jobdesk</span>
-                                    </div>
-                                    <h5 class="mb-1 fw-bold text-dark" style="font-size: 1.1rem;">{{ strtoupper($u->nama_unit) }}</h5>
-                                    <p class="text-muted mb-0 small"><i class="ti ti-category me-1"></i>{{ $unitDeptsCount }} Departemen aktif</p>
+                                <h3 class="text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition truncate mb-1">
+                                    {{ strtoupper($u->nama_unit) }}
+                                </h3>
+                                <p class="text-xs text-slate-400 flex items-center gap-1.5 mb-3">
+                                    <i class="ti ti-user-check text-slate-400"></i>
+                                    <span>{{ $unitJabatansCount }} Jabatan terisi tupoksi</span>
+                                </p>
+                                <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-600 group-hover:text-emerald-700">
+                                    <span>Buka Daftar Jabatan</span>
+                                    <i class="ti ti-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
                                 </div>
                             </div>
                         </div>
                     </a>
                 @empty
-                    <div class="col-12 text-center p-5">
-                        <i class="ti ti-building fs-1 opacity-25"></i>
-                        <h5 class="mt-3">Belum Ada Data Unit</h5>
+                    <div class="col-span-full bg-white border border-slate-200/90 rounded-2xl p-12 text-center shadow-xs">
+                        <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-3xl mb-3 mx-auto">
+                            <i class="ti ti-building-off"></i>
+                        </div>
+                        <h4 class="text-sm font-bold text-slate-800 mb-1">Belum Ada Data Unit</h4>
+                        <p class="text-xs text-slate-400">Data unit kerja belum terdaftar pada sistem.</p>
                     </div>
                 @endforelse
             </div>
         </div>
 
-        <!-- 1. DEPARTEMEN SECTION -->
-        <div class="step-section {{ $selected_unit && !$selected_dept ? 'active' : '' }}" id="dept-section">
-            <div class="d-flex align-items-center gap-2 mb-3">
-                <a href="{{ route('jobdesk.index') }}" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 py-2 px-3" style="border-radius: 8px;">
-                    <i class="ti ti-arrow-left"></i> Kembali ke Unit
-                </a>
-            </div>
-            <div class="row g-3">
-                @if ($selected_unit)
-                    @forelse ($departemen as $d)
-                        @php
-                            $deptJobdesksCount = $jobdesk->where('kode_unit', $selected_unit->kode_unit)->where('kode_dept', $d->kode_dept)->count();
-                            $deptJabatansCount = $jobdesk->where('kode_unit', $selected_unit->kode_unit)->where('kode_dept', $d->kode_dept)->pluck('kode_jabatan')->unique()->count();
-                        @endphp
-                        @if ($deptJobdesksCount > 0)
-                            <a href="{{ route('jobdesk.index', ['kode_unit' => $selected_unit->kode_unit, 'kode_dept' => $d->kode_dept]) }}" class="col-xl-4 col-md-6 col-sm-12 text-decoration-none">
-                                <div class="card drilldown-card shadow-sm h-100">
-                                    <div class="card-body p-4 d-flex align-items-start gap-3">
-                                        <div class="avatar avatar-lg rounded-circle d-flex align-items-center justify-content-center"
-                                             style="width: 50px; height: 50px; background-color: rgba(6, 78, 59, 0.08); color: #064e3b;">
-                                            <i class="{{ getDeptIcon($d->kode_dept) }} fs-3"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                                <span class="badge badge-dept fs-xs px-2 py-1 rounded">{{ $d->kode_dept }}</span>
-                                                <span class="text-muted small fw-medium">{{ $deptJobdesksCount }} Jobdesk</span>
-                                            </div>
-                                            <h5 class="mb-1 fw-bold text-dark" style="font-size: 1.1rem;">{{ strtoupper($d->nama_dept) }}</h5>
-                                            <p class="text-muted mb-0 small"><i class="ti ti-users me-1"></i>{{ $deptJabatansCount }} Jabatan aktif</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        @endif
-                    @empty
-                        <div class="col-12 text-center p-5">
-                            <i class="ti ti-building-community fs-1 opacity-25"></i>
-                            <h5 class="mt-3">Belum Ada Data Departemen</h5>
+
+    {{-- ========================================================================= --}}
+    {{-- ===================== SCREEN 2: PILIHAN JABATAN DI UNIT ================== --}}
+    {{-- ========================================================================= --}}
+    @elseif ($selected_unit && !$selected_jabatan && empty(request('jobdesk_search')))
+        <div class="space-y-4">
+            <!-- Unit Navigation & Filter Banner -->
+            <div class="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3.5">
+                    <a href="{{ route('jobdesk.index') }}" 
+                       class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold border border-slate-200 transition shrink-0" 
+                       title="Kembali ke Pilihan Unit">
+                        <i class="ti ti-arrow-left text-lg"></i>
+                    </a>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600 font-mono border border-slate-200">
+                                {{ $selected_unit->kode_unit }}
+                            </span>
+                            <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">Unit Kerja Terpilih</span>
                         </div>
-                    @endforelse
-                @endif
-            </div>
-        </div>
-
-        <!-- 2. JABATAN SECTION -->
-        <div class="step-section {{ $selected_unit && $selected_dept && !$selected_jabatan ? 'active' : '' }}" id="jabatan-section">
-            <div class="d-flex align-items-center gap-2 mb-3">
-                <a href="{{ route('jobdesk.index', ['kode_unit' => $selected_unit->kode_unit ?? '']) }}" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 py-2 px-3" style="border-radius: 8px;">
-                    <i class="ti ti-arrow-left"></i> Kembali ke Departemen
-                </a>
-            </div>
-            <div class="row g-3" id="jabatan-cards-container">
-                @if($selected_unit && $selected_dept)
-                    @foreach ($jabatan as $jab)
-                        @php
-                            $count = $jobdesk->where('kode_unit', $selected_unit->kode_unit)->where('kode_dept', $selected_dept->kode_dept)->where('kode_jabatan', $jab->kode_jabatan)->count();
-                        @endphp
-                        @if ($count > 0)
-                            <a href="{{ route('jobdesk.index', ['kode_unit' => $selected_unit->kode_unit, 'kode_dept' => $selected_dept->kode_dept, 'kode_jabatan' => $jab->kode_jabatan]) }}" class="col-xl-4 col-md-6 col-sm-12 text-decoration-none">
-                                <div class="card drilldown-card shadow-sm h-100">
-                                    <div class="card-body p-4 d-flex align-items-center gap-3">
-                                        <div class="avatar avatar-md rounded-circle d-flex align-items-center justify-content-center"
-                                             style="width: 42px; height: 42px; background-color: rgba(0, 168, 204, 0.08); color: #0081a7;">
-                                            <i class="ti ti-user-check fs-4"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <h6 class="mb-1 fw-bold text-dark">{{ strtoupper($jab->nama_jabatan) }}</h6>
-                                            <span class="badge bg-label-info px-2 py-1 rounded small">{{ $count }} Jobdesk</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        @endif
-                    @endforeach
-                @endif
-            </div>
-        </div>
-
-        <!-- 3. JOBDESK SECTION -->
-        <div class="step-section {{ $selected_unit && $selected_dept && $selected_jabatan ? 'active' : '' }}" id="jobdesk-section">
-            <div class="d-flex align-items-center gap-2 mb-4">
-                <a href="{{ route('jobdesk.index', ['kode_unit' => $selected_unit->kode_unit ?? '', 'kode_dept' => $selected_dept->kode_dept ?? '']) }}" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 py-2 px-3" style="border-radius: 8px;">
-                    <i class="ti ti-arrow-left"></i> Kembali ke Jabatan
-                </a>
-            </div>
-
-            @if ($selected_unit && $selected_dept && $selected_jabatan)
-                <div class="card shadow-sm mb-4" style="border-radius: 12px; background: linear-gradient(135deg, rgba(6, 78, 59, 0.05) 0%, rgba(6, 78, 59, 0.01) 100%); border: 1px solid rgba(6, 78, 59, 0.15) !important;">
-                    <div class="card-body py-3 px-4">
-                        <div class="d-flex flex-wrap align-items-center gap-4 text-dark">
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="avatar avatar-md rounded-circle d-flex align-items-center justify-content-center" style="background-color: rgba(6, 78, 59, 0.1); color: #064e3b; width: 38px; height: 38px;">
-                                    <i class="ti ti-building fs-5"></i>
-                                </div>
-                                <div>
-                                    <span class="text-muted fs-xs d-block lh-1 mb-0.5">UNIT</span>
-                                    <span class="fw-bold text-dark fs-sm" style="color: #064e3b !important;">{{ strtoupper($selected_unit->nama_unit) }}</span>
-                                </div>
-                            </div>
-                            <div class="border-start py-3 d-none d-md-block" style="border-color: rgba(6, 78, 59, 0.15) !important;"></div>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="avatar avatar-md rounded-circle d-flex align-items-center justify-content-center" style="background-color: rgba(6, 78, 59, 0.1); color: #064e3b; width: 38px; height: 38px;">
-                                    <i class="ti ti-layout-grid fs-5"></i>
-                                </div>
-                                <div>
-                                    <span class="text-muted fs-xs d-block lh-1 mb-0.5">DEPARTEMEN</span>
-                                    <span class="fw-bold text-dark fs-sm" style="color: #064e3b !important;">{{ strtoupper($selected_dept->nama_dept) }}</span>
-                                </div>
-                            </div>
-                            <div class="border-start py-3 d-none d-md-block" style="border-color: rgba(6, 78, 59, 0.15) !important;"></div>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="avatar avatar-md rounded-circle d-flex align-items-center justify-content-center" style="background-color: rgba(6, 78, 59, 0.1); color: #064e3b; width: 38px; height: 38px;">
-                                    <i class="ti ti-user-check fs-5"></i>
-                                </div>
-                                <div>
-                                    <span class="text-muted fs-xs d-block lh-1 mb-0.5">JABATAN</span>
-                                    <span class="fw-bold text-dark fs-sm" style="color: #064e3b !important;">{{ strtoupper($selected_jabatan->nama_jabatan) }}</span>
-                                </div>
-                            </div>
-                        </div>
+                        <h2 class="text-lg font-bold text-slate-900 tracking-tight">
+                            {{ strtoupper($selected_unit->nama_unit) }}
+                        </h2>
                     </div>
                 </div>
-            @endif
-            
-            <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead style="background-color: #064e3b">
-                            <tr>
+
+                <!-- Instant Jabatan Filter Box -->
+                <div class="relative w-full md:w-80">
+                    <i class="ti ti-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                    <input type="text" 
+                           id="filterJabatanInput" 
+                           placeholder="Cari nama jabatan..." 
+                           class="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                </div>
+            </div>
+
+            <!-- Jabatan Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="jabatanGridContainer">
+                @forelse ($jabatan_unit as $jab)
+                    @php
+                        $jabJobdesksCount = isset($jobdesk_summary) 
+                            ? $jobdesk_summary->where('kode_unit', $selected_unit->kode_unit)->where('kode_jabatan', $jab->kode_jabatan)->sum('total_jobdesk')
+                            : $jobdesk->where('kode_unit', $selected_unit->kode_unit)->where('kode_jabatan', $jab->kode_jabatan)->count();
+                    @endphp
+                    <a href="{{ route('jobdesk.index', ['kode_unit' => $selected_unit->kode_unit, 'kode_dept' => 'all', 'kode_jabatan' => $jab->kode_jabatan]) }}" 
+                       class="jabatan-card group block bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-md hover:border-emerald-400 transition-all duration-200 text-decoration-none"
+                       data-jabatan-name="{{ strtolower($jab->nama_jabatan) }}">
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200/80 flex items-center justify-center font-bold text-lg shrink-0 group-hover:scale-105 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-200 shadow-2xs">
+                                <i class="ti ti-briefcase"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between gap-2 mb-1">
+                                    <span class="font-mono font-bold text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                                        {{ $jab->kode_jabatan }}
+                                    </span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ $jabJobdesksCount > 0 ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200' }}">
+                                        {{ $jabJobdesksCount > 0 ? $jabJobdesksCount . ' Butir Jobdesk' : 'Belum ada jobdesk' }}
+                                    </span>
+                                </div>
+                                <h4 class="text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition truncate mb-2">
+                                    {{ strtoupper($jab->nama_jabatan) }}
+                                </h4>
+                                <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-600 group-hover:text-emerald-700">
+                                    <span>Lihat Rincian Jobdesk</span>
+                                    <i class="ti ti-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                @empty
+                    <div class="col-span-full bg-white border border-slate-200/90 rounded-2xl p-12 text-center shadow-xs">
+                        <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mb-3 mx-auto">
+                            <i class="ti ti-briefcase-off"></i>
+                        </div>
+                        <h4 class="text-sm font-bold text-slate-800 mb-1">Belum Ada Jabatan Terdaftar di Unit Ini</h4>
+                        <p class="text-xs text-slate-400 max-w-sm mx-auto">Belum ada data karyawan dengan jabatan pada unit kerja ini.</p>
+                    </div>
+                @endforelse
+            </div>
+        </div>
+
+
+    {{-- ========================================================================= --}}
+    {{-- ================== SCREEN 3: RINCIAN BUTIR DETAIL JOBDESK ================ --}}
+    {{-- ========================================================================= --}}
+    @else
+        <div class="space-y-4">
+            <!-- Navigation Back Bar & Position Info -->
+            <div class="bg-white border border-slate-200/90 rounded-2xl p-3.5 sm:p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                    @if ($selected_unit)
+                        <a href="{{ route('jobdesk.index', ['kode_unit' => $selected_unit->kode_unit]) }}" 
+                           class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold border border-slate-200 transition shrink-0" 
+                           title="Kembali ke Daftar Jabatan">
+                            <i class="ti ti-arrow-left text-base"></i>
+                        </a>
+                    @else
+                        <a href="{{ route('jobdesk.index') }}" 
+                           class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold border border-slate-200 transition shrink-0" 
+                           title="Kembali ke Pilihan Unit">
+                            <i class="ti ti-arrow-left text-base"></i>
+                        </a>
+                    @endif
+
+                    <div>
+                        <div class="flex items-center gap-2 text-[11px] font-bold text-emerald-700 uppercase tracking-wider">
+                            <span>{{ $selected_unit->nama_unit ?? 'Semua Unit' }}</span>
+                            @if ($selected_dept)
+                                <span>•</span>
+                                <span>{{ $selected_dept->nama_dept }}</span>
+                            @endif
+                        </div>
+                        <h2 class="text-base font-bold text-slate-900 tracking-tight">
+                            @if ($selected_jabatan)
+                                Jabatan: {{ strtoupper($selected_jabatan->nama_jabatan) }}
+                            @else
+                                Hasil Pencarian: "{{ request('jobdesk_search') }}"
+                            @endif
+                        </h2>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        {{ count($jobdesk) }} Butir Jobdesk Ditemukan
+                    </span>
+                    @if (request('jobdesk_search'))
+                        <a href="{{ route('jobdesk.index') }}" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition">
+                            Reset Filter
+                        </a>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Jobdesk Table Container -->
+            <div class="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
+                <!-- Table Header Bar -->
+                <div class="px-4 py-2.5 bg-emerald-600 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-white">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-lg bg-white/20 text-white flex items-center justify-center text-xs font-bold border border-white/20 shadow-2xs">
+                            <i class="ti ti-list"></i>
+                        </div>
+                        <h3 class="text-xs sm:text-sm font-bold text-white tracking-tight">Daftar Rincian Uraian Tugas Pokok & Fungsi</h3>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto bg-emerald-600">
+                    <table class="w-full text-left text-xs border-0 border-collapse">
+                        <thead class="bg-emerald-600 text-white font-bold uppercase tracking-wider text-[10.5px] border-0 border-t border-b border-emerald-700/80">
+                            <tr class="border-0">
                                 @can('jobdesk.delete')
-                                    <th class="py-2 text-white font-weight-bold text-center" style="width: 50px;">
-                                        <input type="checkbox" id="check-all-jobdesk" class="form-check-input">
+                                    <th class="py-2 px-3 w-10 text-center text-emerald-100">
+                                        <input type="checkbox" id="check-all-jobdesk" class="rounded text-emerald-600 focus:ring-emerald-500">
                                     </th>
                                 @endcan
-                                <th class="py-2 text-white font-weight-bold text-center" style="width: 120px; font-size: 0.875rem;">KODE</th>
-                                <th class="py-2 text-white font-weight-bold text-center d-none" id="th-dept" style="width: 180px; font-size: 0.875rem;">DEPARTEMEN</th>
-                                <th class="py-2 text-white font-weight-bold text-center d-none" id="th-jabatan" style="width: 180px; font-size: 0.875rem;">JABATAN</th>
-                                <th class="py-2 text-white font-weight-bold" style="font-size: 0.875rem;">TUGAS POKOK & FUNGSI (JOBDESK)</th>
-                                <th class="py-2 text-white font-weight-bold text-end pe-4" style="width: 100px; font-size: 0.875rem;">AKSI</th>
+                                <th class="py-2 px-3 w-20 text-center text-emerald-100 whitespace-nowrap">Kode</th>
+                                @if (empty($selected_jabatan) || request('jobdesk_search'))
+                                    <th class="py-2 px-3 text-center text-emerald-100 whitespace-nowrap">Jabatan</th>
+                                    <th class="py-2 px-3 text-center text-emerald-100 whitespace-nowrap">Departemen</th>
+                                    <th class="py-2 px-3 text-center text-emerald-100 whitespace-nowrap">Unit</th>
+                                @endif
+                                <th class="py-2 px-3 text-emerald-100">Uraian Tugas Pokok & Fungsi (Jobdesk)</th>
+                                <th class="py-2 px-3 text-center w-24 text-emerald-100 whitespace-nowrap">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="jobdesk-table-body">
+                        <tbody id="jobdesk-table-body" class="divide-y divide-slate-100 text-slate-700 font-medium bg-white text-xs">
                             @forelse ($jobdesk as $d)
-                                <tr class="jobdesk-card-item transition-all" data-dept-id="{{ $d->kode_dept }}" data-jab-id="{{ $d->kode_jabatan }}" data-search-content="{{ strtolower($d->jobdesk) }} {{ strtolower($d->nama_jabatan) }} {{ strtolower($d->nama_dept) }} {{ strtolower($d->nama_unit ?? 'umum') }}">
+                                <tr class="hover:bg-slate-50/80 transition-colors">
                                     @can('jobdesk.delete')
-                                        <td class="text-center py-2">
-                                            <input type="checkbox" class="form-check-input jobdesk-checkbox" value="{{ Crypt::encrypt($d->kode_jobdesk) }}">
+                                        <td class="py-1.5 px-3 text-center">
+                                            <input type="checkbox" class="jobdesk-checkbox rounded text-emerald-600 focus:ring-emerald-500" value="{{ Crypt::encrypt($d->kode_jobdesk) }}">
                                         </td>
                                     @endcan
-                                    <td class="text-center py-2">
-                                        <span class="badge bg-label-success px-2 py-0.5 rounded fw-semibold" style="font-size: 0.75rem;">{{ $d->kode_jobdesk }}</span>
+
+                                    <td class="py-1.5 px-3 text-center whitespace-nowrap">
+                                        <span class="font-mono font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded text-[10.5px] border border-slate-200">
+                                            {{ $d->kode_jobdesk }}
+                                        </span>
                                     </td>
-                                    <td class="text-center py-2 td-dept d-none">
-                                        <span class="badge rounded-pill bg-label-secondary px-2 py-0.5 fw-semibold" style="font-size: 0.75rem;">{{ $d->nama_dept }}</span>
+
+                                    @if (empty($selected_jabatan) || request('jobdesk_search'))
+                                        <td class="py-1.5 px-3 text-center whitespace-nowrap">
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                                {{ $d->nama_jabatan }}
+                                            </span>
+                                        </td>
+                                        <td class="py-1.5 px-3 text-center whitespace-nowrap">
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                                {{ $d->nama_dept }}
+                                            </span>
+                                        </td>
+                                        <td class="py-1.5 px-3 text-center whitespace-nowrap">
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                                {{ $d->nama_unit ?? 'Umum' }}
+                                            </span>
+                                        </td>
+                                    @endif
+
+                                    <td class="py-1.5 px-3 leading-snug text-slate-800 font-medium whitespace-pre-line text-xs">
+                                        {{ removeHtmltag($d->jobdesk) }}
                                     </td>
-                                    <td class="text-center py-2 td-jabatan d-none">
-                                        <span class="badge rounded-pill bg-label-info px-2 py-0.5 fw-semibold" style="font-size: 0.75rem;">{{ $d->nama_jabatan }}</span>
-                                    </td>
-                                    <td class="py-2">
-                                        <div class="text-dark fw-normal leading-relaxed" style="font-size: 0.875rem; white-space: pre-line;">{{ removeHtmltag($d->jobdesk) }}</div>
-                                    </td>
-                                    <td class="py-2 text-end pe-4">
-                                        <div class="d-flex justify-content-end gap-2">
+
+                                    <td class="py-1.5 px-3 text-center whitespace-nowrap">
+                                        <div class="inline-flex items-center gap-1">
                                             @can('jobdesk.edit')
-                                                <a href="#" class="btn btn-icon btn-label-success border-0 shadow-sm btnEdit rounded-3"
-                                                    style="width: 28px; height: 28px;"
-                                                    kode_jobdesk="{{ Crypt::encrypt($d->kode_jobdesk) }}"
-                                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Edit Jobdesk">
-                                                    <i class="ti ti-edit fs-6"></i>
-                                                </a>
+                                                <button type="button" 
+                                                        class="btnEdit inline-flex items-center justify-center w-6.5 h-6.5 rounded-md bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white border border-blue-200 font-bold transition-all duration-150 active:scale-95 cursor-pointer shadow-2xs"
+                                                        kode_jobdesk="{{ Crypt::encrypt($d->kode_jobdesk) }}" 
+                                                        title="Edit Jobdesk">
+                                                    <i class="ti ti-edit text-xs"></i>
+                                                </button>
                                             @endcan
                                             @can('jobdesk.delete')
-                                                <form method="POST" name="deleteform" class="deleteform m-0"
-                                                    action="{{ route('jobdesk.delete', Crypt::encrypt($d->kode_jobdesk)) }}">
+                                                <form method="POST" 
+                                                      action="{{ route('jobdesk.delete', Crypt::encrypt($d->kode_jobdesk)) }}" 
+                                                      class="inline-block m-0 deleteform">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-icon btn-label-danger border-0 shadow-sm delete-confirm rounded-3"
-                                                        style="width: 28px; height: 28px;"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Hapus Jobdesk">
-                                                        <i class="ti ti-trash fs-6"></i>
+                                                    <button type="submit" 
+                                                            class="delete-confirm inline-flex items-center justify-center w-6.5 h-6.5 rounded-md bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white border border-rose-200 font-bold transition-all duration-150 active:scale-95 cursor-pointer shadow-2xs"
+                                                            title="Hapus Jobdesk">
+                                                        <i class="ti ti-trash text-xs"></i>
                                                     </button>
                                                 </form>
                                             @endcan
@@ -391,233 +419,218 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr id="jobdesk-empty-row">
-                                    <td colspan="{{ auth()->user()->can('jobdesk.delete') ? 6 : 5 }}" class="text-center p-5 bg-white">
-                                        <div class="mb-3 text-muted">
-                                            <i class="ti ti-briefcase fs-1 opacity-50 text-success"></i>
+                                <tr>
+                                    <td colspan="{{ auth()->user()->can('jobdesk.delete') ? 6 : 5 }}" class="py-8 px-4 text-center bg-white">
+                                        <div class="flex flex-col items-center justify-center max-w-sm mx-auto">
+                                            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-2 border border-emerald-100 shadow-2xs">
+                                                <i class="ti ti-briefcase"></i>
+                                            </div>
+                                            <h4 class="text-xs font-bold text-slate-800 mb-0.5">Belum Ada Data Jobdesk</h4>
+                                            <p class="text-[11px] text-slate-400 text-center leading-relaxed mb-2.5">
+                                                Belum ada uraian tugas untuk posisi ini. Silakan tambahkan data baru.
+                                            </p>
+                                            @can('jobdesk.create')
+                                                <button type="button" 
+                                                        class="btncreateJobdeskDirect inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-xs transition active:scale-95 cursor-pointer">
+                                                    <i class="ti ti-plus text-xs"></i>
+                                                    <span>Tambah Jobdesk Sekarang</span>
+                                                </button>
+                                            @endcan
                                         </div>
-                                        <h5 class="fw-bold text-dark">Belum Ada Data Jobdesk</h5>
-                                        <p class="text-muted small">Klik tombol "Tambah Jobdesk" untuk menambahkan data baru.</p>
                                     </td>
                                 </tr>
                             @endforelse
-                            <tr id="jobdesk-no-results" class="d-none">
-                                <td colspan="{{ auth()->user()->can('jobdesk.delete') ? 6 : 5 }}" class="text-center p-5 bg-white">
-                                    <div class="mb-3 text-muted">
-                                        <i class="ti ti-search fs-1 opacity-50 text-warning"></i>
-                                    </div>
-                                    <h5 class="fw-bold text-dark">Hasil Pencarian Tidak Ditemukan</h5>
-                                    <p class="text-muted small">Coba cari dengan kata kunci lain.</p>
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-    </div>
+    @endif
+
 </div>
 
+<!-- Modal Container -->
 <x-modal-form id="mdlJobdesk" size="" show="loadJobdesk" title="" />
 
 <!-- Modal Import Jobdesk -->
 <div class="modal fade" id="mdlImportJobdesk" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold">Import Data Jobdesk</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content rounded-2xl border-0 shadow-lg overflow-hidden">
+            <div class="px-5 py-4 bg-emerald-600 text-white flex items-center justify-between">
+                <h5 class="text-sm font-bold text-white mb-0 flex items-center gap-2">
+                    <i class="ti ti-file-import text-lg"></i>
+                    <span>Import Data Jobdesk</span>
+                </h5>
+                <button type="button" class="text-white/80 hover:text-white" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ti ti-x text-lg"></i>
+                </button>
             </div>
-            <form action="{{ route('jobdesk.import') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('jobdesk.import') }}" method="POST" enctype="multipart/form-data" class="p-5 space-y-4">
                 @csrf
-                <div class="modal-body">
-                    <div class="alert alert-info d-flex align-items-start gap-2 mb-3" role="alert" style="border-radius: 8px;">
-                        <i class="ti ti-info-circle fs-4 mt-0.5"></i>
-                        <div>
-                            <span class="fw-semibold d-block">Petunjuk Impor:</span>
-                            <span class="small d-block">1. Unduh template format Excel yang disediakan di bawah.</span>
-                            <span class="small d-block">2. Isi kolom kode unit, departemen, jabatan, dan deskripsi tugas sesuai kode referensi pada sheet kedua.</span>
-                            <span class="small d-block">3. Unggah berkas Excel yang telah diisi.</span>
-                        </div>
-                    </div>
-                    <div class="mb-4 text-center">
-                        <a href="{{ route('jobdesk.download-format') }}" class="btn btn-label-success d-inline-flex align-items-center gap-2">
-                            <i class="ti ti-download fs-5"></i> Unduh Format Excel
-                        </a>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="import-file" class="form-label fw-semibold">Pilih Berkas Excel (.xlsx)</label>
-                        <input type="file" name="file" id="import-file" class="form-control" accept=".xlsx, .xls, .csv" required>
-                    </div>
+                <div class="p-3 bg-emerald-50/80 border border-emerald-200/80 rounded-xl text-xs text-emerald-800 space-y-1">
+                    <span class="font-bold block">Petunjuk Impor Excel:</span>
+                    <span>1. Unduh template Excel yang disediakan di bawah.</span><br>
+                    <span>2. Isi kolom kode unit, departemen, jabatan, dan deskripsi tugas sesuai referensi.</span><br>
+                    <span>3. Upload berkas Excel (.xlsx) yang telah diisi.</span>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-success">Mulai Impor</button>
+
+                <div class="text-center">
+                    <a href="{{ route('jobdesk.download-format') }}" 
+                       class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl text-xs border border-emerald-200 transition">
+                        <i class="ti ti-download text-sm"></i>
+                        <span>Unduh Format Excel</span>
+                    </a>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-bold text-slate-700">Pilih Berkas Excel (.xlsx)</label>
+                    <input type="file" name="file" id="import-file" class="w-full px-3 py-2 text-xs bg-white border border-slate-300 rounded-xl text-slate-800" accept=".xlsx, .xls, .csv" required>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <button type="button" class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition" data-bs-dismiss="modal">
+                        Batal
+                    </button>
+                    <button type="submit" class="py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                        Mulai Impor
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 @endsection
 
 @push('myscript')
 <script>
     $(function() {
-        let isSearching = false;
+        const loadingSpinner = `
+            <div class="flex items-center justify-center p-8">
+                <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        `;
+
         const selectedUnitId = "{{ $selected_unit->kode_unit ?? '' }}";
         const selectedDeptId = "{{ $selected_dept->kode_dept ?? '' }}";
         const selectedJabId = "{{ $selected_jabatan->kode_jabatan ?? '' }}";
 
-        // Initial setup for jobdesk table rows on page load
-        if (selectedDeptId && selectedJabId) {
-            $('.jobdesk-card-item').hide();
-            $(`.jobdesk-card-item[data-dept-id="${selectedDeptId}"][data-jab-id="${selectedJabId}"]`).show();
-        }
-
-        // Local live search functionality
-        $('#jobdesk-local-search').on('input', function() {
-            let val = $(this).val().toLowerCase().trim();
-            if (val.length > 0) {
-                isSearching = true;
-                $('#flow-breadcrumbs').fadeOut(100);
-                $('.step-section').removeClass('active');
-                $('#jobdesk-section').addClass('active');
-
-                // Show table columns during global search
-                $('#th-dept, #th-jabatan, .td-dept, .td-jabatan').removeClass('d-none');
-
-                let matchedCount = 0;
-                $('.jobdesk-card-item').each(function() {
-                    let content = $(this).data('search-content');
-                    if (content.includes(val)) {
-                        $(this).show();
-                        matchedCount++;
-                    } else {
-                        $(this).hide();
-                    }
-                });
-
-                if (matchedCount === 0) {
-                    $('#jobdesk-no-results').removeClass('d-none');
+        // Filter local jabatans on Screen 2
+        $('#filterJabatanInput').on('input', function() {
+            let query = $(this).val().toLowerCase().trim();
+            $('.jabatan-card').each(function() {
+                let name = $(this).attr('data-jabatan-name') || '';
+                if (name.includes(query)) {
+                    $(this).show();
                 } else {
-                    $('#jobdesk-no-results').addClass('d-none');
-                }
-            } else {
-                isSearching = false;
-                $('#jobdesk-no-results').addClass('d-none');
-
-                // Restore active section and breadcrumbs based on server state
-                $('.step-section').removeClass('active');
-                if (selectedUnitId && selectedDeptId && selectedJabId) {
-                    $('#flow-breadcrumbs').fadeIn(100);
-                    $('#jobdesk-section').addClass('active');
-                    $('#th-dept, #th-jabatan, .td-dept, .td-jabatan').addClass('d-none');
-                    $('.jobdesk-card-item').hide();
-                    $(`.jobdesk-card-item[data-dept-id="${selectedDeptId}"][data-jab-id="${selectedJabId}"]`).show();
-                } else if (selectedUnitId && selectedDeptId) {
-                    $('#flow-breadcrumbs').fadeIn(100);
-                    $('#jabatan-section').addClass('active');
-                } else if (selectedUnitId) {
-                    $('#flow-breadcrumbs').fadeIn(100);
-                    $('#dept-section').addClass('active');
-                } else {
-                    $('#unit-section').addClass('active');
-                }
-            }
-        });
-
-        // Original logic for Modal (Add / Edit)
-        $("#btncreateJobdesk").click(function(e) {
-            e.preventDefault();
-            $('#mdlJobdesk').modal("show");
-            $("#mdlJobdesk").find(".modal-title").text("Tambah Jobdesk");
-            $("#loadJobdesk").load('/jobdesk/create?kode_unit=' + selectedUnitId + '&kode_dept=' + selectedDeptId + '&kode_jabatan=' + selectedJabId);
-        });
-
-        $("#btnimportJobdesk").click(function(e) {
-            e.preventDefault();
-            $('#mdlImportJobdesk').modal("show");
-        });
-
-        $(document).on('click', '.btnEdit', function(e) {
-            var kode_jobdesk = $(this).attr("kode_jobdesk");
-            e.preventDefault();
-            $('#mdlJobdesk').modal("show");
-            $("#mdlJobdesk").find(".modal-title").text("Edit Jobdesk");
-            $("#loadJobdesk").load('/jobdesk/' + kode_jobdesk + '/edit');
-        });
-
-        $(document).on('click', '.btn-reset-confirm', function(event) {
-            var form = $(this).closest("form");
-            event.preventDefault();
-            Swal.fire({
-                title: `Apakah Anda Yakin Ingin Mereset Semua Jobdesk ?`,
-                text: "Semua data jobdesk yang ada akan dihapus secara permanen!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Ya, Reset Semua!"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
+                    $(this).hide();
                 }
             });
         });
 
-        // Bulk delete checkbox implementation
-        $('#check-all-jobdesk').on('change', function() {
-            const isChecked = $(this).is(':checked');
-            $('.jobdesk-card-item:visible .jobdesk-checkbox').prop('checked', isChecked);
-            toggleBulkDeleteButton();
+        // Create modal
+        $(document).on("click", "#btncreateJobdesk, .btncreateJobdeskDirect", function(e) {
+            e.preventDefault();
+            let url = "{{ route('jobdesk.create') }}";
+            let params = [];
+            if (selectedUnitId) params.push(`kode_unit=${selectedUnitId}`);
+            if (selectedDeptId) params.push(`kode_dept=${selectedDeptId}`);
+            if (selectedJabId) params.push(`kode_jabatan=${selectedJabId}`);
+            if (params.length > 0) url += '?' + params.join('&');
+
+            $("#mdlJobdesk").modal("show");
+            $("#mdlJobdesk").find(".modal-title").text("Tambah Jobdesk Baru");
+            $("#loadJobdesk").html(loadingSpinner);
+            $("#loadJobdesk").load(url);
         });
 
-        $(document).on('change', '.jobdesk-checkbox', function() {
-            const allVisible = $('.jobdesk-card-item:visible .jobdesk-checkbox');
-            const allChecked = allVisible.filter(':checked');
-            $('#check-all-jobdesk').prop('checked', allVisible.length === allChecked.length && allVisible.length > 0);
-            toggleBulkDeleteButton();
+        // Import modal
+        $("#btnimportJobdesk").click(function(e) {
+            e.preventDefault();
+            $("#mdlImportJobdesk").modal("show");
         });
 
-        function toggleBulkDeleteButton() {
-            const checkedCount = $('.jobdesk-checkbox:checked').length;
+        // Edit modal
+        $(document).on("click", ".btnEdit", function(e) {
+            e.preventDefault();
+            let kode_jobdesk = $(this).attr("kode_jobdesk");
+            $("#mdlJobdesk").modal("show");
+            $("#mdlJobdesk").find(".modal-title").text("Edit Data Jobdesk");
+            $("#loadJobdesk").html(loadingSpinner);
+            $("#loadJobdesk").load(`/jobdesk/${kode_jobdesk}/edit`);
+        });
+
+        // Bulk delete check all
+        $("#check-all-jobdesk").on("change", function() {
+            let isChecked = $(this).is(":checked");
+            $(".jobdesk-checkbox:visible").prop("checked", isChecked);
+            updateBulkDeleteState();
+        });
+
+        $(document).on("change", ".jobdesk-checkbox", function() {
+            updateBulkDeleteState();
+        });
+
+        function updateBulkDeleteState() {
+            let checkedCount = $(".jobdesk-checkbox:checked").length;
+            $("#selected-count").text(checkedCount);
             if (checkedCount > 0) {
-                $('#btnDeleteSelected').removeClass('d-none').addClass('d-flex');
-                $('#selected-count').text(checkedCount);
+                $("#btnDeleteSelected").removeClass("hidden").addClass("inline-flex");
             } else {
-                $('#btnDeleteSelected').removeClass('d-flex').addClass('d-none');
+                $("#btnDeleteSelected").addClass("hidden").removeClass("inline-flex");
             }
         }
 
-        $('#btnDeleteSelected').on('click', function(e) {
+        $("#btnDeleteSelected").on("click", function(e) {
             e.preventDefault();
-            const checkedCount = $('.jobdesk-checkbox:checked').length;
+            let selected = [];
+            $(".jobdesk-checkbox:checked").each(function() {
+                selected.push($(this).val());
+            });
+
+            if (selected.length === 0) return;
+
             Swal.fire({
-                title: `Apakah Anda Yakin Ingin Menghapus ${checkedCount} Jobdesk Terpilih?`,
-                text: "Tindakan ini tidak dapat dibatalkan!",
-                icon: "warning",
+                title: 'Hapus Jobdesk Terpilih?',
+                text: `Anda akan menghapus ${selected.length} butir jobdesk sekaligus!`,
+                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Ya, Hapus!"
+                confirmButtonColor: '#e11d48',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Ya, Hapus Semua!',
+                cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    const form = $('#formBulkDelete');
-                    form.find('.dynamic-id-input').remove();
-                    $('.jobdesk-checkbox:checked').each(function() {
-                        form.append(`<input type="hidden" class="dynamic-id-input" name="ids[]" value="${$(this).val()}">`);
+                    let form = $("#formBulkDelete");
+                    form.empty();
+                    form.append(`@csrf`);
+                    selected.forEach(function(val) {
+                        form.append(`<input type="hidden" name="selected_jobdesks[]" value="${val}">`);
                     });
                     form.submit();
                 }
             });
         });
 
-        // Reset check-all and checkboxes when searching or changing sections
-        $('#jobdesk-local-search').on('input', function() {
-            $('.jobdesk-checkbox, #check-all-jobdesk').prop('checked', false);
-            toggleBulkDeleteButton();
+        // Reset confirmation
+        $(".btn-reset-confirm").on("click", function(e) {
+            e.preventDefault();
+            let form = $(this).closest("form");
+            Swal.fire({
+                title: 'Reset Semua Jobdesk?',
+                text: "Seluruh data jobdesk akan dihapus dari sistem dan tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e11d48',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Ya, Reset Data!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
     });
 </script>
 @endpush
-

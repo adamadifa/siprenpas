@@ -23,7 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Paginator::useBootstrapFive();
+        Paginator::defaultView('vendor.pagination.custom-tailwind');
+        Paginator::defaultSimpleView('vendor.pagination.simple-tailwind');
 
         // Share pengaturan umum to all views
         View::composer('*', PengaturanUmumComposer::class);

@@ -2,372 +2,303 @@
 @section('titlepage', 'Set Permission User - ' . $user->name)
 
 @section('content')
-<style>
-    .menu-group-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
-        margin-bottom: 1.5rem;
-        overflow: hidden;
-    }
+<div class="space-y-5">
 
-    .menu-group-header {
-        background: #f8fafc;
-        border-bottom: 1px solid #e2e8f0;
-        padding: 1rem 1.25rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 0.75rem;
-    }
-
-    .menu-group-title {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #0f172a;
-        margin-bottom: 0;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .menu-group-badge {
-        font-size: 0.72rem;
-        font-weight: 600;
-        color: #475569;
-        background: #e2e8f0;
-        padding: 0.15rem 0.55rem;
-        border-radius: 6px;
-    }
-
-    .sub-group-card {
-        background: #ffffff;
-        border: 1px solid #eef2f6;
-        border-radius: 10px;
-        height: 100%;
-        transition: all 0.2s ease;
-    }
-
-    .sub-group-card:hover {
-        border-color: #cbd5e1;
-        box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.05);
-    }
-
-    .sub-group-header {
-        background: #fcfdfd;
-        border-bottom: 1px solid #f1f5f9;
-        padding: 0.65rem 0.9rem;
-        border-top-left-radius: 9px;
-        border-top-right-radius: 9px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .sub-group-title {
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: #1e293b;
-        margin-bottom: 0;
-        display: flex;
-        align-items: center;
-        gap: 0.35rem;
-    }
-
-    .sub-group-body {
-        padding: 0.85rem 0.9rem;
-    }
-
-    .permission-item-label {
-        font-size: 0.8rem;
-        color: #334155;
-        cursor: pointer;
-        padding: 0.15rem 0;
-        transition: color 0.15s ease;
-    }
-
-    .permission-item-label:hover {
-        color: #064e3b;
-        font-weight: 500;
-    }
-
-    .sticky-actions-bar {
-        position: sticky;
-        top: 75px;
-        z-index: 99;
-        background: rgba(255, 255, 255, 0.92);
-        backdrop-filter: blur(8px);
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.08);
-        padding: 0.75rem 1.25rem;
-        margin-bottom: 1.5rem;
-    }
-</style>
-
-@section('navigasi')
-    <div class="card shadow-none bg-transparent border-0 mb-3">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
-                        <i class="ti ti-shield-lock fs-3" style="color: #064e3b"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Set Hak Akses User: {{ $user->name }}</h4>
-                        <div class="d-flex align-items-center gap-2 mt-1 flex-wrap">
-                            <span class="text-muted small">Username: <strong>{{ $user->username }}</strong></span>
-                            <span class="text-muted small">•</span>
-                            <span class="text-muted small">Role: </span>
-                            @forelse ($user->roles as $role)
-                                <span class="badge bg-label-primary font-weight-bold">{{ ucwords($role->name) }}</span>
-                            @empty
-                                <span class="badge bg-label-secondary">Tanpa Role</span>
-                            @endforelse
-                        </div>
-                    </div>
+    <!-- ================= 1. PAGE HEADER WITH RIGHT BREADCRUMB ================= -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-1">
+        <!-- Title & Subtitle with User Identity -->
+        <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200/80 shadow-xs shrink-0">
+                <i class="ti ti-shield-lock text-2xl"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                        Hak Akses User: <span class="text-emerald-700">{{ $user->name }}</span>
+                    </h1>
+                    @forelse ($user->roles as $role)
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            {{ ucwords($role->name) }}
+                        </span>
+                    @empty
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                            Tanpa Role
+                        </span>
+                    @endforelse
                 </div>
-                <div class="d-flex flex-column align-items-end">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb breadcrumb-style1 mb-0">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('users.index') }}" class="text-muted">
-                                    <i class="ti ti-settings me-1"></i> Pengaturan
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('users.index') }}" class="text-muted">Users</a>
-                            </li>
-                            <li class="breadcrumb-item active">Set Permission</li>
-                        </ol>
-                    </nav>
-                </div>
+                <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-2">
+                    <span>Username: <strong class="text-slate-700 font-bold font-mono">{{ $user->username }}</strong></span>
+                    <span>•</span>
+                    <span>Email: <span class="text-slate-600">{{ $user->email ?? '-' }}</span></span>
+                </p>
             </div>
         </div>
+
+        <!-- Right Side: Breadcrumb Navigation -->
+        <div class="flex flex-col md:items-end gap-2.5">
+            <nav class="flex items-center text-xs text-slate-400 font-medium">
+                <a href="{{ route('dashboard.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <a href="{{ route('users.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-users text-sm"></i>
+                    <span>Users</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="font-bold text-slate-800">Set Permission</span>
+            </nav>
+            <a href="{{ route('users.index') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs border border-slate-200 shadow-2xs transition active:scale-95">
+                <i class="ti ti-arrow-left text-sm"></i>
+                <span>Kembali ke Data Users</span>
+            </a>
+        </div>
     </div>
-@endsection
 
-@php
-    // Mapping Structure Menu Utama -> Sub Menu Groups yang PERSIS sama dengan urutan Sidebar Super Admin
-    $menuStructure = [
-        'Data Master' => [
-            'icon' => 'ti ti-database',
-            'groups' => ['Karyawan', 'Jabatan', 'Siswa', 'Unit', 'Jenis Biaya', 'Departemen', 'Ledger', 'jenissimpanan', 'jenistabungan', 'jenispembiayaan', 'Kategori Ibadah', 'Kegiatan Ibadah'],
-        ],
-        'Pendaftaran' => [
-            'icon' => 'ti ti-file-description',
-            'groups' => ['Pendaftaran', 'Pendaftaran Online', 'Tahun Ajaran PPDB', 'Asal Sekolah'],
-        ],
-        'Akademik' => [
-            'icon' => 'ti ti-school',
-            'groups' => ['Guru', 'Akademik Siswa', 'Jabatan Akademik', 'Presensi Siswa', 'Mata Pelajaran', 'Kelas', 'Jadwal Pelajaran', 'akademik'],
-        ],
-        'Koperasi' => [
-            'icon' => 'ti ti-moneybag',
-            'groups' => ['anggota', 'simpanan', 'tabungan', 'Pembiayaan'],
-        ],
-        'Keuangan' => [
-            'icon' => 'ti ti-wallet',
-            'groups' => ['Pembayaran Pendidikan', 'Jenis Bayar', 'Rencana SPP', 'Ledger Transaksi', 'Kategori Pemasukan', 'Kategori Pengeluaran', 'Kategori Ledger', 'Saldo Awal Ledger', 'Laporan Keuangan', 'Sumber Dana'],
-        ],
-        'MSDM' => [
-            'icon' => 'ti ti-users',
-            'groups' => ['Presensi', 'Izin Absen', 'Izin Sakit', 'Jam Kerja'],
-        ],
-        'Kegiatan' => [
-            'icon' => 'ti ti-activity',
-            'groups' => ['Jobdesk', 'Program Kerja', 'Agenda Kegiatan', 'Realisasi Kegiatan', 'Agenda'],
-        ],
-        'Asrama' => [
-            'icon' => 'ti ti-home-check',
-            'groups' => ['Asrama Siswa'],
-        ],
-        'Al Amin Got Talent' => [
-            'icon' => 'ti ti-award',
-            'groups' => ['Perlombaan', 'Pendaftaran Got Talent', 'Jenjang Pendidikan'],
-        ],
-        'Website' => [
-            'icon' => 'ti ti-globe',
-            'groups' => ['Kategori', 'Post', 'Sebaran Alumni', 'Pages', 'Tentang Pesantren', 'Visi & Misi', 'PPDB Setting', 'Testimoni', 'Prestasi Siswa', 'Program Unggulan', 'Pilar Pendidikan', 'Gallery'],
-        ],
-        'Pengumuman' => [
-            'icon' => 'ti ti-speakerphone',
-            'groups' => ['Pengumuman', 'Kategori Pengumuman', 'Push Subscription'],
-        ],
-        'Konfigurasi' => [
-            'icon' => 'ti ti-adjustments',
-            'groups' => ['Tahun Ajaran', 'Biaya', 'Mesin Fingerprint', 'Migrasi Siswa'],
-        ],
-        'Kuisioner' => [
-            'icon' => 'ti ti-clipboard-list',
-            'groups' => ['Kuisioner'],
-        ],
-        'Settings' => [
-            'icon' => 'ti ti-settings',
-            'groups' => ['Pengaturan Umum'],
-        ],
-        'Lainnya / Modul Tambahan' => [
-            'icon' => 'ti ti-box',
-            'groups' => [], // Otomatis menampung grup yang belum terdaftar
-        ],
-    ];
+    <!-- ================= 2. INFO BANNER ================= -->
+    <div class="flex items-start gap-3 p-3.5 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl text-emerald-950 text-xs shadow-2xs">
+        <div class="w-7 h-7 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <i class="ti ti-info-circle text-base"></i>
+        </div>
+        <div class="flex-1 leading-relaxed">
+            <span class="font-extrabold text-emerald-900">Petunjuk Permission Pengguna:</span>
+            Permission bertanda <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 text-[10px]"><i class="ti ti-lock text-[10px]"></i>Role</span> sudah aktif otomatis dari Role utama dan dikunci. Centang kotak permission tambahan untuk memberikan hak akses spesifik khusus bagi pengguna ini.
+        </div>
+    </div>
 
-    // Kelompokkan data $permissions ke dalam masing-masing Main Menu
-    $groupedData = [];
-    $assignedGroupIds = [];
-
-    // Indeks data permissions berdasarkan name (case insensitive)
-    $permissionsByGroupName = [];
-    foreach ($permissions as $p) {
-        $cleanName = trim($p->name);
-        $permissionsByGroupName[strtolower($cleanName)] = $p;
-    }
-
-    foreach ($menuStructure as $mainMenu => $meta) {
-        $groupedData[$mainMenu] = [
-            'icon' => $meta['icon'],
-            'items' => []
+    @php
+        // Mapping Structure Menu Utama -> Sub Menu Groups yang PERSIS sama dengan urutan Sidebar Super Admin
+        $menuStructure = [
+            'Data Master' => [
+                'icon' => 'ti ti-database',
+                'groups' => ['Karyawan', 'Jabatan', 'Siswa', 'Unit', 'Jenis Biaya', 'Departemen', 'Ledger', 'jenissimpanan', 'jenistabungan', 'jenispembiayaan', 'Kategori Ibadah', 'Kegiatan Ibadah'],
+            ],
+            'Pendaftaran' => [
+                'icon' => 'ti ti-file-description',
+                'groups' => ['Pendaftaran', 'Pendaftaran Online', 'Tahun Ajaran PPDB', 'Asal Sekolah'],
+            ],
+            'Akademik' => [
+                'icon' => 'ti ti-school',
+                'groups' => ['Guru', 'Akademik Siswa', 'Jabatan Akademik', 'Presensi Siswa', 'Mata Pelajaran', 'Kelas', 'Jadwal Pelajaran', 'akademik'],
+            ],
+            'Koperasi' => [
+                'icon' => 'ti ti-moneybag',
+                'groups' => ['anggota', 'simpanan', 'tabungan', 'Pembiayaan'],
+            ],
+            'Keuangan' => [
+                'icon' => 'ti ti-wallet',
+                'groups' => ['Pembayaran Pendidikan', 'Jenis Bayar', 'Rencana SPP', 'Ledger Transaksi', 'Kategori Pemasukan', 'Kategori Pengeluaran', 'Kategori Ledger', 'Saldo Awal Ledger', 'Laporan Keuangan', 'Sumber Dana'],
+            ],
+            'MSDM' => [
+                'icon' => 'ti ti-users',
+                'groups' => ['Presensi', 'Izin Absen', 'Izin Sakit', 'Jam Kerja'],
+            ],
+            'Kegiatan' => [
+                'icon' => 'ti ti-activity',
+                'groups' => ['Jobdesk', 'Program Kerja', 'Agenda Kegiatan', 'Realisasi Kegiatan', 'Agenda'],
+            ],
+            'Asrama' => [
+                'icon' => 'ti ti-home-check',
+                'groups' => ['Asrama Siswa'],
+            ],
+            'Al Amin Got Talent' => [
+                'icon' => 'ti ti-award',
+                'groups' => ['Perlombaan', 'Pendaftaran Got Talent', 'Jenjang Pendidikan'],
+            ],
+            'Website' => [
+                'icon' => 'ti ti-globe',
+                'groups' => ['Kategori', 'Post', 'Sebaran Alumni', 'Pages', 'Tentang Pesantren', 'Visi & Misi', 'PPDB Setting', 'Testimoni', 'Prestasi Siswa', 'Program Unggulan', 'Pilar Pendidikan', 'Gallery'],
+            ],
+            'Pengumuman' => [
+                'icon' => 'ti ti-speakerphone',
+                'groups' => ['Pengumuman', 'Kategori Pengumuman', 'Push Subscription'],
+            ],
+            'Konfigurasi' => [
+                'icon' => 'ti ti-adjustments',
+                'groups' => ['Tahun Ajaran', 'Biaya', 'Mesin Fingerprint', 'Migrasi Siswa'],
+            ],
+            'Kuisioner' => [
+                'icon' => 'ti ti-clipboard-list',
+                'groups' => ['Kuisioner'],
+            ],
+            'Settings' => [
+                'icon' => 'ti ti-settings',
+                'groups' => ['Pengaturan Umum'],
+            ],
+            'Lainnya / Modul Tambahan' => [
+                'icon' => 'ti ti-box',
+                'groups' => [],
+            ],
         ];
-        foreach ($meta['groups'] as $gName) {
-            $key = strtolower(trim($gName));
-            if (isset($permissionsByGroupName[$key])) {
-                $groupedData[$mainMenu]['items'][] = $permissionsByGroupName[$key];
-                $assignedGroupIds[] = $permissionsByGroupName[$key]->id;
+
+        $groupedData = [];
+        $assignedGroupIds = [];
+
+        $permissionsByGroupName = [];
+        foreach ($permissions as $p) {
+            $cleanName = trim($p->name);
+            $permissionsByGroupName[strtolower($cleanName)] = $p;
+        }
+
+        foreach ($menuStructure as $mainMenu => $meta) {
+            $groupedData[$mainMenu] = [
+                'icon' => $meta['icon'],
+                'items' => []
+            ];
+            foreach ($meta['groups'] as $gName) {
+                $key = strtolower(trim($gName));
+                if (isset($permissionsByGroupName[$key])) {
+                    $groupedData[$mainMenu]['items'][] = $permissionsByGroupName[$key];
+                    $assignedGroupIds[] = $permissionsByGroupName[$key]->id;
+                }
             }
         }
-    }
 
-    // Masukkan sisa permission group yang belum masuk ke menu di atas
-    foreach ($permissions as $p) {
-        if (!in_array($p->id, $assignedGroupIds)) {
-            $groupedData['Lainnya / Modul Tambahan']['items'][] = $p;
+        foreach ($permissions as $p) {
+            if (!in_array($p->id, $assignedGroupIds)) {
+                $groupedData['Lainnya / Modul Tambahan']['items'][] = $p;
+            }
         }
-    }
-@endphp
+    @endphp
 
-<div class="alert alert-info d-flex align-items-center mb-4" role="alert" style="border-radius: 10px;">
-    <i class="ti ti-info-circle fs-4 me-2"></i>
-    <div>
-        <strong>Informasi:</strong> Permission bertanda <span class="badge bg-label-success"><i class="ti ti-lock me-1"></i>Role</span> sudah otomatis aktif dari role user dan <strong>terkunci</strong>. Anda dapat mencentang permission tambahan khusus untuk user ini.
-    </div>
-</div>
+    <!-- ================= 3. STICKY ACTION & SEARCH TOOLBAR ================= -->
+    <div class="sticky top-16 z-30 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 shadow-md p-3 sm:p-4">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <!-- Search Live Filter -->
+            <div class="relative w-full sm:w-80">
+                <i class="ti ti-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base"></i>
+                <input type="text" id="searchPermission" 
+                    placeholder="Cari modul atau permission..." 
+                    class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+            </div>
 
-<!-- Action & Search Toolbar -->
-<div class="sticky-actions-bar">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-        <div class="d-flex align-items-center gap-2 flex-grow-1 flex-md-grow-0" style="min-width: 250px;">
-            <div class="input-group input-group-merge">
-                <span class="input-group-text bg-white"><i class="ti ti-search text-muted"></i></span>
-                <input type="text" id="searchPermission" class="form-control" placeholder="Cari nama modul atau permission...">
+            <!-- Bulk Check Actions & Save Trigger -->
+            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                <button type="button" id="selectAll" class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold rounded-xl text-xs border border-emerald-200 transition active:scale-95 cursor-pointer">
+                    <i class="ti ti-checkbox text-sm"></i>
+                    <span>Pilih Semua (Tambahan)</span>
+                </button>
+                <button type="button" id="deselectAll" class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-800 font-bold rounded-xl text-xs border border-rose-200 transition active:scale-95 cursor-pointer">
+                    <i class="ti ti-square-x text-sm"></i>
+                    <span>Kosongkan Tambahan</span>
+                </button>
+                <button type="button" onclick="document.getElementById('formUserPermission').submit()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl text-xs shadow-xs transition active:scale-95 cursor-pointer">
+                    <i class="ti ti-device-floppy text-sm"></i>
+                    <span>Simpan Perubahan</span>
+                </button>
             </div>
         </div>
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-            <a href="{{ route('users.index') }}" class="btn btn-outline-secondary d-flex align-items-center gap-1.5 px-3">
-                <i class="ti ti-arrow-left"></i> Kembali
-            </a>
-            <button type="button" class="btn btn-label-success d-flex align-items-center gap-1.5 px-3" id="selectAll">
-                <i class="ti ti-checkbox"></i> Pilih Semua (Tambahan)
-            </button>
-            <button type="button" class="btn btn-label-danger d-flex align-items-center gap-1.5 px-3" id="deselectAll">
-                <i class="ti ti-square-x"></i> Kosongkan Tambahan
-            </button>
-        </div>
     </div>
-</div>
 
-<form action="{{ route('users.storeuserpermission', Crypt::encrypt($user->id)) }}" method="POST">
-    @csrf
+    <!-- ================= 4. MAIN FORM & PERMISSION GROUPS ================= -->
+    <form action="{{ route('users.storeuserpermission', Crypt::encrypt($user->id)) }}" method="POST" id="formUserPermission" class="space-y-5">
+        @csrf
 
-    @foreach ($groupedData as $mainMenuTitle => $mainMenuData)
-        @if (count($mainMenuData['items']) > 0)
-            <div class="menu-group-card permission-main-section">
-                <!-- Main Menu Header -->
-                <div class="menu-group-header">
-                    <div class="d-flex align-items-center gap-2.5">
-                        <div class="avatar avatar-sm bg-label-success rounded d-flex align-items-center justify-content-center">
-                            <i class="{{ $mainMenuData['icon'] }} fs-5"></i>
+        @foreach ($groupedData as $mainMenuTitle => $mainMenuData)
+            @if (count($mainMenuData['items']) > 0)
+                <div class="permission-main-section bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden transition-all">
+                    
+                    <!-- Solid Emerald Header of Group -->
+                    <div class="bg-emerald-600 px-4 py-3 sm:px-5 sm:py-3.5 flex items-center justify-between flex-wrap gap-3">
+                        <div class="flex items-center gap-2.5 text-white">
+                            <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center backdrop-blur-xs">
+                                <i class="{{ $mainMenuData['icon'] }} text-lg"></i>
+                            </div>
+                            <h2 class="text-sm sm:text-base font-extrabold tracking-tight">
+                                {{ $mainMenuTitle }}
+                            </h2>
+                            <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-white/20 text-white border border-white/20">
+                                {{ count($mainMenuData['items']) }} Sub Menu
+                            </span>
                         </div>
-                        <div>
-                            <h5 class="menu-group-title">{{ $mainMenuTitle }}</h5>
-                        </div>
-                        <span class="menu-group-badge">{{ count($mainMenuData['items']) }} Sub Menu</span>
-                    </div>
-                    <div class="form-check mb-0">
-                        <input class="form-check-input select-all-main-menu" type="checkbox" id="mainMenuCheck_{{ Str::slug($mainMenuTitle) }}">
-                        <label class="form-check-label fw-semibold text-dark small cursor-pointer" for="mainMenuCheck_{{ Str::slug($mainMenuTitle) }}">
-                            Pilih Semua di {{ $mainMenuTitle }}
+
+                        <!-- Toggle Select All for this Main Menu -->
+                        <label class="inline-flex items-center gap-2 cursor-pointer bg-emerald-700/60 hover:bg-emerald-700 px-3 py-1.5 rounded-xl border border-emerald-500/40 text-white text-xs font-bold transition">
+                            <input class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 select-all-main-menu cursor-pointer" type="checkbox" id="mainMenuCheck_{{ Str::slug($mainMenuTitle) }}">
+                            <span>Pilih Semua di {{ $mainMenuTitle }}</span>
                         </label>
                     </div>
-                </div>
 
-                <!-- Sub Menus Grid -->
-                <div class="p-3.5 p-md-4">
-                    <div class="row g-3">
-                        @foreach ($mainMenuData['items'] as $d)
-                            <div class="col-xl-3 col-lg-4 col-md-6 col-12 sub-group-wrapper">
-                                <div class="sub-group-card">
-                                    <div class="sub-group-header">
-                                        <h6 class="sub-group-title text-truncate" title="{{ $d->name }}">
-                                            <i class="ti ti-folder text-success fs-5"></i>
-                                            <span>{{ $d->name }}</span>
-                                        </h6>
-                                        <div class="form-check mb-0">
-                                            <input class="form-check-input select-all-group" type="checkbox" data-group="{{ $d->id }}" id="selectGroup{{ $d->id }}">
-                                            <label class="form-check-label small text-muted cursor-pointer" for="selectGroup{{ $d->id }}" style="font-size: 0.72rem;">
-                                                Semua
+                    <!-- Sub Menus Grid -->
+                    <div class="p-4 sm:p-5 bg-slate-50/40">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            @foreach ($mainMenuData['items'] as $d)
+                                <div class="sub-group-wrapper">
+                                    <div class="h-full flex flex-col bg-white border border-slate-200/90 rounded-xl shadow-2xs hover:border-emerald-300 hover:shadow-xs transition duration-200">
+                                        
+                                        <!-- Sub Group Card Header -->
+                                        <div class="px-3.5 py-2.5 bg-slate-50 border-b border-slate-200/80 rounded-t-xl flex items-center justify-between gap-2">
+                                            <div class="flex items-center gap-1.5 min-w-0">
+                                                <i class="ti ti-folder text-emerald-600 text-base shrink-0"></i>
+                                                <h3 class="text-xs font-extrabold text-slate-800 truncate sub-group-title" title="{{ $d->name }}">
+                                                    {{ $d->name }}
+                                                </h3>
+                                            </div>
+                                            <label class="inline-flex items-center gap-1 cursor-pointer shrink-0">
+                                                <input class="w-3.5 h-3.5 rounded text-emerald-600 focus:ring-emerald-500 select-all-group cursor-pointer" type="checkbox" data-group="{{ $d->id }}" id="selectGroup{{ $d->id }}">
+                                                <span class="text-[11px] font-bold text-slate-500">Semua</span>
                                             </label>
                                         </div>
-                                    </div>
-                                    <div class="sub-group-body">
-                                        @foreach ($d->permissions as $perm)
-                                            @php
-                                                $isFromRole = in_array($perm->name, $rolePermissions);
-                                                $isDirect = in_array($perm->name, $directPermissions);
-                                            @endphp
-                                            <div class="form-check mb-1.5 permission-item">
-                                                @if ($isFromRole)
-                                                    {{-- Locked checkbox if inherited from Role --}}
-                                                    <input class="form-check-input permission-checkbox" type="checkbox" 
-                                                        value="{{ $perm->name }}" id="defaultCheck{{ $perm->id }}"
-                                                        data-group="{{ $d->id }}"
-                                                        checked disabled>
-                                                    <label class="form-check-label text-muted py-1 d-flex align-items-center justify-content-between w-100" for="defaultCheck{{ $perm->id }}">
-                                                        <span>{{ $perm->name }}</span>
-                                                        <span class="badge bg-label-success ms-1 small" style="font-size: 0.68rem;" title="Hak akses bawaan role (permanen)"><i class="ti ti-lock me-1"></i>Role</span>
-                                                    </label>
-                                                @else
-                                                    {{-- Editable checkbox for custom user permissions --}}
-                                                    <input class="form-check-input permission-checkbox editable-permission" type="checkbox" name="permission[]"
-                                                        value="{{ $perm->name }}" id="defaultCheck{{ $perm->id }}"
-                                                        data-group="{{ $d->id }}"
-                                                        {{ $isDirect ? 'checked' : '' }}>
-                                                    <label class="form-check-label permission-item-label w-100" for="defaultCheck{{ $perm->id }}">
-                                                        {{ $perm->name }}
-                                                    </label>
-                                                @endif
-                                            </div>
-                                        @endforeach
+
+                                        <!-- Sub Group Card Body (Permission Items) -->
+                                        <div class="p-3 space-y-1.5 flex-1">
+                                            @foreach ($d->permissions as $perm)
+                                                @php
+                                                    $isFromRole = in_array($perm->name, $rolePermissions);
+                                                    $isDirect = in_array($perm->name, $directPermissions);
+                                                @endphp
+
+                                                <div class="permission-item flex items-center justify-between gap-2 p-1.5 rounded-lg hover:bg-slate-50 transition">
+                                                    @if ($isFromRole)
+                                                        <!-- Inherited from Role (Locked) -->
+                                                        <label class="flex items-center justify-between w-full cursor-not-allowed text-xs text-slate-500 font-medium">
+                                                            <div class="flex items-center gap-2">
+                                                                <input class="w-4 h-4 rounded text-emerald-600 bg-slate-200 border-slate-300 cursor-not-allowed permission-checkbox" 
+                                                                    type="checkbox" 
+                                                                    value="{{ $perm->name }}" 
+                                                                    data-group="{{ $d->id }}"
+                                                                    checked disabled>
+                                                                <span class="text-slate-600 font-semibold">{{ $perm->name }}</span>
+                                                            </div>
+                                                            <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold border border-emerald-200" title="Hak akses permanen dari Role">
+                                                                <i class="ti ti-lock text-[10px]"></i> Role
+                                                            </span>
+                                                        </label>
+                                                    @else
+                                                        <!-- Editable Direct Permission -->
+                                                        <label for="defaultCheck{{ $perm->id }}" class="flex items-center gap-2 w-full cursor-pointer text-xs text-slate-700 font-medium hover:text-emerald-800">
+                                                            <input class="w-4 h-4 rounded text-emerald-600 border-slate-300 focus:ring-emerald-500 permission-checkbox editable-permission cursor-pointer" 
+                                                                type="checkbox" 
+                                                                name="permission[]"
+                                                                value="{{ $perm->name }}" 
+                                                                id="defaultCheck{{ $perm->id }}"
+                                                                data-group="{{ $d->id }}"
+                                                                {{ $isDirect ? 'checked' : '' }}>
+                                                            <span>{{ $perm->name }}</span>
+                                                        </label>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                     </div>
                 </div>
-            </div>
-        @endif
-    @endforeach
+            @endif
+        @endforeach
 
-    <div class="row mt-4 mb-5">
-        <div class="col-12">
-            <button type="submit" class="btn text-white w-100 py-3 shadow-sm d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; font-size: 1.05rem; font-weight: 700; border: none; border-radius: 10px;">
-                <i class="ti ti-device-floppy fs-4"></i>
-                Simpan Hak Akses User {{ $user->name }}
+        <!-- Bottom Submit Bar -->
+        <div class="pt-2 pb-8">
+            <button type="submit" class="w-full py-3.5 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm rounded-2xl shadow-sm transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer">
+                <i class="ti ti-device-floppy text-lg"></i>
+                <span>Simpan Seluruh Hak Akses User {{ $user->name }}</span>
             </button>
         </div>
-    </div>
-</form>
+    </form>
+</div>
 @endsection
 
 @push('myscript')

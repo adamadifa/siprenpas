@@ -36,7 +36,21 @@ class KonfirmasiPembayaranGotTalentController extends Controller
         $konfirmasi = $query->latest()->paginate(25);
         $konfirmasi->appends($request->all());
 
-        return view('konfirmasi-pembayaran-got-talent.index', compact('konfirmasi'));
+        // Statistik summary
+        $totalKonfirmasi = KonfirmasiPembayaranGotTalent::count();
+        $totalPending = KonfirmasiPembayaranGotTalent::where('status', 'pending')->count();
+        $totalDiverifikasi = KonfirmasiPembayaranGotTalent::where('status', 'diverifikasi')->count();
+        $totalDitolak = KonfirmasiPembayaranGotTalent::where('status', 'ditolak')->count();
+        $totalDanaMasuk = KonfirmasiPembayaranGotTalent::where('status', 'diverifikasi')->sum('jumlah_pembayaran');
+
+        return view('konfirmasi-pembayaran-got-talent.index', compact(
+            'konfirmasi', 
+            'totalKonfirmasi', 
+            'totalPending', 
+            'totalDiverifikasi', 
+            'totalDitolak', 
+            'totalDanaMasuk'
+        ));
     }
 
     /**
@@ -45,7 +59,7 @@ class KonfirmasiPembayaranGotTalentController extends Controller
     public function show($id)
     {
         $id = Crypt::decrypt($id);
-        $konfirmasi = KonfirmasiPembayaranGotTalent::with(['pendaftaran.jenjangPendidikan', 'verifikator'])
+        $konfirmasi = KonfirmasiPembayaranGotTalent::with(['pendaftaran.jenjangPendidikan', 'pendaftaran.perlombaan', 'verifikator'])
             ->findOrFail($id);
 
         return view('konfirmasi-pembayaran-got-talent.show', compact('konfirmasi'));

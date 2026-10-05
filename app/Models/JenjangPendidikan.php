@@ -10,4 +10,9 @@ class JenjangPendidikan extends Model
     use HasFactory;
     protected $table = "jenjang_pendidikan";
     protected $guarded = [];
+
+    public function perlombaan()
+    {
+        return $this->hasMany(Perlombaan::class, 'id_jenjang', 'id');
+    }
 }

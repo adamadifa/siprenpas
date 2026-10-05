@@ -1,153 +1,247 @@
-<style>
-    .upload-zone {
-        border: 2px dashed #064e3b;
-        border-radius: 12px;
-        padding: 40px;
-        text-align: center;
-        background-color: #f8faf9;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .upload-zone:hover {
-        background-color: #f0f4f2;
-        border-color: #059669;
-    }
-
-    .upload-zone i {
-        font-size: 3rem;
-        color: #064e3b;
-    }
-
-    .upload-zone p {
-        margin: 0;
-        color: #064e3b;
-        font-weight: 500;
-    }
-
-    .upload-zone .preview-container {
-        display: {{ $unit->logo ? 'block' : 'none' }};
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: white;
-        z-index: 10;
-        padding: 20px;
-    }
-
-    .upload-zone .preview-container img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
-
-    .upload-zone .remove-preview {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        z-index: 20;
-        background: rgba(239, 68, 68, 0.9);
-        color: white;
-        border-radius: 50%;
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s;
-    }
-
-    .upload-zone .remove-preview:hover {
-        transform: scale(1.1);
-        background: #ef4444;
-    }
-</style>
-
-<form action="{{ route('unit.update', Crypt::encrypt($unit->kode_unit)) }}" id="formeditUnit" method="POST"
-    enctype="multipart/form-data">
+<form action="{{ route('unit.update', Crypt::encrypt($unit->kode_unit)) }}" id="formeditUnit" method="POST" enctype="multipart/form-data" class="space-y-4" novalidate>
     @csrf
     @method('PUT')
-    <x-input-with-icon-label icon="ti ti-barcode" label="Kode Unit" name="kode_unit" value="{{ $unit->kode_unit }}"
-        readonly="true" />
-    <x-input-with-icon-label icon="ti ti-file-description" label="Nama Unit" name="nama_unit"
-        value="{{ $unit->nama_unit }}" required="true" />
 
-    <div class="form-group mb-3">
-        <label class="form-label" style="font-weight: 600">Logo Unit</label>
-        <label for="logo" class="upload-zone" id="upload-zone">
-            <div class="preview-container" id="preview-container">
-                <div class="remove-preview" id="remove-preview">
-                    <i class="ti ti-x fs-5"></i>
-                </div>
-                <img src="{{ $unit->logo ? asset('storage/' . $unit->logo) : '' }}" alt="Preview" id="preview-img">
-            </div>
-            <i class="ti ti-cloud-upload"></i>
-            <div>
-                <p>Klik untuk ganti logo</p>
-                <span class="text-muted small">Format: PNG, JPG, JPEG (Max. 2MB)</span>
-            </div>
-            <input type="file" name="logo" id="logo" class="d-none" accept="image/*"
-                onchange="previewImage(this)">
+    <!-- Kode Unit (Readonly) -->
+    <div class="space-y-1.5">
+        <label for="kode_unit" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+            <i class="ti ti-barcode text-sm text-slate-400"></i>
+            <span>Kode Unit (Tidak Dapat Diubah)</span>
         </label>
-        <div class="form-text mt-2">Biarkan kosong jika tidak ingin mengubah logo.</div>
+        <div class="relative">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i class="ti ti-barcode text-base"></i>
+            </div>
+            <input type="text" 
+                   id="kode_unit" 
+                   name="kode_unit" 
+                   value="{{ $unit->kode_unit }}"
+                   readonly
+                   class="w-full pl-9 pr-3.5 py-2.5 text-sm font-black uppercase font-mono tracking-wider text-slate-600 bg-slate-100 border border-slate-300 rounded-xl shadow-2xs cursor-not-allowed">
+        </div>
     </div>
 
-    <x-textarea-label label="Keterangan" name="keterangan" value="{{ $unit->keterangan }}" />
-
-    <div class="form-group mb-3">
-        <label for="status" class="form-label" style="font-weight: 600">Status <span
-                class="text-danger">*</span></label>
-        <select name="status" id="status" class="form-select">
-            <option value="1" {{ $unit->status == 1 ? 'selected' : '' }}>Show</option>
-            <option value="0" {{ $unit->status == 0 ? 'selected' : '' }}>Hide</option>
-        </select>
+    <!-- Nama Unit -->
+    <div class="space-y-1.5">
+        <label for="nama_unit" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+            <i class="ti ti-building-community text-sm text-slate-400"></i>
+            <span>Nama Lengkap Unit <span class="text-rose-500 font-bold">*</span></span>
+        </label>
+        <div class="relative">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i class="ti ti-building-community text-base"></i>
+            </div>
+            <input type="text" 
+                   id="nama_unit" 
+                   name="nama_unit" 
+                   value="{{ $unit->nama_unit }}"
+                   placeholder="Contoh: TK Islam Terpadu Al-Amin..." 
+                   class="w-full pl-9 pr-3.5 py-2.5 text-sm font-bold text-slate-800 bg-white border border-slate-300 rounded-xl placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+        </div>
     </div>
 
-    <div class="form-group">
-        <button class="btn text-white w-100 py-2" type="submit" style="background-color: #064e3b">
-            <i class="ti ti-device-floppy me-1"></i>
-            Update Data
+    <!-- Status Tampilan -->
+    <div class="space-y-1.5">
+        <label for="status" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+            <i class="ti ti-eye text-sm text-slate-400"></i>
+            <span>Status Unit <span class="text-rose-500 font-bold">*</span></span>
+        </label>
+        <div class="relative">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i class="ti ti-eye text-base"></i>
+            </div>
+            <select name="status" 
+                    id="status" 
+                    class="w-full appearance-none pl-9 pr-9 py-2.5 text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition cursor-pointer">
+                <option value="1" {{ $unit->status == 1 ? 'selected' : '' }}>Show (Tampilkan di Sistem & Menu)</option>
+                <option value="0" {{ $unit->status == 0 ? 'selected' : '' }}>Hide (Sembunyikan)</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                <i class="ti ti-chevron-down text-sm"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keterangan -->
+    <div class="space-y-1.5">
+        <label for="keterangan" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+            <i class="ti ti-notes text-sm text-slate-400"></i>
+            <span>Keterangan (Opsional)</span>
+        </label>
+        <div class="relative">
+            <div class="pointer-events-none absolute top-3 left-3 text-slate-400">
+                <i class="ti ti-notes text-base"></i>
+            </div>
+            <textarea id="keterangan" 
+                      name="keterangan" 
+                      rows="2" 
+                      placeholder="Catatan tambahan mengenai unit ini..."
+                      class="w-full pl-9 pr-3.5 py-2.5 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-xl placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition resize-none">{{ $unit->keterangan }}</textarea>
+        </div>
+    </div>
+
+    <!-- Upload Logo Unit -->
+    @php
+        $hasLogo = !empty($unit->logo) && Storage::disk('public')->exists($unit->logo);
+    @endphp
+    <div class="space-y-1.5">
+        <label class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+            <i class="ti ti-photo text-sm text-slate-400"></i>
+            <span>Logo Unit</span>
+        </label>
+        <div class="relative">
+            <label for="logo_edit" class="flex flex-col items-center justify-center p-4 border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-xl bg-slate-50/70 hover:bg-emerald-50/20 transition cursor-pointer text-center group">
+                <div id="uploadPlaceholderEdit" class="{{ $hasLogo ? 'hidden' : '' }} flex flex-col items-center space-y-1">
+                    <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 text-slate-400 group-hover:text-emerald-600 group-hover:border-emerald-200 flex items-center justify-center text-xl transition shadow-2xs">
+                        <i class="ti ti-cloud-upload"></i>
+                    </div>
+                    <div class="text-xs font-bold text-slate-700 group-hover:text-emerald-700">Klik untuk ganti logo unit</div>
+                    <p class="text-[11px] text-slate-400">Format: PNG, JPG, JPEG, WEBP (Maks. 2MB)</p>
+                </div>
+                <div id="previewContainerEdit" class="{{ $hasLogo ? '' : 'hidden' }} flex flex-col items-center space-y-2">
+                    <img id="previewImgEdit" 
+                         src="{{ $hasLogo ? asset('storage/' . $unit->logo) : '' }}" 
+                         alt="Logo {{ $unit->nama_unit }}" 
+                         class="h-16 w-auto max-w-[120px] object-contain rounded-lg p-1 bg-white border border-slate-200 shadow-2xs">
+                    <span class="text-[11px] font-bold text-slate-500">Klik untuk mengganti logo</span>
+                </div>
+                <input type="file" name="logo" id="logo_edit" class="hidden" accept="image/*">
+            </label>
+        </div>
+        <p class="text-[11px] text-slate-400 font-medium">Kosongkan isian logo jika tidak ingin mengubah logo saat ini.</p>
+    </div>
+
+    <!-- Actions Footer -->
+    <div class="pt-4 mt-6 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5">
+        <button type="button" class="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer active:scale-95" data-bs-dismiss="modal">
+            Batal
+        </button>
+        <button type="submit" id="btnSubmitEditUnit" class="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+            <i class="ti ti-device-floppy text-base"></i>
+            <span>Simpan Perubahan</span>
         </button>
     </div>
 </form>
 
 <script>
-    function previewImage(input) {
-        const file = input.files[0];
-        if (file) {
-            const reader = new FileReader();
-            const previewContainer = document.getElementById('preview-container');
-            const previewImg = document.getElementById('preview-img');
+    $(function() {
+        const form = $("#formeditUnit");
 
-            reader.onload = function(e) {
-                previewImg.src = e.target.result;
-                previewContainer.style.display = 'block';
-            }
-            reader.readAsDataURL(file);
+        // Logo Image Preview Handler
+        const logoInput = document.getElementById('logo_edit');
+        const uploadPlaceholder = document.getElementById('uploadPlaceholderEdit');
+        const previewContainer = document.getElementById('previewContainerEdit');
+        const previewImg = document.getElementById('previewImgEdit');
+
+        if (logoInput) {
+            logoInput.addEventListener('change', function(e) {
+                const file = this.files[0];
+                if (file) {
+                    if (file.size > 2 * 1024 * 1024) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Ukuran Terlalu Besar',
+                            text: 'Ukuran logo maksimal 2MB',
+                            confirmButtonColor: '#059669',
+                            customClass: { popup: 'rounded-2xl shadow-2xl' }
+                        });
+                        this.value = '';
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        previewImg.src = event.target.result;
+                        uploadPlaceholder.classList.add('hidden');
+                        previewContainer.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
         }
-    }
 
-    document.getElementById('remove-preview')?.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const input = document.getElementById('logo');
-        const previewContainer = document.getElementById('preview-container');
+        // Real-time validation rules
+        const validationRules = {
+            'nama_unit': { 
+                required: true, 
+                message: 'Nama Unit Pendidikan wajib diisi' 
+            }
+        };
 
-        input.value = '';
-        previewContainer.style.display = 'none';
-        // Note: For edit, removing the preview just hides it. 
-        // Logic in controller should handle whether logo is updated or not.
+        function showError(element, message) {
+            const $el = $(element);
+            const $container = $el.closest('.space-y-1\\.5').length ? $el.closest('.space-y-1\\.5') : ($el.closest('.space-y-1').length ? $el.closest('.space-y-1') : $el.parent());
+            
+            $el.addClass('border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20')
+               .removeClass('border-slate-300 focus:ring-emerald-500/20 focus:border-emerald-600');
+            
+            $el.siblings('.pointer-events-none').find('i').addClass('text-rose-500').removeClass('text-slate-400');
+            
+            $container.find('.error-msg').remove();
+            $container.append(`
+                <p class="error-msg text-[11px] font-semibold text-rose-500 mt-1 flex items-center gap-1 animate-in fade-in duration-200">
+                    <i class="ti ti-alert-circle text-xs shrink-0"></i>
+                    <span>${message}</span>
+                </p>
+            `);
+        }
+
+        function clearError(element) {
+            const $el = $(element);
+            const $container = $el.closest('.space-y-1\\.5').length ? $el.closest('.space-y-1\\.5') : ($el.closest('.space-y-1').length ? $el.closest('.space-y-1') : $el.parent());
+            
+            $el.removeClass('border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20')
+               .addClass('border-slate-300');
+            
+            $el.siblings('.pointer-events-none').find('i').removeClass('text-rose-500').addClass('text-slate-400');
+            $container.find('.error-msg').remove();
+        }
+
+        function validateField(input) {
+            const name = $(input).attr('name');
+            const val = $(input).val() ? $(input).val().trim() : '';
+            const rule = validationRules[name];
+
+            if (!rule) return true;
+
+            if (rule.required && !val) {
+                showError(input, rule.message);
+                return false;
+            }
+
+            clearError(input);
+            return true;
+        }
+
+        form.find('input').on('input blur', function() {
+            validateField(this);
+        });
+
+        // Form Submit
+        form.on('submit', function(e) {
+            e.preventDefault();
+            let isValid = true;
+            let firstInvalid = null;
+
+            $.each(validationRules, function(fieldName, rule) {
+                const input = form.find(`[name="${fieldName}"]`);
+                if (input.length && !validateField(input[0])) {
+                    isValid = false;
+                    if (!firstInvalid) firstInvalid = input;
+                }
+            });
+
+            if (!isValid) {
+                if (firstInvalid) firstInvalid.focus();
+                return false;
+            }
+
+            const btnSubmit = form.find("#btnSubmitEditUnit");
+            btnSubmit.prop('disabled', true).html(`
+                <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Menyimpan...</span>
+            `);
+
+            this.submit();
+        });
     });
 </script>
-<script src="{{ asset('assets/js/pages/unit/edit.js') }}"></script>

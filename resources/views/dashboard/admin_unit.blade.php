@@ -196,10 +196,10 @@
     {{-- MODAL DRILL-DOWN REPORT --}}
     <div class="modal fade" id="modalDetailReport" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content border-0 shadow" id="modalDetailReportContent" style="border-radius: 1.25rem; overflow: hidden;">
-                <div class="modal-body text-center p-5">
-                    <div class="spinner-border text-success mx-auto mb-3" role="status"></div>
-                    <div class="fw-bold text-dark">Memuat Detail...</div>
+            <div class="modal-content border-0 shadow-2xl rounded-2xl overflow-hidden" id="modalDetailReportContent">
+                <div class="p-8 text-center bg-white">
+                    <div class="w-10 h-10 border-3 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                    <p class="text-xs font-bold text-slate-700">Memuat Detail Data...</p>
                 </div>
             </div>
         </div>
@@ -214,21 +214,6 @@
 @push('myscript')
     <script>
         $(function() {
-            // Modal stacking z-index handler agar backdrop modal kedua (misal: modal edit) berada di atas modal pertama
-            $(document).on('show.bs.modal', '.modal', function() {
-                const zIndex = 1090 + 10 * $('.modal:visible').length;
-                $(this).css('z-index', zIndex);
-                setTimeout(() => {
-                    $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
-                }, 0);
-            });
-
-            $(document).on('hidden.bs.modal', '.modal', function() {
-                if ($('.modal:visible').length) {
-                    $('body').addClass('modal-open');
-                }
-            });
-
             function updateDateTime() {
                 const now = new Date();
                 const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -306,9 +291,9 @@
                 let kode_ta = $('#filter_kode_ta').val();
 
                 $('#modalDetailReportContent').html(`
-                    <div class="modal-body text-center p-5">
-                        <div class="spinner-border text-warning mx-auto mb-3" role="status"></div>
-                        <div class="fw-bold text-dark">Memuat Data Santri Belum Lengkap...</div>
+                    <div class="p-8 text-center bg-white">
+                        <div class="w-10 h-10 border-3 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                        <div class="text-xs font-bold text-slate-800">Memuat Data Santri Belum Lengkap...</div>
                     </div>
                 `);
                 $('#modalDetailReport').modal('show');
@@ -332,9 +317,9 @@
                 let kode_ta = $('#filter_kode_ta').val();
 
                 $('#modalDetailReportContent').html(`
-                    <div class="modal-body text-center p-5">
-                        <div class="spinner-border text-primary mx-auto mb-3" role="status"></div>
-                        <div class="fw-bold text-dark">Memuat Data Santri Belum Masuk Rombel...</div>
+                    <div class="p-8 text-center bg-white">
+                        <div class="w-10 h-10 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                        <div class="text-xs font-bold text-slate-800">Memuat Data Santri Belum Masuk Rombel...</div>
                     </div>
                 `);
                 $('#modalDetailReport').modal('show');
@@ -358,9 +343,9 @@
                 let kode_ta = $('#filter_kode_ta').val();
 
                 $('#modalDetailReportContent').html(`
-                    <div class="modal-body text-center p-5">
-                        <div class="spinner-border text-success mx-auto mb-3" role="status"></div>
-                        <div class="fw-bold text-dark">Memuat Data Jadwal Kelas...</div>
+                    <div class="p-8 text-center bg-white">
+                        <div class="w-10 h-10 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                        <div class="text-xs font-bold text-slate-800">Memuat Data Jadwal Kelas...</div>
                     </div>
                 `);
                 $('#modalDetailReport').modal('show');

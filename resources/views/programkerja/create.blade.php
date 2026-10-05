@@ -1,172 +1,231 @@
-<form action="{{ route('programkerja.store') }}" id="formCreateProgramKerja" method="POST" enctype="multipart/form-data">
+<form action="{{ route('programkerja.store') }}" id="formCreateProgramKerja" method="POST" class="space-y-4" novalidate>
     @csrf
-    <x-input-with-icon icon="ti ti-file" label="Program Kerja" name="program_kerja" />
-    <div class="form-group mb-3">
-        <textarea name="target_pencapaian" id="target_pencapaian" class="form-control" rows="30"></textarea>
-    </div>
-    <div class="form-group mb-3">
-        <textarea name="keterangan" id="keterangan" class="form-control" rows="30"></textarea>
-    </div>
-    @if ($user->hasRole('super admin'))
-        <div class="form-group mb-3">
-            <select name="kode_unit" id="kode_unit" class="form-select select2Kodeunit">
-                <option value="">Unit</option>
-                @foreach ($unit as $u)
-                    <option value="{{ $u->kode_unit }}">{{ strtoupper($u->nama_unit) }}</option>
-                @endforeach
-            </select>
-        </div>
 
-        <div class="form-group mb-3">
-            <select name="kode_dept" id="kode_dept" class="form-select select2Kodedept">
-                <option value="">Departemen</option>
-            </select>
+    <!-- Program Kerja -->
+    <div class="space-y-1.5">
+        <label for="program_kerja" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+            <i class="ti ti-notebook text-sm text-slate-400"></i>
+            <span>Nama / Judul Program Kerja <span class="text-rose-500 font-bold">*</span></span>
+        </label>
+        <div class="relative">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i class="ti ti-file-text text-base"></i>
+            </div>
+            <input type="text" 
+                   name="program_kerja" 
+                   id="program_kerja" 
+                   placeholder="Contoh: Optimalisasi Kurikulum Bahasa Arab dan Tahfidz"
+                   class="w-full pl-9 pr-3.5 py-2.5 text-sm font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition"
+                   required>
         </div>
+    </div>
 
-        <div class="form-group mb-3">
-            <select name="kode_jabatan" id="kode_jabatan" class="form-select select2Kodejabatan">
-                <option value="">Jabatan</option>
-            </select>
+    @if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris']))
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <!-- Unit Kerja -->
+            <div class="space-y-1.5">
+                <label for="kode_unit" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <i class="ti ti-building text-sm text-slate-400"></i>
+                    <span>Unit Kerja <span class="text-slate-400 font-normal text-[11px]">(Opsional)</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-building text-base"></i>
+                    </div>
+                    <select name="kode_unit" id="kode_unit" class="w-full pl-9 pr-8 py-2.5 text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                        <option value="">Semua / Umum</option>
+                        @foreach ($unit as $u)
+                            <option value="{{ $u->kode_unit }}">{{ strtoupper($u->nama_unit) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <!-- Departemen -->
+            <div class="space-y-1.5">
+                <label for="kode_dept" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <i class="ti ti-sitemap text-sm text-slate-400"></i>
+                    <span>Departemen <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-sitemap text-base"></i>
+                    </div>
+                    <select name="kode_dept" id="kode_dept" class="w-full pl-9 pr-8 py-2.5 text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition" required>
+                        <option value="">-- Pilih Departemen --</option>
+                        @foreach ($departemen as $d)
+                            <option value="{{ $d->kode_dept }}">{{ strtoupper($d->nama_dept) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <!-- Jabatan -->
+            <div class="space-y-1.5">
+                <label for="kode_jabatan" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                    <i class="ti ti-briefcase text-sm text-slate-400"></i>
+                    <span>Jabatan <span class="text-rose-500 font-bold">*</span></span>
+                </label>
+                <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="ti ti-briefcase text-base"></i>
+                    </div>
+                    <select name="kode_jabatan" id="kode_jabatan" class="w-full pl-9 pr-8 py-2.5 text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition" required>
+                        <option value="">-- Pilih Jabatan --</option>
+                        @foreach ($jabatan as $j)
+                            <option value="{{ $j->kode_jabatan }}">{{ strtoupper($j->nama_jabatan) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
         </div>
     @endif
 
+    <!-- Target Pencapaian -->
+    <div class="space-y-1.5">
+        <label for="target_pencapaian" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+            <i class="ti ti-target text-sm text-slate-400"></i>
+            <span>Target Pencapaian / Output <span class="text-rose-500 font-bold">*</span></span>
+        </label>
+        <div class="relative">
+            <textarea name="target_pencapaian" 
+                      id="target_pencapaian" 
+                      rows="4" 
+                      placeholder="Jelaskan target kuantitatif/kualitatif yang diharapkan (misal: 100% santri hafal juz 30, tersusunnya modul pembelajaran standar)..." 
+                      class="w-full p-3 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-xl placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition resize-y"
+                      required></textarea>
+        </div>
+        <p class="text-[11px] text-slate-400 font-medium">Uraikan sasaran capaian dan tolak ukur keberhasilan program ini.</p>
+    </div>
 
+    <!-- Keterangan -->
+    <div class="space-y-1.5">
+        <label for="keterangan" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+            <i class="ti ti-notes text-sm text-slate-400"></i>
+            <span>Keterangan & Catatan Tambahan <span class="text-rose-500 font-bold">*</span></span>
+        </label>
+        <div class="relative">
+            <textarea name="keterangan" 
+                      id="keterangan" 
+                      rows="3" 
+                      placeholder="Catatan pelaksanaan, periode waktu, strategi, atau informasi penunjang lainnya..." 
+                      class="w-full p-3 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-xl placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition resize-y"
+                      required></textarea>
+        </div>
+    </div>
 
-
-    <div class="form-group mb-3">
-        <button class="btn btn-primary w-100" id="btnSimpan" type="submit">
-            <ion-icon name="send-outline" class="me-1"></ion-icon>
-            Submit
+    <!-- Modal Footer Actions -->
+    <div class="pt-4 mt-6 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5">
+        <button type="button" class="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer active:scale-95" data-bs-dismiss="modal">
+            Batal
+        </button>
+        <button type="submit" id="btnSimpan" class="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+            <i class="ti ti-device-floppy text-base"></i>
+            <span>Simpan Program Kerja</span>
         </button>
     </div>
 </form>
 
-
-
-<script></script>
 <script>
     $(function() {
+        const form = $("#formCreateProgramKerja");
 
-        $('#target_pencapaian').summernote({
-            height: 100,
-            placeholder: 'Target Pencapaian...' // Tinggi summernote diatur menjadi 300px
-        });
+        // Validation Rules Map
+        const validationRules = {
+            'program_kerja': {
+                required: true,
+                message: 'Nama / Judul program kerja wajib diisi'
+            },
+            'target_pencapaian': {
+                required: true,
+                message: 'Target pencapaian program kerja wajib diisi'
+            },
+            'keterangan': {
+                required: true,
+                message: 'Keterangan program kerja wajib diisi'
+            },
+            'kode_dept': {
+                required: true,
+                message: 'Departemen wajib dipilih'
+            },
+            'kode_jabatan': {
+                required: true,
+                message: 'Jabatan wajib dipilih'
+            }
+        };
 
-        $('#keterangan').summernote({
-            height: 100,
-            placeholder: 'Keterangan...' // Tinggi summernote diatur menjadi 300px
-        });
+        function showError(element, message) {
+            const $el = $(element);
+            const $container = $el.closest('.space-y-1\\.5').length ? $el.closest('.space-y-1\\.5') : ($el.closest('.space-y-1').length ? $el.closest('.space-y-1') : $el.parent());
+            
+            $el.addClass('border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20')
+               .removeClass('border-slate-300 focus:ring-emerald-500/20 focus:border-emerald-600');
+            
+            // Left icon highlight
+            $el.siblings('.pointer-events-none').find('i').addClass('text-rose-500').removeClass('text-slate-400');
+            
+            // Remove existing error msg
+            $container.find('.error-msg').remove();
+            
+            // Append error message
+            $container.append(`
+                <p class="error-msg text-[11px] font-semibold text-rose-500 mt-1 flex items-center gap-1 animate-in fade-in duration-200">
+                    <i class="ti ti-alert-circle text-xs shrink-0"></i>
+                    <span>${message}</span>
+                </p>
+            `);
+        }
 
-        $("#formCreateProgramKerja").submit(function(e) {
-            let tanggal_pelaksanaan = $(this).find('#tanggal_pelaksanaan').val();
-            let kode_dept = $(this).find('#kode_dept').val();
-            let kode_jabatan = $(this).find('#kode_jabatan').val();
-            let program_kerja = $(this).find('#program_kerja').val();
-            let target_pencapaian = $(this).find('#target_pencapaian').val();
-            let keterangan = $(this).find('#keterangan').val();
+        function clearError(element) {
+            const $el = $(element);
+            const $container = $el.closest('.space-y-1\\.5').length ? $el.closest('.space-y-1\\.5') : ($el.closest('.space-y-1').length ? $el.closest('.space-y-1') : $el.parent());
+            
+            $el.removeClass('border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20')
+               .addClass('border-slate-300 focus:ring-emerald-500/20 focus:border-emerald-600');
+            
+            $el.siblings('.pointer-events-none').find('i').removeClass('text-rose-500').addClass('text-slate-400');
+            
+            $container.find('.error-msg').remove();
+        }
 
-            if (program_kerja == "") {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Oops...',
-                    text: 'Program Kerja tidak boleh kosong!',
-                    didClose: (e) => {
-                        $(this).find("#program_kerja").focus();
-                    }
-                });
+        function validateSingleField(el) {
+            const $el = $(el);
+            const name = $el.attr('name') || $el.attr('id');
+            const val = ($el.val() || '').toString().trim();
+
+            const rule = validationRules[name];
+            if (!rule) {
+                clearError($el);
+                return true;
+            }
+
+            if (rule.required && !val) {
+                showError($el, rule.message);
                 return false;
-            } else if (target_pencapaian == "") {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Oops...',
-                    text: 'Target Pencapaian tidak boleh kosong!',
-                    didClose: (e) => {
-                        $(this).find("#kode_dept").focus();
-                    }
-                });
-                return false;
-            } else if (kode_jabatan == "") {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Oops...',
-                    text: 'Jabatan tidak boleh kosong!',
-                    didClose: (e) => {
-                        $(this).find("#kode_jabatan").focus();
-                    }
-                });
-                return false;
-            } else {
-                $("#btnSimpan").attr("disabled", true);
-                $("#btnSimpan").html(
-                    `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Loading...`
-                );
+            }
+
+            clearError($el);
+            return true;
+        }
+
+        // Realtime validation trigger
+        form.on('input change blur', 'input, select, textarea', function(e) {
+            const $this = $(this);
+            const hasError = $this.hasClass('border-rose-500');
+            const val = ($this.val() || '').toString().trim();
+            
+            if (e.type === 'blur' || val !== '' || hasError) {
+                validateSingleField(this);
             }
         });
-        $("#tanggal_pelaksanaan").flatpickr();
-        const select2Kodeunit = $('.select2Kodeunit');
-        if (select2Kodeunit.length) {
-            select2Kodeunit.each(function() {
-                var $this = $(this);
-                $this.wrap('<div class="position-relative"></div>').select2({
-                    placeholder: 'Pilih Unit',
-                    allowClear: true,
-                    dropdownParent: $this.parent()
-                });
-            });
-        }
 
-        const select2Kodedept = $('.select2Kodedept');
-        if (select2Kodedept.length) {
-            select2Kodedept.each(function() {
-                var $this = $(this);
-                $this.wrap('<div class="position-relative"></div>').select2({
-                    placeholder: 'Pilih  Departemen',
-                    allowClear: true,
-                    dropdownParent: $this.parent()
-                });
-            });
-        }
-
-        const select2Kodejabatan = $('.select2Kodejabatan');
-        if (select2Kodejabatan.length) {
-            select2Kodejabatan.each(function() {
-                var $this = $(this);
-                $this.wrap('<div class="position-relative"></div>').select2({
-                    placeholder: 'Pilih  Jabatan',
-                    allowClear: true,
-                    dropdownParent: $this.parent()
-                });
-            });
-        }
-
-        const select2Kodejobdesk = $('.select2Kodejobdesk');
-        if (select2Kodejobdesk.length) {
-            select2Kodejobdesk.each(function() {
-                var $this = $(this);
-                $this.wrap('<div class="position-relative"></div>').select2({
-                    placeholder: 'Pilih  Jobdesk',
-                    allowClear: true,
-                    dropdownParent: $this.parent()
-                });
-            });
-        }
-
-
-        function updateFilterOptions() {
-            let kode_unit = $("#formCreateProgramKerja").find('#kode_unit').val();
-            let kode_dept = $("#formCreateProgramKerja").find('#kode_dept').val();
+        // Dynamic Department & Jabatan Cascade
+        function updateCascades() {
+            let kode_unit = form.find('#kode_unit').val();
+            let kode_dept = form.find('#kode_dept').val();
 
             if (kode_unit === "" || kode_unit === null) {
-                let deptSelect = $("#formCreateProgramKerja").find('#kode_dept');
-                deptSelect.empty().append('<option value="">Departemen</option>').trigger('change.select2');
-                let jabSelect = $("#formCreateProgramKerja").find('#kode_jabatan');
-                jabSelect.empty().append('<option value="">Jabatan</option>').trigger('change.select2');
                 return;
-            }
-
-            if (kode_dept === "" || kode_dept === null) {
-                let jabSelect = $("#formCreateProgramKerja").find('#kode_jabatan');
-                jabSelect.empty().append('<option value="">Jabatan</option>').trigger('change.select2');
             }
 
             $.ajax({
@@ -177,65 +236,89 @@
                     kode_dept: kode_dept
                 },
                 success: function(response) {
-                    // Update Departemen select options
-                    let deptSelect = $("#formCreateProgramKerja").find('#kode_dept');
+                    let deptSelect = form.find('#kode_dept');
                     let activeDept = deptSelect.val();
-                    deptSelect.empty().append('<option value="">Departemen</option>');
+                    deptSelect.empty().append('<option value="">-- Pilih Departemen --</option>');
                     response.departments.forEach(function(dept) {
                         let selected = activeDept === dept.kode_dept ? 'selected' : '';
                         deptSelect.append(`<option value="${dept.kode_dept}" ${selected}>${dept.nama_dept.toUpperCase()}</option>`);
                     });
-                    deptSelect.trigger('change.select2');
 
-                    // Update Jabatan select options (only if Departemen is selected)
-                    let jabSelect = $("#formCreateProgramKerja").find('#kode_jabatan');
+                    let jabSelect = form.find('#kode_jabatan');
                     let activeJab = jabSelect.val();
-                    jabSelect.empty().append('<option value="">Jabatan</option>');
+                    jabSelect.empty().append('<option value="">-- Pilih Jabatan --</option>');
                     if (kode_dept !== "" && kode_dept !== null) {
                         response.jabatans.forEach(function(jab) {
                             let selected = activeJab === jab.kode_jabatan ? 'selected' : '';
                             jabSelect.append(`<option value="${jab.kode_jabatan}" ${selected}>${jab.nama_jabatan.toUpperCase()}</option>`);
                         });
                     }
-                    jabSelect.trigger('change.select2');
                 }
             });
         }
 
-        $("#formCreateProgramKerja").find('#kode_unit').change(function() {
-            $("#formCreateProgramKerja").find('#kode_dept').val('').trigger('change.select2');
-            $("#formCreateProgramKerja").find('#kode_jabatan').val('').trigger('change.select2');
-            updateFilterOptions();
+        form.find('#kode_unit').on('change', function() {
+            form.find('#kode_dept').val('');
+            form.find('#kode_jabatan').val('');
+            updateCascades();
         });
 
-        $("#formCreateProgramKerja").find('#kode_dept').change(function() {
-            $("#formCreateProgramKerja").find('#kode_jabatan').val('').trigger('change.select2');
-            updateFilterOptions();
-        });
-
-        function getJobdesk() {
-            let kode_jabatan = $("#formCreateProgramKerja").find('#kode_jabatan').val();
-            let kode_dept = $("#formCreateProgramKerja").find('#kode_dept').val();
+        form.find('#kode_dept').on('change', function() {
+            let kode_unit = form.find('#kode_unit').val();
+            let kode_dept = $(this).val();
 
             $.ajax({
-                url: "{{ route('jobdesk.getjobdesk') }}",
+                url: "{{ route('programkerja.get-karyawan-filter-options') }}",
                 type: "GET",
                 data: {
-                    kode_jabatan: kode_jabatan,
+                    kode_unit: kode_unit,
                     kode_dept: kode_dept
                 },
-                cache: false,
                 success: function(response) {
-                    for (let i = 0; i < response.length; i++) {
-                        $("#formCreateProgramKerja").find("#kode_jobdesk").append('<option value="' + response[i]
-                            .kode_jobdesk + '">' + response[i].jobdesk + '</option>');
+                    let jabSelect = form.find('#kode_jabatan');
+                    let activeJab = jabSelect.val();
+                    jabSelect.empty().append('<option value="">-- Pilih Jabatan --</option>');
+                    response.jabatans.forEach(function(jab) {
+                        let selected = activeJab === jab.kode_jabatan ? 'selected' : '';
+                        jabSelect.append(`<option value="${jab.kode_jabatan}" ${selected}>${jab.nama_jabatan.toUpperCase()}</option>`);
+                    });
+                }
+            });
+        });
+
+        // Form Submit Validation
+        form.on('submit', function(e) {
+            let isValid = true;
+            let firstInvalidEl = null;
+
+            Object.keys(validationRules).forEach(function(fieldName) {
+                const $el = form.find(`[name="${fieldName}"]`);
+                if ($el.length > 0 && $el.is(':visible')) {
+                    const valid = validateSingleField($el);
+                    if (!valid) {
+                        isValid = false;
+                        if (!firstInvalidEl) {
+                            firstInvalidEl = $el;
+                        }
                     }
                 }
-            })
-        }
+            });
 
-        $("#formCreateProgramKerja").find('#kode_jabatan, #kode_dept').on('change', function() {
-            getJobdesk();
+            if (!isValid) {
+                e.preventDefault();
+                if (firstInvalidEl) {
+                    firstInvalidEl.focus();
+                }
+                return false;
+            }
+
+            // Disable button & show spinner
+            const submitBtn = form.find('#btnSimpan');
+            submitBtn.html('<div class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> <span>Menyimpan...</span>');
+            setTimeout(function() {
+                submitBtn.prop('disabled', true);
+            }, 50);
+            return true;
         });
     });
 </script>

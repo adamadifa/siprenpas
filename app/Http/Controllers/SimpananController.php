@@ -19,17 +19,26 @@ class SimpananController extends Controller
 {
     public function index(Request $request)
     {
-
         $subquerySaldosimpanan = Saldosimpanan::select('no_anggota', DB::raw('SUM(jumlah) as jml_saldo'))
             ->groupBy('no_anggota');
         $query = Anggota::query();
         $query->select('koperasi_anggota.*', 'jml_saldo');
         if (!empty($request->nama_lengkap)) {
-            $query->where('nama_lengkap', 'like', "%" . $request->nama_lengkap . "%");
+            $query->where(function ($q) use ($request) {
+                $q->where('nama_lengkap', 'like', "%" . $request->nama_lengkap . "%")
+                    ->orWhere('no_anggota', 'like', "%" . $request->nama_lengkap . "%")
+                    ->orWhere('nik', 'like', "%" . $request->nama_lengkap . "%")
+                    ->orWhere('no_hp', 'like', "%" . $request->nama_lengkap . "%");
+            });
         }
         $query->leftJoinSub($subquerySaldosimpanan, 'saldosimpanan', 'koperasi_anggota.no_anggota', '=', 'saldosimpanan.no_anggota');
-        $anggota = $query->paginate(10);
+        $query->orderBy('koperasi_anggota.nama_lengkap', 'asc');
+        $anggota = $query->paginate(15);
         $anggota->appends($request->all());
+
+        $data['total_anggota'] = Anggota::count();
+        $data['total_saldo_simpanan'] = Saldosimpanan::sum('jumlah') ?? 0;
+        $data['anggota_dengan_saldo'] = Saldosimpanan::where('jumlah', '>', 0)->distinct('no_anggota')->count('no_anggota');
         $data['anggota'] = $anggota;
         return view('koperasi.simpanan.index', $data);
     }

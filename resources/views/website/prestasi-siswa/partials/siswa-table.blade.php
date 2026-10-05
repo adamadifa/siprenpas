@@ -1,179 +1,74 @@
-<style>
-    /* CSS khusus untuk modal pencarian siswa - tidak mempengaruhi card lain */
-    #modalPilihSiswa .hover-shadow {
-        transition: all 0.3s ease;
-    }
-
-    #modalPilihSiswa .hover-shadow:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
-    }
-
-    #modalPilihSiswa .avatar-initial {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        transition: all 0.3s ease;
-    }
-
-    #modalPilihSiswa .card {
-        transition: all 0.3s ease;
-        cursor: pointer;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        border-left: 4px solid #696cff !important;
-        border-radius: 8px !important;
-        position: relative;
-        overflow: hidden;
-    }
-
-    #modalPilihSiswa .card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(105, 108, 255, 0.1), transparent);
-        transition: left 0.5s ease;
-    }
-
-    #modalPilihSiswa .card:hover {
-        border-left-color: #696cff !important;
-        border-color: #1e7e34 !important;
-        box-shadow: 0 8px 25px rgba(30, 126, 52, 0.3);
-        transform: translateY(-3px) scale(1.02);
-    }
-
-    #modalPilihSiswa .card:hover::before {
-        left: 100%;
-    }
-
-    #modalPilihSiswa .clickable-card {
-        cursor: pointer;
-    }
-
-    #modalPilihSiswa .clickable-card:hover {
-        border-color: #1e7e34 !important;
-        border-left-color: #696cff !important;
-        background: linear-gradient(135deg, rgba(30, 126, 52, 0.05), rgba(105, 108, 255, 0.05));
-    }
-
-    #modalPilihSiswa .student-card {
-        opacity: 0;
-        transform: translateY(20px);
-        animation: fadeInUp 0.5s ease forwards;
-    }
-
-    #modalPilihSiswa .student-card:hover .avatar-initial {
-        transform: scale(1.1);
-        background: linear-gradient(135deg, #696cff, #1e7e34) !important;
-    }
-
-    #modalPilihSiswa .student-card:hover h6 {
-        color: #1e7e34 !important;
-        transform: translateX(5px);
-        transition: all 0.3s ease;
-    }
-
-    #modalPilihSiswa .student-card:hover small {
-        color: #696cff !important;
-        transition: all 0.3s ease;
-    }
-
-    #modalPilihSiswa .student-card h6,
-    #modalPilihSiswa .student-card small,
-    #modalPilihSiswa .student-card .avatar-initial {
-        transition: all 0.3s ease;
-    }
-
-    #modalPilihSiswa .gap-2 {
-        gap: 0.5rem;
-    }
-
-    #modalPilihSiswa .btn-pilih-siswa {
-        transition: all 0.2s ease;
-    }
-
-    #modalPilihSiswa .btn-pilih-siswa:hover {
-        transform: scale(1.05);
-    }
-
-    @keyframes fadeInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-</style>
-
 @if ($siswa->count() > 0)
-    <div class="row">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         @foreach ($siswa as $s)
-            <div class="col-12 mb-3">
-                <div class="card shadow-sm hover-shadow student-card border border-success border-1 clickable-card" data-id="{{ $s->id_siswa }}"
-                    data-nama="{{ $s->nama_lengkap }}" data-nisn="{{ $s->nisn ?? '-' }}" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
-                    <div class="card-body p-3">
-                        <div class="d-flex align-items-center">
-                            <div class="avatar avatar-md me-3">
-                                <div class="avatar-initial rounded-circle bg-primary">
-                                    <i class="ti ti-user text-white"></i>
-                                </div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="d-flex justify-content-between align-items-start mb-2">
-                                    <div>
-                                        <h6 class="mb-1 fw-semibold" title="{{ $s->nama_lengkap }}">
-                                            {{ $s->nama_lengkap }}
-                                        </h6>
-                                        <small class="text-muted">
-                                            <i class="ti ti-id me-1"></i>
-                                            {{ $s->nisn ?? 'NISN: -' }}
-                                        </small>
-                                    </div>
-                                    <div class="d-flex align-items-center gap-2">
-                                        <small class="text-muted">
-                                            <i class="ti ti-mouse-pointer me-1"></i>
-                                            Klik untuk memilih
-                                        </small>
-                                    </div>
-                                </div>
+            @php
+                $pendaftaran = $s->pendaftaran;
+                $unit = $pendaftaran ? $pendaftaran->unit : null;
+                $kodeUnit = $pendaftaran ? $pendaftaran->kode_unit : '';
+                $namaUnit = $unit ? $unit->nama_unit : '';
+            @endphp
+            <div class="clickable-card bg-white border border-slate-200/90 hover:border-emerald-500 rounded-xl p-3.5 shadow-2xs hover:shadow-md transition-all duration-200 cursor-pointer group flex flex-col justify-between relative overflow-hidden"
+                 data-id="{{ $s->id_siswa }}"
+                 data-nama="{{ $s->nama_lengkap }}"
+                 data-nisn="{{ $s->nisn ?? '-' }}"
+                 data-kode-unit="{{ $kodeUnit }}"
+                 data-nama-unit="{{ $namaUnit }}">
+                
+                <!-- Card Header: Avatar, Name, and Quick Action -->
+                <div class="flex items-start gap-3">
+                    <!-- Avatar Initials -->
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 group-hover:bg-emerald-600 text-emerald-700 group-hover:text-white border border-emerald-200/80 group-hover:border-emerald-600 flex items-center justify-center font-black text-sm shrink-0 transition-colors shadow-2xs">
+                        {{ strtoupper(substr($s->nama_lengkap, 0, 1)) }}
+                    </div>
 
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <small class="text-muted d-block mb-1">
-                                            <i class="ti ti-map-pin me-1"></i>
-                                            <strong>Alamat:</strong>
-                                        </small>
-                                        <small class="text-dark">
-                                            {{ $s->alamat ?? 'Alamat tidak tersedia' }}
-                                        </small>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <small class="text-muted d-block mb-1">
-                                            <i class="ti ti-calendar me-1"></i>
-                                            <strong>Tahun Masuk:</strong>
-                                        </small>
-                                        <small class="text-dark">
-                                            {{ $s->tahun_masuk ?? 'Tidak tersedia' }}
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
+                    <!-- Name & NISN -->
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-1">
+                            <h4 class="text-xs font-black text-slate-800 group-hover:text-emerald-700 transition truncate leading-snug" title="{{ $s->nama_lengkap }}">
+                                {{ $s->nama_lengkap }}
+                            </h4>
+                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                <span>Pilih</span>
+                                <i class="ti ti-arrow-right text-xs"></i>
+                            </span>
                         </div>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <span class="inline-flex items-center gap-1 text-[10px] font-mono text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                                <i class="ti ti-id text-[11px] text-slate-400"></i>
+                                <span>NISN: {{ $s->nisn ?: '-' }}</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Body: Unit & Details -->
+                <div class="mt-3 pt-2.5 border-t border-slate-100 grid grid-cols-2 gap-2 text-[11px]">
+                    <div class="min-w-0">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Unit Sekolah</span>
+                        <span class="font-bold text-slate-700 truncate block mt-0.5">
+                            {{ $namaUnit ?: 'Belum Terdata' }}
+                        </span>
+                    </div>
+                    <div class="min-w-0 text-right">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tahun Masuk</span>
+                        <span class="font-semibold text-slate-600 truncate block mt-0.5">
+                            {{ $s->tahun_masuk ? 'Th. ' . $s->tahun_masuk : '-' }}
+                        </span>
                     </div>
                 </div>
             </div>
         @endforeach
     </div>
 @else
-    <div class="text-center py-5">
-        <div class="text-muted">
-            <i class="ti ti-search" style="font-size: 3rem; opacity: 0.5;"></i>
-            <h5 class="mt-3 mb-2">Tidak ada data siswa ditemukan</h5>
-            <p class="mb-0">Coba ubah kata kunci pencarian Anda</p>
+    <div class="py-12 text-center">
+        <div class="flex flex-col items-center justify-center gap-2.5">
+            <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-xl">
+                <i class="ti ti-user-x"></i>
+            </div>
+            <div>
+                <p class="font-bold text-slate-700 text-xs">Data Santri Tidak Ditemukan</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Coba gunakan kata kunci pencarian nama lengkap atau NISN yang lain.</p>
+            </div>
         </div>
     </div>
 @endif

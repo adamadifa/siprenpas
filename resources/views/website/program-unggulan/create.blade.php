@@ -2,66 +2,233 @@
 @section('titlepage', 'Tambah Program Unggulan')
 
 @section('content')
-@section('navigasi')
-    <span>Program Unggulan</span>
-@endsection
+<div class="space-y-5 w-full">
 
-<div class="row">
-    <div class="col-lg-8 col-sm-12 col-xs-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Tambah Program Unggulan</h5>
+    <!-- ================= 1. PAGE HEADER (FULL WIDTH) WITH RIGHT BREADCRUMB ================= -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-1 w-full">
+        <!-- Title & Subtitle -->
+        <div>
+            <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200/80 shadow-2xs">
+                    <i class="ti ti-star text-2xl"></i>
+                </div>
+                <span>Tambah Program Unggulan</span>
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">
+                Tambahkan program unggulan baru untuk ditampilkan pada portal website pesantren
+            </p>
+        </div>
+
+        <!-- Right Side: Breadcrumb & Actions -->
+        <div class="flex flex-col md:items-end gap-2.5">
+            <!-- Breadcrumb Navigation -->
+            <nav class="flex items-center text-xs text-slate-400 font-medium">
+                <a href="{{ route('dashboard.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="text-slate-500 flex items-center gap-1">
+                    <i class="ti ti-world text-sm"></i>
+                    <span>Website</span>
+                </span>
+                <span class="mx-2 text-slate-300">/</span>
+                <a href="{{ route('program-unggulan.index') }}" class="hover:text-slate-700 transition">
+                    <span>Program Unggulan</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="font-bold text-slate-800">Tambah</span>
+            </nav>
+
+            <!-- Back Button -->
+            <a href="{{ route('program-unggulan.index') }}" class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer">
+                <i class="ti ti-arrow-left text-sm"></i>
+                <span>Kembali</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- ================= 2. MAIN FORM CARD (LEFT-ALIGNED WITH COMPACT MAX-WIDTH) ================= -->
+    <div class="max-w-3xl">
+        <div class="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
+            <!-- Solid Emerald Header -->
+            <div class="bg-emerald-600 px-5 py-4 flex items-center justify-between text-white">
+                <div class="flex items-center gap-2.5">
+                    <i class="ti ti-forms text-xl"></i>
+                    <h3 class="font-bold text-sm tracking-wide text-white">Formulir Program Unggulan Baru</h3>
+                </div>
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-white/20 text-white backdrop-blur-xs">
+                    <i class="ti ti-asterisk text-[10px]"></i> Wajib Diisi
+                </span>
             </div>
-            <div class="card-body">
-                <form action="{{ route('program-unggulan.store') }}" method="POST">
-                    @csrf
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group mb-3">
-                                <label for="nama_program" class="form-label">Nama Program <span
-                                        class="text-danger">*</span></label>
-                                <input type="text" class="form-control @error('nama_program') is-invalid @enderror"
-                                    id="nama_program" name="nama_program" value="{{ old('nama_program') }}" required>
-                                @error('nama_program')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group mb-3">
-                                <label for="urutan" class="form-label">Urutan <span
-                                        class="text-danger">*</span></label>
-                                <input type="number" class="form-control @error('urutan') is-invalid @enderror"
-                                    id="urutan" name="urutan" value="{{ old('urutan', 0) }}" min="0"
-                                    required>
-                                @error('urutan')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group mb-3">
-                                <label for="deskripsi" class="form-label">Deskripsi</label>
-                                <textarea class="form-control @error('deskripsi') is-invalid @enderror" id="deskripsi" name="deskripsi" rows="4">{{ old('deskripsi') }}</textarea>
-                                @error('deskripsi')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="ti ti-device-floppy me-1"></i> Simpan
-                                </button>
-                                <a href="{{ route('program-unggulan.index') }}" class="btn btn-secondary">
-                                    <i class="ti ti-arrow-left me-1"></i> Kembali
-                                </a>
-                            </div>
-                        </div>
+
+            <!-- Form Body -->
+            <form action="{{ route('program-unggulan.store') }}" method="POST" id="formProgramUnggulan" novalidate class="p-5 sm:p-7 space-y-6">
+                @csrf
+
+                <!-- Callout Info -->
+                <div class="flex items-start gap-3.5 p-4 bg-emerald-50/80 border border-emerald-200/80 rounded-xl text-emerald-900">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 text-base font-bold">
+                        <i class="ti ti-info-circle"></i>
                     </div>
-                </form>
-            </div>
+                    <div class="text-xs">
+                        <p class="font-bold text-emerald-950">Petunjuk Pengisian</p>
+                        <p class="text-emerald-700/90 mt-0.5 leading-relaxed">
+                            Masukkan nama program unggulan beserta deskripsi singkat penjelasan program. Urutan menentukan posisi prioritas tampilan pada website.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Nama Program -->
+                <div class="space-y-1.5" id="group_nama_program">
+                    <label for="nama_program" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                        <i class="ti ti-star text-slate-400"></i>
+                        <span>Nama Program Unggulan <span class="text-rose-500">*</span></span>
+                    </label>
+                    <div class="relative">
+                        <i class="ti ti-bookmark text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 text-base transition-colors" id="icon_nama_program"></i>
+                        <input type="text" 
+                               name="nama_program" 
+                               id="nama_program" 
+                               value="{{ old('nama_program') }}"
+                               placeholder="Contoh: Tahfidz Al-Qur'an 30 Juz Bersanad" 
+                               autocomplete="off"
+                               class="w-full pl-9 pr-3.5 py-2.5 text-xs font-bold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all placeholder:font-normal placeholder:text-slate-400 @error('nama_program') border-rose-400 bg-rose-50/20 @enderror">
+                    </div>
+                    @error('nama_program')
+                        <p class="text-[11px] font-semibold text-rose-500 mt-1 flex items-center gap-1">
+                            <i class="ti ti-alert-circle text-xs"></i> {{ $message }}
+                        </p>
+                    @enderror
+                    <p class="text-[11px] font-semibold text-rose-500 hidden mt-1 flex items-center gap-1" id="error_nama_program"></p>
+                </div>
+
+                <!-- Urutan -->
+                <div class="space-y-1.5" id="group_urutan">
+                    <label for="urutan" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                        <i class="ti ti-arrows-sort text-slate-400"></i>
+                        <span>Nomor Urut Tampil <span class="text-rose-500">*</span></span>
+                    </label>
+                    <div class="relative">
+                        <i class="ti ti-sort-ascending-numbers text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 text-base transition-colors" id="icon_urutan"></i>
+                        <input type="number" 
+                               name="urutan" 
+                               id="urutan" 
+                               min="0"
+                               value="{{ old('urutan', 0) }}"
+                               placeholder="0" 
+                               class="w-full pl-9 pr-3.5 py-2.5 text-xs font-bold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all @error('urutan') border-rose-400 bg-rose-50/20 @enderror">
+                    </div>
+                    <p class="text-[11px] text-slate-400">Semakin kecil angka urutan (misal: 1, 2, 3), semakin awal program muncul di halaman utama.</p>
+                    @error('urutan')
+                        <p class="text-[11px] font-semibold text-rose-500 mt-1 flex items-center gap-1">
+                            <i class="ti ti-alert-circle text-xs"></i> {{ $message }}
+                        </p>
+                    @enderror
+                    <p class="text-[11px] font-semibold text-rose-500 hidden mt-1 flex items-center gap-1" id="error_urutan"></p>
+                </div>
+
+                <!-- Deskripsi -->
+                <div class="space-y-1.5" id="group_deskripsi">
+                    <label for="deskripsi" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                        <i class="ti ti-notes text-slate-400"></i>
+                        <span>Deskripsi & Ulasan Program</span>
+                    </label>
+                    <textarea name="deskripsi" 
+                              id="deskripsi" 
+                              rows="4" 
+                              placeholder="Jelaskan secara ringkas kurikulum, target capaian, metode pembelajaran, atau keunggulan dari program ini..." 
+                              class="w-full p-3.5 text-xs text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all placeholder:text-slate-400 leading-relaxed @error('deskripsi') border-rose-400 bg-rose-50/20 @enderror">{{ old('deskripsi') }}</textarea>
+                    @error('deskripsi')
+                        <p class="text-[11px] font-semibold text-rose-500 mt-1 flex items-center gap-1">
+                            <i class="ti ti-alert-circle text-xs"></i> {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
+                <!-- Form Actions -->
+                <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-end gap-2.5">
+                    <a href="{{ route('program-unggulan.index') }}" 
+                       class="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition inline-flex items-center justify-center cursor-pointer">
+                        Batal
+                    </a>
+                    <button type="submit" 
+                            id="btnSubmit" 
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-xs transition-all duration-200 active:scale-95 cursor-pointer">
+                        <i class="ti ti-device-floppy text-base"></i>
+                        <span>Simpan Program Unggulan</span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 @endsection
+
+@push('myscript')
+<script>
+    $(function() {
+        function showError($input, $group, $errorMsg, $icon, message) {
+            $input.removeClass("border-slate-300 focus:border-emerald-600 focus:ring-emerald-500/20")
+                  .addClass("border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-rose-500/20");
+            if ($icon) $icon.removeClass("text-slate-400").addClass("text-rose-500");
+            $errorMsg.html(`<i class="ti ti-alert-circle text-xs"></i> ${message}`).removeClass("hidden");
+        }
+
+        function clearError($input, $group, $errorMsg, $icon) {
+            $input.removeClass("border-rose-400 bg-rose-50/20 focus:border-rose-500 focus:ring-rose-500/20")
+                  .addClass("border-slate-300 focus:border-emerald-600 focus:ring-emerald-500/20");
+            if ($icon) $icon.removeClass("text-rose-500").addClass("text-slate-400");
+            $errorMsg.addClass("hidden").html("");
+        }
+
+        $("#nama_program").on("input", function() {
+            if ($(this).val().trim() !== "") {
+                clearError($("#nama_program"), $("#group_nama_program"), $("#error_nama_program"), $("#icon_nama_program"));
+            }
+        });
+
+        $("#urutan").on("input", function() {
+            if ($(this).val().trim() !== "") {
+                clearError($("#urutan"), $("#group_urutan"), $("#error_urutan"), $("#icon_urutan"));
+            }
+        });
+
+        $('#formProgramUnggulan').on('submit', function(e) {
+            let namaProgram = $("#nama_program").val().trim();
+            let urutan = $("#urutan").val().trim();
+            let isValid = true;
+
+            if (namaProgram === "") {
+                showError($("#nama_program"), $("#group_nama_program"), $("#error_nama_program"), $("#icon_nama_program"), "Nama program unggulan wajib diisi!");
+                $("#nama_program").focus();
+                isValid = false;
+            } else {
+                clearError($("#nama_program"), $("#group_nama_program"), $("#error_nama_program"), $("#icon_nama_program"));
+            }
+
+            if (urutan === "") {
+                showError($("#urutan"), $("#group_urutan"), $("#error_urutan"), $("#icon_urutan"), "Urutan nomor tampil wajib diisi!");
+                if (isValid) $("#urutan").focus();
+                isValid = false;
+            } else {
+                clearError($("#urutan"), $("#group_urutan"), $("#error_urutan"), $("#icon_urutan"));
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                return false;
+            }
+
+            $("#btnSubmit").prop("disabled", true).addClass("opacity-75 cursor-not-allowed");
+            $("#btnSubmit").html(`
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Menyimpan...</span>
+            `);
+        });
+    });
+</script>
+@endpush

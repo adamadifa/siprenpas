@@ -1,54 +1,187 @@
-<form action="{{ route('jenistabungan.store') }}" id="formTabungan" method="POST">
+<form action="{{ route('jenistabungan.store') }}" id="formcreateTabungan" method="POST" class="space-y-4" novalidate>
     @csrf
-    <x-input-with-icon-label icon="ti ti-barcode" label="Kode Jenis Tabungan" name="kode_tabungan" required="true" />
-    <x-input-with-icon-label icon="ti ti-file-description" label="Nama Jenis Tabungan" name="jenis_tabungan" required="true" />
-    
-    <div class="form-group mt-3">
-        <button class="btn btn-primary w-100 shadow-sm d-flex align-items-center justify-content-center gap-2" type="submit" id="btnSimpan" style="background-color: #064e3b; border-color: #064e3b">
-            <i class="ti ti-device-floppy fs-4"></i>
-            <span class="fw-bold">Simpan Data Jenis Tabungan</span>
+
+    <!-- Kode Tabungan -->
+    <div class="space-y-1.5">
+        <label for="kode_tabungan" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+            <i class="ti ti-barcode text-sm text-slate-400"></i>
+            <span>Kode Tabungan (3 Karakter) <span class="text-rose-500 font-bold">*</span></span>
+        </label>
+        <div class="relative">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i class="ti ti-barcode text-base"></i>
+            </div>
+            <input type="text" 
+                   id="kode_tabungan" 
+                   name="kode_tabungan" 
+                   maxlength="3"
+                   placeholder="Contoh: T01" 
+                   class="w-full pl-9 pr-3.5 py-2.5 text-sm font-black uppercase font-mono tracking-wider text-slate-800 bg-white border border-slate-300 rounded-xl placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+        </div>
+        <p class="text-[11px] text-slate-400 font-medium">Format kode harus tepat 3 karakter (contoh: T01, T02, TPK).</p>
+    </div>
+
+    <!-- Nama Jenis Tabungan -->
+    <div class="space-y-1.5">
+        <label for="jenis_tabungan" class="block text-xs font-bold text-slate-700 flex items-center gap-1.5">
+            <i class="ti ti-coin text-sm text-slate-400"></i>
+            <span>Nama Jenis Tabungan <span class="text-rose-500 font-bold">*</span></span>
+        </label>
+        <div class="relative">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i class="ti ti-coin text-base"></i>
+            </div>
+            <input type="text" 
+                   id="jenis_tabungan" 
+                   name="jenis_tabungan" 
+                   placeholder="Contoh: Tabungan Qurban / Tabungan Hari Raya / Tabungan Santri..." 
+                   class="w-full pl-9 pr-3.5 py-2.5 text-sm font-bold text-slate-800 bg-white border border-slate-300 rounded-xl placeholder-slate-400 shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+        </div>
+    </div>
+
+    <!-- Actions Footer -->
+    <div class="pt-4 mt-6 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-2.5">
+        <button type="button" class="w-full sm:w-auto px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer active:scale-95" data-bs-dismiss="modal">
+            Batal
+        </button>
+        <button type="submit" id="btnSubmitTabungan" class="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+            <i class="ti ti-device-floppy text-base"></i>
+            <span>Simpan Jenis Tabungan</span>
         </button>
     </div>
 </form>
 
 <script>
     $(function() {
-        $('#kode_tabungan').mask('A00');
-        
-        $('#formTabungan').submit(function(e) {
-            let kode = $('#kode_tabungan').val();
-            let jenis = $('#jenis_tabungan').val();
+        const form = $("#formcreateTabungan");
 
-            if (kode == '') {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Oops...',
-                    text: 'Kode Tabungan harus diisi!',
-                    confirmButtonColor: '#064e3b'
-                });
-            } else if (kode.length != 3) {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Oops...',
-                    text: 'Kode Tabungan harus terdiri dari 3 karakter (Contoh: T01)!',
-                    confirmButtonColor: '#064e3b'
-                });
-            } else if (jenis == '') {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Oops...',
-                    text: 'Nama Jenis Tabungan harus diisi!',
-                    confirmButtonColor: '#064e3b'
-                });
-            } else {
-                $('#btnSimpan').attr('disabled', 'disabled');
-                $('#btnSimpan').html(
-                    '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Memproses...'
-                );
+        // Force uppercase on kode_tabungan
+        form.find('#kode_tabungan').on('input', function() {
+            $(this).val($(this).val().toUpperCase());
+        });
+
+        // Validation Rules Map
+        const validationRules = {
+            'kode_tabungan': { 
+                required: true, 
+                message: 'Kode Tabungan wajib diisi', 
+                minLength: 3, 
+                maxLength: 3, 
+                lengthMessage: 'Kode Tabungan harus tepat 3 karakter (contoh: T01)' 
+            },
+            'jenis_tabungan': { 
+                required: true, 
+                message: 'Nama Jenis Tabungan wajib diisi' 
             }
+        };
+
+        function showError(element, message) {
+            const $el = $(element);
+            const $container = $el.closest('.space-y-1\\.5').length ? $el.closest('.space-y-1\\.5') : ($el.closest('.space-y-1').length ? $el.closest('.space-y-1') : $el.parent());
+            
+            $el.addClass('border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20')
+               .removeClass('border-slate-300 focus:ring-emerald-500/20 focus:border-emerald-600');
+            
+            // Left icon highlight
+            $el.siblings('.pointer-events-none').find('i').addClass('text-rose-500').removeClass('text-slate-400');
+            
+            // Remove existing error msg
+            $container.find('.error-msg').remove();
+            
+            // Append error message
+            $container.append(`
+                <p class="error-msg text-[11px] font-semibold text-rose-500 mt-1 flex items-center gap-1 animate-in fade-in duration-200">
+                    <i class="ti ti-alert-circle text-xs shrink-0"></i>
+                    <span>${message}</span>
+                </p>
+            `);
+        }
+
+        function clearError(element) {
+            const $el = $(element);
+            const $container = $el.closest('.space-y-1\\.5').length ? $el.closest('.space-y-1\\.5') : ($el.closest('.space-y-1').length ? $el.closest('.space-y-1') : $el.parent());
+            
+            $el.removeClass('border-rose-500 ring-2 ring-rose-500/20 bg-rose-50/20')
+               .addClass('border-slate-300 focus:ring-emerald-500/20 focus:border-emerald-600');
+            
+            $el.siblings('.pointer-events-none').find('i').removeClass('text-rose-500').addClass('text-slate-400');
+            
+            $container.find('.error-msg').remove();
+        }
+
+        function validateSingleField(el) {
+            const $el = $(el);
+            const name = $el.attr('name') || $el.attr('id');
+            const val = ($el.val() || '').toString().trim();
+
+            const rule = validationRules[name];
+            if (!rule) {
+                clearError($el);
+                return true;
+            }
+
+            if (rule.required && !val) {
+                showError($el, rule.message);
+                return false;
+            }
+
+            if (rule.minLength && val.length < rule.minLength) {
+                showError($el, rule.lengthMessage || `Minimal ${rule.minLength} karakter`);
+                return false;
+            }
+
+            if (rule.maxLength && val.length > rule.maxLength) {
+                showError($el, rule.lengthMessage || `Maksimal ${rule.maxLength} karakter`);
+                return false;
+            }
+
+            clearError($el);
+            return true;
+        }
+
+        // Realtime validation trigger
+        form.on('input change blur', 'input', function(e) {
+            const $this = $(this);
+            const hasError = $this.hasClass('border-rose-500');
+            const val = ($this.val() || '').toString().trim();
+            
+            if (e.type === 'blur' || val !== '' || hasError) {
+                validateSingleField(this);
+            }
+        });
+
+        // Form Submit Validation
+        form.on('submit', function(e) {
+            let isValid = true;
+            let firstInvalidEl = null;
+
+            Object.keys(validationRules).forEach(function(fieldName) {
+                const $el = form.find(`[name="${fieldName}"]`);
+                if ($el.length > 0 && $el.is(':visible')) {
+                    const valid = validateSingleField($el);
+                    if (!valid) {
+                        isValid = false;
+                        if (!firstInvalidEl) {
+                            firstInvalidEl = $el;
+                        }
+                    }
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                if (firstInvalidEl) {
+                    firstInvalidEl.focus();
+                }
+                return false;
+            }
+
+            // Disable button & show spinner
+            const submitBtn = form.find('#btnSubmitTabungan');
+            submitBtn.html('<div class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> <span>Menyimpan...</span>');
+            setTimeout(function() {
+                submitBtn.prop('disabled', true);
+            }, 50);
         });
     });
 </script>

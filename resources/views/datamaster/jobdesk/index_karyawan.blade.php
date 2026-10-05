@@ -2,135 +2,203 @@
 @section('titlepage', 'Jobdesk Saya')
 
 @section('content')
-@section('navigasi')
-    <div class="card shadow-none bg-transparent border-0 mb-4">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar avatar-md rounded-circle d-flex align-items-center justify-content-center" style="background-color: #e6f4ea; color: #064e3b">
-                        <i class="ti ti-briefcase fs-3"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-1 fw-extrabold" style="color: #064e3b; letter-spacing: -0.5px;">Jobdesk Saya</h4>
-                        <p class="text-muted mb-0 small">Daftar tugas pokok dan fungsi resmi Anda</p>
-                    </div>
-                </div>
-                <div class="d-flex flex-column align-items-end">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb breadcrumb-style1 mb-0">
-                            <li class="breadcrumb-item">
-                                <a href="javascript:void(0);" class="text-muted">
-                                    <i class="ti ti-home-2 me-1"></i> Dashboard
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active fw-medium" style="color: #064e3b">
-                                <i class="ti ti-briefcase me-1"></i> Jobdesk Saya
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
+<div class="space-y-6">
+
+    <!-- ================= 1. PAGE HEADER & BREADCRUMB ================= -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Title & Subtitle -->
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl shrink-0 font-bold border border-emerald-200 shadow-2xs">
+                <i class="ti ti-checklist"></i>
             </div>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                    Jobdesk Saya
+                </h1>
+                <p class="text-xs text-slate-500 font-medium">
+                    Daftar rincian tugas pokok & fungsi (tupoksi) resmi jabatan Anda
+                </p>
+            </div>
+        </div>
+
+        <!-- Breadcrumb & Print Action -->
+        <div class="flex flex-col md:items-end gap-2.5">
+            <nav class="flex items-center text-xs text-slate-400 font-medium">
+                <a href="{{ route('dashboard.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="text-slate-500">MSDM & Layanan</span>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="font-bold text-slate-800">Jobdesk Saya</span>
+            </nav>
+
+            <button type="button" 
+                    onclick="window.print()" 
+                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-white hover:bg-slate-50 text-slate-700 font-bold rounded-lg text-xs border border-slate-200 shadow-2xs transition active:scale-95 cursor-pointer">
+                <i class="ti ti-printer text-sm text-slate-500"></i>
+                <span>Cetak Jobdesk</span>
+            </button>
         </div>
     </div>
-@endsection
 
-<style>
-    .jobdesk-card {
-        transition: all 0.3s ease;
-        border: 1px solid rgba(0, 0, 0, 0.08) !important;
-        border-radius: 12px;
-    }
-    .jobdesk-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(6, 78, 59, 0.08) !important;
-        border-color: rgba(6, 78, 59, 0.25) !important;
-    }
-</style>
+    <!-- ================= 2. EMPLOYEE PROFILE BANNER ================= -->
+    @if(!empty($karyawan))
+        <div class="bg-gradient-to-br from-emerald-800 via-emerald-900 to-teal-950 rounded-2xl p-5 sm:p-6 text-white shadow-sm relative overflow-hidden border border-emerald-700/50">
+            <!-- Decorative subtle background circles -->
+            <div class="absolute -right-10 -bottom-10 w-48 h-48 rounded-full bg-white/5 pointer-events-none"></div>
+            <div class="absolute right-32 -top-12 w-32 h-32 rounded-full bg-emerald-500/10 pointer-events-none"></div>
 
-<div class="row">
-    <div class="col-lg-12">
-        
-        <!-- Employee Profile Summary Card -->
-        @if(!empty($karyawan))
-            <div class="card border-0 shadow-sm mb-4 rounded-3 overflow-hidden text-white" style="background: linear-gradient(135deg, #064e3b 0%, #043e2f 100%);">
-                <div class="card-body p-4">
-                    <div class="row align-items-center g-4">
-                        <div class="col-auto">
-                            <div class="avatar avatar-xl bg-white rounded-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
-                                <i class="ti ti-user-check fs-2" style="color: #064e3b;"></i>
-                            </div>
+            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5 relative z-10">
+                <!-- Avatar & Identity -->
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white/10 backdrop-blur-xs border border-white/20 flex items-center justify-center text-white text-2xl font-bold shadow-inner shrink-0">
+                        <i class="ti ti-user-check"></i>
+                    </div>
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-700/60 border border-emerald-500/40 text-[11px] font-semibold text-emerald-200 mb-1">
+                            <i class="ti ti-id"></i>
+                            <span>NPP: {{ $karyawan->npp }}</span>
                         </div>
-                        <div class="col-md">
-                            <h4 class="fw-bold mb-1 text-white">{{ $karyawan->nama_lengkap }}</h4>
-                            <p class="text-white-50 mb-0 small">NPP: <span class="fw-semibold text-white">{{ $karyawan->npp }}</span></p>
+                        <h2 class="text-lg sm:text-xl font-bold text-white tracking-tight">
+                            {{ $karyawan->nama_lengkap }}
+                        </h2>
+                    </div>
+                </div>
+
+                <!-- Assignment Metadata Badges -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 w-full lg:w-auto">
+                    <!-- Jabatan -->
+                    <div class="bg-white/10 backdrop-blur-xs border border-white/15 rounded-xl px-3.5 py-2.5 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-600/50 flex items-center justify-center text-emerald-200 shrink-0">
+                            <i class="ti ti-briefcase text-base"></i>
                         </div>
-                        <div class="col-md-auto ms-md-auto">
-                            <div class="d-flex flex-wrap gap-2">
-                                <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-3" style="background: rgba(255, 255, 255, 0.12) !important; border: 1px solid rgba(255, 255, 255, 0.08);">
-                                    <i class="ti ti-briefcase text-white fs-4 flex-shrink-0"></i>
-                                    <div style="line-height: 1.1;">
-                                        <span class="text-white-50 text-uppercase d-block mb-1" style="font-size: 0.6rem; letter-spacing: 0.5px; font-weight: 500;">Jabatan</span>
-                                        <span class="fw-bold text-white" style="font-size: 0.8rem; letter-spacing: 0.2px;">{{ strtoupper($karyawan->nama_jabatan) }}</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-3" style="background: rgba(255, 255, 255, 0.12) !important; border: 1px solid rgba(255, 255, 255, 0.08);">
-                                    <i class="ti ti-hierarchy-2 text-white fs-4 flex-shrink-0"></i>
-                                    <div style="line-height: 1.1;">
-                                        <span class="text-white-50 text-uppercase d-block mb-1" style="font-size: 0.6rem; letter-spacing: 0.5px; font-weight: 500;">Departemen</span>
-                                        <span class="fw-bold text-white" style="font-size: 0.8rem; letter-spacing: 0.2px;">{{ strtoupper($karyawan->nama_dept) }}</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-3" style="background: rgba(255, 255, 255, 0.12) !important; border: 1px solid rgba(255, 255, 255, 0.08);">
-                                    <i class="ti ti-building text-white fs-4 flex-shrink-0"></i>
-                                    <div style="line-height: 1.1;">
-                                        <span class="text-white-50 text-uppercase d-block mb-1" style="font-size: 0.6rem; letter-spacing: 0.5px; font-weight: 500;">Unit Kerja</span>
-                                        <span class="fw-bold text-white" style="font-size: 0.8rem; letter-spacing: 0.2px;">{{ strtoupper($karyawan->nama_unit) }}</span>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-bold text-emerald-200/80 uppercase tracking-wider">Jabatan</p>
+                            <p class="text-xs font-bold text-white truncate">{{ strtoupper($karyawan->nama_jabatan ?? '-') }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Departemen -->
+                    <div class="bg-white/10 backdrop-blur-xs border border-white/15 rounded-xl px-3.5 py-2.5 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-600/50 flex items-center justify-center text-emerald-200 shrink-0">
+                            <i class="ti ti-sitemap text-base"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-bold text-emerald-200/80 uppercase tracking-wider">Departemen</p>
+                            <p class="text-xs font-bold text-white truncate">{{ strtoupper($karyawan->nama_dept ?? '-') }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Unit -->
+                    <div class="bg-white/10 backdrop-blur-xs border border-white/15 rounded-xl px-3.5 py-2.5 flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-600/50 flex items-center justify-center text-emerald-200 shrink-0">
+                            <i class="ti ti-building text-base"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-bold text-emerald-200/80 uppercase tracking-wider">Unit Kerja</p>
+                            <p class="text-xs font-bold text-white truncate">{{ strtoupper($karyawan->nama_unit ?? '-') }}</p>
                         </div>
                     </div>
                 </div>
             </div>
-        @endif
+        </div>
+    @endif
 
-        <!-- Jobdesk List Header -->
-        <div class="d-flex align-items-center justify-content-between mb-3 px-1">
-            <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
-                <i class="ti ti-list-check text-success fs-4"></i>
-                <span>Tugas Pokok & Fungsi (Tupoksi)</span>
-            </h5>
-            <span class="badge bg-label-success fw-bold px-2-5 py-1">{{ count($jobdesk) }} Butir Tugas</span>
+    <!-- ================= 3. JOBDESK LIST SECTION ================= -->
+    <div class="space-y-4">
+        <!-- Section Header Bar -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 border border-slate-200/90 rounded-2xl shadow-xs">
+            <div class="flex items-center gap-2.5">
+                <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 font-bold text-xs border border-emerald-200/60">
+                    <i class="ti ti-list-details"></i>
+                </span>
+                <span class="text-sm font-bold text-slate-800">Rincian Butir Tugas Pokok</span>
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+                    {{ count($jobdesk) }} Butir
+                </span>
+            </div>
+
+            <!-- Instant Search Box -->
+            <div class="relative w-full sm:w-64">
+                <i class="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" 
+                       id="searchKaryawanJobdesk" 
+                       placeholder="Cari dalam jobdesk..." 
+                       class="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-700 placeholder-slate-400 focus:outline-hidden focus:border-emerald-500 focus:bg-white transition">
+            </div>
         </div>
 
-        <!-- Jobdesk Items Grid -->
-        <div class="row g-3">
-            @forelse($jobdesk as $jd)
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 bg-white jobdesk-card border-0 shadow-sm">
-                        <div class="card-body p-4 d-flex align-items-start gap-3">
-                            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background-color: #e6f4ea; color: #064e3b; box-shadow: 0 2px 6px rgba(6, 78, 59, 0.1);">
-                                <i class="ti ti-checklist fs-4"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <span class="badge bg-label-success mb-2 fw-semibold text-uppercase" style="font-size: 0.65rem;">{{ $jd->kode_jobdesk }}</span>
-                                <p class="mb-0 text-dark fw-semibold" style="line-height: 1.6; font-size: 0.95rem;">{!! $jd->jobdesk !!}</p>
-                            </div>
+        <!-- Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="jobdeskContainer">
+            @forelse($jobdesk as $index => $jd)
+                <div class="jobdesk-item bg-white border border-slate-200/90 hover:border-emerald-300 rounded-2xl p-4 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group">
+                    <div>
+                        <!-- Header badge & number -->
+                        <div class="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-100">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200/70 uppercase tracking-wider">
+                                <i class="ti ti-tag text-[10px]"></i>
+                                <span>{{ $jd->kode_jobdesk }}</span>
+                            </span>
+                            <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-500 text-[11px] font-bold flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition">
+                                {{ $index + 1 }}
+                            </span>
                         </div>
+
+                        <!-- Jobdesk Content -->
+                        <div class="text-xs text-slate-700 leading-relaxed font-normal jobdesk-text prose-sm max-w-none">
+                            {!! $jd->jobdesk !!}
+                        </div>
+                    </div>
+
+                    <!-- Footer Info -->
+                    <div class="mt-4 pt-3 border-t border-slate-100/70 flex items-center justify-between text-[11px] text-slate-400">
+                        <span class="flex items-center gap-1">
+                            <i class="ti ti-circle-check text-emerald-600"></i>
+                            <span>Tugas Resmi</span>
+                        </span>
+                        <span class="text-[10px] font-medium text-slate-400">
+                            Sipren Al Amin
+                        </span>
                     </div>
                 </div>
             @empty
-                <div class="col-12 text-center py-5 bg-white rounded-3 shadow-sm border border-light">
-                    <div class="mb-3 text-muted">
-                        <i class="ti ti-briefcase-off fs-1 opacity-50 text-success"></i>
+                <div class="col-span-full bg-white border border-slate-200/90 rounded-2xl p-12 text-center shadow-xs">
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center text-2xl mb-3 border border-slate-100">
+                        <i class="ti ti-briefcase-off"></i>
                     </div>
-                    <h5 class="fw-bold text-dark">Belum Ada Jobdesk Yang Ditetapkan</h5>
-                    <p class="text-muted small">Silakan hubungi bagian Kepegawaian (HRD) untuk informasi tugas jabatan Anda.</p>
+                    <h3 class="text-base font-bold text-slate-800 mb-1">Belum Ada Jobdesk Yang Ditetapkan</h3>
+                    <p class="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
+                        Data tugas pokok dan fungsi resmi untuk jabatan Anda belum diinput oleh bagian Kepegawaian (HRD/MSDM).
+                    </p>
                 </div>
             @endforelse
         </div>
-
     </div>
+
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchKaryawanJobdesk');
+        const items = document.querySelectorAll('.jobdesk-item');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                items.forEach(item => {
+                    const text = item.querySelector('.jobdesk-text')?.textContent.toLowerCase() || '';
+                    const code = item.querySelector('.jobdesk-item span')?.textContent.toLowerCase() || '';
+                    if (text.includes(query) || code.includes(query)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>
 @endsection
+

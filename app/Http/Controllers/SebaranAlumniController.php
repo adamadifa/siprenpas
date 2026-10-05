@@ -15,9 +15,17 @@ class SebaranAlumniController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $items = SebaranAlumni::orderBy('nama_universitas')->paginate(20);
+        $query = SebaranAlumni::query();
+
+        if (!empty($request->nama_universitas)) {
+            $query->where('nama_universitas', 'like', '%' . $request->nama_universitas . '%');
+        }
+
+        $items = $query->orderBy('nama_universitas')->paginate(20);
+        $items->appends($request->all());
+
         return view('website.sebaran-alumni.index', compact('items'));
     }
 

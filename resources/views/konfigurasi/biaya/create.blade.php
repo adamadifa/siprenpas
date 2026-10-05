@@ -1,87 +1,213 @@
-<form action="{{ route('biaya.store') }}" method="POST" id="formBiaya">
+<form action="{{ route('biaya.store') }}" method="POST" id="formcreateBiaya" novalidate class="space-y-4">
     @csrf
-    <x-select label="Jenjang / Unit" name="kode_unit" :data="$unit" key="kode_unit" textShow="nama_unit" upperCase="true" />
-    <div class="form-group mb-3">
-        <select name="tingkat" id="tingkat" class="form-select">
-            <option value="">Pilih Tingkat</option>
-        </select>
-    </div>
-    <div class="form-group mb-3">
-        <select name="asrama" id="asrama" class="form-select">
-            <option value="">Asrama / Non Asrama</option>
-            <option value="1">Asrama</option>
-            <option value="0">Non Asrama</option>
-        </select>
-    </div>
-    <div class="form-group mb-3">
-        <select name="kode_ta" id="kode_ta" class="form-select">
-            <option value="">Tahun Ajaran</option>
-            @foreach ($tahunajaran as $d)
-                <option value="{{ $d->kode_ta }}" {{ $d->status == '1' ? 'selected' : '' }}>{{ $d->tahun_ajaran }}</option>
-            @endforeach
-        </select>
-    </div>
-    <div class="form-check mb-3">
-        <input class="form-check-input" type="checkbox" name="is_pindahan" value="1" id="is_pindahan">
-        <label class="form-check-label" for="is_pindahan"> Apakah Paket Biaya Pindahan? </label>
-    </div>
-    <div class="divider text-start">
-        <div class="divider-text">Detail Biaya</div>
-    </div>
-    <div class="row mb-2">
-        <div class="col-lg-6 col-sm-12 col-md-12">
-            <x-select label="Jenis Biaya" name="kode_jenis_biaya" :data="$jenisbiaya" key="kode_jenis_biaya" textShow="jenis_biaya" upperCase="true" />
+
+    <!-- Callout Info -->
+    <div class="flex items-start gap-3 p-3.5 bg-emerald-50/80 border border-emerald-200/80 rounded-xl text-emerald-900">
+        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 text-base font-bold">
+            <i class="ti ti-coin"></i>
         </div>
-        <div class="col-lg-4 col-sm-12 col-md-12">
-            <x-input-with-icon icon="ti ti-file-description" label="Jumlah Biaya" textalign="right" name="jumlah" />
-        </div>
-        <div class="col-lg-2 col-sm-12 col-md-12">
-            <a href="#" class="btn btn-primary w-100" id="tambahbiaya">
-                <i class="ti ti-plus"></i>
-            </a>
+        <div class="text-xs">
+            <p class="font-bold text-emerald-950">Konfigurasi Tarif Paket Biaya</p>
+            <p class="text-emerald-700/90 mt-0.5 leading-relaxed">
+                Pilih jenjang, tingkat, tipe asrama, dan tahun ajaran, lalu tambahkan rincian komponen biaya pada tabel di bawah.
+            </p>
         </div>
     </div>
-    <table class="table table-bordered table-hover" id="tabledetail">
-        <thead class="table-dark">
-            <tr>
-                <th>Kode</th>
-                <th>Jenis Biaya</th>
-                <th>Jumlah</th>
-                <th>#</th>
-            </tr>
-        </thead>
-        <tbody id="loaddetail"></tbody>
-        <tfoot class="table-dark">
-            <tr>
-                <td colspan="2" class="text-start fw-bold">Total Biaya</td>
-                <td class="text-end fw-bold" id="totalbiaya"></td>
-                <td></td>
-            </tr>
-        </tfoot>
-    </table>
-    <div class="row mt-2">
-        <div class="col-12">
-            <div class="form-check mt-3 mb-3">
-                <input class="form-check-input agreement" name="aggrement" value="aggrement" type="checkbox" value="" id="defaultCheck3">
-                <label class="form-check-label" for="defaultCheck3"> Yakin Akan Disimpan ? </label>
+
+    <!-- Baris 1: Jenjang & Tingkat -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <!-- Jenjang / Unit -->
+        <div class="space-y-1.5" id="group_kode_unit">
+            <label for="kode_unit" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <i class="ti ti-building text-slate-400"></i>
+                <span>Jenjang / Unit <span class="text-rose-500">*</span></span>
+            </label>
+            <div class="relative">
+                <select name="kode_unit" 
+                        id="kode_unit" 
+                        class="w-full py-2.5 px-3.5 text-xs font-bold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition cursor-pointer">
+                    <option value="">-- Pilih Jenjang / Unit --</option>
+                    @foreach ($unit as $u)
+                        <option value="{{ $u->kode_unit }}">{{ strtoupper($u->nama_unit) }}</option>
+                    @endforeach
+                </select>
             </div>
-            <div class="form-group" id="saveButton">
-                <button class="btn btn-primary w-100" type="submit" id="btnSimpan">
-                    <ion-icon name="send-outline" class="me-1"></ion-icon>
-                    Submit
-                </button>
+            <p class="text-[11px] font-semibold text-rose-500 hidden mt-1 flex items-center gap-1" id="error_kode_unit"></p>
+        </div>
+
+        <!-- Tingkat Kelas -->
+        <div class="space-y-1.5" id="group_tingkat">
+            <label for="tingkat" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <i class="ti ti-stairs text-slate-400"></i>
+                <span>Tingkat Kelas <span class="text-rose-500">*</span></span>
+            </label>
+            <div class="relative">
+                <select name="tingkat" 
+                        id="tingkat" 
+                        class="w-full py-2.5 px-3.5 text-xs font-bold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition cursor-pointer">
+                    <option value="">-- Pilih Unit Terlebih Dahulu --</option>
+                </select>
             </div>
+            <p class="text-[11px] font-semibold text-rose-500 hidden mt-1 flex items-center gap-1" id="error_tingkat"></p>
+        </div>
+    </div>
+
+    <!-- Baris 2: Asrama & Tahun Ajaran -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <!-- Asrama / Non-Asrama -->
+        <div class="space-y-1.5" id="group_asrama">
+            <label for="asrama" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <i class="ti ti-home text-slate-400"></i>
+                <span>Tipe Hunian <span class="text-rose-500">*</span></span>
+            </label>
+            <div class="relative">
+                <select name="asrama" 
+                        id="asrama" 
+                        class="w-full py-2.5 px-3.5 text-xs font-bold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition cursor-pointer">
+                    <option value="">-- Pilih Status Asrama --</option>
+                    <option value="1">Asrama (Mukim)</option>
+                    <option value="0">Non Asrama (Non-Mukim)</option>
+                </select>
+            </div>
+            <p class="text-[11px] font-semibold text-rose-500 hidden mt-1 flex items-center gap-1" id="error_asrama"></p>
+        </div>
+
+        <!-- Tahun Ajaran -->
+        <div class="space-y-1.5" id="group_kode_ta">
+            <label for="kode_ta_form" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <i class="ti ti-calendar text-slate-400"></i>
+                <span>Tahun Ajaran PPDB <span class="text-rose-500">*</span></span>
+            </label>
+            <div class="relative">
+                <select name="kode_ta" 
+                        id="kode_ta_form" 
+                        class="w-full py-2.5 px-3.5 text-xs font-bold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition cursor-pointer">
+                    <option value="">-- Pilih Tahun Ajaran --</option>
+                    @foreach ($tahunajaran as $d)
+                        <option value="{{ $d->kode_ta }}" {{ $d->status == '1' ? 'selected' : '' }}>
+                            {{ $d->tahun_ajaran }} {{ $d->status == '1' ? '(Aktif)' : '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <p class="text-[11px] font-semibold text-rose-500 hidden mt-1 flex items-center gap-1" id="error_kode_ta"></p>
+        </div>
+    </div>
+
+    <!-- Checkbox Pindahan -->
+    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-3">
+        <input type="checkbox" name="is_pindahan" value="1" id="is_pindahan" class="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer">
+        <label for="is_pindahan" class="text-xs font-bold text-slate-700 select-none cursor-pointer">
+            Paket Biaya Khusus Santri Pindahan (Transfer)
+        </label>
+    </div>
+
+    <!-- Divider Section: Detail Biaya -->
+    <div class="pt-2">
+        <div class="flex items-center gap-3 mb-3">
+            <div class="h-px bg-slate-200 flex-1"></div>
+            <span class="text-xs font-extrabold uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
+                <i class="ti ti-list-check text-emerald-600"></i>
+                Rincian Komponen Biaya
+            </span>
+            <div class="h-px bg-slate-200 flex-1"></div>
+        </div>
+
+        <!-- Toolbar Tambah Komponen -->
+        <div class="p-3.5 bg-slate-50 border border-slate-200/90 rounded-2xl space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                <!-- Jenis Biaya -->
+                <div class="sm:col-span-6 space-y-1.5">
+                    <label for="kode_jenis_biaya" class="text-xs font-bold text-slate-700">Jenis Biaya</label>
+                    <select id="kode_jenis_biaya" class="w-full py-2.5 px-3 text-xs font-bold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition cursor-pointer">
+                        <option value="">-- Pilih Jenis Biaya --</option>
+                        @foreach ($jenisbiaya as $jb)
+                            <option value="{{ $jb->kode_jenis_biaya }}">{{ strtoupper($jb->jenis_biaya) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Nominal Biaya -->
+                <div class="sm:col-span-4 space-y-1.5">
+                    <label for="jumlah" class="text-xs font-bold text-slate-700">Jumlah Biaya (Rp)</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
+                        <input type="text" 
+                               id="jumlah" 
+                               placeholder="0" 
+                               autocomplete="off"
+                               class="w-full pl-9 pr-3.5 py-2.5 text-xs font-mono font-bold text-right text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition">
+                    </div>
+                </div>
+
+                <!-- Tombol Tambah -->
+                <div class="sm:col-span-2">
+                    <button type="button" id="tambahbiaya" class="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+                        <i class="ti ti-plus text-sm"></i>
+                        <span>Tambah</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabel Komponen Biaya -->
+    <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-2xs bg-white">
+        <table class="w-full text-left border-collapse" id="tabledetail">
+            <thead>
+                <tr class="bg-slate-100 text-slate-700 text-[11px] font-extrabold uppercase border-b border-slate-200">
+                    <th class="py-2.5 px-3 w-28 text-center">KODE</th>
+                    <th class="py-2.5 px-4">JENIS BIAYA</th>
+                    <th class="py-2.5 px-4 text-right w-44">JUMLAH (RP)</th>
+                    <th class="py-2.5 px-3 text-center w-16">AKSI</th>
+                </tr>
+            </thead>
+            <tbody id="loaddetail" class="divide-y divide-slate-100 text-xs text-slate-700">
+                <!-- Data item diinject via JavaScript -->
+            </tbody>
+            <tfoot>
+                <tr class="bg-slate-900 text-white font-extrabold text-xs">
+                    <td colspan="2" class="py-3 px-4 text-left uppercase tracking-wider">Total Biaya Pendidikan</td>
+                    <td class="py-3 px-4 text-right font-mono text-sm text-emerald-400" id="totalbiaya">Rp 0</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <!-- Checkbox Agreement & Submit Actions -->
+    <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+            <input type="checkbox" name="aggrement" value="aggrement" id="defaultCheck3" class="agreement w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer">
+            <label for="defaultCheck3" class="text-xs font-bold text-slate-700 select-none cursor-pointer">
+                Konfirmasi rincian biaya telah sesuai & siap disimpan
+            </label>
+        </div>
+
+        <div class="flex items-center justify-end gap-2.5">
+            <button type="button" data-bs-dismiss="modal" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer">
+                Batal
+            </button>
+            <button type="submit" id="btnSimpan" class="inline-flex items-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-xs transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="ti ti-device-floppy text-base"></i>
+                <span>Simpan Paket Biaya</span>
+            </button>
         </div>
     </div>
 </form>
 
 <script>
     $(function() {
-        const form = $("#formBiaya");
+        const form = $("#formcreateBiaya");
 
-        form.find("#jumlah").maskMoney();
+        form.find("#jumlah").maskMoney({thousands:'.', decimal:',', precision:0});
+
         form.find("#kode_unit").change(function() {
             const kode_unit = $(this).val();
+            if(!kode_unit) {
+                form.find("#tingkat").html('<option value="">-- Pilih Unit Terlebih Dahulu --</option>');
+                return;
+            }
             $.ajax({
                 type: "POST",
                 url: "{{ route('unit.gettingkatbyunit') }}",
@@ -103,24 +229,27 @@
             const jumlah = form.find("#jumlah").val();
 
             let listbiaya = `
-                <tr id="index_${kode_jenis_biaya}">
-                    <td>
+                <tr id="index_${kode_jenis_biaya}" class="hover:bg-slate-50 transition">
+                    <td class="py-2.5 px-3 text-center">
                         <input type="hidden" name="kode_jenis_biaya[]" value="${kode_jenis_biaya}" />
-                        ${kode_jenis_biaya}
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 font-mono text-[11px] font-bold border border-slate-200">
+                            ${kode_jenis_biaya}
+                        </span>
                     </td>
-                    <td>${jenis_biaya}</td>
-                    <td class="text-end">
+                    <td class="py-2.5 px-4 font-bold text-slate-800">${jenis_biaya}</td>
+                    <td class="py-2.5 px-4 text-right font-mono font-bold text-slate-800">
                         <input type="hidden" name="jml[]" value="${jumlah}" />
-                        ${jumlah}
+                        Rp ${jumlah}
                     </td>
-                    <td class="text-center">
-                        <a href="#" kode_jenis_biaya="${kode_jenis_biaya}" class="delete"><i class="ti ti-trash text-danger"></i></a>
+                    <td class="py-2.5 px-3 text-center">
+                        <button type="button" kode_jenis_biaya="${kode_jenis_biaya}" class="w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 inline-flex items-center justify-center transition border border-rose-200/60 delete cursor-pointer" title="Hapus">
+                            <i class="ti ti-trash text-sm"></i>
+                        </button>
                     </td>
                 </tr>
             `;
 
             $("#loaddetail").prepend(listbiaya);
-
             form.find("#kode_jenis_biaya").val("");
             form.find("#jumlah").val("");
             getTotalBiaya();
@@ -130,11 +259,12 @@
             let totalbiaya = 0;
             $("#loaddetail tr").each(function() {
                 let jumlah = $(this).find("input[name='jml[]']").val();
-                // Hilangkan simbol titik pada jumlah
-                jumlah = jumlah.replace(/\./g, '');
-                totalbiaya += parseInt(jumlah) || 0;
+                if(jumlah) {
+                    jumlah = jumlah.replace(/\./g, '');
+                    totalbiaya += parseInt(jumlah) || 0;
+                }
             });
-            $("#totalbiaya").text(totalbiaya.toLocaleString('id-ID'));
+            $("#totalbiaya").text('Rp ' + totalbiaya.toLocaleString('id-ID'));
         }
 
         $("#tambahbiaya").click(function(e) {
@@ -144,35 +274,24 @@
             const cekdetail = form.find('#tabledetail').find('#index_' + kode_jenis_biaya).length;
             if (kode_jenis_biaya == "") {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Silahkan Pilih dulu Jenis Biaya !",
+                    title: "Pilih Komponen!",
+                    text: "Silahkan pilih jenis biaya terlebih dahulu.",
                     icon: "warning",
-                    showConfirmButton: true,
-                    didClose: (e) => {
-                        form.find("#kode_jenis_biaya").focus();
-                    },
-
+                    confirmButtonColor: "#059669"
                 });
             } else if (jumlah == "" || jumlah === "0") {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Jumlah Tidak Boleh 0 Atau Kosong !",
+                    title: "Jumlah Nominal Kosong!",
+                    text: "Nominal biaya tidak boleh 0 atau kosong.",
                     icon: "warning",
-                    showConfirmButton: true,
-                    didClose: (e) => {
-                        form.find("#jumlah").focus();
-                    },
-
+                    confirmButtonColor: "#059669"
                 });
             } else if (cekdetail > 0) {
                 Swal.fire({
-                    title: "Oops!",
-                    text: "Data Sudah Ada !",
+                    title: "Komponen Sudah Ada!",
+                    text: "Jenis biaya ini sudah ditambahkan ke dalam rincian.",
                     icon: "warning",
-                    showConfirmButton: true,
-                    didClose: (e) => {
-                        form.find("#kode_jenis_biaya").focus();
-                    },
+                    confirmButtonColor: "#059669"
                 });
             } else {
                 addBiaya();
@@ -182,90 +301,46 @@
         form.on('click', '.delete', function(e) {
             e.preventDefault();
             var kode_jenis_biaya = $(this).attr("kode_jenis_biaya");
-            event.preventDefault();
-            Swal.fire({
-                title: `Apakah Anda Yakin Ingin Menghapus Data Ini ?`,
-                text: "Jika dihapus maka data akan hilang permanent.",
-                icon: "warning",
-                buttons: true,
-                dangerMode: true,
-                showCancelButton: true,
-                confirmButtonColor: "#554bbb",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, Hapus Saja!"
-            }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) {
-                    $(`#index_${kode_jenis_biaya}`).remove();
-                    getTotalBiaya();
-                }
-            });
+            $(`#index_${kode_jenis_biaya}`).remove();
+            getTotalBiaya();
         });
 
-
-
-        form.find("#saveButton").hide();
-
+        form.find("#btnSimpan").prop("disabled", true);
         form.find('.agreement').change(function() {
-            if (this.checked) {
-                form.find("#saveButton").show();
-            } else {
-                form.find("#saveButton").hide();
-            }
+            form.find("#btnSimpan").prop("disabled", !this.checked);
         });
 
-        form.submit(function() {
+        form.submit(function(e) {
             const kode_unit = form.find("#kode_unit").val();
             const tingkat = form.find("#tingkat").val();
             const asrama = form.find("#asrama").val();
+            const kode_ta = form.find("#kode_ta_form").val();
             const detail = form.find('#loaddetail tr').length;
-            if (kode_unit == "") {
-                Swal.fire({
-                    title: "Oops!",
-                    text: "Tingkat Harus Diisi !",
-                    icon: "warning",
-                    showConfirmButton: true,
-                    didClose: (e) => {
-                        form.find("#kode_unit").focus();
-                    },
-                });
 
+            if (!kode_unit) {
+                Swal.fire({ title: "Oops!", text: "Jenjang / Unit wajib dipilih!", icon: "warning", confirmButtonColor: "#059669" });
                 return false;
-            } else if (tingkat == "") {
-                Swal.fire({
-                    title: "Oops!",
-                    text: "Tingkat harus Diisi !",
-                    icon: "warning",
-                    showConfirmButton: true,
-                    didClose: (e) => {
-                        form.find("#tingkat").focus();
-                    },
-                });
-
+            } else if (!tingkat) {
+                Swal.fire({ title: "Oops!", text: "Tingkat kelas wajib dipilih!", icon: "warning", confirmButtonColor: "#059669" });
                 return false;
-            } else if (asrama == "") {
-                Swal.fire({
-                    title: "Oops!",
-                    text: "Asrama / Non Asrama Harus Diisi !",
-                    icon: "warning",
-                    showConfirmButton: true,
-                    didClose: (e) => {
-                        form.find("#asrama").focus();
-                    },
-                });
+            } else if (asrama === "") {
+                Swal.fire({ title: "Oops!", text: "Tipe hunian (Asrama) wajib dipilih!", icon: "warning", confirmButtonColor: "#059669" });
                 return false;
-            } else if (detail == "0") {
-                Swal.fire({
-                    title: "Oops!",
-                    text: "Detail Biaya Masih Kosong !",
-                    icon: "warning",
-                    showConfirmButton: true,
-                    didClose: (e) => {
-                        form.find("#kode_biaya").focus();
-                    },
-                });
+            } else if (!kode_ta) {
+                Swal.fire({ title: "Oops!", text: "Tahun ajaran wajib dipilih!", icon: "warning", confirmButtonColor: "#059669" });
+                return false;
+            } else if (detail === 0) {
+                Swal.fire({ title: "Detail Masih Kosong!", text: "Silahkan tambahkan minimal 1 komponen jenis biaya!", icon: "warning", confirmButtonColor: "#059669" });
                 return false;
             }
+
+            $("#btnSimpan").prop("disabled", true).html(`
+                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Menyimpan...</span>
+            `);
         });
     });
 </script>

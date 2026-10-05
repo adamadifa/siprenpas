@@ -1,203 +1,290 @@
 @extends('layouts.app')
-@section('titlepage', 'Jabatan Akademik')
+@section('titlepage', 'Data Jabatan Akademik')
 
 @section('content')
-@section('navigasi')
-    <div class="card shadow-none bg-transparent border-0 mb-3">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
-                        <i class="ti ti-id-badge fs-3"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Jabatan Akademik</h4>
-                        <p class="text-muted mb-0 small">Manajemen data jabatan akademik</p>
-                    </div>
-                </div>
-                <div class="d-flex flex-column align-items-end">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb breadcrumb-style1 mb-0">
-                            <li class="breadcrumb-item">
-                                <a href="javascript:void(0);" class="text-muted">
-                                    <i class="ti ti-database me-1"></i> Data Master
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active">
-                                <i class="ti ti-id-badge me-1"></i> Jabatan Akademik
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
+<div class="space-y-5">
 
-<div class="row">
-    <div class="col-lg-8">
-        <!-- Actions Section -->
-        <div class="d-flex justify-content-start mb-3">
-            @can('jabatanakademik.store')
-                <button class="btn d-flex align-items-center gap-2 shadow-sm text-white" id="btnCreateJabatan"
-                    style="background-color: #064e3b">
-                    <i class="ti ti-plus fs-4"></i>
-                    <span>Tambah Jabatan</span>
-                </button>
-            @endcan
+    <!-- ================= 1. PAGE HEADER (NO CARD) WITH RIGHT BREADCRUMB ================= -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-1">
+        <!-- Title & Subtitle -->
+        <div>
+            <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+                <i class="ti ti-award text-emerald-600 text-2xl"></i>
+                <span>Data Jabatan Akademik</span>
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">
+                Manajemen struktur jabatan tenaga pendidik, susunan hierarki, dan wewenang tanda tangan raport
+            </p>
         </div>
 
-        <!-- Filter Form -->
-        <div class="mb-4">
-            <form action="{{ route('jabatan-akademik.index') }}">
-                <div class="d-flex gap-2">
-                    <div class="input-group input-group-merge border shadow-none rounded-2"
-                        style="border-color: #e0e0e0 !important;">
-                        <span class="input-group-text bg-white border-0"><i class="ti ti-search text-muted"></i></span>
-                        <input type="text" name="nama_jabatan_search" class="form-control bg-white border-0 ps-2"
-                            placeholder="Cari Jabatan..." value="{{ Request('nama_jabatan_search') }}">
-                    </div>
-                    <button type="submit" class="btn shadow-none d-flex align-items-center gap-2 text-white px-4"
-                        style="background-color: #064e3b">
-                        <i class="ti ti-search fs-5"></i> Cari
+        <!-- Right Side: Breadcrumb & Actions -->
+        <div class="flex flex-col md:items-end gap-2.5">
+            <!-- Breadcrumb Navigation -->
+            <nav class="flex items-center text-xs text-slate-400 font-medium">
+                <a href="{{ route('dashboard.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="text-slate-500 flex items-center gap-1">
+                    <i class="ti ti-school text-sm"></i>
+                    <span>Akademik</span>
+                </span>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="font-bold text-slate-800">Jabatan Akademik</span>
+            </nav>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap items-center gap-2">
+                @can('jabatanakademik.store')
+                    <button type="button" id="btnCreateJabatanAkademik" class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-xs transition-all duration-200 active:scale-95 cursor-pointer">
+                        <i class="ti ti-plus text-base"></i>
+                        <span>Tambah Jabatan Akademik</span>
                     </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="card shadow-sm border-0">
-            <div class="card-header d-flex align-items-center gap-2 text-white py-3" style="background-color: #064e3b">
-                <i class="ti ti-layout-grid fs-5"></i>
-                <h6 class="card-title mb-0 text-white">Data Jabatan Akademik</h6>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0 text-nowrap">
-                        <thead style="background-color: #064e3b">
-                            <tr>
-                                <th class="text-white py-3">NO.</th>
-                                <th class="text-white py-3">KODE</th>
-                                <th class="text-white py-3">NAMA JABATAN</th>
-                                <th class="text-white py-3 text-center">URUTAN</th>
-                                <th class="text-white py-3 text-center">RAPORT</th>
-                                <th class="text-white py-3 text-end" style="width: 100px;">#</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($jabatan_akademik as $d)
-                                <tr>
-                                    <td class="py-1">{{ $loop->iteration }}</td>
-                                    <td class="py-1"><span class="fw-bold">{{ $d->kode_jabatan }}</span></td>
-                                    <td class="py-1">{{ $d->nama_jabatan }}</td>
-                                    <td class="py-1 text-center">{{ $d->urutan }}</td>
-                                    <td class="py-1 text-center">
-                                        @if ($d->tampil_di_raport == 1)
-                                            <span class="badge bg-label-success p-1"><i class="ti ti-check fs-6"></i></span>
-                                        @else
-                                            <span class="badge bg-label-secondary p-1"><i class="ti ti-minus fs-6"></i></span>
-                                        @endif
-                                    </td>
-                                    <td class="py-1 text-end">
-                                        <div class="d-flex justify-content-end gap-1">
-                                            @can('jabatanakademik.edit')
-                                                <a href="#" class="btn btn-icon btn-label-success border editJabatan"
-                                                    style="width: 28px; height: 28px;"
-                                                    id="{{ Crypt::encrypt($d->kode_jabatan) }}">
-                                                    <i class="ti ti-edit fs-6"></i>
-                                                </a>
-                                            @endcan
-                                            @can('jabatanakademik.delete')
-                                                <form method="POST" name="deleteform" class="deleteform"
-                                                    action="{{ route('jabatan-akademik.delete', Crypt::encrypt($d->kode_jabatan)) }}">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <a href="#" class="btn btn-icon btn-label-danger border delete-confirm"
-                                                        style="width: 28px; height: 28px;">
-                                                        <i class="ti ti-trash fs-6"></i>
-                                                    </a>
-                                                </form>
-                                            @endcan
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center p-5">
-                                        <div class="mb-3">
-                                            <i class="ti ti-id-badge fs-1 opacity-25"></i>
-                                        </div>
-                                        <h5>Belum Ada Data Jabatan</h5>
-                                        <p class="text-muted">Silahkan tambah data baru atau sesuaikan filter pencarian.</p>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                @endcan
             </div>
         </div>
     </div>
+
+    <!-- ================= 2. FILTER & SEARCH TOOLBAR ================= -->
+    <form action="{{ route('jabatan-akademik.index') }}" method="GET" class="w-full">
+        <div class="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3 w-full">
+            <!-- Search Input (Flex-1 expands to fill width) -->
+            <div class="flex-1 min-w-0 w-full relative">
+                <i class="ti ti-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none"></i>
+                <input type="text" 
+                       name="nama_jabatan" 
+                       value="{{ Request('nama_jabatan') ?? Request('nama_jabatan_search') }}" 
+                       placeholder="Cari Nama Jabatan Akademik atau Kode..." 
+                       class="w-full pl-11 pr-4 py-2.5 sm:py-3 text-sm bg-white border border-slate-300/90 rounded-lg text-slate-800 font-medium placeholder-slate-400 shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                <button type="submit" class="w-full sm:w-auto px-5 py-2.5 sm:py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-lg shadow-xs transition inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95 whitespace-nowrap">
+                    <i class="ti ti-search text-base"></i>
+                    <span>Cari</span>
+                </button>
+                @if(Request('nama_jabatan') || Request('nama_jabatan_search'))
+                    <a href="{{ route('jabatan-akademik.index') }}" class="py-2.5 sm:py-3 px-3 bg-white hover:bg-slate-100 text-slate-600 border border-slate-300/90 rounded-lg font-semibold text-sm transition inline-flex items-center justify-center shrink-0 shadow-xs" title="Reset Filter">
+                        <i class="ti ti-refresh text-base"></i>
+                    </a>
+                @endif
+            </div>
+        </div>
+    </form>
+
+    <!-- ================= 3. DATA TABLE (SEAMLESS SOLID GREEN HEADER) ================= -->
+    <div class="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
+        
+        <!-- Seamless Solid Green Card Header -->
+        <div class="px-5 pt-4 pb-2.5 bg-emerald-600 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-white border-0">
+            <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center text-xs font-bold border border-white/20 shadow-2xs">
+                    <i class="ti ti-award"></i>
+                </div>
+                <h3 class="text-sm font-extrabold text-white tracking-tight">Daftar Struktur Jabatan Akademik</h3>
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white/20 text-white border border-white/30 shadow-2xs backdrop-blur-xs">
+                    {{ count($jabatan_akademik) }} data
+                </span>
+            </div>
+            <div class="text-xs text-emerald-100 font-medium">
+                Urutan digunakan untuk tata letak susunan jabatan dan tanda tangan raport
+            </div>
+        </div>
+
+        <!-- Responsive Table Container -->
+        <div class="overflow-x-auto bg-emerald-600">
+            <table class="w-full text-left text-xs sm:text-sm border-0 border-collapse">
+                <!-- Matching Solid Green Table Header -->
+                <thead class="bg-emerald-600 text-white font-bold uppercase tracking-wider text-[11px] border-0 border-t-0 border-b border-emerald-700/80">
+                    <tr class="border-0 border-t-0">
+                        <th class="py-2.5 px-3.5 w-12 text-center text-emerald-100 border-0 border-t-0">No</th>
+                        <th class="py-2.5 px-3.5 w-32 text-emerald-100 border-0 border-t-0">Kode Jabatan</th>
+                        <th class="py-2.5 px-3.5 text-emerald-100 border-0 border-t-0">Nama Jabatan</th>
+                        <th class="py-2.5 px-3.5 text-center w-24 text-emerald-100 border-0 border-t-0">Urutan</th>
+                        <th class="py-2.5 px-3.5 text-center w-36 text-emerald-100 border-0 border-t-0">Tampil Raport</th>
+                        <th class="py-2.5 px-3.5 text-center w-24 text-emerald-100 border-0 border-t-0">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-700 font-medium bg-white">
+                    @forelse ($jabatan_akademik as $d)
+                        <tr class="hover:bg-slate-50/80 transition-colors group">
+                            <!-- No Index -->
+                            <td class="py-2.5 px-3.5 text-center text-slate-400 font-bold text-xs">
+                                <span class="w-5.5 h-5.5 rounded-md bg-slate-100 group-hover:bg-emerald-50 group-hover:text-emerald-700 group-hover:border group-hover:border-emerald-200 inline-flex items-center justify-center font-bold text-slate-600 transition text-[11px]">
+                                    {{ $loop->iteration }}
+                                </span>
+                            </td>
+
+                            <!-- Kode Jabatan -->
+                            <td class="py-2.5 px-3.5">
+                                <span class="px-2 py-0.5 rounded-md text-[11px] font-black font-mono tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200/80 shadow-2xs">
+                                    {{ $d->kode_jabatan }}
+                                </span>
+                            </td>
+
+                            <!-- Nama Jabatan -->
+                            <td class="py-2.5 px-3.5">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-md bg-slate-100 text-slate-500 flex items-center justify-center text-xs shrink-0 group-hover:bg-emerald-100 group-hover:text-emerald-700 transition">
+                                        <i class="ti ti-award"></i>
+                                    </div>
+                                    <span class="font-bold text-slate-900 group-hover:text-emerald-800 transition text-xs sm:text-sm">
+                                        {{ $d->nama_jabatan }}
+                                    </span>
+                                </div>
+                            </td>
+
+                            <!-- Urutan -->
+                            <td class="py-2.5 px-3.5 text-center">
+                                <span class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200/80">
+                                    {{ $d->urutan }}
+                                </span>
+                            </td>
+
+                            <!-- Tampil di Raport -->
+                            <td class="py-2.5 px-3.5 text-center">
+                                @if ($d->tampil_di_raport == 1)
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1 shadow-2xs">
+                                        <i class="ti ti-check text-xs"></i>
+                                        <span>Ya (Raport)</span>
+                                    </span>
+                                @else
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200 inline-flex items-center gap-1">
+                                        <i class="ti ti-minus text-xs"></i>
+                                        <span>Tidak</span>
+                                    </span>
+                                @endif
+                            </td>
+
+                            <!-- Aksi -->
+                            <td class="py-2.5 px-3.5 text-center">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    @can('jabatanakademik.edit')
+                                        <button type="button" 
+                                                class="w-7 h-7 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/80 flex items-center justify-center transition active:scale-95 btnEditJabatanAkademik cursor-pointer shadow-2xs"
+                                                kode_jabatan="{{ Crypt::encrypt($d->kode_jabatan) }}"
+                                                title="Edit Jabatan Akademik">
+                                            <i class="ti ti-edit text-xs"></i>
+                                        </button>
+                                    @endcan
+
+                                    @can('jabatanakademik.delete')
+                                        <form method="POST" action="{{ route('jabatan-akademik.delete', Crypt::encrypt($d->kode_jabatan)) }}" class="inline-block">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" 
+                                                    class="w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 flex items-center justify-center transition active:scale-95 btn-delete-jabatan-akademik cursor-pointer shadow-2xs"
+                                                    data-nama="{{ $d->nama_jabatan }}"
+                                                    data-kode="{{ $d->kode_jabatan }}"
+                                                    title="Hapus Jabatan Akademik">
+                                                <i class="ti ti-trash text-xs"></i>
+                                            </button>
+                                        </form>
+                                    @endcan
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="p-12 text-center text-slate-400">
+                                <div class="w-14 h-14 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-3 text-slate-400 text-2xl">
+                                    <i class="ti ti-award-off"></i>
+                                </div>
+                                <h4 class="text-sm font-bold text-slate-800">Belum Ada Data Jabatan Akademik</h4>
+                                <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                                    Silakan tambahkan data struktur jabatan akademik baru melalui tombol Tambah Jabatan Akademik di atas.
+                                </p>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 
-<x-modal-form id="mdlCreateJabatan" size="" show="loadCreateJabatan" title="Tambah Jabatan Akademik" icon="ti ti-id-badge" />
-<x-modal-form id="mdlEditJabatan" size="" show="loadEditJabatan" title="Edit Jabatan Akademik" icon="ti ti-edit" />
+<!-- ================= MODAL CONTAINER ================= -->
+<x-modal-form id="modalJabatanAkademik" size="modal-md" show="loadmodalJabatanAkademik" title="" icon="ti ti-award" />
 
 @endsection
 
 @push('myscript')
 <script>
     $(function() {
-        $("#btnCreateJabatan").click(function(e) {
+        const loading = `
+            <div class="p-10 text-center bg-white">
+                <div class="w-9 h-9 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-2.5"></div>
+                <div class="text-xs font-bold text-slate-700">Memuat Data Jabatan Akademik...</div>
+            </div>
+        `;
+
+        // Tambah Jabatan Akademik Modal
+        $("#btnCreateJabatanAkademik").click(function(e) {
             e.preventDefault();
-            $('#mdlCreateJabatan').modal("show");
-            $("#loadCreateJabatan").html(`
-                <form action="{{ route('jabatan-akademik.store') }}" method="POST" id="formcreateJabatan">
-                    @csrf
-                    <div class="row">
-                        <div class="col-12">
-                            <x-input-with-icon label="Kode Jabatan" value="" name="kode_jabatan" icon="ti ti-barcode" />
-                            <x-input-with-icon label="Nama Jabatan" value="" name="nama_jabatan" icon="ti ti-id" />
-                            <x-input-with-icon label="Urutan" value="" name="urutan" icon="ti ti-list-numbers" />
-                            <div class="form-check mt-3 mb-3">
-                                <input class="form-check-input" type="checkbox" value="1" id="tampil_di_raport" name="tampil_di_raport">
-                                <label class="form-check-label" for="tampil_di_raport">
-                                    Tampil di Raport (Tanda Tangan)
-                                </label>
-                            </div>
-                            <div class="form-group mb-3">
-                                <button class="btn btn-primary w-100" style="background-color: #064e3b; border-color: #064e3b">
-                                    <i class="ti ti-send me-1"></i> Simpan Data
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            `);
+            e.stopPropagation();
+            $('#modalJabatanAkademik').modal("show");
+            $("#modalJabatanAkademik").find("#loadmodalJabatanAkademik").html(loading);
+            $("#modalJabatanAkademik").find(".modal-title").text("Tambah Data Jabatan Akademik");
+            $("#loadmodalJabatanAkademik").load("{{ route('jabatan-akademik.create') }}");
         });
 
-        $(".editJabatan").click(function(e) {
-            var id = $(this).attr("id");
+        // Edit Jabatan Akademik Modal
+        $(document).on('click', '.btnEditJabatanAkademik', function(e) {
             e.preventDefault();
-            $('#mdlEditJabatan').modal("show");
-            $("#loadEditJabatan").load('/jabatan-akademik/' + id + '/edit');
+            e.stopPropagation();
+            const kode_jabatan = $(this).attr('kode_jabatan');
+            $('#modalJabatanAkademik').modal("show");
+            $("#modalJabatanAkademik").find("#loadmodalJabatanAkademik").html(loading);
+            $("#modalJabatanAkademik").find(".modal-title").text("Edit Data Jabatan Akademik");
+            $("#loadmodalJabatanAkademik").load(`/jabatan-akademik/${kode_jabatan}/edit`);
         });
 
-        // Delete Confirm
-        $(document).on('click', '.delete-confirm', function(e) {
+        // Delete Jabatan Akademik with SweetAlert2
+        $(document).on('click', '.btn-delete-jabatan-akademik', function(e) {
             e.preventDefault();
-            var form = $(this).closest('form');
+            e.stopPropagation();
+            const form = $(this).closest('form');
+            const nama = $(this).data('nama') || 'jabatan akademik ini';
+            const kode = $(this).data('kode') || '';
+
             Swal.fire({
-                title: 'Apakah anda yakin?',
-                text: "Data ini akan dihapus secara permanen!",
+                title: 'Hapus Jabatan Akademik?',
+                html: `
+                    <div class="text-xs sm:text-sm text-slate-600 mt-2 space-y-2 text-center">
+                        <p>Apakah Anda yakin ingin menghapus struktur jabatan akademik:</p>
+                        <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900">
+                            ${nama} ${kode ? `<span class="text-xs text-slate-500 font-mono block mt-0.5">Kode: ${kode}</span>` : ''}
+                        </div>
+                        <p class="text-[11px] text-rose-500 font-semibold">Pastikan tidak ada data guru atau raport yang masih terkait dengan jabatan ini.</p>
+                    </div>
+                `,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#064e3b',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
+                confirmButtonColor: '#e11d48',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="ti ti-trash mr-1"></i> Ya, Hapus Data',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-2xl p-5',
+                    title: 'text-base font-bold text-slate-900',
+                    confirmButton: 'px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer',
+                    cancelButton: 'px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    form.submit();
+                    Swal.fire({
+                        title: 'Menghapus Data...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+                    form.get(0).submit();
                 }
             });
         });

@@ -21,6 +21,9 @@ class PermissionController extends Controller
         if (!empty($request->id_permission_group)) {
             $query->where('id_permission_group', $request->id_permission_group);
         }
+        if (!empty($request->name)) {
+            $query->where('permissions.name', 'like', '%' . $request->name . '%');
+        }
         $query->orderBy('id_permission_group');
         $permissions = $query->paginate(10);
 

@@ -1,296 +1,155 @@
-@php
-    $agent = new Jenssegers\Agent\Agent();
-@endphp
-<nav class="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
-    id="layout-navbar" @if ($agent->isMobile()) style="width:100% !important; margin:0 !important  " @endif>
-    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
-        <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-            <i class="ti ti-menu-2 ti-sm"></i>
+<header class="sticky top-0 z-30 h-16 w-full bg-white border-b border-slate-200/80 flex items-center justify-between px-4 sm:px-6 transition-all duration-300">
+    
+    <!-- Left: Brand Logo & Sidebar Toggle -->
+    <div class="flex items-center gap-4">
+        <!-- Logo Brand -->
+        <a href="{{ route('dashboard.index') }}" class="flex items-center gap-2 group">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-sm shadow-emerald-600/30">
+                <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 16a6 6 0 1 1 6-6 6 6 0 0 1-6 6z"/>
+                </svg>
+            </div>
+            <div class="flex items-center">
+                <span class="font-extrabold text-lg tracking-tight text-slate-900 leading-none">
+                    Smart<span class="text-emerald-600">HR</span>
+                </span>
+            </div>
         </a>
+
+        <!-- Desktop Sidebar Toggle Button -->
+        <button @click="sidebarOpen = !sidebarOpen" 
+                type="button" 
+                class="hidden lg:flex items-center justify-center w-7 h-7 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+            <i class="ti ti-layout-sidebar-left-collapse text-lg"></i>
+        </button>
+
+        <!-- Mobile Sidebar Toggle Button -->
+        <button @click="mobileSidebarOpen = !mobileSidebarOpen" 
+                type="button" 
+                class="lg:hidden flex items-center justify-center w-8 h-8 rounded-lg text-slate-600 hover:bg-slate-100 transition">
+            <i class="ti ti-menu-2 text-lg"></i>
+        </button>
     </div>
 
-    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-        <!-- Search -->
-        <div class="navbar-nav align-items-center">
-            <div class="nav-item navbar-search-wrapper mb-0">
-                <a class="nav-item nav-link search-toggler d-flex align-items-center px-0" href="javascript:void(0);">
-                    <i class="ti ti-search ti-md me-2"></i>
-                    <span class="d-none d-md-inline-block text-muted">Search (Ctrl+/)</span>
-                </a>
+    <!-- Center: Search Input Bar -->
+    <div class="hidden md:flex items-center flex-1 max-w-sm mx-6">
+        <div class="relative w-full">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <i class="ti ti-search text-sm"></i>
+            </div>
+            <input type="text" 
+                   placeholder="Search in HRMS" 
+                   class="w-full pl-8 pr-20 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-200/90 rounded-lg text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition duration-150">
+            <div class="absolute inset-y-0 right-0 pr-2.5 flex items-center gap-1">
+                <kbd class="px-1.5 py-0.5 text-[9px] font-semibold text-slate-400 bg-white border border-slate-200 rounded shadow-2xs">CTRL + /</kbd>
             </div>
         </div>
-        <!-- /Search -->
+    </div>
 
-        @if(session()->has('impersonator_id'))
-            <div class="alert alert-warning d-flex align-items-center mb-0 py-1 px-3 ms-3 rounded-pill shadow-sm" role="alert" style="font-size: 0.8rem;">
-                <i class="ti ti-user-check me-2 fs-5 text-warning"></i>
-                <div class="text-dark">
-                    Viewing as: <strong>{{ auth()->user()->name }}</strong>
+    <!-- Right: Action Icons & User Profile -->
+    <div class="flex items-center gap-1.5 sm:gap-2">
+        
+        <!-- Fullscreen Button -->
+        <button type="button" 
+                onclick="document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()"
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition" 
+                title="Toggle Fullscreen">
+            <i class="ti ti-maximize text-sm"></i>
+        </button>
+
+        <!-- Dark Mode Toggle Button -->
+        <button type="button" 
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition" 
+                title="Theme Mode">
+            <i class="ti ti-moon text-sm"></i>
+        </button>
+
+        <!-- Chat / Message Button -->
+        <button type="button" 
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-100 relative transition" 
+                title="Messages">
+            <i class="ti ti-message text-sm"></i>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white"></span>
+        </button>
+
+        <!-- Notification Bell -->
+        <div class="relative" x-data="{ open: false }">
+            <button @click="open = !open" 
+                    type="button" 
+                    class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-100 relative transition">
+                <i class="ti ti-bell text-sm"></i>
+                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
+            </button>
+            <!-- Dropdown Menu -->
+            <div x-show="open" 
+                 @click.away="open = false" 
+                 x-transition 
+                 class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-lg border border-slate-100 py-2 z-50">
+                <div class="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
+                    <span class="font-bold text-xs text-slate-800">Notifikasi</span>
+                    <span class="text-[10px] text-emerald-600 font-semibold cursor-pointer">Tandai Dibaca</span>
                 </div>
-                <a href="{{ route('users.stop-impersonate') }}" class="btn btn-xs btn-dark ms-3 rounded-pill px-3 py-1 fw-bold text-uppercase" style="font-size: 0.7rem; color: #fff !important;">
-                    Exit View As
-                </a>
+                <div class="p-3 text-center text-xs text-slate-400">
+                    Tidak ada notifikasi baru
+                </div>
             </div>
-        @endif
+        </div>
 
-        <ul class="navbar-nav flex-row align-items-center ms-auto">
+        <!-- Vertical Divider -->
+        <div class="h-5 w-px bg-slate-200 mx-1"></div>
 
-
-            <!-- Quick links  -->
-            <li class="nav-item dropdown-shortcuts navbar-dropdown dropdown me-2 me-xl-0">
-                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown"
-                    data-bs-auto-close="outside" aria-expanded="false">
-                    <i class="ti ti-layout-grid-add ti-md"></i>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end py-0">
-                    <div class="dropdown-menu-header border-bottom">
-                        <div class="dropdown-header d-flex align-items-center py-3">
-                            <h5 class="text-body mb-0 me-auto">Shortcuts</h5>
-                            <a href="javascript:void(0)" class="dropdown-shortcuts-add text-body"
-                                data-bs-toggle="tooltip" data-bs-placement="top" title="Add shortcuts"><i
-                                    class="ti ti-sm ti-apps"></i></a>
-                        </div>
+        <!-- User Profile Dropdown -->
+        <div class="relative" x-data="{ open: false }">
+            <button @click="open = !open" 
+                    type="button" 
+                    class="flex items-center gap-2 p-1 rounded-xl hover:bg-slate-100 transition text-left">
+                <div class="relative">
+                    <div class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                        {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                     </div>
-                    <div class="dropdown-shortcuts-list scrollable-container">
-                        <div class="row row-bordered overflow-visible g-0">
-                            <div class="dropdown-shortcuts-item col">
-                                <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                                    <i class="ti ti-calendar fs-4"></i>
-                                </span>
-                                <a href="app-calendar.html" class="stretched-link">Calendar</a>
-                                <small class="text-muted mb-0">Appointments</small>
-                            </div>
-                            <div class="dropdown-shortcuts-item col">
-                                <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                                    <i class="ti ti-file-invoice fs-4"></i>
-                                </span>
-                                <a href="app-invoice-list.html" class="stretched-link">Invoice
-                                    App</a>
-                                <small class="text-muted mb-0">Manage Accounts</small>
-                            </div>
-                        </div>
-                        <div class="row row-bordered overflow-visible g-0">
-                            <div class="dropdown-shortcuts-item col">
-                                <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                                    <i class="ti ti-users fs-4"></i>
-                                </span>
-                                <a href="app-user-list.html" class="stretched-link">User App</a>
-                                <small class="text-muted mb-0">Manage Users</small>
-                            </div>
-                            <div class="dropdown-shortcuts-item col">
-                                <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                                    <i class="ti ti-lock fs-4"></i>
-                                </span>
-                                <a href="app-access-roles.html" class="stretched-link">Role
-                                    Management</a>
-                                <small class="text-muted mb-0">Permission</small>
-                            </div>
-                        </div>
-                        <div class="row row-bordered overflow-visible g-0">
-                            <div class="dropdown-shortcuts-item col">
-                                <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                                    <i class="ti ti-chart-bar fs-4"></i>
-                                </span>
-                                <a href="index.html" class="stretched-link">Dashboard</a>
-                                <small class="text-muted mb-0">User Profile</small>
-                            </div>
-                            <div class="dropdown-shortcuts-item col">
-                                <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                                    <i class="ti ti-settings fs-4"></i>
-                                </span>
-                                <a href="pages-account-settings-account.html" class="stretched-link">Setting</a>
-                                <small class="text-muted mb-0">Account Settings</small>
-                            </div>
-                        </div>
-                        <div class="row row-bordered overflow-visible g-0">
-                            <div class="dropdown-shortcuts-item col">
-                                <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                                    <i class="ti ti-help fs-4"></i>
-                                </span>
-                                <a href="pages-faq.html" class="stretched-link">FAQs</a>
-                                <small class="text-muted mb-0">FAQs & Articles</small>
-                            </div>
-                            <div class="dropdown-shortcuts-item col">
-                                <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                                    <i class="ti ti-square fs-4"></i>
-                                </span>
-                                <a href="modal-examples.html" class="stretched-link">Modals</a>
-                                <small class="text-muted mb-0">Useful Popups</small>
-                            </div>
-                        </div>
-                    </div>
+                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
                 </div>
-            </li>
-            <!-- Quick links -->
+            </button>
 
-            <!-- Notification -->
-            @if (auth()->user()->hasRole(['super admin', 'kepala msdm', 'staff msdm']))
-
-                <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
-                    <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown"
-                        data-bs-auto-close="outside" aria-expanded="false">
-                        <i class="ti ti-bell ti-md"></i>
-                        <span
-                            class="badge bg-danger rounded-pill badge-notifications">{{ $notifikasi_ajuan_absen }}</span>
+            <!-- User Menu Modal -->
+            <div x-show="open" 
+                 @click.away="open = false" 
+                 x-transition 
+                 class="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl border border-slate-100 py-2 z-50">
+                <div class="px-4 py-2 border-b border-slate-100">
+                    <p class="text-xs font-bold text-slate-800">{{ auth()->user()->name ?? 'User' }}</p>
+                    <p class="text-[10px] text-slate-400 truncate">{{ auth()->user()->email ?? '' }}</p>
+                </div>
+                <div class="py-1">
+                    <a href="{{ route('profile.edit') }}" class="flex items-center gap-2.5 px-4 py-2 text-xs text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition">
+                        <i class="ti ti-user text-sm text-slate-400"></i>
+                        Profil Saya
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end py-0">
-                        <li class="dropdown-menu-header border-bottom">
-                            <div class="dropdown-header d-flex align-items-center py-3">
-                                <h5 class="text-body mb-0 me-auto">Notification</h5>
-                                <a href="javascript:void(0)" class="dropdown-notifications-all text-body"
-                                    data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all as read"><i
-                                        class="ti ti-mail-opened fs-4"></i></a>
-                            </div>
-                        </li>
-                        <li class="dropdown-notifications-list scrollable-container">
-                            <ul class="list-group list-group-flush">
-                                @php
-                                    $bgcolor = '';
-                                @endphp
-                                @foreach ($data_izin as $d)
-                                    @php
-                                        if ($d->status == 'i') {
-                                            $keterangan = 'Izin Absen';
-                                            $bgcolor = 'info';
-                                        } elseif ($d->status == 's') {
-                                            $keterangan = 'Izin Sakit';
-                                            $bgcolor = 'warning';
-                                        } elseif ($d->status == 'c') {
-                                            $keterangan = 'Izin Cuti';
-                                            $bgcolor = 'success';
-                                        }
-                                    @endphp
-                                    <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                                        <div class="d-flex">
-                                            <div class="flex-shrink-0 me-3">
-                                                <div class="avatar">
-                                                    <span
-                                                        class="avatar-initial rounded-circle bg-label-{{ $bgcolor }}">{{ textUpperCase($d->status) }}</span>
-                                                </div>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-1">{{ $d->nama_lengkap }}</h6>
-                                                <p class="mb-0">Mengajukan {{ $keterangan }}</p>
-                                                <small class="text-muted">
-                                                    {{ \Carbon\Carbon::parse($d->created_at)->diffForHumans() }}
-                                                </small>
-                                            </div>
-                                            <div class="flex-shrink-0 dropdown-notifications-actions">
-                                                <a href="javascript:void(0)" class="dropdown-notifications-read"><span
-                                                        class="badge badge-dot"></span></a>
-                                                <a href="javascript:void(0)"
-                                                    class="dropdown-notifications-archive"><span
-                                                        class="ti ti-x"></span></a>
-                                            </div>
-                                        </div>
-                                    </li>
-                                @endforeach
-
-                            </ul>
-                        </li>
-                        <li class="dropdown-menu-footer border-top">
-                            <a href="javascript:void(0);"
-                                class="dropdown-item d-flex justify-content-center text-primary p-2 h-px-40 mb-1 align-items-center">
-                                View all notifications
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            @endif
-            <!--/ Notification -->
-
-            <!-- User -->
-            <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                    <div class="avatar avatar-online">
-                        <img src="{{ asset('/assets/img/avatars/1.png') }}" alt class="h-auto rounded-circle" />
+                    <a href="{{ route('pengaturan-umum.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-xs text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition">
+                        <i class="ti ti-settings text-sm text-slate-400"></i>
+                        Pengaturan
+                    </a>
+                </div>
+                @if (session()->has('impersonator_id'))
+                    <div class="px-2 py-1.5 border-b border-amber-100 bg-amber-50">
+                        <a href="{{ route('users.stop-impersonate') }}" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-bold text-amber-800 hover:bg-amber-100 transition">
+                            <i class="ti ti-door-exit text-sm text-amber-600"></i>
+                            <span>Kembali ke Admin Utama</span>
+                        </a>
                     </div>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <a class="dropdown-item" href="pages-account-settings-account.html">
-                            <div class="d-flex">
-                                <div class="flex-shrink-0 me-3">
-                                    <div class="avatar avatar-online">
-                                        <img src="{{ asset('/assets/img/avatars/1.png') }}" alt
-                                            class="h-auto rounded-circle" />
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <span class="fw-medium d-block">
-                                        @if (Auth::check())
-                                            {{ Auth::user()->name }}
-                                        @endif
-                                    </span>
-                                    <small class="text-muted">Admin</small>
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <div class="dropdown-divider"></div>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="pages-profile-user.html">
-                            <i class="ti ti-user-check me-2 ti-sm"></i>
-                            <span class="align-middle">My Profile</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="pages-account-settings-account.html">
-                            <i class="ti ti-settings me-2 ti-sm"></i>
-                            <span class="align-middle">Settings</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="pages-account-settings-billing.html">
-                            <span class="d-flex align-items-center align-middle">
-                                <i class="flex-shrink-0 ti ti-credit-card me-2 ti-sm"></i>
-                                <span class="flex-grow-1 align-middle">Billing</span>
-                                <span
-                                    class="flex-shrink-0 badge badge-center rounded-pill bg-label-danger w-px-20 h-px-20">2</span>
-                            </span>
-                        </a>
-                    </li>
-                    <li>
-                        <div class="dropdown-divider"></div>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="pages-faq.html">
-                            <i class="ti ti-help me-2 ti-sm"></i>
-                            <span class="align-middle">FAQ</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="pages-pricing.html">
-                            <i class="ti ti-currency-dollar me-2 ti-sm"></i>
-                            <span class="align-middle">Pricing</span>
-                        </a>
-                    </li>
-                    <li>
-                        <div class="dropdown-divider"></div>
-                    </li>
-                    <li>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
+                @endif
+                <div class="border-t border-slate-100 pt-1">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center gap-2.5 px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 transition font-medium">
+                            <i class="ti ti-logout text-sm text-rose-500"></i>
+                            Keluar (Logout)
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-                            <x-responsive-nav-link :href="route('logout')"
-                                onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-responsive-nav-link>
-                        </form>
-                    </li>
-                </ul>
-            </li>
-            <!--/ User -->
-        </ul>
     </div>
 
-    <!-- Search Small Screens -->
-    <div class="navbar-search-wrapper search-input-wrapper d-none">
-        <input type="text" class="form-control search-input container-fluid border-0" placeholder="Search..."
-            aria-label="Search..." />
-        <i class="ti ti-x ti-sm search-toggler cursor-pointer"></i>
-    </div>
-</nav>
+</header>

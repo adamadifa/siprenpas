@@ -47,42 +47,49 @@ class JobdeskController extends Controller
             return view('datamaster.jobdesk.index_karyawan', $data);
         }
 
+        // Resolve target_kode_unit, target_kode_dept, and target_kode_jabatan
+        $target_kode_unit = $request->kode_unit ?: $kode_unit;
+        $target_kode_jabatan = $request->kode_jabatan ?: $kode_jabatan;
+        $target_kode_dept = ($request->kode_dept && $request->kode_dept !== 'all') ? $request->kode_dept : (($kode_dept && $kode_dept !== 'all') ? $kode_dept : null);
+
+        // If $kode_dept was passed as 2nd positional segment but is actually a kode_jabatan (e.g. /jobdesk/{kode_unit}/{kode_jabatan})
+        if (!$target_kode_jabatan && $kode_dept && $kode_dept !== 'all') {
+            if (Jabatan::where('kode_jabatan', $kode_dept)->exists() || str_starts_with($kode_dept, 'J')) {
+                $target_kode_jabatan = $kode_dept;
+                $target_kode_dept = null;
+            }
+        }
+
         if ($user->hasRole('super admin')) {
-            if (!empty($kode_jabatan)) {
-                $query->where('jobdesk_group.kode_jabatan', $kode_jabatan);
-            } elseif (!empty($request->kode_jabatan)) {
-                $query->where('jobdesk_group.kode_jabatan', $request->kode_jabatan);
+            if (!empty($target_kode_jabatan)) {
+                $query->where('jobdesk_group.kode_jabatan', $target_kode_jabatan);
             }
             
-            if (!empty($kode_dept)) {
-                $query->where('jobdesk_group.kode_dept', $kode_dept);
-            } elseif (!empty($request->kode_dept)) {
-                $query->where('jobdesk_group.kode_dept', $request->kode_dept);
+            if (!empty($target_kode_dept)) {
+                $query->where('jobdesk_group.kode_dept', $target_kode_dept);
             }
 
-            if (!empty($kode_unit)) {
-                $query->where('jobdesk_group.kode_unit', $kode_unit);
-            } elseif (!empty($request->kode_unit)) {
-                $query->where('jobdesk_group.kode_unit', $request->kode_unit);
+            if (!empty($target_kode_unit)) {
+                $query->where('jobdesk_group.kode_unit', $target_kode_unit);
             }
         } elseif ($user->hasRole(['pimpinan pesantren', 'sekretaris'])) {
             $accessibleUnits = $user->getAccessibleUnitCodes();
             $accessibleDepts = $user->getAccessibleDeptCodes();
 
-            if (!empty($request->kode_unit)) {
-                $query->where('jobdesk_group.kode_unit', $request->kode_unit);
+            if (!empty($target_kode_unit)) {
+                $query->where('jobdesk_group.kode_unit', $target_kode_unit);
             } else {
                 $query->whereIn('jobdesk_group.kode_unit', $accessibleUnits);
             }
 
-            if (!empty($request->kode_dept)) {
-                $query->where('jobdesk_group.kode_dept', $request->kode_dept);
+            if (!empty($target_kode_dept)) {
+                $query->where('jobdesk_group.kode_dept', $target_kode_dept);
             } else {
                 $query->whereIn('jobdesk_group.kode_dept', $accessibleDepts);
             }
 
-            if (!empty($request->kode_jabatan)) {
-                $query->where('jobdesk_group.kode_jabatan', $request->kode_jabatan);
+            if (!empty($target_kode_jabatan)) {
+                $query->where('jobdesk_group.kode_jabatan', $target_kode_jabatan);
             }
         } else {
             $accessibleUnits = $user->getAccessibleUnitCodes();
@@ -99,15 +106,51 @@ class JobdeskController extends Controller
 
         $data['jobdesk'] = $query->get();
 
-        $data['jabatan'] = Jabatan::orderBy('kode_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
+        $data['jabatan'] = Jabatan::orderBy('nama_jabatan')->where('kode_jabatan', '!=', 'J00')->get();
         $uModel = new \App\Models\Unit();
         $dModel = new Departemen();
         $data['departemen'] = $dModel->getDepartemen();
         $data['unit'] = $uModel->getUnit();
 
-        $data['selected_unit'] = $kode_unit ? \App\Models\Unit::where('kode_unit', $kode_unit)->first() : null;
-        $data['selected_dept'] = $kode_dept ? Departemen::where('kode_dept', $kode_dept)->first() : null;
-        $data['selected_jabatan'] = $kode_jabatan ? Jabatan::where('kode_jabatan', $kode_jabatan)->first() : null;
+        // Get jabatans specifically present in the selected unit based on Karyawan and JobdeskGroup
+        if ($target_kode_unit) {
+            $karyawanJabatanCodes = \App\Models\Karyawan::where('kode_unit', $target_kode_unit)
+                ->whereNotNull('kode_jabatan')
+                ->where('kode_jabatan', '!=', 'J00')
+                ->pluck('kode_jabatan');
+
+            $jobdeskGroupJabatanCodes = \App\Models\JobdeskGroup::where('kode_unit', $target_kode_unit)
+                ->whereNotNull('kode_jabatan')
+                ->where('kode_jabatan', '!=', 'J00')
+                ->pluck('kode_jabatan');
+
+            $combinedJabatanCodes = $karyawanJabatanCodes->merge($jobdeskGroupJabatanCodes)->unique()->filter()->values();
+
+            if ($combinedJabatanCodes->isNotEmpty()) {
+                $data['jabatan_unit'] = Jabatan::whereIn('kode_jabatan', $combinedJabatanCodes)->orderBy('nama_jabatan')->get();
+            } else {
+                $data['jabatan_unit'] = Jabatan::where('kode_jabatan', '!=', 'J00')->orderBy('nama_jabatan')->get();
+            }
+        } else {
+            $data['jabatan_unit'] = Jabatan::where('kode_jabatan', '!=', 'J00')->orderBy('nama_jabatan')->get();
+        }
+
+        // Also fetch all jobdesk groups count summary for drilldown badges
+        $summaryQuery = DB::table('jobdesk')
+            ->join('jobdesk_group', 'jobdesk.kode_jobdesk_group', '=', 'jobdesk_group.kode_jobdesk_group')
+            ->select(
+                'jobdesk_group.kode_unit',
+                'jobdesk_group.kode_jabatan',
+                DB::raw('count(jobdesk.kode_jobdesk) as total_jobdesk')
+            )
+            ->groupBy('jobdesk_group.kode_unit', 'jobdesk_group.kode_jabatan')
+            ->get();
+        
+        $data['jobdesk_summary'] = $summaryQuery;
+
+        $data['selected_unit'] = $target_kode_unit ? \App\Models\Unit::where('kode_unit', $target_kode_unit)->first() : null;
+        $data['selected_dept'] = $target_kode_dept ? Departemen::where('kode_dept', $target_kode_dept)->first() : null;
+        $data['selected_jabatan'] = $target_kode_jabatan ? Jabatan::where('kode_jabatan', $target_kode_jabatan)->first() : null;
 
         $agent = new Agent();
         if ($agent->isMobile()) {
@@ -135,12 +178,16 @@ class JobdeskController extends Controller
     public function store(Request $request)
     {
         $user = User::where('id', auth()->user()->id)->first();
-        if ($user->hasRole('super admin')) {
+        if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris'])) {
             $request->validate([
                 'kode_jabatan' => 'required',
                 'kode_dept' => 'required',
                 'jobdesk' => 'required',
                 'kode_unit' => 'nullable',
+            ], [
+                'kode_jabatan.required' => 'Jabatan wajib dipilih',
+                'kode_dept.required' => 'Departemen wajib dipilih',
+                'jobdesk.required' => 'Uraian jobdesk wajib diisi',
             ]);
             $kode_dept = $request->kode_dept;
             $kode_jabatan = $request->kode_jabatan;
@@ -148,6 +195,8 @@ class JobdeskController extends Controller
         } else {
             $request->validate([
                 'jobdesk' => 'required',
+            ], [
+                'jobdesk.required' => 'Uraian jobdesk wajib diisi',
             ]);
             $kode_dept = $user->kode_dept;
             $kode_jabatan = $user->kode_jabatan;
@@ -206,17 +255,17 @@ class JobdeskController extends Controller
 
     public function destroyMultiple(Request $request)
     {
-        $request->validate([
-            'ids' => 'required|array',
-            'ids.*' => 'required|string'
-        ]);
+        $ids = $request->ids ?? $request->selected_jobdesks;
+        if (empty($ids) || !is_array($ids)) {
+            return Redirect::back()->with(messageError('Pilih setidaknya satu jobdesk untuk dihapus'));
+        }
 
         try {
-            foreach ($request->ids as $encryptedId) {
+            foreach ($ids as $encryptedId) {
                 $kode_jobdesk = Crypt::decrypt($encryptedId);
                 Jobdesk::where('kode_jobdesk', $kode_jobdesk)->delete();
             }
-            return Redirect::back()->with(messageSuccess('Data Berhasil Dihapus'));
+            return Redirect::back()->with(messageSuccess('Data Jobdesk Terpilih Berhasil Dihapus'));
         } catch (\Exception $e) {
             return Redirect::back()->with(messageError($e->getMessage()));
         }
@@ -242,12 +291,16 @@ class JobdeskController extends Controller
     public function update(Request $request, $kode_jobdesk)
     {
         $user = User::where('id', auth()->user()->id)->first();
-        if ($user->hasRole('super admin')) {
+        if ($user->hasRole(['super admin', 'pimpinan pesantren', 'sekretaris'])) {
             $request->validate([
                 'kode_jabatan' => 'required',
                 'kode_dept' => 'required',
                 'jobdesk' => 'required',
                 'kode_unit' => 'nullable',
+            ], [
+                'kode_jabatan.required' => 'Jabatan wajib dipilih',
+                'kode_dept.required' => 'Departemen wajib dipilih',
+                'jobdesk.required' => 'Uraian jobdesk wajib diisi',
             ]);
             $kode_dept = $request->kode_dept;
             $kode_jabatan = $request->kode_jabatan;
@@ -255,6 +308,8 @@ class JobdeskController extends Controller
         } else {
             $request->validate([
                 'jobdesk' => 'required',
+            ], [
+                'jobdesk.required' => 'Uraian jobdesk wajib diisi',
             ]);
             $kode_dept = $user->kode_dept;
             $kode_jabatan = $user->kode_jabatan;

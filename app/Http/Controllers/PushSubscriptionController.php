@@ -40,9 +40,19 @@ class PushSubscriptionController extends Controller
     /**
      * Display a listing of the push subscriptions.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $subscriptions = PushSubscription::with('user')->orderBy('created_at', 'desc')->get();
+        $query = PushSubscription::with('user');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            })->orWhere('endpoint', 'like', "%{$search}%");
+        }
+
+        $subscriptions = $query->orderBy('created_at', 'desc')->get();
         return view('push_subscriptions.index', compact('subscriptions'));
     }
 

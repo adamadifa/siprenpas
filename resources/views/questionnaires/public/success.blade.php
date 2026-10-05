@@ -1,23 +1,42 @@
 @extends('questionnaires.public.layout')
-@section('title', 'Sukses')
+@section('title', 'Terima Kasih Atas Partisipasi Anda')
+
 @section('content')
-<div class="flex-1 min-h-0 flex items-center justify-center px-2 mt-16">
-    <div class="max-w-2xl w-full mx-auto bg-white rounded-2xl shadow-2xl p-10 border border-gray-100 animate-fadein-card relative z-10">
-        <!-- Lottie Success Animation -->
-        <lottie-player
-            src="https://lottie.host/1e84c075-52db-498d-9bac-af30c05f9f20/U8vf0bmZcE.json"
-            background="transparent"
-            speed="1"
-            style="width: 160px; height: 160px; margin: 0 auto 1.5rem auto;"
-            autoplay
-            loop
-        ></lottie-player>
-        <div class="text-3xl font-extrabold mb-2 text-sidebar-green tracking-tight">Terima Kasih!</div>
-        <div class="text-lg text-gray-500 mb-6">Jawaban Anda sudah kami terima. Terima kasih atas partisipasi Anda dalam
-            mengisi kuisioner ini.</div>
-        <a href="{{ route('questionnaires.list') }}"
-            class="inline-block mt-2 px-8 py-3 bg-sidebar-green text-white rounded-xl font-bold text-lg shadow-lg hover:bg-green-900 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-sidebar-green">Kembali
-            ke Daftar Kuisioners</a>
+<div class="max-w-xl w-full mx-auto">
+    <div class="bg-white rounded-3xl border border-slate-200/90 p-8 sm:p-10 shadow-lg text-center space-y-6">
+        
+        <!-- Lottie / Icon Animation -->
+        <div class="flex justify-center">
+            <lottie-player
+                src="https://lottie.host/1e84c075-52db-498d-9bac-af30c05f9f20/U8vf0bmZcE.json"
+                background="transparent"
+                speed="1"
+                style="width: 140px; height: 140px;"
+                autoplay
+                loop
+            ></lottie-player>
+        </div>
+
+        <div class="space-y-2">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200">
+                <i class="ti ti-check text-sm"></i>
+                <span>Jawaban Berhasil Dikirim</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                Terima Kasih!
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
+                Jawaban survei Anda telah kami simpan. Setiap tanggapan Anda sangat berharga bagi peningkatan kualitas layanan Pesantren Persis Al-Amin.
+            </p>
+        </div>
+
+        <div class="pt-2">
+            <a href="{{ route('questionnaires.list') }}"
+                class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition active:scale-95">
+                <i class="ti ti-arrow-left text-sm"></i>
+                <span>Kembali ke Daftar Kuisioner</span>
+            </a>
+        </div>
     </div>
 </div>
 @endsection

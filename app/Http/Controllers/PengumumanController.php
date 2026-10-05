@@ -22,9 +22,19 @@ class PengumumanController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $pengumuman = Pengumuman::with('kategori')->orderBy('tanggal', 'desc')->get();
+        $query = Pengumuman::with('kategori');
+
+        if ($request->has('judul') && !empty($request->judul)) {
+            $query->where('judul', 'like', '%' . $request->judul . '%');
+        }
+
+        if ($request->has('kategori_id') && !empty($request->kategori_id)) {
+            $query->where('kategori_id', $request->kategori_id);
+        }
+
+        $pengumuman = $query->orderBy('tanggal', 'desc')->get();
         $kategori = KategoriPengumuman::all();
         return view('pengumuman.index', compact('pengumuman', 'kategori'));
     }

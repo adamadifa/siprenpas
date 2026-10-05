@@ -236,7 +236,7 @@
                         </div>
                         
                         <!-- Card Actions -->
-                        @if (auth()->check() && (auth()->user()->can('jadwalpelajaran.index') || auth()->user()->hasRole('guru')))
+                        @if (auth()->check() && (auth()->user()->can('jadwalpelajaran.index') || auth()->user()->hasRole('guru') || ($isGuru ?? false)))
                             <div style="margin-top: 14px; padding-top: 12px; border-top: 1.5px solid var(--border-color); display: flex; gap: 8px;">
                                 <a href="{{ route('presensi-mapel.input', [Crypt::encrypt($item->id), date('Y-m-d')]) }}" 
                                    class="btn-action" 

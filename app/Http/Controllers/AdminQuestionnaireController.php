@@ -9,9 +9,16 @@ class AdminQuestionnaireController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $questionnaires = \App\Models\Questionnaire::withCount('questions')->get();
+        $query = \App\Models\Questionnaire::withCount('questions');
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
+        }
+        $questionnaires = $query->latest()->paginate(10);
         return view('questionnaires.index', compact('questionnaires'));
     }
 

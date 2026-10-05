@@ -12,11 +12,20 @@ class JabatanAkademikController extends Controller
     public function index(Request $request)
     {
         $query = JabatanAkademik::query();
-        if ($request->has('nama_jabatan_search')) {
-            $query->where('nama_jabatan', 'like', '%' . $request->nama_jabatan_search . '%');
+        $search = $request->nama_jabatan ?? $request->nama_jabatan_search;
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_jabatan', 'like', '%' . $search . '%')
+                  ->orWhere('kode_jabatan', 'like', '%' . $search . '%');
+            });
         }
         $jabatan_akademik = $query->orderBy('urutan')->get();
         return view('akademik.jabatan_akademik.index', compact('jabatan_akademik'));
+    }
+
+    public function create()
+    {
+        return view('akademik.jabatan_akademik.create');
     }
 
     public function store(Request $request)

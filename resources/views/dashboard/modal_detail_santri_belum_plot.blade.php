@@ -1,177 +1,223 @@
-<div class="modal-header px-4 py-3 bg-white border-bottom">
-    <div class="d-flex align-items-center justify-content-between w-100">
-        <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <span class="badge bg-label-primary p-1.5 rounded"><i class="ti ti-users-minus fs-5"></i></span>
-                <h5 class="modal-title fw-bold text-dark mb-0" style="letter-spacing: -0.2px;">
-                    Santri Belum Masuk Rombel (Kelas)
-                </h5>
+1{{-- Modal Detail Santri Belum Masuk Rombel: 100% Tailwind CSS --}}
+@php
+    $unitLogo = null;
+    if ($unit) {
+        if (!empty($unit->logo) && Storage::disk('public')->exists($unit->logo)) {
+            $unitLogo = asset('storage/' . $unit->logo);
+        } elseif (!empty($unit->logo) && file_exists(public_path('storage/' . $unit->logo))) {
+            $unitLogo = asset('storage/' . $unit->logo);
+        } else {
+            $namaLower = strtolower($unit->nama_unit);
+            if (str_contains($namaLower, 'tk') || str_contains($namaLower, 'calisa') || str_contains($namaLower, 'rabbani')) {
+                $unitLogo = asset('assets/img/logo/tk.png');
+            } elseif (str_contains($namaLower, 'sd') || str_contains($namaLower, 'sdit')) {
+                $unitLogo = asset('assets/img/logo/sdit.png');
+            } elseif (str_contains($namaLower, 'mdu')) {
+                $unitLogo = asset('assets/img/logo/mdu.png');
+            } elseif (str_contains($namaLower, 'mts')) {
+                $unitLogo = asset('assets/img/logo/mts.png');
+            } elseif (str_contains($namaLower, 'ma') || str_contains($namaLower, 'aliyah')) {
+                $unitLogo = asset('assets/img/logo/ma.png');
+            } elseif (str_contains($namaLower, 'asrama') || str_contains($namaLower, 'pesantren')) {
+                $unitLogo = asset('assets/img/logo/asrama.png');
+            } elseif (file_exists(public_path('assets/img/logo/persisalamin.png'))) {
+                $unitLogo = asset('assets/img/logo/persisalamin.png');
+            }
+        }
+    }
+@endphp
+<div class="px-6 py-4 bg-white border-b border-slate-100 flex items-center justify-between">
+    <div class="flex items-center gap-3.5">
+        @if ($unitLogo)
+            <div class="w-11 h-11 rounded-2xl bg-white border border-slate-200/90 shadow-2xs flex items-center justify-center p-1.5 overflow-hidden shrink-0">
+                <img src="{{ $unitLogo }}" alt="Logo" class="w-full h-full object-contain filter drop-shadow-2xs">
             </div>
-            <div class="text-muted d-flex align-items-center gap-2" style="font-size: 0.8rem;">
-                <span>Unit: <strong class="text-dark">{{ $unit ? $unit->nama_unit : '-' }}</strong></span>
-                <span>•</span>
-                <span>Tahun Ajaran: <strong class="text-dark">{{ $ta ? $ta->tahun_ajaran : '-' }}</strong></span>
-                <span>•</span>
-                <span class="badge bg-label-danger px-2">{{ $students->count() }} Santri Belum Di-Plot</span>
+        @else
+            <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200/80 text-indigo-600 flex items-center justify-center text-xl shrink-0">
+                <i class="ti ti-users-minus"></i>
+            </div>
+        @endif
+        <div>
+            <h3 class="text-base font-bold text-slate-900 tracking-tight">
+                Santri Belum Masuk Rombel (Kelas)
+            </h3>
+            <div class="flex flex-wrap items-center gap-2 mt-0.5 text-xs text-slate-500">
+                <span>Unit: <strong class="text-slate-800 font-semibold">{{ $unit ? $unit->nama_unit : '-' }}</strong></span>
+                <span class="text-slate-300">•</span>
+                <span>Tahun Ajaran: <strong class="text-slate-800 font-semibold">{{ $ta ? $ta->tahun_ajaran : '-' }}</strong></span>
+                <span class="text-slate-300">•</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-600 border border-rose-100">
+                    {{ $students->count() }} Santri Belum Di-Plot
+                </span>
             </div>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
+    <button type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition-colors cursor-pointer" data-bs-dismiss="modal" aria-label="Close">
+        <i class="ti ti-x text-lg"></i>
+    </button>
 </div>
 
-<div class="modal-body p-4 bg-light bg-opacity-25" style="max-height: 520px; overflow-y: auto;">
-    {{-- Top Action Bar inside Modal --}}
-    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3 bg-white p-3 rounded-3 border">
-        <div class="d-flex align-items-center gap-2" style="font-size: 0.83rem; color: #475569;">
-            <i class="ti ti-info-circle text-primary fs-5"></i>
-            <span>Daftar santri aktif yang belum dimasukkan ke dalam rombongan belajar (kelas).</span>
+<div class="p-6 bg-slate-50/60 space-y-4 max-h-[calc(85vh-130px)] overflow-y-auto">
+    {{-- Top Action Banner inside Modal --}}
+    <div class="bg-white border border-slate-200/90 rounded-xl p-4 shadow-2xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center text-lg shrink-0 mt-0.5">
+                <i class="ti ti-info-circle"></i>
+            </div>
+            <div class="text-xs text-slate-600 leading-relaxed">
+                <p class="font-medium text-slate-800">Daftar santri aktif yang belum dimasukkan ke dalam rombel kelas.</p>
+                <p class="text-slate-500 mt-0.5">Anda dapat memplot langsung kelas dari daftar di bawah ini atau melalui menu manajemen rombel.</p>
+            </div>
         </div>
-        <a href="{{ route('kelas.index', ['kode_unit_search' => $unit ? $unit->kode_unit : '', 'kode_ta' => $ta ? $ta->kode_ta : '']) }}" target="_blank" class="btn btn-sm btn-dark d-flex align-items-center gap-1.5 fw-semibold shadow-none flex-shrink-0" style="border-radius: 8px;">
-            <i class="ti ti-external-link fs-6"></i> <span>Buka Ploting Kelas</span>
-        </a>
+        <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+            <a href="{{ route('kelas.index', ['kode_unit_search' => $unit ? $unit->kode_unit : '', 'kode_ta' => $ta ? $ta->kode_ta : '']) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-semibold shadow-2xs transition">
+                <i class="ti ti-external-link text-sm"></i>
+                <span>Buka Ploting Kelas</span>
+            </a>
+        </div>
     </div>
 
     {{-- Filter Bar (Tingkat & Cari) --}}
     @php
         $tingkatList = $students->pluck('tingkat')->filter()->unique()->sort()->values();
     @endphp
-    <div class="card mb-3 bg-white border rounded-3 shadow-none p-3">
-        <div class="row g-2 align-items-center">
-            <div class="col-12 col-md-auto">
-                <span class="text-muted fw-bold d-flex align-items-center gap-1" style="font-size: 0.8rem;">
-                    <i class="ti ti-filter fs-6"></i> Filter Tingkat:
-                </span>
-            </div>
-            <div class="col-12 col-md d-flex flex-wrap gap-1.5 align-items-center" id="filterTingkatContainer">
-                <button type="button" class="btn btn-xs btn-primary btn-filter-tingkat active" data-tingkat="all" style="border-radius: 6px;">
-                    Semua (<span id="count-all">{{ $students->count() }}</span>)
+    <div class="bg-white border border-slate-200/90 rounded-xl p-3 shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-1.5" id="filterTingkatContainer">
+            <span class="text-xs font-bold text-slate-400 mr-1 flex items-center gap-1">
+                <i class="ti ti-filter text-sm"></i> Filter:
+            </span>
+            <button type="button" class="btn-filter-tingkat px-2.5 py-1 text-xs font-bold rounded-lg transition bg-indigo-600 text-white shadow-2xs" data-tingkat="all">
+                Semua (<span id="count-all">{{ $students->count() }}</span>)
+            </button>
+            @foreach ($tingkatList as $t)
+                @php $countTingkat = $students->where('tingkat', $t)->count(); @endphp
+                <button type="button" class="btn-filter-tingkat px-2.5 py-1 text-xs font-semibold rounded-lg transition bg-slate-100 hover:bg-slate-200 text-slate-600" data-tingkat="{{ $t }}">
+                    Tk. {{ $t }} (<span class="count-tingkat">{{ $countTingkat }}</span>)
                 </button>
-                @foreach ($tingkatList as $t)
-                    @php $countTingkat = $students->where('tingkat', $t)->count(); @endphp
-                    <button type="button" class="btn btn-xs btn-outline-secondary btn-filter-tingkat" data-tingkat="{{ $t }}" style="border-radius: 6px;">
-                        Tingkat {{ $t }} (<span class="count-tingkat">{{ $countTingkat }}</span>)
-                    </button>
-                @endforeach
-            </div>
-            <div class="col-12 col-md-4 ms-auto">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-white border-end-0"><i class="ti ti-search text-muted"></i></span>
-                    <input type="text" id="searchSantriBelumPlot" class="form-control bg-white border-start-0 ps-0" placeholder="Cari nama / NIS / No. daftar..." style="font-size: 0.8rem;">
-                </div>
-            </div>
+            @endforeach
+        </div>
+        <div class="relative w-full md:w-64">
+            <i class="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="text" id="searchSantriBelumPlot" class="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-700 focus:outline-hidden focus:border-indigo-500 focus:bg-white transition" placeholder="Cari nama / NIS / No. daftar...">
         </div>
     </div>
 
     {{-- Cards Grid Layout --}}
-    <div class="row g-3" id="santriBelumPlotGrid">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5" id="santriBelumPlotGrid">
         @forelse ($students as $index => $s)
-            <div class="col-12 col-md-6 col-xl-4 santri-card-item" data-tingkat="{{ $s->tingkat ?? '' }}" data-search="{{ strtolower($s->nama_lengkap . ' ' . ($s->nis ?? '') . ' ' . $s->no_pendaftaran) }}">
-                <div class="card h-100 bg-white border rounded-3 p-3 shadow-none d-flex flex-column justify-content-between">
-                    <div>
-                        {{-- Santri Header --}}
-                        <div class="d-flex align-items-center gap-3 pb-2 mb-3 border-bottom">
-                            @if (!empty($s->foto_pendaftaran) && Storage::disk('public')->exists('photos/pendaftaran/' . $s->foto_pendaftaran))
-                                <img src="{{ asset('storage/photos/pendaftaran/' . $s->foto_pendaftaran) }}" alt="Foto" class="rounded-circle flex-shrink-0 me-1" style="width: 42px; height: 42px; object-fit: cover; border: 1px solid #e2e8f0;">
-                            @elseif (!empty($s->foto_pendaftaran) && Storage::disk('public')->exists($s->foto_pendaftaran))
-                                <img src="{{ asset('storage/' . $s->foto_pendaftaran) }}" alt="Foto" class="rounded-circle flex-shrink-0 me-1" style="width: 42px; height: 42px; object-fit: cover; border: 1px solid #e2e8f0;">
-                            @else
-                                <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-secondary flex-shrink-0 me-1" style="width: 42px; height: 42px; font-size: 0.9rem; background-color: #f1f5f9; border: 1px solid #e2e8f0;">
-                                    {{ substr($s->nama_lengkap, 0, 1) }}
-                                </div>
-                            @endif
-                            <div class="overflow-hidden">
-                                <div class="fw-bold text-dark text-truncate" title="{{ $s->nama_lengkap }}">{{ $s->nama_lengkap }}</div>
-                                <div class="text-muted mt-0.5" style="font-size: 0.74rem;">NIS: {{ $s->nis ?? '-' }} • ID: {{ $s->id_siswa }}</div>
-                            </div>
-                        </div>
-
-                        {{-- Details --}}
-                        <div class="d-flex flex-column gap-2 mb-3" style="font-size: 0.82rem;">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="text-muted">No. Pendaftaran:</span>
-                                <span class="badge bg-label-secondary font-monospace" style="font-size: 0.74rem;">{{ $s->no_pendaftaran }}</span>
-                            </div>
-
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="text-muted">Jenis Kelamin:</span>
-                                @if ($s->jenis_kelamin == 'L')
-                                    <span class="badge bg-label-info px-2 py-0.5">Laki-laki</span>
-                                @elseif ($s->jenis_kelamin == 'P')
-                                    <span class="badge bg-label-danger px-2 py-0.5">Perempuan</span>
-                                @else
-                                    <span class="text-muted">-</span>
-                                @endif
-                            </div>
-
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="text-muted">Tingkat Kelas:</span>
-                                <span class="badge bg-label-primary">Tingkat {{ $s->tingkat ?? '-' }}</span>
-                            </div>
-
-                            <div class="d-flex align-items-center justify-content-between">
-                                <span class="text-muted">Status Rombel:</span>
-                                <span class="badge bg-label-danger px-2 py-0.5"><i class="ti ti-alert-triangle me-0.5"></i> Belum Masuk Kelas</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Card Footer Action --}}
-                    @php
-                        // Filter kelas yang sesuai dengan tingkat santri
-                        $matchingKelas = $kelasList->where('tingkat', $s->tingkat);
-                    @endphp
-                    <div class="pt-2 border-top">
-                        @if ($matchingKelas->count() > 0)
-                            <div class="input-group input-group-sm">
-                                <select class="form-select select-plot-kelas" style="font-size: 0.78rem;">
-                                    <option value="">-- Pilih Kelas --</option>
-                                    @foreach ($matchingKelas as $k)
-                                        <option value="{{ $k->kode_kelas }}">
-                                            {{ $k->nama_kelas }} (Tk.{{ $k->tingkat }})
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <button type="button" class="btn btn-primary btn-do-plot-kelas px-2.5" data-id-siswa="{{ $s->id_siswa }}" data-nama-siswa="{{ $s->nama_lengkap }}" title="Simpan ke Kelas">
-                                    <i class="ti ti-check"></i>
-                                </button>
-                            </div>
+            <div class="santri-card-item bg-white border border-slate-200/90 rounded-2xl p-4 shadow-2xs hover:border-slate-300 transition flex flex-col justify-between" 
+                 data-tingkat="{{ $s->tingkat ?? '' }}" 
+                 data-search="{{ strtolower($s->nama_lengkap . ' ' . ($s->nis ?? '') . ' ' . $s->no_pendaftaran) }}">
+                <div>
+                    {{-- Santri Header --}}
+                    <div class="flex items-center gap-3 pb-3 mb-3 border-b border-slate-100">
+                        @if (!empty($s->foto_pendaftaran) && Storage::disk('public')->exists('photos/pendaftaran/' . $s->foto_pendaftaran))
+                            <img src="{{ asset('storage/photos/pendaftaran/' . $s->foto_pendaftaran) }}" alt="Foto" class="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-2xs shrink-0">
+                        @elseif (!empty($s->foto_pendaftaran) && Storage::disk('public')->exists($s->foto_pendaftaran))
+                            <img src="{{ asset('storage/' . $s->foto_pendaftaran) }}" alt="Foto" class="w-10 h-10 rounded-full object-cover border border-slate-200 shadow-2xs shrink-0">
                         @else
-                            <div class="d-flex align-items-center justify-content-between gap-1">
-                                <small class="text-danger" style="font-size: 0.73rem;"><i class="ti ti-alert-circle"></i> Belum ada kelas Tk.{{ $s->tingkat }}</small>
-                                <a href="{{ route('kelas.index', ['kode_unit_search' => $s->kode_unit ?? ($unit ? $unit->kode_unit : ''), 'kode_ta' => $ta ? $ta->kode_ta : '']) }}" target="_blank" class="btn btn-xs btn-outline-secondary" style="font-size: 0.72rem;">
-                                    Buat Kelas
-                                </a>
+                            <div class="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-500 text-xs shrink-0 shadow-2xs">
+                                {{ substr($s->nama_lengkap, 0, 1) }}
                             </div>
                         @endif
+                        <div class="min-w-0">
+                            <h4 class="text-xs font-bold text-slate-900 truncate" title="{{ $s->nama_lengkap }}">{{ $s->nama_lengkap }}</h4>
+                            <div class="text-[11px] text-slate-400 mt-0.5 truncate">NIS: <span class="font-semibold text-slate-700">{{ $s->nis ?? '-' }}</span> • ID: {{ $s->id_siswa }}</div>
+                        </div>
                     </div>
+
+                    {{-- Details Info Rows --}}
+                    <div class="space-y-2 mb-3.5 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-400 text-[11px]">No. Daftar:</span>
+                            <span class="font-mono text-[10px] font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-md">{{ $s->no_pendaftaran }}</span>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-400 text-[11px]">Jenis Kelamin:</span>
+                            @if ($s->jenis_kelamin == 'L')
+                                <span class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-blue-50 text-blue-700 border border-blue-100">Laki-laki</span>
+                            @elseif ($s->jenis_kelamin == 'P')
+                                <span class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-rose-50 text-rose-700 border border-rose-100">Perempuan</span>
+                            @else
+                                <span class="text-slate-400">-</span>
+                            @endif
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-400 text-[11px]">Tingkat:</span>
+                            <span class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-indigo-50 text-indigo-700 border border-indigo-100">Tingkat {{ $s->tingkat ?? '-' }}</span>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-400 text-[11px]">Status:</span>
+                            <span class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-rose-50 text-rose-700 border border-rose-200 inline-flex items-center gap-1">
+                                <i class="ti ti-alert-triangle text-xs"></i> Belum Masuk Kelas
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Card Footer Action (Quick Plotting) --}}
+                @php
+                    $matchingKelas = $kelasList->where('tingkat', $s->tingkat);
+                @endphp
+                <div class="pt-3 border-t border-slate-100">
+                    @if ($matchingKelas->count() > 0)
+                        <div class="flex items-center gap-1.5">
+                            <select class="select-plot-kelas flex-1 text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 font-medium focus:outline-hidden focus:border-indigo-500 focus:bg-white transition">
+                                <option value="">-- Pilih Rombel --</option>
+                                @foreach ($matchingKelas as $k)
+                                    <option value="{{ $k->kode_kelas }}">
+                                        {{ $k->nama_kelas }} (Tk.{{ $k->tingkat }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <button type="button" 
+                                    class="btn-do-plot-kelas px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs shadow-2xs transition shrink-0 cursor-pointer active:scale-95" 
+                                    data-id-siswa="{{ $s->id_siswa }}" 
+                                    data-nama-siswa="{{ $s->nama_lengkap }}" 
+                                    title="Simpan ke Kelas">
+                                <i class="ti ti-check text-sm"></i>
+                            </button>
+                        </div>
+                    @else
+                        <div class="flex items-center justify-between gap-1.5 bg-amber-50/70 border border-amber-200/80 rounded-lg p-2 text-amber-800">
+                            <div class="text-[11px] font-semibold flex items-center gap-1">
+                                <i class="ti ti-alert-circle text-sm text-amber-600"></i>
+                                <span>Belum ada kelas Tk.{{ $s->tingkat }}</span>
+                            </div>
+                            <a href="{{ route('kelas.index', ['kode_unit_search' => $s->kode_unit ?? ($unit ? $unit->kode_unit : ''), 'kode_ta' => $ta ? $ta->kode_ta : '']) }}" target="_blank" class="px-2 py-0.5 bg-white hover:bg-slate-50 border border-amber-300 text-amber-900 rounded text-[10px] font-bold transition">
+                                Buat
+                            </a>
+                        </div>
+                    @endif
                 </div>
             </div>
         @empty
-            <div class="col-12" id="emptyStateAllDone">
-                <div class="card p-5 text-center bg-white border rounded-3 shadow-none">
-                    <i class="ti ti-circle-check fs-1 text-success d-block mb-2"></i>
-                    <div class="fw-bold text-dark fs-6">Seluruh Santri Sudah Masuk Rombel</div>
-                    <small class="text-muted">Tidak ada santri yang tertinggal dalam penempatan kelas.</small>
-                </div>
+            <div class="col-span-full bg-white border border-slate-200/90 rounded-2xl p-10 text-center text-slate-400" id="emptyStateAllDone">
+                <i class="ti ti-circle-check text-4xl text-emerald-500 block mb-2 mx-auto"></i>
+                <h4 class="text-sm font-bold text-slate-800">Seluruh Santri Sudah Masuk Rombel</h4>
+                <p class="text-xs text-slate-500 mt-1">Tidak ada santri yang tertinggal dalam penempatan kelas.</p>
             </div>
         @endforelse
 
-        {{-- Empty Filter State (Hidden by default) --}}
-        <div class="col-12 d-none" id="santriBelumPlotEmptySearch">
-            <div class="card p-5 text-center bg-white border rounded-3 shadow-none">
-                <i class="ti ti-search-off fs-1 text-muted d-block mb-2"></i>
-                <div class="fw-bold text-dark fs-6">Tidak Ada Santri Yang Cocok</div>
-                <small class="text-muted">Coba ubah kata kunci pencarian atau filter tingkat kelas.</small>
-            </div>
+        {{-- Empty Search State --}}
+        <div class="col-span-full bg-white border border-slate-200/90 rounded-2xl p-10 text-center text-slate-400 hidden" id="santriBelumPlotEmptySearch">
+            <i class="ti ti-search-off text-4xl text-slate-300 block mb-2 mx-auto"></i>
+            <h4 class="text-sm font-bold text-slate-800">Tidak Ada Santri Yang Cocok</h4>
+            <p class="text-xs text-slate-500 mt-1">Coba ubah kata kunci pencarian atau filter tingkat kelas.</p>
         </div>
     </div>
 </div>
 
-<div class="modal-footer px-4 py-3 bg-white border-top d-flex justify-content-between align-items-center">
-    <div class="text-muted" style="font-size: 0.8rem;">
-        Menampilkan <strong class="text-dark" id="count-visible-santri">{{ $students->count() }}</strong> santri
+<div class="px-6 py-3.5 bg-white border-t border-slate-100 flex items-center justify-between">
+    <div class="text-xs text-slate-400">
+        Menampilkan <strong class="text-slate-700 font-semibold" id="count-visible-santri">{{ $students->count() }}</strong> santri
     </div>
-    <button type="button" class="btn btn-sm btn-outline-secondary fw-semibold px-3" data-bs-dismiss="modal" style="border-radius: 8px;">Tutup</button>
+    <button type="button" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition cursor-pointer" data-bs-dismiss="modal">
+        Tutup
+    </button>
 </div>
 
 <script>
@@ -189,25 +235,25 @@
                 let matchesSearch = (!searchQuery || cardSearch.includes(searchQuery));
 
                 if (matchesTingkat && matchesSearch) {
-                    $(this).removeClass('d-none');
+                    $(this).removeClass('hidden');
                     visibleCount++;
                 } else {
-                    $(this).addClass('d-none');
+                    $(this).addClass('hidden');
                 }
             });
 
             $('#count-visible-santri').text(visibleCount);
 
             if (visibleCount === 0 && $('.santri-card-item').length > 0) {
-                $('#santriBelumPlotEmptySearch').removeClass('d-none');
+                $('#santriBelumPlotEmptySearch').removeClass('hidden');
             } else {
-                $('#santriBelumPlotEmptySearch').addClass('d-none');
+                $('#santriBelumPlotEmptySearch').addClass('hidden');
             }
         }
 
         $(document).off('click', '.btn-filter-tingkat').on('click', '.btn-filter-tingkat', function() {
-            $('.btn-filter-tingkat').removeClass('btn-primary active').addClass('btn-outline-secondary');
-            $(this).removeClass('btn-outline-secondary').addClass('btn-primary active');
+            $('.btn-filter-tingkat').removeClass('bg-indigo-600 text-white shadow-2xs').addClass('bg-slate-100 text-slate-600 hover:bg-slate-200');
+            $(this).removeClass('bg-slate-100 text-slate-600 hover:bg-slate-200').addClass('bg-indigo-600 text-white shadow-2xs');
 
             activeTingkat = $(this).data('tingkat').toString();
             filterSantri();
@@ -240,7 +286,7 @@
                 return;
             }
 
-            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+            $btn.prop('disabled', true).html('<i class="ti ti-loader-2 animate-spin text-sm"></i>');
 
             $.ajax({
                 method: "POST",
@@ -278,18 +324,16 @@
 
                             if (totalLeft === 0) {
                                 $('#santriBelumPlotGrid').html(`
-                                    <div class="col-12" id="emptyStateAllDone">
-                                        <div class="card p-5 text-center bg-white border rounded-3 shadow-none">
-                                            <i class="ti ti-circle-check fs-1 text-success d-block mb-2"></i>
-                                            <div class="fw-bold text-dark fs-6">Seluruh Santri Sudah Masuk Rombel</div>
-                                            <small class="text-muted">Tidak ada santri yang tertinggal dalam penempatan kelas.</small>
-                                        </div>
+                                    <div class="col-span-full bg-white border border-slate-200/90 rounded-2xl p-10 text-center text-slate-400" id="emptyStateAllDone">
+                                        <i class="ti ti-circle-check text-4xl text-emerald-500 block mb-2 mx-auto"></i>
+                                        <h4 class="text-sm font-bold text-slate-800">Seluruh Santri Sudah Masuk Rombel</h4>
+                                        <p class="text-xs text-slate-500 mt-1">Tidak ada santri yang tertinggal dalam penempatan kelas.</p>
                                     </div>
                                 `);
                             }
                         });
                     } else {
-                        $btn.prop('disabled', false).html('<i class="ti ti-check"></i>');
+                        $btn.prop('disabled', false).html('<i class="ti ti-check text-sm"></i>');
                         Swal.fire({
                             icon: 'error',
                             title: 'Gagal',
@@ -299,7 +343,7 @@
                     }
                 },
                 error: function(xhr) {
-                    $btn.prop('disabled', false).html('<i class="ti ti-check"></i>');
+                    $btn.prop('disabled', false).html('<i class="ti ti-check text-sm"></i>');
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -311,5 +355,3 @@
         });
     })();
 </script>
-
-

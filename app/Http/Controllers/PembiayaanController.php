@@ -381,15 +381,11 @@ class PembiayaanController extends Controller
         DB::beginTransaction();
         try {
             Rencanapembiayaan::where('no_akad', $no_akad)->delete();
+            $bln = (int)$rencana->bulan;
+            $tahunangsuran = (int)$rencana->tahun;
             for ($i = 1; $i <= $angsuran; $i++) {
-                if ($bln > 12) {
-                    $blncicilan = $bln - 12;
-                    $tahun = $tahunangsuran + 1;
-                } else {
-                    $blncicilan = $bln;
-                    $tahun = $tahunangsuran;
-                }
-
+                $blncicilan = (($bln - 1) % 12) + 1;
+                $tahun = $tahunangsuran + intdiv($bln - 1, 12);
 
                 if ($i == $angsuran) {
                     $cicilan = $cicilan_terakhir;
@@ -406,11 +402,6 @@ class PembiayaanController extends Controller
                     'jumlah' => $cicilan
                 ]);
 
-                // echo "No Akad :" . $no_akad . "<br>";
-                // echo "Cicilan Ke :" . $i . "<br>";
-                // echo "Bulan :" . $blncicilan . "<br>";
-                // echo "Tahun :" . $tahun . "<br>";
-                // echo "Jumlah :" . $cicilan . "<br>";
                 $bln++;
             }
 
@@ -669,25 +660,17 @@ class PembiayaanController extends Controller
                 'struk_gaji' => 1,
                 'status' => $status,
             ]);
-            $bulan_cicilan = $bulan + 1;
-            $tahun_cicilan = $tahun;
-            $thncicilan = $tahun_cicilan;
+            $bulan_cicilan = (int)$bulan + 1;
+            $tahun_cicilan = (int)$tahun;
             for ($i = 1; $i <= $request->jangka_waktu; $i++) {
-                if ($bulan_cicilan > 12) {
-                    $blncicilan = $bulan_cicilan - 12;
-                    $thncicilan = $thncicilan + 1;
-                    $bulan_cicilan = 1;
-                } else {
-                    $blncicilan = $bulan_cicilan;
-                    $thncicilan = $thncicilan;
-                }
+                $blncicilan = (($bulan_cicilan - 1) % 12) + 1;
+                $thncicilan = $tahun_cicilan + intdiv($bulan_cicilan - 1, 12);
 
                 if ($i == $request->jangka_waktu) {
                     $cicilan = $cicilan_terakhir;
                 } else {
                     $cicilan = $cicilanperbulan;
                 }
-
 
                 Rencanapembiayaan::create([
                     'no_akad' => $no_akad,
@@ -1000,19 +983,12 @@ class PembiayaanController extends Controller
                 'status' => $status,
             ]);
 
-            $bulan_cicilan = $bulan + 1;
-            $tahun_cicilan = $tahun;
-            $thncicilan = $tahun_cicilan;
+            $bulan_cicilan = (int)$bulan + 1;
+            $tahun_cicilan = (int)$tahun;
             
             for ($i = 1; $i <= $request->jangka_waktu; $i++) {
-                if ($bulan_cicilan > 12) {
-                    $blncicilan = $bulan_cicilan - 12;
-                    $thncicilan = $thncicilan + 1;
-                    $bulan_cicilan = 1;
-                } else {
-                    $blncicilan = $bulan_cicilan;
-                    $thncicilan = $thncicilan;
-                }
+                $blncicilan = (($bulan_cicilan - 1) % 12) + 1;
+                $thncicilan = $tahun_cicilan + intdiv($bulan_cicilan - 1, 12);
 
                 if ($i == $request->jangka_waktu) {
                     $cicilan = $cicilan_terakhir;

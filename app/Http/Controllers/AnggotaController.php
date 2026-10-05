@@ -22,11 +22,23 @@ class AnggotaController extends Controller
         $query = Anggota::with(['siswa', 'karyawan']);
         $query->select('*');
         if (!empty($request->nama_lengkap)) {
-            $query->where('nama_lengkap', 'like', "%" . $request->nama_lengkap . "%");
+            $keyword = $request->nama_lengkap;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('nama_lengkap', 'like', "%" . $keyword . "%")
+                  ->orWhere('nik', 'like', "%" . $keyword . "%")
+                  ->orWhere('no_anggota', 'like', "%" . $keyword . "%")
+                  ->orWhere('no_hp', 'like', "%" . $keyword . "%");
+            });
         }
-        $anggota = $query->paginate(10);
+        $anggota = $query->orderBy('no_anggota', 'desc')->paginate(10);
         $anggota->appends($request->all());
         $data['anggota'] = $anggota;
+        
+        // KPI Statistics
+        $data['total_anggota'] = Anggota::count();
+        $data['total_terhubung_siswa'] = SiswaAnggota::distinct('no_anggota')->count('no_anggota');
+        $data['total_terhubung_karyawan'] = Karyawananggota::distinct('no_anggota')->count('no_anggota');
+        
         return view('koperasi.anggota.index', $data);
     }
 

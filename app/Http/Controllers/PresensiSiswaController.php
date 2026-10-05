@@ -19,7 +19,10 @@ class PresensiSiswaController extends Controller
      */
     public function index(Request $request)
     {
-        if (!auth()->user()->can('presensisiswa.index') && !auth()->user()->hasRole('guru')) {
+        $user = auth()->user();
+        $isGuru = $user->hasRole('guru') || (!empty($user->npp) && \App\Models\Guru::where('npp', $user->npp)->exists());
+
+        if (!$user->can('presensisiswa.index') && !$isGuru) {
             abort(403, 'Akses ditolak.');
         }
 
@@ -81,9 +84,15 @@ class PresensiSiswaController extends Controller
         });
         $query->orderBy('siswa.nama_lengkap');
 
-        // Filter berdasarkan request
+        // Filter berdasarkan request (Nama, NIS, NISN, No. Pendaftaran)
         if (!empty($request->nama_lengkap)) {
-            $query->where('nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
+            $search = $request->nama_lengkap;
+            $query->where(function ($q) use ($search) {
+                $q->where('siswa.nama_lengkap', 'like', '%' . $search . '%')
+                  ->orWhere('pendaftaran.no_pendaftaran', 'like', '%' . $search . '%')
+                  ->orWhere('pendaftaran.nis', 'like', '%' . $search . '%')
+                  ->orWhere('siswa.nisn', 'like', '%' . $search . '%');
+            });
         }
 
         if (!auth()->user()->hasRole('super admin')) {
@@ -108,41 +117,136 @@ class PresensiSiswaController extends Controller
             $query->where('kelas_siswa.kode_kelas', $request->kode_kelas);
         }
 
-        $isGuru = auth()->user()->hasRole('guru');
         $kelasBinaanUnits = [];
-        if ($isGuru) {
-            $guruModel = \App\Models\Guru::where('npp', auth()->user()->npp)->first();
+        $kelasBinaanCodes = [];
+        if ($isGuru && !auth()->user()->can('presensisiswa.index')) {
+            $guruModel = \App\Models\Guru::where('npp', $user->npp)->first();
             $guruId = $guruModel ? $guruModel->id : 0;
             
-            $kelasBinaanQuery = \App\Models\Kelas::where('guru_id', $guruId);
+            // 1. Kelas dari Wali Kelas
+            $kelasWaliQuery = \App\Models\Kelas::where('guru_id', $guruId);
             if (!empty($request->kode_ta)) {
-                $kelasBinaanQuery->where('kode_ta', $request->kode_ta);
+                $kelasWaliQuery->where('kode_ta', $request->kode_ta);
             } elseif ($ta_aktif) {
-                $kelasBinaanQuery->where('kode_ta', $ta_aktif->kode_ta);
+                $kelasWaliQuery->where('kode_ta', $ta_aktif->kode_ta);
             }
-            
-            $kelasBinaan = $kelasBinaanQuery->get();
-            $kelasBinaanCodes = $kelasBinaan->pluck('kode_kelas')->toArray();
-            $kelasBinaanUnits = $kelasBinaan->pluck('kode_unit')->unique()->toArray();
+            $kelasWali = $kelasWaliQuery->get();
+            $waliCodes = $kelasWali->pluck('kode_kelas')->toArray();
+            $waliUnits = $kelasWali->pluck('kode_unit')->toArray();
 
-            $query->whereIn('kelas_siswa.kode_kelas', $kelasBinaanCodes);
+            // 2. Kelas dari Jadwal Pelajaran (Mata Pelajaran yang Diampu)
+            $jadwalQuery = \App\Models\JadwalPelajaran::where('guru_id', $guruId);
+            if (!empty($request->kode_ta)) {
+                $jadwalQuery->where('kode_ta', $request->kode_ta);
+            } elseif ($ta_aktif) {
+                $jadwalQuery->where('kode_ta', $ta_aktif->kode_ta);
+            }
+            $jadwal = $jadwalQuery->get();
+            $jadwalCodes = $jadwal->pluck('kode_kelas')->toArray();
+            $jadwalUnits = $jadwal->pluck('kode_unit')->toArray();
+
+            // Gabungkan semua kelas & unit yang diampu/dibina oleh guru
+            $kelasBinaanCodes = array_values(array_unique(array_filter(array_merge($waliCodes, $jadwalCodes))));
+            $kelasBinaanUnits = array_values(array_unique(array_filter(array_merge($waliUnits, $jadwalUnits))));
+
+            if (!empty($kelasBinaanCodes)) {
+                $query->whereIn('kelas_siswa.kode_kelas', $kelasBinaanCodes);
+            }
+            if (!empty($kelasBinaanUnits)) {
+                $query->whereIn('pendaftaran.kode_unit', $kelasBinaanUnits);
+            }
         }
 
-        $pendaftaran = $query->paginate(30);
+        $pendaftaran = $query->paginate(25);
         $pendaftaran->appends($request->all());
 
-        // Data untuk filter
+        // Executive Statistics Calculation for the date & filters
+        $statsQuery = Biayasiswa::query()
+            ->join('pendaftaran', 'siswa_biaya.no_pendaftaran', '=', 'pendaftaran.no_pendaftaran')
+            ->join('siswa', 'pendaftaran.id_siswa', '=', 'siswa.id_siswa')
+            ->join('konfigurasi_biaya', 'siswa_biaya.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
+            ->where('konfigurasi_biaya.is_pindahan', 0)
+            ->leftJoinSub($kelas_siswa, 'kelas_siswa', function ($join) {
+                $join->on('kelas_siswa.id_siswa', '=', 'siswa.id_siswa');
+            })
+            ->leftJoin('presensi_siswa', function ($join) use ($tanggal) {
+                $join->on('pendaftaran.no_pendaftaran', '=', 'presensi_siswa.no_pendaftaran')
+                    ->where('presensi_siswa.tanggal', '=', $tanggal);
+            });
+
+        if (!empty($request->nama_lengkap)) {
+            $search = $request->nama_lengkap;
+            $statsQuery->where(function ($q) use ($search) {
+                $q->where('siswa.nama_lengkap', 'like', '%' . $search . '%')
+                  ->orWhere('pendaftaran.no_pendaftaran', 'like', '%' . $search . '%')
+                  ->orWhere('pendaftaran.nis', 'like', '%' . $search . '%')
+                  ->orWhere('siswa.nisn', 'like', '%' . $search . '%');
+            });
+        }
+
+        if (!auth()->user()->hasRole('super admin')) {
+            $statsQuery->where('pendaftaran.kode_unit', auth()->user()->kode_unit);
+        } elseif (!empty($request->kode_unit)) {
+            $statsQuery->where('pendaftaran.kode_unit', $request->kode_unit);
+        }
+
+        if (!empty($request->kode_ta)) {
+            $statsQuery->where('konfigurasi_biaya.kode_ta', $request->kode_ta);
+        } elseif ($ta_aktif) {
+            $statsQuery->where('konfigurasi_biaya.kode_ta', $ta_aktif->kode_ta);
+        }
+
+        if (!empty($request->tingkat)) {
+            $statsQuery->where('konfigurasi_biaya.tingkat', $request->tingkat);
+        }
+
+        if (!empty($request->kode_kelas)) {
+            $statsQuery->where('kelas_siswa.kode_kelas', $request->kode_kelas);
+        }
+
+        if ($isGuru && !auth()->user()->can('presensisiswa.index')) {
+            if (!empty($kelasBinaanCodes)) {
+                $statsQuery->whereIn('kelas_siswa.kode_kelas', $kelasBinaanCodes);
+            }
+            if (!empty($kelasBinaanUnits)) {
+                $statsQuery->whereIn('pendaftaran.kode_unit', $kelasBinaanUnits);
+            }
+        }
+
+        $statsRaw = (clone $statsQuery)->selectRaw("
+            COUNT(DISTINCT pendaftaran.no_pendaftaran) as total_santri,
+            COUNT(DISTINCT CASE WHEN presensi_siswa.status = 'h' THEN pendaftaran.no_pendaftaran END) as hadir,
+            COUNT(DISTINCT CASE WHEN presensi_siswa.status = 'i' THEN pendaftaran.no_pendaftaran END) as izin,
+            COUNT(DISTINCT CASE WHEN presensi_siswa.status = 's' THEN pendaftaran.no_pendaftaran END) as sakit,
+            COUNT(DISTINCT CASE WHEN presensi_siswa.status = 'a' THEN pendaftaran.no_pendaftaran END) as alpha,
+            COUNT(DISTINCT CASE WHEN presensi_siswa.status IS NOT NULL THEN pendaftaran.no_pendaftaran END) as sudah_absen
+        ")->first();
+
+        $totalSantri = $statsRaw->total_santri ?? 0;
+        $sudahAbsen = $statsRaw->sudah_absen ?? 0;
+
+        $stats = [
+            'total' => $totalSantri,
+            'hadir' => $statsRaw->hadir ?? 0,
+            'izin' => $statsRaw->izin ?? 0,
+            'sakit' => $statsRaw->sakit ?? 0,
+            'alpha' => $statsRaw->alpha ?? 0,
+            'belum_absen' => max(0, $totalSantri - $sudahAbsen)
+        ];
+
+        // Data untuk view
         $data['pendaftaran'] = $pendaftaran;
+        $data['stats'] = $stats;
         $data['tanggal'] = $tanggal;
         $data['tahun_ajaran'] = $ta_aktif;
-        if ($isGuru) {
+        if ($isGuru && !empty($kelasBinaanUnits)) {
             $data['unit'] = Unit::whereIn('kode_unit', $kelasBinaanUnits)->get();
         } elseif (!auth()->user()->hasRole('super admin')) {
             $data['unit'] = Unit::where('kode_unit', auth()->user()->kode_unit)->get();
         } else {
             $data['unit'] = Unit::all();
         }
-        $data['tahunajaran'] = Tahunajaran::orderBy('kode_ta')->get();
+        $data['tahunajaran'] = Tahunajaran::orderBy('kode_ta', 'desc')->get();
         $data['jenis_kelamin'] = config('global.jenis_kelamin');
 
         return view('presensisiswa.index', $data);

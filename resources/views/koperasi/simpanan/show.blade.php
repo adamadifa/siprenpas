@@ -1,395 +1,530 @@
 @extends('layouts.app')
-<link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-profile.css') }}" />
-@section('titlepage', 'Detail Simpanan')
+@section('titlepage', 'Buku Simpanan Anggota')
 
 @section('content')
-@section('navigasi')
-    <div class="card shadow-none bg-transparent border-0 mb-3">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
-                        <i class="ti ti-database fs-3"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Detail Simpanan</h4>
-                        <p class="text-muted mb-0 small">Informasi lengkap saldo dan mutasi simpanan anggota</p>
-                    </div>
-                </div>
-                <div class="d-flex flex-column align-items-end">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb breadcrumb-style1 mb-0">
-                            <li class="breadcrumb-item">
-                                <a href="javascript:void(0);" class="text-muted">
-                                    <i class="ti ti-building-bank me-1"></i> Koperasi
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active">
-                                <i class="ti ti-database me-1"></i> Detail Simpanan
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
+<div class="space-y-6">
+
+    <!-- ================= 1. TOP HEADER & NAVIGATION ================= -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Title & Subtitle -->
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl shrink-0 font-bold border border-emerald-200 shadow-2xs">
+                <i class="ti ti-book-2"></i>
+            </div>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                    Buku Simpanan Anggota
+                </h1>
+                <p class="text-xs text-slate-500 mt-0.5 font-medium">
+                    Informasi saldo tabungan, mutasi setoran & penarikan, serta histori transaksi nasabah
+                </p>
+            </div>
+        </div>
+
+        <!-- Right: Breadcrumb & Actions -->
+        <div class="flex flex-col md:items-end gap-2.5">
+            <!-- Breadcrumb Navigation -->
+            <nav class="flex items-center text-xs text-slate-400 font-medium">
+                <a href="{{ route('dashboard.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <a href="{{ route('simpanan.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-wallet text-sm"></i>
+                    <span>Simpanan</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="font-bold text-slate-800">Buku Simpanan</span>
+            </nav>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="{{ route('simpanan.index') }}" 
+                   class="inline-flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs border border-slate-200/90 shadow-2xs transition active:scale-95 cursor-pointer">
+                    <i class="ti ti-arrow-left text-sm"></i>
+                    <span>Kembali</span>
+                </a>
+                <a href="{{ route('anggota.show', Crypt::encrypt($anggota->no_anggota)) }}" 
+                   class="inline-flex items-center gap-1.5 px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs border border-slate-200/90 shadow-2xs transition active:scale-95 cursor-pointer">
+                    <i class="ti ti-user text-sm"></i>
+                    <span>Profil Anggota</span>
+                </a>
             </div>
         </div>
     </div>
-@endsection
 
-<div class="row">
-    <div class="col-12">
-        <div class="card mb-4 border-0 shadow-sm overflow-hidden" style="background-color: #064e3b">
-            <!-- Header Banner - Integrated with Full Green Card -->
-            <div class="user-profile-header-banner" style="background: linear-gradient(to right, rgba(0,0,0,0.1), rgba(0,0,0,0.3)); height: 80px;">
-            </div>
-            <div class="user-profile-header d-flex flex-column flex-sm-row align-items-center align-items-sm-end text-sm-start text-center mb-4 px-4 pb-1">
-                <div class="flex-shrink-0 mt-n4 mx-sm-0 mx-auto">
-                    @if (Storage::disk('public')->exists('/anggota/' . $anggota->foto))
-                        <img src="{{ getfotoKaryawan($anggota->foto) }}" alt="user image" 
-                            class="d-block rounded border border-4 border-white shadow-sm user-profile-img"
-                            style="width: 110px; height: 110px; object-fit: cover;">
-                    @else
-                        <div class="bg-white d-flex align-items-center justify-content-center rounded border border-4 border-white shadow-sm user-profile-img" 
-                             style="width: 110px; height: 110px;">
-                            <i class="ti ti-user fs-1 text-muted"></i>
-                        </div>
-                    @endif
+    <!-- ================= 2. MEMBER PROFILE BANNER & QUICK ACTIONS (SOLID GREEN) ================= -->
+    <div class="bg-emerald-600 border border-emerald-500 rounded-2xl shadow-xs p-5 sm:p-6 text-white">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+            <!-- Left: Avatar & Identity -->
+            <div class="flex items-center gap-4 sm:gap-5">
+                <!-- Avatar Initial -->
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-white text-emerald-800 flex items-center justify-center font-bold text-2xl sm:text-3xl shadow-xs shrink-0 ring-4 ring-white/20">
+                    {{ strtoupper(substr($anggota->nama_lengkap, 0, 1)) }}
                 </div>
-                <div class="flex-grow-1 mt-3 mt-sm-0 ms-sm-4">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                        <div class="user-profile-info">
-                            <h4 class="mb-1 fw-bold text-white">{{ textCamelCase($anggota->nama_lengkap) }}</h4>
-                            <div class="d-flex align-items-center flex-wrap gap-2 justify-content-center justify-content-sm-start">
-                                <span class="text-white opacity-75 fw-medium small">
-                                    <i class="ti ti-id me-1"></i>{{ $anggota->no_anggota }}
+
+                <!-- Info -->
+                <div class="space-y-1.5 min-w-0">
+                    <div class="flex items-center gap-2.5 flex-wrap">
+                        <h2 class="text-lg sm:text-xl font-black text-white uppercase tracking-tight truncate">
+                            {{ $anggota->nama_lengkap }}
+                        </h2>
+                        <span class="px-2.5 py-0.5 rounded-lg text-xs font-bold tracking-wider bg-white/20 text-white border border-white/30 shadow-2xs backdrop-blur-xs">
+                            {{ $anggota->no_anggota }}
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white text-emerald-800 shadow-2xs">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Anggota Aktif
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-2 sm:gap-3 text-emerald-100 text-xs flex-wrap font-medium">
+                        <span class="inline-flex items-center gap-1.5">
+                            <i class="ti ti-id text-emerald-200 text-sm"></i>
+                            <span class="text-emerald-200">NIK:</span>
+                            <strong class="text-white font-bold">{{ $anggota->nik ?: '-' }}</strong>
+                        </span>
+                        <span class="text-emerald-400">•</span>
+                        <span class="inline-flex items-center gap-1.5">
+                            @if ($anggota->no_hp)
+                                <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $anggota->no_hp)) }}" 
+                                   target="_blank" 
+                                   class="inline-flex items-center gap-1 text-white font-bold hover:text-emerald-100 hover:underline">
+                                    <i class="ti ti-brand-whatsapp text-emerald-200 text-sm"></i>
+                                    <span>{{ $anggota->no_hp }}</span>
+                                </a>
+                            @else
+                                <i class="ti ti-phone text-emerald-200 text-sm"></i>
+                                <span class="text-emerald-200">-</span>
+                            @endif
+                        </span>
+                        <span class="text-emerald-400">•</span>
+                        <span class="inline-flex items-center gap-1.5">
+                            <i class="ti ti-map-pin text-emerald-200 text-sm"></i>
+                            <span class="text-emerald-100">{{ $anggota->nama_kabupaten ?: ($anggota->alamat ?: 'Alamat belum diisi') }}</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Quick Transaction Actions -->
+            <div class="flex items-center gap-3 shrink-0">
+                <button type="button" 
+                        id="createSetoran"
+                        class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-white hover:bg-emerald-50 text-emerald-800 font-bold rounded-xl text-xs sm:text-sm shadow-sm hover:shadow-md transition active:scale-95 cursor-pointer border border-white">
+                    <i class="ti ti-download text-base sm:text-lg text-emerald-700"></i>
+                    <span>+ Input Setoran</span>
+                </button>
+                <button type="button" 
+                        id="createPenarikan"
+                        class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-xl text-xs sm:text-sm shadow-sm hover:shadow-md transition active:scale-95 cursor-pointer border border-rose-400">
+                    <i class="ti ti-upload text-base sm:text-lg"></i>
+                    <span>- Input Penarikan</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 3. SALDO SUMMARY BY TYPE (SOLID EMERALD - SUBTLE GRADIENT) ================= -->
+    <div class="space-y-3">
+        <!-- Section Header with Total Akumulasi -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm font-bold shadow-2xs">
+                    <i class="ti ti-credit-card"></i>
+                </div>
+                <h3 class="text-sm font-bold text-slate-900">Kartu Saldo Simpanan</h3>
+            </div>
+            <div class="px-3.5 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200/80 text-xs font-bold text-emerald-800 flex items-center gap-2 self-start sm:self-auto shadow-2xs">
+                <span class="text-slate-500 font-medium">Total Akumulasi:</span>
+                <span class="font-bold text-emerald-700 text-sm">Rp {{ formatRupiah($saldosimpanan->total_saldo ?? 0) }}</span>
+            </div>
+        </div>
+
+        <!-- 3-Column Solid Emerald ATM Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            @forelse ($saldo_simpanan as $l)
+                <div class="bg-gradient-to-br from-emerald-600 to-emerald-700 border border-emerald-500 rounded-2xl sm:rounded-3xl p-5 sm:p-6 text-white shadow-xs hover:shadow-md hover:-translate-y-1 transition-all duration-300 relative overflow-hidden flex flex-col justify-between min-h-[220px] sm:min-h-[230px] select-none group">
+                    
+                    <!-- Subtle Glow & Soft Watermark Ring -->
+                    <div class="absolute -right-8 -top-8 w-36 h-36 rounded-full bg-white/5 blur-xl pointer-events-none"></div>
+                    <div class="absolute -right-6 -bottom-6 w-32 h-32 rounded-full border border-white/10 pointer-events-none"></div>
+                    <div class="absolute -right-1 -bottom-1 w-20 h-20 rounded-full border border-white/15 pointer-events-none"></div>
+
+                    <!-- Top Row: Bank / Koperasi Brand & Contactless NFC / Code -->
+                    <div class="flex items-center justify-between gap-2 relative z-10">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-7 h-7 rounded-lg bg-white/20 backdrop-blur-xs flex items-center justify-center border border-white/30 text-white shadow-2xs">
+                                <i class="ti ti-building-bank text-sm"></i>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-black tracking-widest text-white uppercase block leading-tight">
+                                    KOPERASI TSARWAH
                                 </span>
-                                <span class="text-white opacity-25">|</span>
-                                <span class="text-white opacity-75 fw-medium small">
-                                    <i class="ti ti-credit-card me-1"></i>{{ $anggota->nik }}
+                                <span class="text-[8px] font-bold tracking-wider text-emerald-200 uppercase block">
+                                    AL AMIN DIGITAL CARD
                                 </span>
                             </div>
                         </div>
-                        <div class="ms-auto d-none d-md-block">
-                            <span class="badge bg-white text-success px-3 py-2 rounded-pill shadow-sm">
-                                <i class="ti ti-circle-check me-1 small"></i> Anggota Aktif
+
+                        <div class="flex items-center gap-2">
+                            <i class="ti ti-nfc text-lg text-white/80" title="NFC Contactless"></i>
+                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black font-mono tracking-widest bg-white/20 text-white border border-white/30 shadow-2xs backdrop-blur-xs">
+                                {{ $l->kode_simpanan }}
                             </span>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="row g-4">
-    <div class="col-xl-4 col-lg-5 col-md-12">
-        <!-- Redesigned Profil Lengkap Card -->
-        <div class="card mb-4 border-0 shadow-sm overflow-hidden">
-            <!-- Header with Dark Green Theme -->
-            <div class="card-header border-0 py-3 d-flex align-items-center gap-2" style="background-color: #064e3b">
-                <i class="ti ti-id-badge text-white"></i>
-                <h6 class="mb-0 fw-bold text-white">Profil Lengkap</h6>
-            </div>
-            <div class="card-body py-4">
-                <!-- Personal Info Group -->
-                <div class="mb-4">
-                    <small class="text-uppercase fw-bold text-muted opacity-50 mb-3 d-block" style="letter-spacing: 1px; font-size: 0.65rem;">Informasi Pribadi</small>
-                    
-                    <div class="d-flex align-items-start gap-3 mb-3">
-                        <div class="avatar avatar-sm flex-shrink-0">
-                            <span class="avatar-initial rounded bg-label-success"><i class="ti ti-calendar-event opacity-75"></i></span>
+                    <!-- Middle Row: Metallic EMV Chip & Savings Category Name -->
+                    <div class="flex items-center justify-between gap-3 my-auto pt-3 pb-2 relative z-10">
+                        <!-- Golden EMV Chip Graphic -->
+                        <div class="relative w-11 h-8 rounded-md bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 p-[2px] shadow-sm border border-amber-200/80 overflow-hidden shrink-0 flex items-center justify-center">
+                            <!-- Internal Circuitry Lines -->
+                            <div class="w-full h-[1px] bg-amber-900/40 absolute top-1/2 -translate-y-1/2"></div>
+                            <div class="h-full w-[1px] bg-amber-900/40 absolute left-[35%]"></div>
+                            <div class="h-full w-[1px] bg-amber-900/40 absolute right-[35%]"></div>
+                            <div class="w-4 h-3 rounded-[3px] border border-amber-900/40 bg-amber-200/50 shadow-inner z-10"></div>
                         </div>
-                        <div class="flex-grow-1">
-                            <span class="d-block text-muted small">Tempat, Tanggal Lahir</span>
-                            <span class="fw-bold text-dark small">{{ $anggota->tempat_lahir }}, {{ date('d M Y', strtotime($anggota->tanggal_lahir)) }}</span>
+
+                        <!-- Savings Category -->
+                        <div class="text-right">
+                            <span class="text-[9px] font-bold text-emerald-200 uppercase tracking-widest block leading-tight">
+                                Jenis Simpanan
+                            </span>
+                            <span class="text-xs sm:text-sm font-black text-white uppercase tracking-wider block truncate max-w-[170px]" title="{{ $l->jenis_simpanan }}">
+                                {{ $l->jenis_simpanan }}
+                            </span>
                         </div>
                     </div>
 
-                    <div class="d-flex align-items-start gap-3 mb-0">
-                        <div class="avatar avatar-sm flex-shrink-0">
-                            <span class="avatar-initial rounded bg-label-success"><i class="ti ti-users opacity-75"></i></span>
+                    <!-- Balance Row: Saldo Simpanan -->
+                    <div class="relative z-10 mb-3">
+                        <div class="text-[9px] uppercase font-bold tracking-widest text-emerald-200 flex items-center gap-1.5">
+                            <span>Saldo Tersedia</span>
+                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
                         </div>
-                        <div class="flex-grow-1">
-                            <span class="d-block text-muted small">Status Sipil & Tanggungan</span>
-                            @php $sm = ['M' => 'Menikah', 'BM' => 'Belum Menikah', 'JD' => 'Janda/Duda']; @endphp
-                            <span class="fw-bold text-dark small">{{ $sm[$anggota->status_pernikahan] ?? '-' }} | {{ $anggota->jml_tanggungan }} Tanggungan</span>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="my-4 opacity-50">
-
-                <!-- Contact & Address Group -->
-                <div class="mb-4">
-                    <small class="text-uppercase fw-bold text-muted opacity-50 mb-3 d-block" style="letter-spacing: 1px; font-size: 0.65rem;">Kontak & Alamat</small>
-                    
-                    <div class="d-flex align-items-start gap-3 mb-3">
-                        <div class="avatar avatar-sm flex-shrink-0">
-                            <span class="avatar-initial rounded bg-label-success"><i class="ti ti-phone opacity-75"></i></span>
-                        </div>
-                        <div class="flex-grow-1">
-                            <span class="d-block text-muted small">Nomor Telepon</span>
-                            <span class="fw-bold text-dark small">{{ $anggota->no_hp ?? '-' }}</span>
+                        <div class="text-2xl sm:text-3xl font-black text-white tracking-tight font-sans drop-shadow-xs mt-0.5">
+                            Rp {{ formatRupiah($l->jumlah) }}
                         </div>
                     </div>
 
-                    <div class="d-flex align-items-start gap-3 mb-0">
-                        <div class="avatar avatar-sm flex-shrink-0">
-                            <span class="avatar-initial rounded bg-label-success"><i class="ti ti-map-pin opacity-75"></i></span>
-                        </div>
-                        <div class="flex-grow-1">
-                            <span class="d-block text-muted small">Alamat Lengkap</span>
-                            <span class="fw-bold text-dark small" style="line-height: 1.4;">{{ $anggota->alamat ?: '-' }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="my-4 opacity-50">
-
-                <!-- Education Group -->
-                <div>
-                    <small class="text-uppercase fw-bold text-muted opacity-50 mb-3 d-block" style="letter-spacing: 1px; font-size: 0.65rem;">Pendidikan</small>
-                    
-                    <div class="d-flex align-items-start gap-3 mb-0">
-                        <div class="avatar avatar-sm flex-shrink-0">
-                            <span class="avatar-initial rounded bg-label-success"><i class="ti ti-school opacity-75"></i></span>
-                        </div>
-                        <div class="flex-grow-1">
-                            <span class="d-block text-muted small">Pendidikan Terakhir</span>
-                            <span class="fw-bold text-dark small">{{ $anggota->pendidikan_terakhir ?: '-' }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xl-8 col-lg-7 col-md-12 mt-3">
-        <!-- Saldo Summary Section - ATM Card Style -->
-        <div class="row g-3 mb-4">
-            <div class="col-12">
-                <div class="swiper-container cardswiper">
-                    <div class="swiper-wrapper">
-                        @foreach ($saldo_simpanan as $l)
-                            <div class="swiper-slide {{ $loop->first ? 'swiper-slide-active' : '' }}" style="width: auto;">
-                                <div class="card border-0 shadow-lg overflow-hidden position-relative" 
-                                    style="background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); min-height: 160px; width: 300px; border-radius: 16px;">
-                                    
-                                    <!-- Decorative Elements -->
-                                    <div class="position-absolute" style="top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
-                                    <div class="position-absolute" style="bottom: -10px; left: 10%; width: 50px; height: 50px; background: rgba(255,255,255,0.03); border-radius: 50%;"></div>
-                                    
-                                    <div class="card-body p-3 d-flex flex-column justify-content-between h-100">
-                                        <!-- Card Top -->
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div class="d-flex flex-column">
-                                                <small class="text-white-50 text-uppercase fw-bold mb-1" style="letter-spacing: 1px; font-size: 0.6rem;">
-                                                    {{ $l->jenis_simpanan }}
-                                                </small>
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <i class="ti ti-building-bank text-white-50 fs-6"></i>
-                                                    <small class="text-white-50 fw-medium" style="font-size: 0.75rem;">KOPERASI SIPREN</small>
-                                                </div>
-                                            </div>
-                                            <i class="ti ti-wifi text-white-50 fs-5" style="transform: rotate(90deg);"></i>
-                                        </div>
-
-                                        <!-- Card Middle (Chip) -->
-                                        <div class="mt-2">
-                                            <div class="bg-warning opacity-75 rounded-1" style="width: 32px; height: 24px; background: linear-gradient(135deg, #ffd700, #ff8c00) !important; position: relative; overflow: hidden;">
-                                                <div class="position-absolute w-100 h-100" style="background: repeating-linear-gradient(90deg, transparent, transparent 3px, rgba(0,0,0,0.1) 3px, rgba(0,0,0,0.1) 4px);"></div>
-                                                <div class="position-absolute w-100 h-100" style="background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.1) 3px, rgba(0,0,0,0.1) 4px);"></div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Card Bottom (Nominal & Holder) -->
-                                        <div class="mt-auto pt-2">
-                                            <div class="mb-1">
-                                                <small class="text-white-50 small opacity-75" style="font-size: 0.7rem;">Available Balance</small>
-                                                <h4 class="mb-0 text-white fw-bold" style="letter-spacing: 0.5px;">Rp {{ formatAngka($l->jumlah) }}</h4>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-end mt-1">
-                                                <span class="text-white small opacity-75 text-uppercase fw-medium" style="letter-spacing: 0.5px; font-size: 0.65rem;">
-                                                    {{ $l->kode_simpanan }}
-                                                </span>
-                                                <div class="text-end">
-                                                    <small class="text-white-50 d-block" style="font-size: 0.45rem; letter-spacing: 1px;">MEMBER ID</small>
-                                                    <span class="text-white fw-bold" style="letter-spacing: 1px; font-size: 0.7rem;">
-                                                        {{ substr($anggota->no_anggota, 0, 4) }} **** {{ substr($anggota->no_anggota, -4) }}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                    <!-- Bottom Row: Cardholder Name & Account / Member ID -->
+                    <div class="pt-3 border-t border-white/20 flex items-end justify-between gap-3 text-white relative z-10">
+                        <div class="min-w-0">
+                            <div class="text-[8px] uppercase tracking-widest text-emerald-200 font-bold leading-tight">
+                                Pemegang Rekening
                             </div>
-                        @endforeach
+                            <div class="text-xs font-extrabold text-white uppercase tracking-wider truncate max-w-[150px] sm:max-w-[180px] drop-shadow-xs" title="{{ $anggota->nama_lengkap }}">
+                                {{ $anggota->nama_lengkap }}
+                            </div>
+                        </div>
+
+                        <div class="text-right shrink-0">
+                            <div class="text-[8px] uppercase tracking-widest text-emerald-200 font-bold leading-tight">
+                                No. Rekening / ID
+                            </div>
+                            <div class="text-xs font-mono font-black text-white/95 tracking-widest">
+                                {{ $anggota->no_anggota }}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            @empty
+                <div class="col-span-full p-8 bg-white border border-dashed border-slate-200 rounded-3xl text-center text-slate-400 text-xs font-medium flex flex-col items-center justify-center gap-2">
+                    <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-lg">
+                        <i class="ti ti-credit-card-off"></i>
+                    </div>
+                    <span>Belum ada jenis simpanan yang tercatat untuk anggota ini.</span>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
+    <!-- ================= 4. FILTER MUTASI & DATA TABLE ================= -->
+    <div class="space-y-3">
+        
+        <!-- Filter Bar -->
+        <form action="{{ URL::current() }}" method="GET" class="w-full">
+            <div class="bg-white border border-slate-200/90 rounded-xl p-5 sm:p-6 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <!-- Left Title with Icon -->
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center text-base font-bold shadow-2xs shrink-0">
+                        <i class="ti ti-calendar-search"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs sm:text-sm font-bold text-slate-800 block">Filter Rentang Tanggal Mutasi</span>
+                        <span class="text-[11px] text-slate-400 font-medium">Tampilkan pergerakan saldo pada periode tertentu</span>
                     </div>
                 </div>
-            </div>
-        </div>
-        <!-- Professional Action Row -->
-        <div class="row g-3 mb-4">
-            <div class="col-md-6 col-12">
-                <button class="btn btn-primary w-100 py-3 shadow-sm d-flex align-items-center justify-content-center gap-2" 
-                    id="createSetoran" style="background-color: #064e3b; border-color: #064e3b">
-                    <i class="ti ti-transfer-in fs-4"></i>
-                    <span class="fw-bold">Input Setoran</span>
-                </button>
-            </div>
-            <div class="col-md-6 col-12">
-                <button class="btn btn-outline-danger w-100 py-3 shadow-none bg-white d-flex align-items-center justify-content-center gap-2" 
-                    id="createPenarikan">
-                    <i class="ti ti-transfer-out fs-4"></i>
-                    <span class="fw-bold">Input Penarikan</span>
-                </button>
-            </div>
-        </div>
+                
+                <!-- Right Inputs & Action Controls -->
+                <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                    <!-- Dari Tanggal Input -->
+                    <div class="flex items-center gap-2 flex-1 sm:flex-initial">
+                        <div class="relative flex-1 sm:w-40">
+                            <i class="ti ti-calendar text-slate-400 text-sm absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                            <input type="text" 
+                                   name="dari" 
+                                   value="{{ Request('dari', date('Y-m-d', strtotime('-30 days'))) }}" 
+                                   class="flatpickr-date w-full pl-9 pr-3.5 py-2.5 text-xs font-bold text-slate-800 bg-slate-50 hover:bg-white border border-slate-300 rounded-lg shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition" 
+                                   placeholder="Dari Tanggal">
+                        </div>
+                    </div>
+                    
+                    <span class="text-xs text-slate-400 font-semibold px-0.5">s/d</span>
 
-        <!-- Filter Row outside card - Unit Style -->
-        <div class="mb-3 mt-4">
-            <form action="#" method="GET" id="form-filter">
-                <div class="row g-2">
-                    <div class="col-md-5">
-                        <div class="input-group input-group-merge border shadow-none rounded-2 h-100"
-                            style="border-color: #e0e0e0 !important;">
-                            <span class="input-group-text bg-white border-0"><i class="ti ti-calendar text-muted"></i></span>
-                            <input type="text" name="dari" class="form-control bg-white border-0 ps-2 flatpickr-date"
-                                placeholder="Periode Mulai" value="{{ Request('dari') }}">
+                    <!-- Sampai Tanggal Input -->
+                    <div class="flex items-center gap-2 flex-1 sm:flex-initial">
+                        <div class="relative flex-1 sm:w-40">
+                            <i class="ti ti-calendar text-slate-400 text-sm absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                            <input type="text" 
+                                   name="sampai" 
+                                   value="{{ Request('sampai', date('Y-m-d')) }}" 
+                                   class="flatpickr-date w-full pl-9 pr-3.5 py-2.5 text-xs font-bold text-slate-800 bg-slate-50 hover:bg-white border border-slate-300 rounded-lg shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition" 
+                                   placeholder="Sampai Tanggal">
                         </div>
                     </div>
-                    <div class="col-md-5">
-                        <div class="input-group input-group-merge border shadow-none rounded-2 h-100"
-                            style="border-color: #e0e0e0 !important;">
-                            <span class="input-group-text bg-white border-0"><i class="ti ti-calendar text-muted"></i></span>
-                            <input type="text" name="sampai" class="form-control bg-white border-0 ps-2 flatpickr-date"
-                                placeholder="Periode Selesai" value="{{ Request('sampai') }}">
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn shadow-none d-flex align-items-center justify-content-center gap-2 text-white w-100 h-100"
-                            style="background-color: #064e3b">
-                            <i class="ti ti-search fs-5"></i> Cari
+
+                    <!-- Submit & Reset Action Buttons -->
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <button type="submit" 
+                                class="flex-1 sm:flex-initial px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-xs hover:shadow-sm transition inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                            <i class="ti ti-search text-sm"></i>
+                            <span>Terapkan Filter</span>
                         </button>
+
+                        @if(Request('dari') || Request('sampai'))
+                            <a href="{{ URL::current() }}" 
+                               class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold transition inline-flex items-center justify-center shrink-0 border border-slate-200 cursor-pointer active:scale-95" 
+                               title="Reset Rentang Tanggal">
+                                <i class="ti ti-rotate-2 text-sm"></i>
+                            </a>
+                        @endif
                     </div>
                 </div>
-            </form>
-        </div>
-
-        <!-- History Section (Integrated Card) -->
-        <div class="card shadow-sm border-0 overflow-hidden">
-            <div class="card-header d-flex align-items-center gap-2 text-white py-3" style="background-color: #064e3b; border-radius: 0;">
-                <i class="ti ti-history fs-5"></i>
-                <h6 class="card-title mb-0 text-white">Riwayat Mutasi Saldo</h6>
             </div>
-            <div class="card-body p-0">
-                <!-- Premium Table -->
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0 text-nowrap">
-                        <thead style="background-color: #064e3b">
+        </form>
+
+        <!-- Mutasi Table Card -->
+        <div class="bg-white border border-slate-200/90 rounded-xl shadow-xs overflow-hidden">
+            <!-- Card Header -->
+            <div class="px-5 py-3.5 bg-emerald-600 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-white">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-7 h-7 rounded-lg bg-white/20 text-white flex items-center justify-center text-xs font-bold border border-white/20 shadow-2xs">
+                        <i class="ti ti-history"></i>
+                    </div>
+                    <h3 class="text-sm font-extrabold text-white tracking-tight">Riwayat Mutasi Saldo Simpanan</h3>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-white/20 text-white border border-white/30 shadow-2xs backdrop-blur-xs">
+                        {{ count($simpanan) }} data
+                    </span>
+                </div>
+                <div class="text-xs text-emerald-100 font-medium">
+                    Rekam jejak transaksi simpanan anggota
+                </div>
+            </div>
+
+            <!-- Responsive Table -->
+            <div class="overflow-x-auto bg-emerald-600">
+                <table class="w-full text-left text-xs sm:text-sm border-0 border-collapse whitespace-nowrap">
+                    <!-- Matching Solid Green Table Header -->
+                    <thead class="bg-emerald-600 text-white font-bold uppercase tracking-wider text-[11px] border-0 border-t border-b border-emerald-700/80">
+                        <tr class="border-0">
+                            <th class="py-2.5 px-3.5 w-32 text-emerald-100 whitespace-nowrap">No. Transaksi</th>
+                            <th class="py-2.5 px-3.5 w-28 text-emerald-100 whitespace-nowrap">Tanggal</th>
+                            <th class="py-2.5 px-3.5 w-20 text-center text-emerald-100 whitespace-nowrap">Jenis</th>
+                            <th class="py-2.5 px-3.5 text-emerald-100 whitespace-nowrap">Keterangan / Berita</th>
+                            <th class="py-2.5 px-3.5 text-emerald-100 whitespace-nowrap">Petugas</th>
+                            <th class="py-2.5 px-3.5 text-right text-emerald-100 whitespace-nowrap">Setor (Rp)</th>
+                            <th class="py-2.5 px-3.5 text-right text-emerald-100 whitespace-nowrap">Tarik (Rp)</th>
+                            <th class="py-2.5 px-3.5 text-right text-emerald-100 whitespace-nowrap">Saldo Akhir (Rp)</th>
+                            <th class="py-2.5 px-3.5 text-center w-24 text-emerald-100 whitespace-nowrap">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-700 font-medium bg-white text-xs">
+                        
+                        <!-- Saldo Awal Row -->
+                        <tr class="bg-emerald-50/50 font-bold border-b border-emerald-100/60">
+                            <td colspan="5" class="py-2.5 px-3.5 text-center text-xs uppercase tracking-wider text-emerald-800 whitespace-nowrap">
+                                <i class="ti ti-corner-down-right text-emerald-600 mr-1"></i> Saldo Awal Periode
+                            </td>
+                            <td class="py-2.5 px-3.5 text-right text-slate-400 text-xs whitespace-nowrap">-</td>
+                            <td class="py-2.5 px-3.5 text-right text-slate-400 text-xs whitespace-nowrap">-</td>
+                            <td class="py-2.5 px-3.5 text-right font-bold text-emerald-800 text-xs whitespace-nowrap">
+                                Rp {{ formatRupiah($saldo_awal) }}
+                            </td>
+                            <td class="py-2.5 px-3.5 whitespace-nowrap"></td>
+                        </tr>
+
+                        <!-- Mutasi Records -->
+                        @forelse ($simpanan as $d)
+                            @php
+                                $setor = $d->jenis_transaksi == 'S' ? $d->jumlah : 0;
+                                $tarik = $d->jenis_transaksi == 'T' ? $d->jumlah : 0;
+                            @endphp
+                            <tr class="hover:bg-slate-50/80 transition-colors">
+                                <!-- No. Transaksi -->
+                                <td class="py-2.5 px-3.5 whitespace-nowrap font-bold text-slate-800">
+                                    {{ $d->no_transaksi }}
+                                </td>
+
+                                <!-- Tanggal -->
+                                <td class="py-2.5 px-3.5 whitespace-nowrap text-slate-600">
+                                    {{ DateToIndo($d->tanggal) }}
+                                </td>
+
+                                <!-- Kode Jenis -->
+                                <td class="py-2.5 px-3.5 text-center whitespace-nowrap">
+                                    <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                        {{ $d->kode_simpanan }}
+                                    </span>
+                                </td>
+
+                                <!-- Berita (Single Line) -->
+                                <td class="py-2.5 px-3.5 whitespace-nowrap text-slate-800">
+                                    {{ $d->berita }}
+                                </td>
+
+                                <!-- Petugas (Dedicated Column, Single Line) -->
+                                <td class="py-2.5 px-3.5 whitespace-nowrap text-slate-500">
+                                    {{ $d->name ?: '-' }}
+                                </td>
+
+                                <!-- Setor -->
+                                <td class="py-2.5 px-3.5 text-right whitespace-nowrap font-bold">
+                                    @if($setor > 0)
+                                        <span class="text-emerald-700">+{{ formatRupiah($setor) }}</span>
+                                    @else
+                                        <span class="text-slate-300">-</span>
+                                    @endif
+                                </td>
+
+                                <!-- Tarik -->
+                                <td class="py-2.5 px-3.5 text-right whitespace-nowrap font-bold">
+                                    @if($tarik > 0)
+                                        <span class="text-rose-600">-{{ formatRupiah($tarik) }}</span>
+                                    @else
+                                        <span class="text-slate-300">-</span>
+                                    @endif
+                                </td>
+
+                                <!-- Saldo Akhir -->
+                                <td class="py-2.5 px-3.5 text-right whitespace-nowrap font-bold text-slate-900">
+                                    Rp {{ formatRupiah($d->saldo) }}
+                                </td>
+
+                                <!-- Aksi -->
+                                <td class="py-2.5 px-3.5 text-center whitespace-nowrap">
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <!-- Cetak Kwitansi -->
+                                        <a href="{{ route('simpanan.cetakkwitansi', Crypt::encrypt($d->no_transaksi)) }}"
+                                           target="_blank"
+                                           class="w-6.5 h-6.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition active:scale-95 shadow-2xs"
+                                           title="Cetak Kwitansi">
+                                            <i class="ti ti-printer text-xs"></i>
+                                        </a>
+
+                                        <!-- Show Berita Modal -->
+                                        <button type="button" 
+                                                class="btnShowberita w-6.5 h-6.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/80 flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs"
+                                                berita="{{ $d->berita }}" 
+                                                title="Detail Keterangan">
+                                            <i class="ti ti-file-text text-xs"></i>
+                                        </button>
+
+                                        <!-- Delete (If today & last transaction) -->
+                                        @can('simpanan.delete')
+                                            @if ($lasttransaksi && $d->no_transaksi == $lasttransaksi->no_transaksi && $d->tanggal == date('Y-m-d'))
+                                                <form method="POST" class="deleteform m-0"
+                                                      action="{{ route('simpanan.delete', Crypt::encrypt($d->no_transaksi)) }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button" 
+                                                            class="delete-confirm w-6.5 h-6.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200/80 flex items-center justify-center transition active:scale-95 cursor-pointer shadow-2xs"
+                                                            title="Hapus Transaksi">
+                                                        <i class="ti ti-trash text-xs"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        @endcan
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
                             <tr>
-                                <th class="text-white py-2">NO. TRANSAKSI</th>
-                                <th class="text-white py-2 text-center">TANGGAL</th>
-                                <th class="text-white py-2 text-center">KODE</th>
-                                <th class="text-white py-2 text-end">SETOR (Rp)</th>
-                                <th class="text-white py-2 text-end">TARIK (Rp)</th>
-                                <th class="text-white py-2 text-end">SALDO (Rp)</th>
-                                <th class="text-white py-2 text-center" style="width: 100px;">#</th>
+                                <td colspan="9" class="py-10 text-center whitespace-nowrap bg-white">
+                                    <div class="w-10 h-10 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-2 text-lg">
+                                        <i class="ti ti-calendar-off"></i>
+                                    </div>
+                                    <div class="text-xs font-bold text-slate-700">Tidak Ada Mutasi Transaksi</div>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Tidak ditemukan transaksi simpanan pada rentang tanggal yang dipilih.</p>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Saldo Awal Row -->
-                            <tr class="bg-light bg-opacity-50">
-                                <td colspan="5" class="py-3 text-center small text-uppercase fw-bold text-muted">Saldo Awal Periode</td>
-                                <td class="py-3 text-end fw-bold text-dark small">{{ formatAngka($saldo_awal) }}</td>
-                                <td colspan="1"></td>
-                            </tr>
-                            @forelse ($simpanan as $d)
-                                @php
-                                    $setor = $d->jenis_transaksi == 'S' ? $d->jumlah : 0;
-                                    $tarik = $d->jenis_transaksi == 'T' ? $d->jumlah : 0;
-                                @endphp
-                                <tr>
-                                    <td class="py-2 text-dark small fw-bold">{{ $d->no_transaksi }}</td>
-                                    <td class="py-2 text-center small">{{ date('d M Y', strtotime($d->tanggal)) }}</td>
-                                    <td class="py-2 text-center"><span class="badge border text-info bg-label-info small">{{ $d->kode_simpanan }}</span></td>
-                                    <td class="py-2 text-end text-success fw-bold small">{{ $setor > 0 ? formatAngka($setor) : '-' }}</td>
-                                    <td class="py-2 text-end text-danger fw-bold small">{{ $tarik > 0 ? formatAngka($tarik) : '-' }}</td>
-                                    <td class="py-2 text-end fw-bold text-dark small">{{ formatAngka($d->saldo) }}</td>
-                                    <td class="py-2 text-center">
-                                        <div class="d-flex justify-content-center gap-1">
-                                            <a href="{{ route('simpanan.cetakkwitansi', Crypt::encrypt($d->no_transaksi)) }}"
-                                                class="btn btn-icon btn-label-secondary border-0 btn-sm" target="_blank" title="Kwitansi">
-                                                <i class="ti ti-printer fs-6"></i>
-                                            </a>
-                                            <a href="#" class="btn btn-icon btn-label-secondary border-0 btn-sm btnShowberita" 
-                                               berita="{{ $d->berita }}" title="Keterangan">
-                                                <i class="ti ti-note fs-6"></i>
-                                            </a>
-                                            @can('simpanan.delete')
-                                                @if ($d->no_transaksi == $lasttransaksi->no_transaksi && $d->tanggal == date('Y-m-d'))
-                                                    <form method="POST" class="deleteform m-0"
-                                                        action="{{ route('simpanan.delete', Crypt::encrypt($d->no_transaksi)) }}">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <a class="btn btn-icon btn-label-danger border-0 btn-sm delete-confirm" href="#">
-                                                            <i class="ti ti-trash fs-6"></i>
-                                                        </a>
-                                                    </form>
-                                                @endif
-                                            @endcan
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="text-center p-5">
-                                        <div class="mb-3">
-                                            <i class="ti ti-folders fs-1 opacity-25"></i>
-                                        </div>
-                                        <h6 class="text-muted">Tidak ada riwayat mutasi dalam periode ini</h6>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Card Footer -->
+            <div class="px-5 py-3 bg-slate-50 border-t border-slate-200/80 text-[11px] text-slate-400 italic">
+                * Mutasi menampilkan seluruh pergerakan saldo simpanan pada rentang periode yang dipilih.
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal Form Setoran & Penarikan -->
+<x-modal-form id="mdlSetoran" size="modal-lg" show="loadmodalSetoran" title="Transaksi Simpanan" icon="ti ti-wallet" />
+
+<!-- Modal Detail Berita -->
+<div class="modal fade" id="mdlBerita" tabindex="-1" aria-labelledby="mdlBeritaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border border-slate-200/90 shadow-2xl rounded-2xl bg-white overflow-hidden">
+            <div class="px-6 py-4 bg-white border-b border-slate-200/90 flex items-center justify-between text-slate-900">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center justify-center text-base shrink-0 font-bold shadow-2xs">
+                        <i class="ti ti-note"></i>
+                    </div>
+                    <h5 class="modal-title text-base font-bold text-slate-900 tracking-tight" id="mdlBeritaLabel">Keterangan Transaksi</h5>
                 </div>
-                <div class="card-footer py-2 border-top bg-light bg-opacity-10 text-center">
-                    <small class="text-muted italic">*Mutasi yang ditampilkan adalah transaksi pada periode yang dipilih.</small>
-                </div>
+                <button type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition cursor-pointer" data-bs-dismiss="modal">
+                    <i class="ti ti-x text-base"></i>
+                </button>
+            </div>
+            <div class="p-6 bg-white">
+                <div id="loadmodalberita" class="p-4 bg-slate-50 border border-slate-200/80 rounded-xl text-xs text-slate-800 leading-relaxed font-medium"></div>
+            </div>
+            <div class="px-6 py-3.5 bg-slate-50 border-t border-slate-200/90 flex justify-end">
+                <button type="button" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer active:scale-95" data-bs-dismiss="modal">
+                    Tutup
+                </button>
             </div>
         </div>
     </div>
 </div>
-
-<x-modal-form id="mdlBerita" size="" show="loadmodalberita" title="" />
-<x-modal-form id="mdlSetoran" size="" show="loadmodalSetoran" title="" />
 @endsection
 
 @push('myscript')
 <script>
     $(function() {
-        if ($('.cardswiper').length) {
-            new Swiper('.cardswiper', {
-                slidesPerView: 'auto',
-                spaceBetween: 8,
-                grabCursor: true,
-                freeMode: true,
-                mousewheel: true
-            });
-        }
+        $(".flatpickr-date").flatpickr({
+            dateFormat: "Y-m-d",
+            allowInput: true
+        });
 
-        const loading = `<div class="d-flex justify-content-center p-5">
-            <div class="spinner-border text-primary" role="status">
-                <span style="background-color: #064e3b" class="visually-hidden">Loading...</span>
+        const loading = `
+            <div class="flex flex-col items-center justify-center p-12 text-center bg-white">
+                <div class="w-9 h-9 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+                <span class="text-slate-500 text-xs font-semibold">Memuat formulir transaksi...</span>
             </div>
-        </div>`;
+        `;
 
         $(document).on('click', '.btnShowberita', function(e) {
             e.preventDefault();
             var berita = $(this).attr("berita");
             $("#mdlBerita").modal("show");
-            $("#mdlBerita").find(".modal-title").text("Keterangan Transaksi");
-            $("#loadmodalberita").html(`<div class="p-3 text-dark" style="line-height: 1.6;">${berita || 'Tidak ada keterangan tambahan.'}</div>`);
+            $("#loadmodalberita").text(berita || 'Tidak ada keterangan tambahan.');
         });
 
         $(document).on('click', '#createSetoran', function(e) {
@@ -398,7 +533,7 @@
             let jenis_transaksi = "S";
             $('#mdlSetoran').modal("show");
             $("#loadmodalSetoran").html(loading);
-            $("#mdlSetoran").find(".modal-title").text("Transaksi Setoran");
+            $("#mdlSetoran").find(".modal-title").text("Input Setoran Simpanan");
             $("#loadmodalSetoran").load("/simpanan/" + no_anggota + "/" + jenis_transaksi + "/create");
         });
 
@@ -408,7 +543,7 @@
             let jenis_transaksi = "T";
             $('#mdlSetoran').modal("show");
             $("#loadmodalSetoran").html(loading);
-            $("#mdlSetoran").find(".modal-title").text("Transaksi Penarikan");
+            $("#mdlSetoran").find(".modal-title").text("Input Penarikan Simpanan");
             $("#loadmodalSetoran").load("/simpanan/" + no_anggota + "/" + jenis_transaksi + "/create");
         });
 
@@ -417,16 +552,25 @@
             e.preventDefault();
             var form = $(this).closest('form');
             Swal.fire({
-                title: 'Hapus Transaksi?',
-                text: "Anda akan menghapus record transaksi terakhir. Tindakan ini tidak dapat dibatalkan!",
+                title: 'Hapus Transaksi Terakhir?',
+                text: "Anda akan menghapus record transaksi terakhir ini. Saldo akan otomatis disesuaikan kembali!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#064e3b',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Hapus',
-                cancelButtonText: 'Batal'
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="ti ti-trash mr-1"></i> Ya, Hapus',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-2xl p-5',
+                    title: 'text-base font-bold text-slate-900',
+                    confirmButton: 'px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer',
+                    cancelButton: 'px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer'
+                }
             }).then((result) => {
-                if (result.isConfirmed) { form.submit(); }
+                if (result.isConfirmed) { 
+                    form.submit(); 
+                }
             });
         });
     });

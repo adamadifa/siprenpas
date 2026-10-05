@@ -28,6 +28,11 @@ class PresensiMapel extends Model
         return $this->belongsTo(JadwalPelajaran::class, 'jadwal_pelajaran_id');
     }
 
+    public function jadwalPelajaran()
+    {
+        return $this->belongsTo(JadwalPelajaran::class, 'jadwal_pelajaran_id');
+    }
+
     public function unit()
     {
         return $this->belongsTo(Unit::class, 'kode_unit', 'kode_unit');

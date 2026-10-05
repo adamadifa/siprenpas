@@ -16,18 +16,20 @@ class JadwalPelajaranController extends Controller
 {
     public function index(Request $request)
     {
-        if (!auth()->user()->can('jadwalpelajaran.index') && !auth()->user()->hasRole('guru')) {
+        $user = auth()->user();
+        $guru = null;
+        if (!empty($user->npp)) {
+            $guru = Guru::where('npp', $user->npp)->first();
+        }
+
+        $isGuru = $user->hasRole('guru') || ($guru !== null);
+
+        if (!$user->can('jadwalpelajaran.index') && !$isGuru) {
             abort(403, 'Akses ditolak.');
         }
 
         // Get Active Tahun Ajaran
         $activeTa = Tahunajaran::where('status', 1)->first();
-        
-        $user = auth()->user();
-        $guru = null;
-        if ($user->hasRole('guru')) {
-            $guru = Guru::where('npp', $user->npp)->first();
-        }
 
         if ($guru) {
             $semuaTa = Tahunajaran::whereIn('kode_ta', function($q) use ($guru) {
@@ -53,11 +55,17 @@ class JadwalPelajaranController extends Controller
         }
 
         // Filter by Unit
-        if ($user->kode_unit != 'U06') {
-            $query->where('kode_unit', $user->kode_unit);
-        } else {
+        if ($guru) {
             if ($request->has('kode_unit') && $request->kode_unit != '') {
                 $query->where('kode_unit', $request->kode_unit);
+            }
+        } else {
+            if ($user->kode_unit != 'U06') {
+                $query->where('kode_unit', $user->kode_unit);
+            } else {
+                if ($request->has('kode_unit') && $request->kode_unit != '') {
+                    $query->where('kode_unit', $request->kode_unit);
+                }
             }
         }
 
@@ -91,7 +99,10 @@ class JadwalPelajaranController extends Controller
             $query->where('semester', $selectedSemester);
         }
 
-        $jadwal = $query->with(['unit', 'kelas', 'mapel', 'guru', 'tahunAjaran'])->orderBy('hari', 'desc')->orderBy('jam_ke')->get();
+        $jadwal = $query->with(['unit', 'kelas', 'mapel', 'guru.karyawan', 'tahunAjaran'])
+            ->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Ahad') ASC")
+            ->orderBy('jam_ke', 'asc')
+            ->get();
 
         if ($guru) {
             $units = Unit::whereIn('kode_unit', function($q) use ($guru) {
@@ -129,10 +140,10 @@ class JadwalPelajaranController extends Controller
         
         $agent = new \Jenssegers\Agent\Agent();
         if ($agent->isMobile()) {
-            return view('akademik.jadwal_pelajaran.index_mobile', compact('jadwal', 'units', 'kelas', 'gurus', 'activeTa', 'semuaTa', 'selectedKodeTa', 'selectedSemester', 'days', 'semesters'));
+            return view('akademik.jadwal_pelajaran.index_mobile', compact('jadwal', 'units', 'kelas', 'gurus', 'activeTa', 'semuaTa', 'selectedKodeTa', 'selectedSemester', 'days', 'semesters', 'isGuru'));
         }
         
-        return view('akademik.jadwal_pelajaran.index', compact('jadwal', 'units', 'kelas', 'gurus', 'activeTa', 'semuaTa', 'selectedKodeTa', 'selectedSemester', 'days', 'semesters'));
+        return view('akademik.jadwal_pelajaran.index', compact('jadwal', 'units', 'kelas', 'gurus', 'activeTa', 'semuaTa', 'selectedKodeTa', 'selectedSemester', 'days', 'semesters', 'isGuru'));
     }
 
     public function create()
@@ -171,7 +182,14 @@ class JadwalPelajaranController extends Controller
 
     public function getDataByUnit(Request $request)
     {
-        if (!auth()->user()->can('jadwalpelajaran.index') && !auth()->user()->hasRole('guru')) {
+        $user = auth()->user();
+        $guru = null;
+        if (!empty($user->npp)) {
+            $guru = Guru::where('npp', $user->npp)->first();
+        }
+        $isGuru = $user->hasRole('guru') || ($guru !== null);
+
+        if (!$user->can('jadwalpelajaran.index') && !$isGuru) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Akses ditolak.'
@@ -187,12 +205,6 @@ class JadwalPelajaranController extends Controller
                 'status' => 'error',
                 'message' => 'Invalid Request or No Active TA'
             ]);
-        }
-
-        $user = auth()->user();
-        $guru = null;
-        if ($user->hasRole('guru')) {
-            $guru = Guru::where('npp', $user->npp)->first();
         }
 
         if ($guru) {
@@ -250,13 +262,23 @@ class JadwalPelajaranController extends Controller
             'jam_mulai' => 'required',
             'jam_selesai' => 'required',
             'semester' => 'required'
+        ], [
+            'kode_unit.required' => 'Unit pendidikan wajib dipilih',
+            'kode_kelas.required' => 'Kelas wajib dipilih',
+            'mata_pelajaran_id.required' => 'Mata pelajaran wajib dipilih',
+            'guru_id.required' => 'Guru pengampu wajib dipilih',
+            'hari.required' => 'Hari pembelajaran wajib dipilih',
+            'jam_ke.required' => 'Jam ke wajib diisi',
+            'jam_mulai.required' => 'Jam mulai wajib diisi',
+            'jam_selesai.required' => 'Jam selesai wajib diisi',
+            'semester.required' => 'Semester wajib dipilih'
         ]);
 
         try {
             // Get Active TA
             $activeTa = Tahunajaran::where('status', 1)->first();
             if (!$activeTa) {
-                return Redirect::back()->with(['warning' => 'Data Gagal Disimpan: Tidak ada Tahun Ajaran Aktif']);
+                return Redirect::back()->with(messageError('Data Gagal Disimpan: Tidak ada Tahun Ajaran Aktif'));
             }
 
             JadwalPelajaran::create([
@@ -272,9 +294,9 @@ class JadwalPelajaranController extends Controller
                 'semester' => $request->semester
             ]);
 
-            return Redirect::route('jadwal-pelajaran.index')->with(['success' => 'Data Berhasil Disimpan']);
+            return Redirect::route('jadwal-pelajaran.index')->with(messageSuccess('Data Jadwal Pelajaran Berhasil Disimpan'));
         } catch (\Exception $e) {
-            return Redirect::back()->with(['warning' => 'Data Gagal Disimpan: ' . $e->getMessage()]);
+            return Redirect::back()->with(messageError('Data Gagal Disimpan: ' . $e->getMessage()));
         }
     }
 
@@ -323,6 +345,16 @@ class JadwalPelajaranController extends Controller
             'jam_mulai' => 'required',
             'jam_selesai' => 'required',
             'semester' => 'required'
+        ], [
+            'kode_unit.required' => 'Unit pendidikan wajib dipilih',
+            'kode_kelas.required' => 'Kelas wajib dipilih',
+            'mata_pelajaran_id.required' => 'Mata pelajaran wajib dipilih',
+            'guru_id.required' => 'Guru pengampu wajib dipilih',
+            'hari.required' => 'Hari pembelajaran wajib dipilih',
+            'jam_ke.required' => 'Jam ke wajib diisi',
+            'jam_mulai.required' => 'Jam mulai wajib diisi',
+            'jam_selesai.required' => 'Jam selesai wajib diisi',
+            'semester.required' => 'Semester wajib dipilih'
         ]);
 
         try {
@@ -339,9 +371,9 @@ class JadwalPelajaranController extends Controller
                 'semester' => $request->semester
             ]);
 
-            return Redirect::route('jadwal-pelajaran.index')->with(['success' => 'Data Berhasil Diupdate']);
+            return Redirect::route('jadwal-pelajaran.index')->with(messageSuccess('Data Jadwal Pelajaran Berhasil Diupdate'));
         } catch (\Exception $e) {
-            return Redirect::back()->with(['warning' => 'Data Gagal Diupdate: ' . $e->getMessage()]);
+            return Redirect::back()->with(messageError('Data Gagal Diupdate: ' . $e->getMessage()));
         }
     }
 
@@ -351,9 +383,9 @@ class JadwalPelajaranController extends Controller
         try {
             $jadwal = JadwalPelajaran::findOrFail($id);
             $jadwal->delete();
-            return Redirect::back()->with(['success' => 'Data Berhasil Dihapus']);
+            return Redirect::back()->with(messageSuccess('Data Jadwal Pelajaran Berhasil Dihapus'));
         } catch (\Exception $e) {
-            return Redirect::back()->with(['warning' => 'Data Gagal Dihapus: ' . $e->getMessage()]);
+            return Redirect::back()->with(messageError('Data Gagal Dihapus: ' . $e->getMessage()));
         }
     }
 
@@ -370,12 +402,17 @@ class JadwalPelajaranController extends Controller
         $jadwal = JadwalPelajaran::with(['unit', 'kelas', 'mapel', 'guru.karyawan', 'tahunAjaran'])->findOrFail($id);
 
         $user = auth()->user();
-        if (!$user->can('jadwalpelajaran.index') && !$user->hasRole('guru')) {
+        $guru = null;
+        if (!empty($user->npp)) {
+            $guru = Guru::where('npp', $user->npp)->first();
+        }
+        $isGuru = $user->hasRole('guru') || ($guru !== null);
+
+        if (!$user->can('jadwalpelajaran.index') && !$isGuru) {
             abort(403, 'Akses ditolak.');
         }
 
-        if ($user->hasRole('guru') && !$user->can('jadwalpelajaran.index')) {
-            $guru = Guru::where('npp', $user->npp)->first();
+        if ($isGuru && !$user->can('jadwalpelajaran.index') && !$user->hasRole('super admin')) {
             if ($guru) {
                 $isWaliKelas = Kelas::where('kode_kelas', $jadwal->kode_kelas)
                     ->where('guru_id', $guru->id)

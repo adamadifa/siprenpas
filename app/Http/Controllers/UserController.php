@@ -9,6 +9,7 @@ use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -340,6 +341,32 @@ class UserController extends Controller
             $user->assignedDepartemens()->sync($extraDeptsToSync);
 
             return Redirect::back()->with(messageSuccess('Hak Akses Data Unit & Departemen Berhasil Disimpan'));
+        } catch (\Exception $e) {
+            return Redirect::back()->with(messageError($e->getMessage()));
+        }
+    }
+
+    public function resetPasswordSiswa()
+    {
+        try {
+            $siswaUsers = User::role('siswa')->get();
+            if ($siswaUsers->isEmpty()) {
+                $siswaUsers = User::whereHas('roles', function($q) {
+                    $q->where('name', 'like', '%siswa%')
+                      ->orWhere('name', 'like', '%santri%');
+                })->get();
+            }
+
+            if ($siswaUsers->isEmpty()) {
+                return Redirect::back()->with(messageError('Tidak ditemukan user dengan role Siswa / Santri'));
+            }
+
+            $userIds = $siswaUsers->pluck('id')->toArray();
+            $updated = User::whereIn('id', $userIds)->update([
+                'password' => Hash::make('12345678')
+            ]);
+
+            return Redirect::back()->with(messageSuccess("Berhasil mereset password {$updated} akun siswa menjadi 12345678"));
         } catch (\Exception $e) {
             return Redirect::back()->with(messageError($e->getMessage()));
         }

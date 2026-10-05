@@ -41,12 +41,14 @@ class KelasController extends Controller
                 $query->where('kelas.kode_unit', $request->kode_unit_search);
             })
             ->when($request->nama_kelas_search, function ($query) use ($request) {
-                $query->where('kelas.nama_kelas', 'like', '%' . $request->nama_kelas_search . '%');
+                $query->where(function($q) use ($request) {
+                    $q->where('kelas.nama_kelas', 'like', '%' . $request->nama_kelas_search . '%')
+                      ->orWhere('kelas.kode_kelas', 'like', '%' . $request->nama_kelas_search . '%');
+                });
             })
             ->when($request->guru_id_search, function ($query) use ($request) {
                 $query->where('kelas.guru_id', $request->guru_id_search);
             })
-
             ->get();
 
         if ($user->kode_unit != 'U06') {
@@ -69,9 +71,9 @@ class KelasController extends Controller
             ->sortBy(function($g) {
                 return $g->karyawan->nama_lengkap ?? '';
             });
+            
         return view('datamaster.kelas.index', $data);
     }
-
 
     public function create()
     {
@@ -94,7 +96,6 @@ class KelasController extends Controller
         return view('datamaster.kelas.create', $data);
     }
 
-
     public function store(Request $request)
     {
         $user = User::where('id', auth()->user()->id)->first();
@@ -104,7 +105,13 @@ class KelasController extends Controller
             'kode_unit' => 'required',
             'tingkat' => 'required',
             'guru_id' => 'nullable|exists:guru,id',
+        ], [
+            'nama_kelas.required' => 'Nama Kelas wajib diisi',
+            'kode_unit.required' => 'Unit pendidikan wajib dipilih',
+            'tingkat.required' => 'Tingkat kelas wajib dipilih',
+            'guru_id.exists' => 'Wali kelas yang dipilih tidak valid',
         ]);
+
         $ta_aktif = Tahunajaran::where('status', '1')->first();
         if (!$ta_aktif) {
             return Redirect::back()->with(messageError('Tahun ajaran aktif tidak ditemukan.'));
@@ -116,6 +123,7 @@ class KelasController extends Controller
         $last_kode_kelas = $last_kelas ? $last_kelas->kode_kelas : '';
         $kode_kelas = buatkode($last_kode_kelas, $tahun_ajaran . $kode_unit, 2);
         $kode_unit = $user->kode_unit ==  'U06' ? $request->kode_unit : $user->kode_unit;
+
         try {
             Kelas::create([
                 'kode_kelas' => $kode_kelas,
@@ -126,9 +134,9 @@ class KelasController extends Controller
                 'guru_id' => $request->guru_id,
             ]);
 
-            return Redirect::back()->with(messageSuccess('Data Berhasil Disimpan'));
+            return Redirect::back()->with(messageSuccess('Data Kelas Berhasil Disimpan'));
         } catch (\Exception $e) {
-            return Redirect::back()->with(messageError($e->getMessage()));
+            return Redirect::back()->with(messageError('Gagal menyimpan: ' . $e->getMessage()));
         }
     }
 
@@ -162,7 +170,13 @@ class KelasController extends Controller
             'kode_unit' => 'required',
             'tingkat' => 'required',
             'guru_id' => 'nullable|exists:guru,id',
+        ], [
+            'nama_kelas.required' => 'Nama Kelas wajib diisi',
+            'kode_unit.required' => 'Unit pendidikan wajib dipilih',
+            'tingkat.required' => 'Tingkat kelas wajib dipilih',
+            'guru_id.exists' => 'Wali kelas yang dipilih tidak valid',
         ]);
+
         try {
             Kelas::where('kode_kelas', $kode_kelas)->update([
                 'nama_kelas' => $request->nama_kelas,
@@ -171,9 +185,9 @@ class KelasController extends Controller
                 'guru_id' => $request->guru_id,
             ]);
 
-            return Redirect::back()->with(messageSuccess('Data Berhasil Diupdate'));
+            return Redirect::back()->with(messageSuccess('Data Kelas Berhasil Diupdate'));
         } catch (\Exception $e) {
-            return Redirect::back()->with(messageError($e->getMessage()));
+            return Redirect::back()->with(messageError('Gagal memperbarui: ' . $e->getMessage()));
         }
     }
 
@@ -181,10 +195,12 @@ class KelasController extends Controller
     {
         $kode_kelas = Crypt::decrypt($kode_kelas);
         try {
+            // Delete associated kelassiswa members first
+            Kelassiswa::where('kode_kelas', $kode_kelas)->delete();
             Kelas::where('kode_kelas', $kode_kelas)->delete();
-            return Redirect::back()->with(['success' => 'Data Berhasil Dihapus']);
+            return Redirect::back()->with(messageSuccess('Data Kelas Berhasil Dihapus'));
         } catch (\Exception $e) {
-            return Redirect::back()->with(['error' => $e->getMessage()]);
+            return Redirect::back()->with(messageError('Gagal menghapus: ' . $e->getMessage()));
         }
     }
 
@@ -227,7 +243,6 @@ class KelasController extends Controller
             })
             ->get();
 
-
         return response()->json($siswa_pendaftar);
     }
 
@@ -242,7 +257,6 @@ class KelasController extends Controller
             ->where('konfigurasi_biaya.is_pindahan', 0)
             ->select('id_siswa', 'nis', 'pendaftaran.foto as foto_pendaftaran');
 
-
         $kelas_siswa = Kelassiswa::where('kode_kelas', $kode_kelas)
             ->join('siswa', 'kelas_siswa.id_siswa', '=', 'siswa.id_siswa')
             ->leftJoinSub($biaya_siswa, 'biaya_siswa', function ($join) {
@@ -250,7 +264,6 @@ class KelasController extends Controller
             })
             ->select('siswa.*', 'biaya_siswa.nis', 'biaya_siswa.foto_pendaftaran')
             ->get();
-
 
         return response()->json($kelas_siswa);
     }
@@ -268,7 +281,7 @@ class KelasController extends Controller
             ]);
             return response()->json([
                 'success' => true,
-                'message' => 'Data Berhasil Disimpan'
+                'message' => 'Data Siswa Berhasil Ditambahkan ke Kelas'
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -288,7 +301,7 @@ class KelasController extends Controller
             Kelassiswa::where('id_siswa', $request->id_siswa)->where('kode_kelas', $request->kode_kelas)->delete();
             return response()->json([
                 'success' => true,
-                'message' => 'Data Berhasil Dihapus'
+                'message' => 'Data Siswa Berhasil Dikeluarkan dari Kelas'
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -308,7 +321,7 @@ class KelasController extends Controller
             Kelassiswa::where('id_siswa', $request->id_siswa)->where('kode_kelas', $request->kode_kelas)->delete();
             return response()->json([
                 'success' => true,
-                'message' => 'Data Berhasil Dihapus'
+                'message' => 'Data Siswa Berhasil Dihapus dari Kelas'
             ]);
         } catch (\Exception $e) {
             return response()->json([

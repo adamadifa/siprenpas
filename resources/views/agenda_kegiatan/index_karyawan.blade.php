@@ -2,238 +2,307 @@
 @section('titlepage', 'Agenda Kegiatan Saya')
 
 @section('content')
-@section('navigasi')
-    <div class="card shadow-none bg-transparent border-0 mb-4">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar avatar-md rounded-circle d-flex align-items-center justify-content-center" style="background-color: #e6f4ea; color: #064e3b">
-                        <i class="ti ti-calendar-event fs-3"></i>
+<div class="space-y-6">
+
+    <!-- ================= 1. PAGE HEADER & BREADCRUMB ================= -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <!-- Title & Subtitle -->
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl shrink-0 font-bold border border-emerald-200 shadow-2xs">
+                <i class="ti ti-calendar-event"></i>
+            </div>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                    Agenda Kegiatan Saya
+                </h1>
+                <p class="text-xs text-slate-500 font-medium">
+                    Monitoring dan pencatatan agenda rencana kegiatan kerja Anda
+                </p>
+            </div>
+        </div>
+
+        <!-- Breadcrumb & Top Action -->
+        <div class="flex flex-col md:items-end gap-2.5">
+            <nav class="flex items-center text-xs text-slate-400 font-medium">
+                <a href="{{ route('dashboard.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="text-slate-500">MSDM & Layanan</span>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="font-bold text-slate-800">Agenda Kegiatan</span>
+            </nav>
+
+            @can('agendakegiatan.create')
+                <button type="button" 
+                        id="btncreateAgendaKegiatan"
+                        class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-xs transition active:scale-95 cursor-pointer">
+                    <i class="ti ti-plus text-sm"></i>
+                    <span>Tambah Agenda</span>
+                </button>
+            @endcan
+        </div>
+    </div>
+
+    <!-- ================= 2. EMPLOYEE PROFILE HERO BANNER ================= -->
+    @if(!empty($karyawan))
+        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-800 to-teal-900 text-white p-5 sm:p-6 shadow-md border border-emerald-700/50">
+            <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-2xl text-emerald-300 shrink-0 shadow-inner">
+                        <i class="ti ti-user-check"></i>
                     </div>
                     <div>
-                        <h4 class="mb-1 fw-extrabold" style="color: #064e3b; letter-spacing: -0.5px;">Agenda Kegiatan Saya</h4>
-                        <p class="text-muted mb-0 small">Monitoring dan perencanaan agenda kegiatan kerja Anda</p>
-                    </div>
-                </div>
-                <div class="d-flex flex-column align-items-end">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb breadcrumb-style1 mb-0">
-                            <li class="breadcrumb-item">
-                                <a href="javascript:void(0);" class="text-muted">
-                                    <i class="ti ti-home-2 me-1"></i> Dashboard
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active fw-medium" style="color: #064e3b">
-                                <i class="ti ti-calendar-event me-1"></i> Agenda Kegiatan Saya
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
-
-<style>
-    @media (min-width: 768px) {
-        .border-end-md {
-            border-right: 1px solid #eef2f6 !important;
-        }
-    }
-    .text-truncate-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    .card-agenda {
-        transition: all 0.2s ease-in-out;
-    }
-    .card-agenda:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 .5rem 1rem rgba(0,0,0,.08) !important;
-    }
-</style>
-
-<div class="row">
-    <div class="col-lg-12">
-
-        <!-- Employee Profile Summary Card -->
-        @if(!empty($karyawan))
-            <div class="card border-0 shadow-sm mb-4 rounded-3 overflow-hidden text-white" style="background: linear-gradient(135deg, #064e3b 0%, #043e2f 100%);">
-                <div class="card-body p-4">
-                    <div class="row align-items-center g-4">
-                        <div class="col-auto">
-                            <div class="avatar avatar-xl bg-white rounded-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
-                                <i class="ti ti-user-check fs-2" style="color: #064e3b;"></i>
-                            </div>
-                        </div>
-                        <div class="col-md">
-                            <h4 class="fw-bold mb-1 text-white">{{ $karyawan->nama_lengkap }}</h4>
-                            <p class="text-white-50 mb-0 small">NPP: <span class="fw-semibold text-white">{{ $karyawan->npp }}</span></p>
-                        </div>
-                        <div class="col-md-auto ms-md-auto">
-                            <div class="d-flex flex-wrap gap-2">
-                                <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-3" style="background: rgba(255, 255, 255, 0.12) !important; border: 1px solid rgba(255, 255, 255, 0.08);">
-                                    <i class="ti ti-briefcase text-white fs-4 flex-shrink-0"></i>
-                                    <div style="line-height: 1.1;">
-                                        <span class="text-white-50 text-uppercase d-block mb-1" style="font-size: 0.6rem; letter-spacing: 0.5px; font-weight: 500;">Jabatan</span>
-                                        <span class="fw-bold text-white" style="font-size: 0.8rem; letter-spacing: 0.2px;">{{ strtoupper($karyawan->nama_jabatan) }}</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-3" style="background: rgba(255, 255, 255, 0.12) !important; border: 1px solid rgba(255, 255, 255, 0.08);">
-                                    <i class="ti ti-hierarchy-2 text-white fs-4 flex-shrink-0"></i>
-                                    <div style="line-height: 1.1;">
-                                        <span class="text-white-50 text-uppercase d-block mb-1" style="font-size: 0.6rem; letter-spacing: 0.5px; font-weight: 500;">Departemen</span>
-                                        <span class="fw-bold text-white" style="font-size: 0.8rem; letter-spacing: 0.2px;">{{ strtoupper($karyawan->nama_dept) }}</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center gap-3 px-3 py-2 rounded-3" style="background: rgba(255, 255, 255, 0.12) !important; border: 1px solid rgba(255, 255, 255, 0.08);">
-                                    <i class="ti ti-building text-white fs-4 flex-shrink-0"></i>
-                                    <div style="line-height: 1.1;">
-                                        <span class="text-white-50 text-uppercase d-block mb-1" style="font-size: 0.6rem; letter-spacing: 0.5px; font-weight: 500;">Unit Kerja</span>
-                                        <span class="fw-bold text-white" style="font-size: 0.8rem; letter-spacing: 0.2px;">{{ strtoupper($karyawan->nama_unit) }}</span>
-                                    </div>
-                                </div>
-                            </div>
+                        <h2 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                            <span>{{ $karyawan->nama_lengkap }}</span>
+                        </h2>
+                        <div class="flex items-center gap-2 mt-0.5 text-xs text-emerald-200">
+                            <span class="font-mono font-semibold bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/30">NPP: {{ $karyawan->npp }}</span>
                         </div>
                     </div>
                 </div>
-            </div>
-        @endif
 
-        <!-- Action & Filter Section -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-            <div>
-                <button class="btn d-flex align-items-center gap-2 shadow-sm text-white px-4" id="btncreateAgendaKegiatan"
-                    style="background-color: #064e3b; border-radius: 8px; height: 38px;">
-                    <i class="ti ti-plus fs-5"></i>
-                    <span class="fw-semibold">Tambah Agenda Kegiatan</span>
-                </button>
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <div class="px-3.5 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
+                        <span class="block text-[10px] font-medium text-emerald-200 uppercase tracking-wider">Jabatan</span>
+                        <span class="text-xs font-bold text-white">{{ strtoupper($karyawan->nama_jabatan) }}</span>
+                    </div>
+                    <div class="px-3.5 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
+                        <span class="block text-[10px] font-medium text-emerald-200 uppercase tracking-wider">Departemen</span>
+                        <span class="text-xs font-bold text-white">{{ strtoupper($karyawan->nama_dept) }}</span>
+                    </div>
+                    <div class="px-3.5 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/15">
+                        <span class="block text-[10px] font-medium text-emerald-200 uppercase tracking-wider">Unit Kerja</span>
+                        <span class="text-xs font-bold text-white">{{ strtoupper($karyawan->nama_unit) }}</span>
+                    </div>
+                </div>
             </div>
             
-            <div class="flex-grow-1 flex-md-grow-0">
-                <form action="{{ route('agendakegiatan.index') }}" class="form-filter" id="myForm">
-                    <div class="row g-2 align-items-center justify-content-md-end">
-                        <div class="col-lg-4 col-md-4 col-6">
-                            <x-input-with-icon label="" placeholder="Dari Tanggal" name="dari" id="dari" value="{{ Request('dari') }}" datepicker="flatpickr-date" icon="ti ti-calendar" />
-                        </div>
-                        <div class="col-lg-4 col-md-4 col-6">
-                            <x-input-with-icon label="" placeholder="Sampai Tanggal" name="sampai" id="sampai" value="{{ Request('sampai') }}" datepicker="flatpickr-date" icon="ti ti-calendar" />
-                        </div>
-                        <div class="col-lg-4 col-md-4 col-12">
-                            <div class="d-flex gap-2 align-items-center" style="height: 38px;">
-                                <button type="submit" class="btn btn-success shadow-sm d-flex align-items-center justify-content-center flex-grow-1"
-                                    style="background-color: #064e3b; border-color: #064e3b; height: 38px; border-radius: 8px;">
-                                    <i class="ti ti-search fs-5 me-1"></i> Cari
-                                </button>
-                                <button type="submit" name="cetak" value="1" id="cetakButton" class="btn btn-warning shadow-sm border-0 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; border-radius: 8px;">
-                                    <i class="ti ti-printer fs-5 text-white"></i>
-                                </button>
-                                <button type="submit" name="cetak_pdf" value="1" id="cetakPdfButton" class="btn btn-danger shadow-sm border-0 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; border-radius: 8px;">
-                                    <i class="ti ti-file-text fs-5 text-white"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+            <!-- Subtle background decorative shapes -->
+            <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute right-1/3 -top-10 w-36 h-36 bg-teal-400/10 rounded-full blur-xl pointer-events-none"></div>
+        </div>
+    @endif
+
+    <!-- ================= 3. FILTER & SEARCH TOOLBAR ================= -->
+    <form action="{{ route('agendakegiatan.index') }}" method="GET" id="myForm" class="w-full">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 w-full items-center">
+            
+            <!-- Dari Tanggal -->
+            <div class="relative">
+                <i class="ti ti-calendar absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                <input type="text" 
+                       name="dari" 
+                       id="dari" 
+                       value="{{ request('dari') }}" 
+                       placeholder="Dari Tanggal" 
+                       class="w-full pl-9 pr-3.5 py-2.5 text-xs sm:text-sm bg-white border border-slate-300/90 rounded-lg text-slate-700 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition placeholder-slate-400 flatpickr-date">
+            </div>
+
+            <!-- Sampai Tanggal -->
+            <div class="relative">
+                <i class="ti ti-calendar-due absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base pointer-events-none"></i>
+                <input type="text" 
+                       name="sampai" 
+                       id="sampai" 
+                       value="{{ request('sampai') }}" 
+                       placeholder="Sampai Tanggal" 
+                       class="w-full pl-9 pr-3.5 py-2.5 text-xs sm:text-sm bg-white border border-slate-300/90 rounded-lg text-slate-700 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition placeholder-slate-400 flatpickr-date">
+            </div>
+
+            <!-- Empty spacer for lg screens -->
+            <div class="hidden lg:block"></div>
+
+            <!-- Action Buttons (Cari, Cetak Print, Cetak PDF, Reset) -->
+            <div class="flex items-center gap-1.5">
+                <button type="submit" 
+                        class="flex-1 py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm rounded-lg shadow-xs transition inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 whitespace-nowrap"
+                        title="Terapkan Filter">
+                    <i class="ti ti-search text-base"></i>
+                    <span>Cari</span>
+                </button>
+                <button type="submit" 
+                        name="cetak" 
+                        value="1" 
+                        id="cetakButton" 
+                        class="py-2.5 px-2.5 bg-white hover:bg-slate-50 text-slate-700 hover:text-emerald-700 border border-slate-300/90 font-bold rounded-lg text-xs sm:text-sm shadow-xs transition inline-flex items-center justify-center cursor-pointer active:scale-95 shrink-0"
+                        title="Cetak Laporan">
+                    <i class="ti ti-printer text-base"></i>
+                </button>
+                <button type="submit" 
+                        name="cetak_pdf" 
+                        value="1" 
+                        id="cetakPdfButton" 
+                        class="py-2.5 px-2.5 bg-white hover:bg-slate-50 text-slate-700 hover:text-rose-700 border border-slate-300/90 font-bold rounded-lg text-xs sm:text-sm shadow-xs transition inline-flex items-center justify-center cursor-pointer active:scale-95 shrink-0"
+                        title="Cetak PDF">
+                    <i class="ti ti-file-text text-base"></i>
+                </button>
+                @if(request('dari') || request('sampai'))
+                    <a href="{{ route('agendakegiatan.index') }}" class="py-2.5 px-2.5 bg-white hover:bg-slate-100 text-slate-600 border border-slate-300/90 rounded-lg font-semibold text-xs sm:text-sm transition inline-flex items-center justify-center shrink-0 shadow-xs" title="Reset Filter">
+                        <i class="ti ti-refresh text-base"></i>
+                    </a>
+                @endif
+            </div>
+
+        </div>
+    </form>
+
+    <!-- ================= 4. DATA TABLE CONTAINER ================= -->
+    <div class="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
+        <!-- Table Header Bar -->
+        <div class="px-4 py-2.5 bg-emerald-600 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-white">
+            <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-lg bg-white/20 text-white flex items-center justify-center text-xs font-bold border border-white/20 shadow-2xs">
+                    <i class="ti ti-calendar-event"></i>
+                </div>
+                <h3 class="text-xs sm:text-sm font-bold text-white tracking-tight">Daftar Agenda Kegiatan Saya</h3>
+            </div>
+            <div class="text-[11px] font-semibold text-emerald-100">
+                Total: <span class="font-bold text-white">{{ $agenda_kegiatan->total() }}</span> Agenda
             </div>
         </div>
 
-        <!-- Agenda Cards Stack -->
-        <div class="d-flex flex-column gap-3 mb-4">
-            @forelse ($agenda_kegiatan as $d)
-                <div class="card border-0 border-start border-success border-4 shadow-sm card-agenda">
-                    <div class="card-body p-3">
-                        <div class="row align-items-center g-3">
-                            <!-- Left Column: Date -->
-                            <div class="col-12 col-md-3 border-end-md">
-                                <div class="d-flex flex-column">
-                                    <span class="text-muted small fw-medium mb-1"><i class="ti ti-calendar me-1 text-success"></i>Tanggal</span>
-                                    <span class="fw-bold text-dark mb-1">{{ date('d-m-Y', strtotime($d->tanggal)) }}</span>
-                                    <span class="text-muted small fw-medium mb-1"><i class="ti ti-clock me-1 text-success"></i>Waktu</span>
-                                    <span class="text-dark small">{{ date('H:i', strtotime($d->created_at)) }}</span>
+        <!-- Table -->
+        <div class="overflow-x-auto bg-emerald-600">
+            <table class="w-full text-left text-xs border-0 border-collapse">
+                <thead class="bg-emerald-600 text-white font-bold uppercase tracking-wider text-[10.5px] border-0 border-t border-b border-emerald-700/80">
+                    <tr class="border-0">
+                        <th class="py-2 px-3 w-12 text-center text-emerald-100 whitespace-nowrap">No.</th>
+                        <th class="py-2 px-3 text-emerald-100 w-32 whitespace-nowrap">Tanggal & Waktu</th>
+                        <th class="py-2 px-3 text-emerald-100 min-w-[220px]">Agenda Kegiatan</th>
+                        <th class="py-2 px-3 text-emerald-100 min-w-[300px]">Uraian Kegiatan</th>
+                        <th class="py-2 px-3 text-center w-24 text-emerald-100 whitespace-nowrap">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-700 font-medium bg-white text-xs">
+                    @forelse ($agenda_kegiatan as $d)
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                            <td class="py-2 px-3 text-center whitespace-nowrap font-mono text-slate-500 font-bold">
+                                {{ $loop->iteration + ($agenda_kegiatan->currentPage() - 1) * $agenda_kegiatan->perPage() }}
+                            </td>
+                            <td class="py-2 px-3 whitespace-nowrap">
+                                <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                                    <i class="ti ti-calendar text-emerald-600 text-sm"></i>
+                                    <span>{{ date('d-m-Y', strtotime($d->tanggal)) }}</span>
                                 </div>
-                            </div>
-                            
-                            <!-- Middle Column: Kegiatan & Uraian -->
-                            <div class="col-12 col-md-6 border-end-md">
-                                <div class="pe-md-3">
-                                    <span class="badge bg-label-success mb-2">Agenda</span>
-                                    <h6 class="fw-bold text-dark mb-1">{{ strip_tags($d->nama_kegiatan) }}</h6>
-                                    <p class="text-muted small mb-0 text-truncate-2">
-                                        {{ strip_tags($d->uraian_kegiatan) }}
+                                <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1 font-normal">
+                                    <i class="ti ti-clock text-xs shrink-0"></i>
+                                    <span>{{ date('H:i', strtotime($d->created_at)) }} WIB</span>
+                                </div>
+                            </td>
+                            <td class="py-2 px-3">
+                                <div class="font-bold text-slate-900 leading-snug">
+                                    {{ strip_tags($d->nama_kegiatan) }}
+                                </div>
+                            </td>
+                            <td class="py-2 px-3 leading-snug text-slate-800 font-medium whitespace-pre-line">
+                                <div class="bg-slate-50/70 p-2 rounded-lg border border-slate-100 text-xs">
+                                    {{ strip_tags($d->uraian_kegiatan) }}
+                                </div>
+                            </td>
+                            <td class="py-2 px-3 text-center whitespace-nowrap">
+                                <div class="inline-flex items-center gap-1">
+                                    @can('agendakegiatan.edit')
+                                        <button type="button" 
+                                                class="btnEdit inline-flex items-center justify-center w-6.5 h-6.5 rounded-md bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white border border-blue-200 font-bold transition-all duration-150 active:scale-95 cursor-pointer shadow-2xs"
+                                                id="{{ Crypt::encrypt($d->id) }}" 
+                                                title="Edit Agenda">
+                                            <i class="ti ti-edit text-xs"></i>
+                                        </button>
+                                    @endcan
+                                    @can('agendakegiatan.delete')
+                                        <form method="POST" 
+                                              action="{{ route('agendakegiatan.delete', Crypt::encrypt($d->id)) }}" 
+                                              class="inline-block m-0 deleteform">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="delete-confirm inline-flex items-center justify-center w-6.5 h-6.5 rounded-md bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white border border-rose-200 font-bold transition-all duration-150 active:scale-95 cursor-pointer shadow-2xs"
+                                                    title="Hapus Agenda">
+                                                <i class="ti ti-trash text-xs"></i>
+                                            </button>
+                                        </form>
+                                    @endcan
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="py-10 px-4 text-center bg-white">
+                                <div class="flex flex-col items-center justify-center max-w-sm mx-auto">
+                                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-2 border border-emerald-100 shadow-2xs">
+                                        <i class="ti ti-calendar-off"></i>
+                                    </div>
+                                    <h4 class="text-xs font-bold text-slate-800 mb-0.5">Belum Ada Agenda Kegiatan</h4>
+                                    <p class="text-[11px] text-slate-400 text-center leading-relaxed mb-2.5">
+                                        Tidak ada agenda kegiatan yang Anda catat pada rentang tanggal ini.
                                     </p>
+                                    @can('agendakegiatan.create')
+                                        <button type="button" 
+                                                class="btncreateAgendaKegiatanDirect inline-flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-xs transition active:scale-95 cursor-pointer">
+                                            <i class="ti ti-plus text-xs"></i>
+                                            <span>Tambah Agenda Kegiatan</span>
+                                        </button>
+                                    @endcan
                                 </div>
-                            </div>
-
-                            <!-- Right Column: Actions -->
-                            <div class="col-12 col-md-3">
-                                <div class="d-flex justify-content-md-end gap-2 align-items-center">
-                                    <a href="#" class="btn btn-icon btn-label-success border btnEdit"
-                                        style="width: 38px; height: 38px;"
-                                        id="{{ Crypt::encrypt($d->id) }}"
-                                        data-bs-toggle="tooltip" title="Edit">
-                                        <i class="ti ti-edit fs-5"></i>
-                                    </a>
-                                    <form method="POST" name="deleteform" class="deleteform m-0"
-                                        action="{{ route('agendakegiatan.delete', Crypt::encrypt($d->id)) }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <a href="#" class="btn btn-icon btn-label-danger border delete-confirm"
-                                            style="width: 38px; height: 38px;"
-                                            data-bs-toggle="tooltip" title="Hapus">
-                                            <i class="ti ti-trash fs-5"></i>
-                                        </a>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body text-center p-5">
-                        <div class="mb-3">
-                            <i class="ti ti-calendar-event fs-1 text-muted opacity-50"></i>
-                        </div>
-                        <h5 class="fw-bold">Belum Ada Agenda Kegiatan</h5>
-                        <p class="text-muted mb-0">Silakan tambahkan agenda rencana kegiatan baru Anda dengan menekan tombol Tambah Agenda.</p>
-                    </div>
-                </div>
-            @endforelse
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
 
-        <!-- Pagination -->
-        <div class="d-flex justify-content-end">
-            {{ $agenda_kegiatan->links() }}
-        </div>
-
+        @if ($agenda_kegiatan->hasPages())
+            <div class="p-3 border-t border-slate-100 bg-white">
+                {{ $agenda_kegiatan->links() }}
+            </div>
+        @endif
     </div>
+
 </div>
 
+<!-- Modal Container -->
 <x-modal-form id="mdlAgendaKegiatan" size="" show="loadAgendaKegiatan" title="" />
+
 @endsection
 
 @push('myscript')
 <script>
     $(function() {
-        $("#btncreateAgendaKegiatan").click(function(e) {
+        const loadingSpinner = `
+            <div class="flex items-center justify-center p-8">
+                <div class="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        `;
+
+        // Init flatpickr
+        $(".flatpickr-date").flatpickr({
+            dateFormat: "Y-m-d",
+            allowInput: true
+        });
+
+        // Create Modal Trigger
+        $(document).on("click", "#btncreateAgendaKegiatan, .btncreateAgendaKegiatanDirect", function(e) {
             e.preventDefault();
             $('#mdlAgendaKegiatan').modal("show");
             $("#mdlAgendaKegiatan").find(".modal-title").text("Tambah Agenda Kegiatan");
+            $("#loadAgendaKegiatan").html(loadingSpinner);
             $("#loadAgendaKegiatan").load('/agendakegiatan/create');
         });
 
-        $(".btnEdit").click(function(e) {
-            var id = $(this).attr("id");
+        // Edit Modal Trigger
+        $(document).on("click", ".btnEdit", function(e) {
             e.preventDefault();
+            var id = $(this).attr("id");
             $('#mdlAgendaKegiatan').modal("show");
             $("#mdlAgendaKegiatan").find(".modal-title").text("Edit Agenda Kegiatan");
+            $("#loadAgendaKegiatan").html(loadingSpinner);
             $("#loadAgendaKegiatan").load('/agendakegiatan/' + id + '/edit');
         });
 
-        $('#cetakButton, #cetakPdfButton').click(function(e) {
+        // Cetak Validation
+        $('#cetakButton, #cetakPdfButton').on('click', function(e) {
             const dari = $('#dari').val();
             const sampai = $('#sampai').val();
 
@@ -241,11 +310,8 @@
                 e.preventDefault();
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Oops...',
-                    text: 'Tanggal tidak boleh kosong!',
-                    didClose: (e) => {
-                        $('#dari').focus();
-                    }
+                    title: 'Pilih Rentang Tanggal',
+                    text: 'Silakan isi tanggal dari dan sampai terlebih dahulu.'
                 });
                 return false;
             }

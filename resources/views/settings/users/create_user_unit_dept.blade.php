@@ -1,183 +1,217 @@
 @extends('layouts.app')
 @section('titlepage', 'Hak Akses Unit & Departemen')
 
-@section('navigasi')
-    <div class="card shadow-none bg-transparent border-0 mb-3">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar avatar-md bg-label-info rounded-circle d-flex align-items-center justify-content-center">
-                        <i class="ti ti-building-community fs-3" style="color: #064e3b"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Hak Akses Unit & Departemen: {{ $user->name }}</h4>
-                        <div class="d-flex align-items-center gap-2 mt-1 flex-wrap">
-                            <span class="text-muted small">Username: <strong>{{ $user->username }}</strong></span>
-                            <span class="text-muted small">•</span>
-                            <span class="text-muted small">Role: </span>
-                            @forelse ($user->roles as $role)
-                                <span class="badge bg-label-primary font-weight-bold">{{ ucwords($role->name) }}</span>
-                            @empty
-                                <span class="badge bg-label-secondary">Tanpa Role</span>
-                            @endforelse
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex flex-column align-items-end">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb breadcrumb-style1 mb-0">
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('users.index') }}" class="text-muted">
-                                    <i class="ti ti-settings me-1"></i> Konfigurasi
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="{{ route('users.index') }}" class="text-muted">Users</a>
-                            </li>
-                            <li class="breadcrumb-item active">Akses Unit & Dept</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
-
 @section('content')
-<div class="alert alert-info d-flex align-items-center mb-4" role="alert">
-    <i class="ti ti-info-circle fs-4 me-2"></i>
-    <div>
-        <strong>Informasi Hak Akses:</strong>
-        Secara default, user hanya dapat mengakses unit dan departemen utama miliknya (<span class="badge bg-label-success"><i class="ti ti-lock me-1"></i>Utama</span>). Anda dapat menambahkan akses ke data unit dan departemen lain dengan mencentang pilihan di bawah ini. Khusus akun dengan role <code>super admin</code> otomatis memiliki akses ke semua data.
+<div class="space-y-6">
+
+    <!-- ================= 1. PAGE HEADER (NO CARD) WITH RIGHT BREADCRUMB ================= -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-1">
+        <!-- Title & Subtitle -->
+        <div>
+            <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200/80 shadow-2xs">
+                    <i class="ti ti-building-community text-2xl"></i>
+                </div>
+                <span>Hak Akses Unit & Departemen</span>
+            </h1>
+            <div class="flex items-center gap-2 mt-1 text-xs text-slate-500 flex-wrap">
+                <span>Pengguna: <strong class="text-slate-800">{{ $user->name }}</strong></span>
+                <span>&bull;</span>
+                <span>Username: <strong class="text-slate-800 font-mono">{{ $user->username }}</strong></span>
+                <span>&bull;</span>
+                <span>Role: </span>
+                @forelse ($user->roles as $role)
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-50 text-sky-800 border border-sky-200">
+                        {{ ucwords($role->name) }}
+                    </span>
+                @empty
+                    <span class="text-slate-400 italic">Tanpa Role</span>
+                @endforelse
+            </div>
+        </div>
+
+        <!-- Right Side: Breadcrumb & Actions -->
+        <div class="flex flex-col md:items-end gap-2.5">
+            <!-- Breadcrumb Navigation -->
+            <nav class="flex items-center text-xs text-slate-400 font-medium">
+                <a href="{{ route('dashboard.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="text-slate-500 flex items-center gap-1">
+                    <i class="ti ti-settings text-sm"></i>
+                    <span>Konfigurasi</span>
+                </span>
+                <span class="mx-2 text-slate-300">/</span>
+                <a href="{{ route('users.index') }}" class="hover:text-slate-700 transition">
+                    <span>Users</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="font-bold text-slate-800">Akses Unit & Dept</span>
+            </nav>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="{{ route('users.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-100 text-slate-700 font-bold rounded-xl text-xs border border-slate-300/90 shadow-2xs transition-all duration-200 active:scale-95">
+                    <i class="ti ti-arrow-left text-base text-emerald-600"></i>
+                    <span>Kembali ke Data Users</span>
+                </a>
+            </div>
+        </div>
     </div>
-</div>
 
-<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-    <a href="{{ route('users.index') }}" class="btn btn-outline-secondary d-flex align-items-center gap-2 shadow-sm">
-        <i class="ti ti-arrow-left fs-5"></i> Kembali ke Data Users
-    </a>
-</div>
+    <!-- Info Callout Alert -->
+    <div class="flex items-start gap-3 p-4 bg-emerald-50/80 border border-emerald-200/90 rounded-2xl text-emerald-950">
+        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 text-base font-bold">
+            <i class="ti ti-info-circle"></i>
+        </div>
+        <div class="text-xs space-y-1">
+            <h4 class="font-bold text-emerald-950">Informasi Pembagian Hak Akses Multidatabase:</h4>
+            <p class="text-emerald-800 leading-relaxed">
+                Secara default, pengguna hanya memiliki akses ke <strong>Unit</strong> dan <strong>Departemen Utama</strong> miliknya (ditandai dengan badge <span class="inline-flex items-center px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]"><i class="ti ti-lock text-[10px] mr-0.5"></i>Utama</span>). Anda dapat memberikan wewenang tambahan ke unit atau cabang lain dengan mencentang kotak di bawah ini. Akun dengan role <code class="bg-emerald-100/70 px-1 py-0.5 rounded font-bold">super admin</code> secara otomatis memiliki akses penuh ke seluruh data.
+            </p>
+        </div>
+    </div>
 
-<form action="{{ route('users.storeuserunitdept', Crypt::encrypt($user->id)) }}" method="POST">
-    @csrf
+    <!-- Form Access -->
+    <form action="{{ route('users.storeuserunitdept', Crypt::encrypt($user->id)) }}" method="POST" class="space-y-6">
+        @csrf
 
-    {{-- KARTU HAK AKSES UNIT --}}
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header d-flex align-items-center justify-content-between text-white py-3" style="background-color: #064e3b; border-bottom: 3px solid #053e2f;">
-            <div class="d-flex align-items-center gap-2">
-                <i class="ti ti-building fs-4"></i>
-                <div>
-                    <h6 class="card-title mb-0 text-white fw-bold">Hak Akses Data Unit</h6>
-                    <small class="text-white opacity-75">Tentukan data unit mana saja yang diizinkan untuk diakses user</small>
+        <!-- ================= 2. KARTU HAK AKSES DATA UNIT ================= -->
+        <div class="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
+            <!-- Solid Emerald Header -->
+            <div class="bg-emerald-600 px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
+                <div class="flex items-center gap-2.5">
+                    <i class="ti ti-building text-xl"></i>
+                    <div>
+                        <h3 class="font-bold text-sm tracking-wide text-white">Hak Akses Data Unit / Jenjang</h3>
+                        <p class="text-[11px] text-emerald-100 mt-0.5">Tentukan data unit mana saja yang diizinkan untuk dikelola oleh pengguna ini</p>
+                    </div>
+                </div>
+                
+                @if(!empty($defaultUnit))
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white text-emerald-800 shadow-2xs self-start sm:self-auto">
+                        <i class="ti ti-home text-xs"></i>
+                        <span>Unit Utama: {{ $user->unit->nama_unit ?? $defaultUnit }}</span>
+                    </span>
+                @endif
+            </div>
+
+            <div class="p-5 sm:p-6 space-y-4">
+                <!-- Toolbar Quick Actions -->
+                <div class="flex items-center justify-end gap-2 pb-2 border-b border-slate-100">
+                    <button type="button" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-xs transition cursor-pointer" id="selectAllUnits">
+                        Pilih Semua Unit
+                    </button>
+                    <button type="button" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-lg text-xs transition cursor-pointer" id="deselectAllUnits">
+                        Kosongkan Tambahan
+                    </button>
+                </div>
+
+                <!-- Units Checkbox Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    @foreach ($allUnits as $u)
+                        @php
+                            $isDefault = ($u->kode_unit === $defaultUnit);
+                            $isAssigned = in_array($u->kode_unit, $assignedUnitCodes);
+                        @endphp
+                        <div class="p-3 rounded-xl border transition-all flex items-center justify-between {{ $isDefault ? 'bg-slate-50 border-slate-200 opacity-90' : 'bg-white border-slate-200 hover:border-emerald-500/50 hover:shadow-2xs' }}">
+                            <label class="flex items-center gap-2.5 w-full cursor-pointer select-none">
+                                @if ($isDefault)
+                                    <input type="checkbox" checked disabled class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-not-allowed">
+                                    <div class="flex items-center justify-between w-full">
+                                        <span class="font-bold text-slate-800 text-xs">{{ $u->nama_unit }}</span>
+                                        <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]" title="Unit utama user (otomatis aktif)">
+                                            <i class="ti ti-lock text-[10px]"></i>
+                                            <span>Utama</span>
+                                        </span>
+                                    </div>
+                                @else
+                                    <input type="checkbox" name="unit_access[]" value="{{ $u->kode_unit }}" id="unitCheck{{ $u->kode_unit }}" {{ $isAssigned ? 'checked' : '' }} class="unit-checkbox w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 transition cursor-pointer">
+                                    <span class="font-semibold text-slate-700 text-xs">{{ $u->nama_unit }}</span>
+                                @endif
+                            </label>
+                        </div>
+                    @endforeach
                 </div>
             </div>
-            @if(!empty($defaultUnit))
-                <span class="badge bg-white text-success fw-bold px-3 py-1">
-                    <i class="ti ti-home me-1"></i> Unit Utama: {{ $user->unit->nama_unit ?? $defaultUnit }}
-                </span>
-            @endif
         </div>
-        <div class="card-body pt-3 pb-3">
-            <div class="d-flex justify-content-end mb-2 gap-2">
-                <button type="button" class="btn btn-xs btn-outline-primary" id="selectAllUnits">Pilih Semua Unit</button>
-                <button type="button" class="btn btn-xs btn-outline-danger" id="deselectAllUnits">Kosongkan Unit Tambahan</button>
-            </div>
-            <div class="row">
-                @foreach ($allUnits as $u)
-                    @php
-                        $isDefault = ($u->kode_unit === $defaultUnit);
-                        $isAssigned = in_array($u->kode_unit, $assignedUnitCodes);
-                    @endphp
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 my-2">
-                        <div class="p-2 rounded border d-flex align-items-center justify-content-between {{ $isDefault ? 'bg-light' : '' }}" style="border-color: #e5e7eb !important;">
-                            <div class="form-check mb-0 d-flex align-items-center w-100">
-                                @if ($isDefault)
-                                    <input class="form-check-input me-2" type="checkbox"
-                                        id="unitCheck{{ $u->kode_unit }}"
-                                        checked disabled>
-                                    <label class="form-check-label text-muted d-flex align-items-center justify-content-between w-100 pe-2" for="unitCheck{{ $u->kode_unit }}">
-                                        <span class="fw-semibold text-dark">{{ $u->nama_unit }}</span>
-                                        <span class="badge bg-label-success ms-1 small" style="font-size: 0.7rem;" title="Unit utama user (otomatis aktif)"><i class="ti ti-lock me-1"></i>Utama</span>
-                                    </label>
-                                @else
-                                    <input class="form-check-input me-2 unit-checkbox" type="checkbox" name="unit_access[]"
-                                        value="{{ $u->kode_unit }}" id="unitCheck{{ $u->kode_unit }}"
-                                        {{ $isAssigned ? 'checked' : '' }}>
-                                    <label class="form-check-label text-dark cursor-pointer fw-semibold w-100" for="unitCheck{{ $u->kode_unit }}">
-                                        {{ $u->nama_unit }}
-                                    </label>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
 
-    {{-- KARTU HAK AKSES DEPARTEMEN --}}
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header d-flex align-items-center justify-content-between text-white py-3" style="background-color: #064e3b; border-bottom: 3px solid #053e2f;">
-            <div class="d-flex align-items-center gap-2">
-                <i class="ti ti-briefcase fs-4"></i>
-                <div>
-                    <h6 class="card-title mb-0 text-white fw-bold">Hak Akses Data Departemen</h6>
-                    <small class="text-white opacity-75">Tentukan data departemen mana saja yang diizinkan untuk diakses user</small>
+        <!-- ================= 3. KARTU HAK AKSES DATA DEPARTEMEN ================= -->
+        <div class="bg-white border border-slate-200/90 rounded-2xl shadow-xs overflow-hidden">
+            <!-- Solid Emerald Header -->
+            <div class="bg-emerald-600 px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-white">
+                <div class="flex items-center gap-2.5">
+                    <i class="ti ti-briefcase text-xl"></i>
+                    <div>
+                        <h3 class="font-bold text-sm tracking-wide text-white">Hak Akses Data Departemen</h3>
+                        <p class="text-[11px] text-emerald-100 mt-0.5">Tentukan departemen mana saja yang diizinkan untuk diakses user</p>
+                    </div>
+                </div>
+                
+                @if(!empty($defaultDept))
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white text-emerald-800 shadow-2xs self-start sm:self-auto">
+                        <i class="ti ti-briefcase text-xs"></i>
+                        <span>Dept Utama: {{ $user->departemen->nama_dept ?? $defaultDept }}</span>
+                    </span>
+                @endif
+            </div>
+
+            <div class="p-5 sm:p-6 space-y-4">
+                <!-- Toolbar Quick Actions -->
+                <div class="flex items-center justify-end gap-2 pb-2 border-b border-slate-100">
+                    <button type="button" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-xs transition cursor-pointer" id="selectAllDepts">
+                        Pilih Semua Dept
+                    </button>
+                    <button type="button" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold rounded-lg text-xs transition cursor-pointer" id="deselectAllDepts">
+                        Kosongkan Tambahan
+                    </button>
+                </div>
+
+                <!-- Dept Checkbox Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    @foreach ($allDepts as $dept)
+                        @php
+                            $isDefault = ($dept->kode_dept === $defaultDept);
+                            $isAssigned = in_array($dept->kode_dept, $assignedDeptCodes);
+                        @endphp
+                        <div class="p-3 rounded-xl border transition-all flex items-center justify-between {{ $isDefault ? 'bg-slate-50 border-slate-200 opacity-90' : 'bg-white border-slate-200 hover:border-emerald-500/50 hover:shadow-2xs' }}">
+                            <label class="flex items-center gap-2.5 w-full cursor-pointer select-none">
+                                @if ($isDefault)
+                                    <input type="checkbox" checked disabled class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-not-allowed">
+                                    <div class="flex items-center justify-between w-full">
+                                        <span class="font-bold text-slate-800 text-xs">{{ $dept->nama_dept }}</span>
+                                        <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]" title="Departemen utama user (otomatis aktif)">
+                                            <i class="ti ti-lock text-[10px]"></i>
+                                            <span>Utama</span>
+                                        </span>
+                                    </div>
+                                @else
+                                    <input type="checkbox" name="dept_access[]" value="{{ $dept->kode_dept }}" id="deptCheck{{ $dept->kode_dept }}" {{ $isAssigned ? 'checked' : '' }} class="dept-checkbox w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 transition cursor-pointer">
+                                    <span class="font-semibold text-slate-700 text-xs">{{ $dept->nama_dept }}</span>
+                                @endif
+                            </label>
+                        </div>
+                    @endforeach
                 </div>
             </div>
-            @if(!empty($defaultDept))
-                <span class="badge bg-white text-success fw-bold px-3 py-1">
-                    <i class="ti ti-briefcase me-1"></i> Dept Utama: {{ $user->departemen->nama_dept ?? $defaultDept }}
-                </span>
-            @endif
         </div>
-        <div class="card-body pt-3 pb-3">
-            <div class="d-flex justify-content-end mb-2 gap-2">
-                <button type="button" class="btn btn-xs btn-outline-primary" id="selectAllDepts">Pilih Semua Dept</button>
-                <button type="button" class="btn btn-xs btn-outline-danger" id="deselectAllDepts">Kosongkan Dept Tambahan</button>
-            </div>
-            <div class="row">
-                @foreach ($allDepts as $dept)
-                    @php
-                        $isDefault = ($dept->kode_dept === $defaultDept);
-                        $isAssigned = in_array($dept->kode_dept, $assignedDeptCodes);
-                    @endphp
-                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12 my-2">
-                        <div class="p-2 rounded border d-flex align-items-center justify-content-between {{ $isDefault ? 'bg-light' : '' }}" style="border-color: #e5e7eb !important;">
-                            <div class="form-check mb-0 d-flex align-items-center w-100">
-                                @if ($isDefault)
-                                    <input class="form-check-input me-2" type="checkbox"
-                                        id="deptCheck{{ $dept->kode_dept }}"
-                                        checked disabled>
-                                    <label class="form-check-label text-muted d-flex align-items-center justify-content-between w-100 pe-2" for="deptCheck{{ $dept->kode_dept }}">
-                                        <span class="fw-semibold text-dark">{{ $dept->nama_dept }}</span>
-                                        <span class="badge bg-label-success ms-1 small" style="font-size: 0.7rem;" title="Departemen utama user (otomatis aktif)"><i class="ti ti-lock me-1"></i>Utama</span>
-                                    </label>
-                                @else
-                                    <input class="form-check-input me-2 dept-checkbox" type="checkbox" name="dept_access[]"
-                                        value="{{ $dept->kode_dept }}" id="deptCheck{{ $dept->kode_dept }}"
-                                        {{ $isAssigned ? 'checked' : '' }}>
-                                    <label class="form-check-label text-dark cursor-pointer fw-semibold w-100" for="deptCheck{{ $dept->kode_dept }}">
-                                        {{ $dept->nama_dept }}
-                                    </label>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
 
-    <div class="row mt-3 mb-5">
-        <div class="col-12">
-            <button type="submit" class="btn text-white w-100 py-3 shadow-md d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; font-size: 1.1rem; font-weight: 600; border: none; border-radius: 8px;">
-                <i class="ti ti-device-floppy fs-4"></i>
-                Simpan Hak Akses Unit & Departemen
+        <!-- Submit Button Bottom Sticky -->
+        <div class="flex items-center justify-end gap-3 pt-2 pb-8">
+            <a href="{{ route('users.index') }}" class="px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition inline-flex items-center gap-2 cursor-pointer">
+                <i class="ti ti-x text-base"></i>
+                <span>Batal</span>
+            </a>
+            <button type="submit" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-xs transition-all inline-flex items-center gap-2 active:scale-95 cursor-pointer">
+                <i class="ti ti-device-floppy text-base"></i>
+                <span>Simpan Hak Akses Unit & Departemen</span>
             </button>
         </div>
-    </div>
-</form>
+    </form>
+
+</div>
 @endsection
 
 @push('myscript')
@@ -215,3 +249,4 @@
     });
 </script>
 @endpush
+

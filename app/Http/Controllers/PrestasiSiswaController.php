@@ -25,7 +25,8 @@ class PrestasiSiswaController extends Controller
             $query->where('kode_unit', $request->kode_unit);
         }
 
-        $prestasiSiswa = $query->orderBy('created_at', 'desc')->get();
+        $prestasiSiswa = $query->latest('id')->paginate(10);
+        $prestasiSiswa->appends($request->all());
         $unit = Unit::orderBy('nama_unit', 'asc')->get();
         return view('website.prestasi-siswa.index', compact('prestasiSiswa', 'unit'));
     }
@@ -147,7 +148,7 @@ class PrestasiSiswaController extends Controller
         $search = $request->get('search');
         $page = $request->get('page', 1);
 
-        $query = Siswa::query();
+        $query = Siswa::with(['pendaftaran.unit']);
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -157,7 +158,7 @@ class PrestasiSiswaController extends Controller
         }
 
         $siswa = $query->orderBy('nama_lengkap', 'asc')
-            ->paginate(10, ['*'], 'page', $page);
+            ->paginate(8, ['*'], 'page', $page);
 
         $html = view('website.prestasi-siswa.partials.siswa-table', compact('siswa'))->render();
         $pagination = $siswa->links()->render();

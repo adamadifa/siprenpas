@@ -60,9 +60,16 @@ class AkademikSiswaController extends Controller
             $join->on('kelas_siswa.id_siswa', '=', 'siswa.id_siswa');
         });
 
-        // Apply filters
+        // Apply search filter across name, nis, nisn, no_pendaftaran, and rfid_code
         if (!empty($request->nama_lengkap)) {
-            $query->where('siswa.nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
+            $search = $request->nama_lengkap;
+            $query->where(function ($q) use ($search) {
+                $q->where('siswa.nama_lengkap', 'like', '%' . $search . '%')
+                  ->orWhere('pendaftaran.no_pendaftaran', 'like', '%' . $search . '%')
+                  ->orWhere('pendaftaran.nis', 'like', '%' . $search . '%')
+                  ->orWhere('siswa.nisn', 'like', '%' . $search . '%')
+                  ->orWhere('pendaftaran.rfid_code', 'like', '%' . $search . '%');
+            });
         }
 
         if (!empty($request->kode_unit)) {
@@ -91,29 +98,70 @@ class AkademikSiswaController extends Controller
         $siswa = $query->paginate(25);
         $siswa->appends($request->all());
 
-        // Statistics query using subquery of siswa_biaya
-        $subQuery = DB::table('siswa_biaya')
+        // Executive Statistics query
+        $statsQuery = DB::table('siswa_biaya')
             ->join('pendaftaran', 'siswa_biaya.no_pendaftaran', '=', 'pendaftaran.no_pendaftaran')
             ->join('siswa', 'pendaftaran.id_siswa', '=', 'siswa.id_siswa')
             ->join('konfigurasi_biaya', 'siswa_biaya.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
-            ->select('pendaftaran.kode_unit', 'siswa_biaya.no_pendaftaran');
+            ->leftJoinSub($kelas_siswa, 'kelas_siswa', function ($join) {
+                $join->on('kelas_siswa.id_siswa', '=', 'siswa.id_siswa');
+            })
+            ->where('konfigurasi_biaya.kode_ta', $target_ta);
 
-        $subQuery->where('konfigurasi_biaya.kode_ta', $target_ta);
-
-        if (!empty($request->nama_lengkap)) {
-            $subQuery->where('siswa.nama_lengkap', 'like', '%' . $request->nama_lengkap . '%');
-        }
-
-        if (!empty($request->tingkat)) {
-            $subQuery->where('konfigurasi_biaya.tingkat', $request->tingkat);
+        if ($user->kode_unit != 'U06') {
+            $statsQuery->where('pendaftaran.kode_unit', $user->kode_unit);
         }
 
         if (!empty($request->kode_unit)) {
-            $subQuery->where('pendaftaran.kode_unit', $request->kode_unit);
+            $statsQuery->where('pendaftaran.kode_unit', $request->kode_unit);
+        }
+
+        if (!empty($request->tingkat)) {
+            $statsQuery->where('konfigurasi_biaya.tingkat', $request->tingkat);
+        }
+
+        $statsRaw = (clone $statsQuery)->selectRaw("
+            COUNT(DISTINCT pendaftaran.no_pendaftaran) as total_siswa,
+            COUNT(DISTINCT CASE WHEN siswa.jenis_kelamin = 'L' THEN pendaftaran.no_pendaftaran END) as total_laki,
+            COUNT(DISTINCT CASE WHEN siswa.jenis_kelamin = 'P' THEN pendaftaran.no_pendaftaran END) as total_perempuan,
+            COUNT(DISTINCT CASE WHEN kelas_siswa.nama_kelas IS NOT NULL THEN pendaftaran.no_pendaftaran END) as sudah_kelas,
+            COUNT(DISTINCT CASE WHEN pendaftaran.rfid_code IS NOT NULL AND pendaftaran.rfid_code != '' THEN pendaftaran.no_pendaftaran END) as rfid_ready
+        ")->first();
+
+        $stats = [
+            'total_siswa' => $statsRaw->total_siswa ?? 0,
+            'total_laki' => $statsRaw->total_laki ?? 0,
+            'total_perempuan' => $statsRaw->total_perempuan ?? 0,
+            'sudah_kelas' => $statsRaw->sudah_kelas ?? 0,
+            'belum_kelas' => ($statsRaw->total_siswa ?? 0) - ($statsRaw->sudah_kelas ?? 0),
+            'rfid_ready' => $statsRaw->rfid_ready ?? 0,
+        ];
+
+        // Unit breakdown statistics
+        $unitSubQuery = DB::table('siswa_biaya')
+            ->join('pendaftaran', 'siswa_biaya.no_pendaftaran', '=', 'pendaftaran.no_pendaftaran')
+            ->join('siswa', 'pendaftaran.id_siswa', '=', 'siswa.id_siswa')
+            ->join('konfigurasi_biaya', 'siswa_biaya.kode_biaya', '=', 'konfigurasi_biaya.kode_biaya')
+            ->select('pendaftaran.kode_unit', 'siswa_biaya.no_pendaftaran')
+            ->where('konfigurasi_biaya.kode_ta', $target_ta);
+
+        if (!empty($request->nama_lengkap)) {
+            $search = $request->nama_lengkap;
+            $unitSubQuery->where(function ($q) use ($search) {
+                $q->where('siswa.nama_lengkap', 'like', '%' . $search . '%')
+                  ->orWhere('pendaftaran.no_pendaftaran', 'like', '%' . $search . '%')
+                  ->orWhere('pendaftaran.nis', 'like', '%' . $search . '%')
+                  ->orWhere('siswa.nisn', 'like', '%' . $search . '%')
+                  ->orWhere('pendaftaran.rfid_code', 'like', '%' . $search . '%');
+            });
+        }
+
+        if (!empty($request->tingkat)) {
+            $unitSubQuery->where('konfigurasi_biaya.tingkat', $request->tingkat);
         }
 
         $rekap_unit = DB::table('unit')
-            ->leftJoinSub($subQuery, 'filtered_pendaftaran', function ($join) {
+            ->leftJoinSub($unitSubQuery, 'filtered_pendaftaran', function ($join) {
                 $join->on('unit.kode_unit', '=', 'filtered_pendaftaran.kode_unit');
             })
             ->select('unit.nama_unit', 'unit.kode_unit', DB::raw('count(filtered_pendaftaran.no_pendaftaran) as jumlah'))
@@ -124,11 +172,13 @@ class AkademikSiswaController extends Controller
 
         $data['pendaftaran'] = $siswa;
         $data['rekap_unit'] = $rekap_unit;
+        $data['stats'] = $stats;
         $data['tahun_ajaran'] = $ta_aktif;
+        $data['selected_ta'] = $target_ta;
         $u = new Unit();
         $data['unit'] = $u->getUnit();
         $data['jenis_kelamin'] = config('global.jenis_kelamin');
-        $data['tahunajaran'] = Tahunajaranppdb::orderBy('kode_ta')->get();
+        $data['tahunajaran'] = Tahunajaranppdb::orderBy('kode_ta', 'desc')->get();
 
         return view('akademik.siswa.index', $data);
     }

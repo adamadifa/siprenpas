@@ -1,593 +1,567 @@
 @extends('layouts.app')
-@section('titlepage', 'Karyawan')
+@section('titlepage', 'Data Karyawan')
 
 @section('content')
-<style>
-    /* Modern Semi-Formal Karyawan Card */
-    .karyawan-item-card {
-        background: #ffffff;
-        border-radius: 12px;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
-        position: relative;
-    }
+<div class="space-y-6">
 
-    .karyawan-item-card.dropdown-open {
-        z-index: 1050 !important;
-    }
+    <!-- ================= 1. PAGE HEADER (NO CARD) WITH RIGHT BREADCRUMB ================= -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-1">
+        <!-- Title & Subtitle -->
+        <div>
+            <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+                <i class="ti ti-id-badge-2 text-emerald-600 text-2xl"></i>
+                <span>Data Karyawan</span>
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">
+                Manajemen data pegawai, jabatan, unit penempatan, jadwal kerja, dan akun akses sistem
+            </p>
+        </div>
 
-    .karyawan-item-card.card-status-active {
-        border: 1px solid #10b981;
-    }
+        <!-- Right Side: Breadcrumb & Actions -->
+        <div class="flex flex-col md:items-end gap-2.5">
+            <!-- Breadcrumb Navigation -->
+            <nav class="flex items-center text-xs text-slate-400 font-medium">
+                <a href="{{ route('dashboard.index') }}" class="hover:text-slate-700 transition flex items-center gap-1">
+                    <i class="ti ti-home text-sm"></i>
+                    <span>Dashboard</span>
+                </a>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="text-slate-500 flex items-center gap-1">
+                    <i class="ti ti-database text-sm"></i>
+                    <span>Master Data</span>
+                </span>
+                <span class="mx-2 text-slate-300">/</span>
+                <span class="font-bold text-slate-800">Karyawan</span>
+            </nav>
 
-    .karyawan-item-card.card-status-nonactive {
-        border: 1px solid #ef4444;
-    }
-
-    .karyawan-item-card.card-status-active:hover {
-        border-color: #059669;
-        box-shadow: 0 8px 20px -4px rgba(16, 185, 129, 0.15);
-        transform: translateY(-1px);
-    }
-
-    .karyawan-item-card.card-status-nonactive:hover {
-        border-color: #dc2626;
-        box-shadow: 0 8px 20px -4px rgba(239, 68, 68, 0.15);
-        transform: translateY(-1px);
-    }
-
-    .karyawan-item-card:hover {
-        z-index: 10;
-    }
-
-    .action-karyawan-btn {
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        color: #475569;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-        outline: none !important;
-    }
-    .action-karyawan-btn:hover,
-    .action-karyawan-btn[aria-expanded="true"] {
-        background: #0f172a;
-        color: #ffffff;
-        border-color: #0f172a;
-    }
-
-    .karyawan-dropdown-menu {
-        border-radius: 10px;
-        font-size: 0.82rem;
-        z-index: 1060 !important;
-        min-width: 195px;
-        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1) !important;
-    }
-
-    .karyawan-avatar-wrapper {
-        width: 48px;
-        height: 48px;
-        border-radius: 10px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .karyawan-avatar-wrapper img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .status-dot-indicator {
-        position: absolute;
-        bottom: 2px;
-        right: 2px;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        border: 2px solid #ffffff;
-    }
-
-    .karyawan-name-title {
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #0f172a;
-        letter-spacing: -0.01em;
-        line-height: 1.35;
-    }
-
-    .badge-subtle-unit {
-        font-size: 0.7rem;
-        font-weight: 600;
-        color: #334155;
-        background: #f1f5f9;
-        border: 1px solid #e2e8f0;
-        border-radius: 6px;
-        padding: 0.2rem 0.55rem;
-    }
-
-    .badge-subtle-dept {
-        font-size: 0.7rem;
-        font-weight: 600;
-        color: #1d4ed8;
-        background: #eff6ff;
-        border: 1px solid #dbeafe;
-        border-radius: 6px;
-        padding: 0.2rem 0.55rem;
-    }
-
-    .status-pill-toggle {
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.5px;
-        border-radius: 100px;
-        padding: 0.25rem 0.75rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        text-decoration: none;
-        transition: opacity 0.2s ease;
-    }
-    .status-pill-toggle:hover {
-        opacity: 0.85;
-    }
-    .status-pill-active {
-        background: #ecfdf5;
-        color: #047857;
-        border: 1px solid #a7f3d0;
-    }
-    .status-pill-off {
-        background: #fef2f2;
-        color: #b91c1c;
-        border: 1px solid #fecaca;
-    }
-
-    .action-karyawan-btn {
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        color: #475569;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-    }
-    .action-karyawan-btn:hover {
-        background: #0f172a;
-        color: #ffffff;
-        border-color: #0f172a;
-    }
-
-    /* Unified Executive Statistics Strip */
-    .karyawan-stats-strip {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
-    }
-
-    .karyawan-stat-item {
-        padding: 1.1rem 1.5rem;
-        transition: background-color 0.2s ease;
-    }
-
-    .karyawan-stat-item:hover {
-        background-color: #fafbfd;
-    }
-
-    .stat-label-text {
-        font-size: 0.72rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.6px;
-        color: #64748b;
-        margin-bottom: 0.25rem;
-    }
-
-    .stat-number-display {
-        font-size: 1.65rem;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        line-height: 1.15;
-    }
-
-    .stat-indicator-pill {
-        font-size: 0.68rem;
-        font-weight: 600;
-        padding: 0.15rem 0.55rem;
-        border-radius: 20px;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-    }
-
-    .stat-icon-box {
-        width: 42px;
-        height: 42px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
-        flex-shrink: 0;
-    }
-
-    @media (min-width: 992px) {
-        .border-start-lg {
-            border-left: 1px solid #f1f5f9 !important;
-        }
-    }
-</style>
-@section('navigasi')
-    <div class="card shadow-none bg-transparent border-0 mb-3">
-        <div class="card-body p-0">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar avatar-md bg-label-success rounded-circle d-flex align-items-center justify-content-center">
-                        <i class="ti ti-users fs-3"></i>
-                    </div>
-                    <div>
-                        <h4 class="mb-0 fw-bold" style="color: #064e3b">Data Karyawan</h4>
-                        <p class="text-muted mb-0 small">Manajemen data dan akses karyawan</p>
-                    </div>
-                </div>
-                <div class="d-flex flex-column align-items-end">
-                    <nav aria-label="breadcrumb" class="mb-2">
-                        <ol class="breadcrumb breadcrumb-style1 mb-0">
-                            <li class="breadcrumb-item">
-                                <a href="javascript:void(0);" class="text-muted">
-                                    <i class="ti ti-database me-1"></i> Data Master
-                                </a>
-                            </li>
-                            <li class="breadcrumb-item active">
-                                <i class="ti ti-users me-1"></i> Karyawan
-                            </li>
-                        </ol>
-                    </nav>
-                    @can('karyawan.create')
-                        <button class="btn btn-primary d-flex align-items-center gap-2 shadow-sm" id="btncreateKaryawan" style="background-color: #064e3b; border-color: #064e3b; border-radius: 8px;">
-                            <i class="ti ti-plus fs-5"></i>
-                            <span>Tambah Karyawan</span>
-                        </button>
-                    @endcan
-                </div>
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap items-center gap-2">
+                @can('karyawan.create')
+                    <button type="button" id="btncreateKaryawan" class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs shadow-xs transition-all duration-200 active:scale-95 cursor-pointer">
+                        <i class="ti ti-plus text-base"></i>
+                        <span>Tambah Karyawan</span>
+                    </button>
+                @endcan
             </div>
         </div>
     </div>
-@endsection
 
-<div class="row">
-    <div class="col-lg-12">
-        <!-- Executive Statistics Section -->
-        <div class="karyawan-stats-strip mb-4 overflow-hidden">
-            <div class="row g-0">
-                <div class="col-sm-6 col-xl-3 border-end border-bottom border-bottom-xl-0">
-                    <div class="karyawan-stat-item h-100 d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="stat-label-text">Total Karyawan</div>
-                            <div class="d-flex align-items-baseline gap-2">
-                                <h3 class="stat-number-display text-dark mb-0">{{ number_format($stats['total_karyawan']) }}</h3>
-                                <span class="text-muted small" style="font-size: 0.72rem;">Orang</span>
-                            </div>
-                        </div>
-                        <div class="stat-icon-box" style="background: #f8fafc; color: #475569; border: 1px solid #e2e8f0;">
-                            <i class="ti ti-users"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-xl-3 border-end-xl border-bottom border-bottom-sm-0">
-                    <div class="karyawan-stat-item h-100 d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="stat-label-text text-success">Karyawan Aktif</div>
-                            <div class="d-flex align-items-baseline gap-2">
-                                <h3 class="stat-number-display text-success mb-0">{{ number_format($stats['aktif']) }}</h3>
-                                <span class="stat-indicator-pill" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;">
-                                    <i class="ti ti-check" style="font-size: 0.7rem;"></i> Aktif
-                                </span>
-                            </div>
-                        </div>
-                        <div class="stat-icon-box" style="background: #ecfdf5; color: #059669; border: 1px solid #d1fae5;">
-                            <i class="ti ti-user-check"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-xl-3 border-end border-bottom border-bottom-xl-0">
-                    <div class="karyawan-stat-item h-100 d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="stat-label-text text-danger">Karyawan Nonaktif</div>
-                            <div class="d-flex align-items-baseline gap-2">
-                                <h3 class="stat-number-display text-danger mb-0">{{ number_format($stats['nonaktif']) }}</h3>
-                                <span class="stat-indicator-pill" style="background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca;">
-                                    <i class="ti ti-x" style="font-size: 0.7rem;"></i> Off
-                                </span>
-                            </div>
-                        </div>
-                        <div class="stat-icon-box" style="background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2;">
-                            <i class="ti ti-user-x"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-xl-3">
-                    <div class="karyawan-stat-item h-100 d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="stat-label-text text-info">Total Unit</div>
-                            <div class="d-flex align-items-baseline gap-2">
-                                <h3 class="stat-number-display text-info mb-0">{{ number_format($stats['total_unit']) }}</h3>
-                                <span class="text-muted small" style="font-size: 0.72rem;">Unit</span>
-                            </div>
-                        </div>
-                        <div class="stat-icon-box" style="background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe;">
-                            <i class="ti ti-building"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- ================= 2. EXECUTIVE STATISTICS (SINGLE SEAMLESS EMERALD CARD WITH TAPERED DIVIDERS) ================= -->
+    <div class="rounded-2xl shadow-sm bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-700 text-white p-5 sm:p-6 border border-emerald-900/30 relative overflow-hidden">
+        <!-- Background watermark -->
+        <div class="absolute -right-8 -bottom-10 text-white/5 pointer-events-none">
+            <i class="ti ti-id-badge-2 text-[200px]"></i>
         </div>
 
-        <!-- Filter Section (Styled like /akademik/siswa) -->
-        <div class="card mb-4 shadow-none border-0 bg-transparent">
-            <div class="card-body p-0">
-                <form action="{{ route('karyawan.index') }}">
-                    <div class="row g-3 align-items-center">
-                        <div class="col">
-                            <x-input-with-icon label="" value="{{ Request('nama_lengkap') }}" name="nama_lengkap"
-                                placeholder="Cari Nama Karyawan" icon="ti ti-search" />
-                        </div>
-
-                        <div class="col-md-3 col-12">
-                            <div class="form-group mb-3">
-                                <div class="input-group input-group-merge">
-                                    <span class="input-group-text"><i class="ti ti-school text-muted"></i></span>
-                                    <select name="kode_unit" id="kode_unit_search" class="form-select">
-                                        <option value="">Semua Unit</option>
-                                        @foreach ($units as $u)
-                                            <option value="{{ $u->kode_unit }}" {{ Request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>
-                                                {{ $u->nama_unit }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-12">
-                            <div class="form-group mb-3">
-                                <div class="input-group input-group-merge">
-                                    <span class="input-group-text"><i class="ti ti-building text-muted"></i></span>
-                                    <select name="kode_dept" id="kode_dept_search" class="form-select">
-                                        <option value="">Semua Departemen</option>
-                                        @foreach ($departemen as $dept)
-                                            <option value="{{ $dept->kode_dept }}" {{ Request('kode_dept') == $dept->kode_dept ? 'selected' : '' }}>
-                                                {{ $dept->nama_dept }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-auto">
-                            <div class="form-group mb-3">
-                                <button class="btn btn-primary d-flex align-items-center justify-content-center gap-2" style="background-color: #064e3b; border-color: #064e3b; height: 38px;">
-                                    <i class="ti ti-search fs-5"></i>
-                                    <span>Cari</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Data List -->
-        <div class="row g-3">
-            @forelse ($karyawan as $d)
-                <div class="col-12">
-                    <div class="karyawan-item-card {{ $d->status == 1 ? 'card-status-active' : 'card-status-nonactive' }}">
-                        <div class="card-body p-3.5 p-md-4">
-                            <div class="row align-items-center g-3">
-                                <!-- Info Karyawan -->
-                                <div class="col-lg-4 col-md-6">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="karyawan-avatar-wrapper">
-                                            @if (!empty($d->foto) && Storage::disk('public')->exists('photos/karyawan/' . $d->foto))
-                                                <img src="{{ getfotoKaryawan($d->foto) }}" alt="{{ $d->nama_lengkap }}">
-                                            @else
-                                                <span class="fw-bold text-dark" style="font-size: 1.05rem;">
-                                                     {{ substr($d->nama_lengkap, 0, 1) }}
-                                                </span>
-                                            @endif
-                                            <span class="status-dot-indicator bg-{{ $d->status == 1 ? 'success' : 'danger' }}"></span>
-                                        </div>
-                                        <div class="overflow-hidden">
-                                            <div class="karyawan-name-title text-truncate mb-1" title="{{ $d->nama_lengkap }}">{{ $d->nama_lengkap }}</div>
-                                            <div class="d-flex align-items-center gap-2 flex-wrap">
-                                                <span class="text-muted small d-inline-flex align-items-center" style="font-size: 0.75rem;"><i class="ti ti-id me-1"></i>{{ $d->npp }}</span>
-                                                <span class="badge-subtle-unit">{{ $d->nama_unit }}</span>
-                                                @if (!empty($d->nama_dept))
-                                                    <span class="badge-subtle-dept">{{ $d->nama_dept }}</span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Detail Karyawan -->
-                                <div class="col-lg-3 col-md-6 border-start-lg ps-lg-4">
-                                    <div class="d-flex flex-column gap-1.5">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <i class="ti ti-briefcase text-success small"></i>
-                                            <span class="fw-semibold text-dark small">{{ $d->nama_jabatan ?? 'Belum Ditentukan' }}</span>
-                                        </div>
-                                        <div class="d-flex align-items-center gap-2">
-                                            <i class="ti ti-calendar-event text-info small"></i>
-                                            <span class="text-muted small">TMT: {{ !empty($d->tmt) ? date('d M Y', strtotime($d->tmt)) : '-' }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Contact & Status -->
-                                <div class="col-lg-3 col-md-6 border-start-lg ps-lg-4">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div>
-                                            <p class="mb-1 text-muted text-uppercase" style="font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px;">STATUS</p>
-                                            <a href="{{ route('karyawan.updatestatus', Crypt::encrypt($d->npp)) }}" class="status-pill-toggle {{ $d->status == 1 ? 'status-pill-active' : 'status-pill-off' }}">
-                                                <i class="ti ti-point-filled" style="font-size: 0.55rem;"></i>
-                                                <span>{{ $d->status == 1 ? 'AKTIF' : 'OFF' }}</span>
-                                            </a>
-                                        </div>
-                                        <div class="border-start ps-3">
-                                            <p class="mb-1 text-muted text-uppercase" style="font-size: 0.65rem; font-weight: 700; letter-spacing: 0.5px;">HUBUNGI</p>
-                                            <span class="fw-semibold small text-dark d-inline-flex align-items-center gap-1.5">
-                                                <i class="ti ti-device-mobile text-muted"></i>
-                                                {{ $d->no_hp ?? '-' }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Actions -->
-                                <div class="col-lg-2 col-md-6 text-end">
-                                    <div class="d-flex justify-content-end gap-2 align-items-center">
-                                        <a href="{{ route('karyawan.show', Crypt::encrypt($d->npp)) }}" class="btn btn-xs btn-outline-secondary d-none d-xl-inline-flex align-items-center gap-1 px-2.5 py-1" style="border-radius: 6px; font-weight: 500;">
-                                            <span>Detail</span>
-                                        </a>
-
-                                        <div class="dropdown">
-                                            <button class="action-karyawan-btn" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" title="Menu Opsi">
-                                                <i class="ti ti-dots-vertical fs-5"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end karyawan-dropdown-menu border-0" style="border-radius: 10px; font-size: 0.82rem;">
-                                                <li><h6 class="dropdown-header text-muted small text-uppercase" style="font-size: 0.6rem">Pengaturan Kerja</h6></li>
-                                                @can('karyawan.create')
-                                                    <li><a class="dropdown-item d-flex align-items-center gap-2 btnSetJamkerja py-1.5" href="#" npp="{{ Crypt::encrypt($d->npp) }}"><i class="ti ti-clock text-primary"></i> Atur Jam Kerja</a></li>
-                                                @endcan
-                                                <li><a class="dropdown-item d-flex align-items-center gap-2 btnSetharikerja py-1.5" href="#" npp="{{ Crypt::encrypt($d->npp) }}"><i class="ti ti-calendar text-warning"></i> Atur Hari Kerja</a></li>
-                                                <li><hr class="dropdown-divider"></li>
-                                                <li><h6 class="dropdown-header text-muted small text-uppercase" style="font-size: 0.6rem">Data Karyawan</h6></li>
-                                                @can('karyawan.edit')
-                                                    <li><a class="dropdown-item d-flex align-items-center gap-2 editKaryawan py-1.5" href="#" npp="{{ Crypt::encrypt($d->npp) }}"><i class="ti ti-edit text-success"></i> Edit Profil</a></li>
-                                                @endcan
-                                                @can('karyawan.show')
-                                                    <li><a class="dropdown-item d-flex align-items-center gap-2 py-1.5" href="{{ route('karyawan.show', Crypt::encrypt($d->npp)) }}"><i class="ti ti-file-description text-info"></i> Detail Lengkap</a></li>
-                                                @endcan
-                                                @if (!empty($d->id_user))
-                                                    @can('karyawan.create')
-                                                        <li><a class="dropdown-item d-flex align-items-center gap-2 reset-user-confirm py-1.5" href="{{ route('karyawan.resetuser', Crypt::encrypt($d->npp)) }}"><i class="ti ti-rotate text-warning"></i> Reset Password User</a></li>
-                                                        <li><a class="dropdown-item d-flex align-items-center gap-2 delete-user-confirm text-danger py-1.5" href="{{ route('karyawan.deleteuser', Crypt::encrypt($d->npp)) }}"><i class="ti ti-user-x"></i> Hapus Akses User</a></li>
-                                                    @endcan
-                                                @else
-                                                    @can('karyawan.create')
-                                                        <li><a class="dropdown-item d-flex align-items-center gap-2 py-1.5" href="{{ route('karyawan.createuser', Crypt::encrypt($d->npp)) }}"><i class="ti ti-user-plus text-primary"></i> Buat User Default</a></li>
-                                                    @endcan
-                                                @endif
-                                                @can('karyawan.delete')
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <li>
-                                                        <form method="POST" class="deleteform" action="{{ route('karyawan.delete', Crypt::encrypt($d->npp)) }}">
-                                                             @csrf @method('DELETE')
-                                                            <a class="dropdown-item d-flex align-items-center gap-2 delete-confirm text-danger py-1.5" href="#"><i class="ti ti-trash"></i> Hapus Karyawan</a>
-                                                        </form>
-                                                    </li>
-                                                @endcan
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="col-12 text-center p-5 bg-white border" style="border-radius: 12px; border-color: #e2e8f0 !important;">
-                    <i class="ti ti-users-off fs-1 opacity-25 d-block mb-3"></i>
-                    <h5 class="text-muted">Tidak ada data karyawan ditemukan</h5>
-                    <p class="text-muted small">Coba sesuaikan kata kunci pencarian Anda</p>
-                </div>
-            @endforelse
+        <div class="relative z-10 flex flex-wrap sm:flex-nowrap items-stretch justify-between gap-y-6">
             
-            <div class="col-12 mt-4">
-                <div class="d-flex justify-content-end">
-                    {{ $karyawan->links() }}
+            <!-- Segment 1: Total Karyawan -->
+            <div class="flex-1 min-w-[140px] sm:min-w-[160px] px-3 sm:px-4 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-black uppercase tracking-wider text-emerald-200 truncate">
+                            Total Karyawan
+                        </span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-white/20 text-white border border-white/25">
+                            Semua
+                        </span>
+                    </div>
+                    <div class="text-3xl sm:text-4xl font-black text-white tracking-tight mt-1.5">
+                        {{ number_format($stats['total_karyawan']) }}
+                    </div>
+                </div>
+                <div class="mt-3.5 pt-2 flex items-center justify-between text-xs text-emerald-200/90">
+                    <span class="font-medium text-[11px]">Semua Pegawai</span>
+                    <span class="font-black text-white text-[10px] bg-white/20 px-2 py-0.5 rounded-md">
+                        100%
+                    </span>
                 </div>
             </div>
+
+            <!-- Tapered Vertical Divider Line -->
+            <div class="hidden sm:block w-[1px] bg-gradient-to-b from-transparent via-white/35 to-transparent self-center h-16 shrink-0"></div>
+
+            <!-- Segment 2: Karyawan Aktif -->
+            <div class="flex-1 min-w-[140px] sm:min-w-[160px] px-3 sm:px-4 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-black uppercase tracking-wider text-emerald-200 truncate">
+                            Karyawan Aktif
+                        </span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-white/15 text-emerald-100 border border-white/20">
+                            Aktif
+                        </span>
+                    </div>
+                    <div class="text-3xl sm:text-4xl font-black text-white tracking-tight mt-1.5">
+                        {{ number_format($stats['aktif']) }}
+                    </div>
+                </div>
+                <div class="mt-3.5 pt-2 flex items-center justify-between text-xs text-emerald-200/90">
+                    <span class="font-medium text-[11px] flex items-center gap-1">
+                        <i class="ti ti-user-check text-xs opacity-70"></i>
+                        <span>Status Bekerja</span>
+                    </span>
+                    <span class="font-black text-white text-[10px] bg-white/15 px-2 py-0.5 rounded-md">
+                        {{ $stats['total_karyawan'] > 0 ? round(($stats['aktif'] / $stats['total_karyawan']) * 100) : 0 }}%
+                    </span>
+                </div>
+            </div>
+
+            <!-- Tapered Vertical Divider Line -->
+            <div class="hidden sm:block w-[1px] bg-gradient-to-b from-transparent via-white/35 to-transparent self-center h-16 shrink-0"></div>
+
+            <!-- Segment 3: Karyawan Nonaktif -->
+            <div class="flex-1 min-w-[140px] sm:min-w-[160px] px-3 sm:px-4 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-black uppercase tracking-wider text-emerald-200 truncate">
+                            Nonaktif / Off
+                        </span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-white/15 text-emerald-100 border border-white/20">
+                            Off
+                        </span>
+                    </div>
+                    <div class="text-3xl sm:text-4xl font-black text-white tracking-tight mt-1.5">
+                        {{ number_format($stats['nonaktif']) }}
+                    </div>
+                </div>
+                <div class="mt-3.5 pt-2 flex items-center justify-between text-xs text-emerald-200/90">
+                    <span class="font-medium text-[11px] flex items-center gap-1">
+                        <i class="ti ti-user-x text-xs opacity-70"></i>
+                        <span>Status Berhenti</span>
+                    </span>
+                    <span class="font-black text-white text-[10px] bg-white/15 px-2 py-0.5 rounded-md">
+                        {{ $stats['total_karyawan'] > 0 ? round(($stats['nonaktif'] / $stats['total_karyawan']) * 100) : 0 }}%
+                    </span>
+                </div>
+            </div>
+
+            <!-- Tapered Vertical Divider Line -->
+            <div class="hidden sm:block w-[1px] bg-gradient-to-b from-transparent via-white/35 to-transparent self-center h-16 shrink-0"></div>
+
+            <!-- Segment 4: Total Unit -->
+            <div class="flex-1 min-w-[140px] sm:min-w-[160px] px-3 sm:px-4 flex flex-col justify-between group">
+                <div>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-black uppercase tracking-wider text-emerald-200 truncate">
+                            Total Unit
+                        </span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-white/15 text-emerald-100 border border-white/20">
+                            Unit
+                        </span>
+                    </div>
+                    <div class="text-3xl sm:text-4xl font-black text-white tracking-tight mt-1.5">
+                        {{ number_format($stats['total_unit']) }}
+                    </div>
+                </div>
+                <div class="mt-3.5 pt-2 flex items-center justify-between text-xs text-emerald-200/90">
+                    <span class="font-medium text-[11px] flex items-center gap-1">
+                        <i class="ti ti-building text-xs opacity-70"></i>
+                        <span>Unit Kerja</span>
+                    </span>
+                    <span class="font-black text-white text-[10px] bg-white/15 px-2 py-0.5 rounded-md">
+                        Terdaftar
+                    </span>
+                </div>
+            </div>
+
         </div>
     </div>
+
+    <!-- ================= 3. FILTER TOOLBAR (FULL-WIDTH 1 ROW WITH EXPANDING SEARCH & COMPACT BUTTONS) ================= -->
+    <form action="{{ route('karyawan.index') }}" method="GET" class="w-full">
+        @php
+            $isU06 = auth()->user()->kode_unit == 'U06';
+        @endphp
+        
+        <div class="flex flex-col md:flex-row items-center gap-2.5 sm:gap-3 w-full">
+            <!-- Search Input (Flex-1 expands to fill all remaining width) -->
+            <div class="flex-1 min-w-0 w-full relative">
+                <i class="ti ti-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-lg pointer-events-none"></i>
+                <input type="text" 
+                       name="nama_lengkap" 
+                       value="{{ Request('nama_lengkap') }}" 
+                       placeholder="Cari Nama Karyawan / NPP / No. KTP..." 
+                       class="w-full pl-11 pr-4 py-2.5 sm:py-3 text-sm bg-white border border-slate-300/90 rounded-lg text-slate-800 font-medium placeholder-slate-400 shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+            </div>
+
+            <!-- Unit Filter (If U06) -->
+            @if ($isU06)
+                <div class="w-full md:w-52 lg:w-60 shrink-0">
+                    <select name="kode_unit" id="kode_unit_search" class="w-full px-4 py-2.5 sm:py-3 text-sm bg-white border border-slate-300/90 rounded-lg text-slate-800 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                        <option value="">-- Semua Unit --</option>
+                        @foreach ($units as $u)
+                            <option value="{{ $u->kode_unit }}" {{ Request('kode_unit') == $u->kode_unit ? 'selected' : '' }}>
+                                {{ $u->nama_unit }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
+
+            <!-- Departemen Filter -->
+            <div class="w-full md:w-52 lg:w-56 shrink-0">
+                <select name="kode_dept" id="kode_dept_search" class="w-full px-4 py-2.5 sm:py-3 text-sm bg-white border border-slate-300/90 rounded-lg text-slate-800 font-medium shadow-xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition">
+                    <option value="">-- Semua Departemen --</option>
+                    @foreach ($departemen as $dept)
+                        <option value="{{ $dept->kode_dept }}" {{ Request('kode_dept') == $dept->kode_dept ? 'selected' : '' }}>
+                            {{ $dept->nama_dept }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Compact Action Buttons -->
+            <div class="flex items-center gap-2 shrink-0 w-full md:w-auto">
+                <button type="submit" class="w-full md:w-auto px-5 py-2.5 sm:py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-lg shadow-xs transition inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95 whitespace-nowrap">
+                    <i class="ti ti-search text-base"></i>
+                    <span>Cari</span>
+                </button>
+                @if(Request('nama_lengkap') || Request('kode_unit') || Request('kode_dept'))
+                    <a href="{{ route('karyawan.index') }}" class="py-2.5 sm:py-3 px-3 bg-white hover:bg-slate-100 text-slate-600 border border-slate-300/90 rounded-lg font-semibold text-sm transition inline-flex items-center justify-center shrink-0 shadow-xs" title="Reset Filter">
+                        <i class="ti ti-refresh text-base"></i>
+                    </a>
+                @endif
+            </div>
+        </div>
+    </form>
+
+    <!-- ================= 4. DATA LIST FULL-WIDTH CARDS ================= -->
+    <div class="space-y-3">
+        <!-- List Header Info -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1 text-xs">
+            <div class="flex items-center gap-2 text-slate-500">
+                <span class="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                    <i class="ti ti-id-badge text-emerald-600 text-base"></i>
+                    <span>Daftar Karyawan</span>
+                </span>
+                <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                <span>Menampilkan <strong class="text-slate-800 font-bold">{{ $karyawan->firstItem() ?? 0 }}-{{ $karyawan->lastItem() ?? 0 }}</strong> dari <strong class="text-slate-800 font-bold">{{ $karyawan->total() }}</strong> pegawai</span>
+            </div>
+            <div class="text-slate-400 font-medium">
+                Aktif: <strong class="text-emerald-700 font-bold">{{ $stats['aktif'] }}</strong> | Nonaktif: <strong class="text-rose-600 font-bold">{{ $stats['nonaktif'] }}</strong>
+            </div>
+        </div>
+
+        <!-- Cards List -->
+        @forelse ($karyawan as $d)
+            <div class="bg-white border {{ $d->status == 1 ? 'border-slate-200/90 hover:border-emerald-300/90' : 'border-rose-200/80 hover:border-rose-300' }} rounded-xl p-4 sm:p-5 shadow-xs hover:shadow-md transition-all duration-200 group">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    
+                    <!-- Left: Identity & Details -->
+                    <div class="flex items-start sm:items-center gap-3.5 sm:gap-4 flex-1 min-w-0">
+                        <!-- Row Index Badge -->
+                        <div class="hidden sm:flex w-7 h-7 rounded-lg bg-slate-100 text-slate-500 text-[11px] font-bold items-center justify-center shrink-0 border border-slate-200/80">
+                            {{ $loop->iteration + $karyawan->firstItem() - 1 }}
+                        </div>
+
+                        <!-- Photo Thumbnail with Status Dot -->
+                        <div class="relative shrink-0">
+                            @if (!empty($d->foto) && Storage::disk('public')->exists('photos/karyawan/' . $d->foto))
+                                <img src="{{ getfotoKaryawan($d->foto) }}" alt="{{ $d->nama_lengkap }}" class="w-12 h-15 sm:w-13 sm:h-16 rounded-lg object-cover border border-slate-200 shadow-2xs">
+                            @else
+                                <div class="w-12 h-15 sm:w-13 sm:h-16 rounded-lg bg-slate-100 border border-slate-200/80 flex flex-col items-center justify-center text-slate-700 font-bold text-base shadow-2xs">
+                                    {{ strtoupper(substr($d->nama_lengkap, 0, 1)) }}
+                                </div>
+                            @endif
+
+                            @if($d->status == 1)
+                                <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] ring-2 ring-white" title="Status Aktif">
+                                    <i class="ti ti-check"></i>
+                                </span>
+                            @else
+                                <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px] ring-2 ring-white" title="Status Nonaktif">
+                                    <i class="ti ti-x"></i>
+                                </span>
+                            @endif
+                        </div>
+
+                        <!-- Info Content -->
+                        <div class="flex-1 min-w-0">
+                            <!-- Name & Status Badges -->
+                            <div class="flex flex-wrap items-center gap-2">
+                                <h4 class="text-sm sm:text-base font-bold capitalize text-slate-800 group-hover:text-emerald-700 transition truncate max-w-md" title="{{ $d->nama_lengkap }}">
+                                    {{ textCamelCase($d->nama_lengkap) }}
+                                </h4>
+
+                                <!-- Unit Badge -->
+                                <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200/80">
+                                    {{ $d->nama_unit }}
+                                </span>
+
+                                <!-- Departemen Badge -->
+                                @if (!empty($d->nama_dept))
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-100">
+                                        {{ $d->nama_dept }}
+                                    </span>
+                                @endif
+
+                                <!-- Status Toggle Pill -->
+                                <a href="{{ route('karyawan.updatestatus', Crypt::encrypt($d->npp)) }}" 
+                                   class="px-2.5 py-0.5 rounded-full text-[10px] font-bold transition inline-flex items-center gap-1 {{ $d->status == 1 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100' }}"
+                                   title="Klik untuk mengubah status aktif/nonaktif">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $d->status == 1 ? 'bg-emerald-500' : 'bg-rose-500' }}"></span>
+                                    <span>{{ $d->status == 1 ? 'AKTIF' : 'NONAKTIF' }}</span>
+                                </a>
+
+                                <!-- User Access Badge -->
+                                @if (!empty($d->id_user))
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1" title="User Login Terdaftar">
+                                        <i class="ti ti-user-check"></i>
+                                        <span>User Aktif</span>
+                                    </span>
+                                @endif
+                            </div>
+
+                            <!-- Meta Chips Flex -->
+                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-2 text-xs text-slate-500">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-slate-400 font-medium">NPP:</span>
+                                    <span class="font-bold text-slate-800 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 text-[11px]">{{ $d->npp }}</span>
+                                </div>
+
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-slate-400 font-medium">Jabatan:</span>
+                                    <span class="font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 text-[11px]">
+                                        <i class="ti ti-briefcase text-xs"></i>
+                                        <span>{{ $d->nama_jabatan ?? 'Belum Ditentukan' }}</span>
+                                    </span>
+                                </div>
+
+                                @if(!empty($d->tmt))
+                                    <div class="flex items-center gap-1 text-[11px] text-slate-500">
+                                        <i class="ti ti-calendar text-slate-400"></i>
+                                        <span>TMT: {{ DateToIndo($d->tmt) }}</span>
+                                    </div>
+                                @endif
+
+                                @if(!empty($d->no_hp))
+                                    <div class="flex items-center gap-1 text-[11px] text-slate-600 font-medium">
+                                        <i class="ti ti-phone text-slate-400"></i>
+                                        <span>{{ $d->no_hp }}</span>
+                                    </div>
+                                @endif
+
+                                @if(!empty($d->hari_kerja))
+                                    <div class="flex items-center gap-1 text-[11px] text-slate-400" title="Hari Kerja: {{ $d->hari_kerja }}">
+                                        <i class="ti ti-calendar-check text-slate-400"></i>
+                                        <span class="truncate max-w-xs">{{ $d->hari_kerja }}</span>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Action Buttons Toolbar -->
+                    <div class="flex flex-wrap items-center justify-end gap-1.5 shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-100">
+                        @can('karyawan.show')
+                            <a href="{{ route('karyawan.show', Crypt::encrypt($d->npp)) }}" 
+                               class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold transition active:scale-95 cursor-pointer"
+                               title="Lihat Detail Profil Karyawan">
+                                <i class="ti ti-file-description text-sm"></i>
+                                <span>Detail</span>
+                            </a>
+                        @endcan
+
+                        @can('karyawan.edit')
+                            <button type="button" 
+                                    class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold transition active:scale-95 editKaryawan cursor-pointer"
+                                    npp="{{ Crypt::encrypt($d->npp) }}"
+                                    title="Edit Data Profil Karyawan">
+                                <i class="ti ti-edit text-sm"></i>
+                                <span>Edit</span>
+                            </button>
+                        @endcan
+
+                        @can('karyawan.create')
+                            <button type="button" 
+                                    class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold transition active:scale-95 btnSetJamkerja cursor-pointer"
+                                    npp="{{ Crypt::encrypt($d->npp) }}"
+                                    title="Atur Jam Kerja Harian & Khusus">
+                                <i class="ti ti-clock text-sm"></i>
+                                <span>Jam Kerja</span>
+                            </button>
+
+                            <button type="button" 
+                                    class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 text-xs font-bold transition active:scale-95 btnSetharikerja cursor-pointer"
+                                    npp="{{ Crypt::encrypt($d->npp) }}"
+                                    title="Atur Hari Kerja Mingguan">
+                                <i class="ti ti-calendar text-sm"></i>
+                                <span>Hari Kerja</span>
+                            </button>
+                        @endcan
+
+                        <!-- User Account Menu / Quick Action -->
+                        @if (!empty($d->id_user))
+                            @can('karyawan.create')
+                                <a href="{{ route('karyawan.resetuser', Crypt::encrypt($d->npp)) }}" 
+                                   class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-bold transition active:scale-95 reset-user-confirm cursor-pointer"
+                                   data-name="{{ $d->nama_lengkap }}"
+                                   title="Reset Password ke Default (12345678)">
+                                    <i class="ti ti-rotate text-sm text-amber-600"></i>
+                                    <span>Reset User</span>
+                                </a>
+
+                                <a href="{{ route('karyawan.deleteuser', Crypt::encrypt($d->npp)) }}" 
+                                   class="w-8.5 h-8.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-700 border border-slate-200 flex items-center justify-center transition active:scale-95 delete-user-confirm cursor-pointer" 
+                                   data-name="{{ $d->nama_lengkap }}"
+                                   title="Hapus Akses Login User">
+                                    <i class="ti ti-user-x text-sm"></i>
+                                </a>
+                            @endcan
+                        @else
+                            @can('karyawan.create')
+                                <a href="{{ route('karyawan.createuser', Crypt::encrypt($d->npp)) }}" 
+                                   class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-teal-50 hover:bg-teal-100 text-teal-700 border border-teal-200 text-xs font-bold transition active:scale-95 cursor-pointer"
+                                   title="Buat Akun User Login Default">
+                                    <i class="ti ti-user-plus text-sm"></i>
+                                    <span>Buat User</span>
+                                </a>
+                            @endcan
+                        @endif
+
+                        @can('karyawan.delete')
+                            <form method="POST" class="deleteform inline-block" action="{{ route('karyawan.delete', Crypt::encrypt($d->npp)) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" 
+                                        class="w-8.5 h-8.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 flex items-center justify-center transition active:scale-95 btn-delete-karyawan cursor-pointer" 
+                                        data-name="{{ $d->nama_lengkap }}"
+                                        data-npp="{{ $d->npp }}"
+                                        title="Hapus Data Karyawan">
+                                    <i class="ti ti-trash text-sm"></i>
+                                </button>
+                            </form>
+                        @endcan
+                    </div>
+
+                </div>
+            </div>
+        @empty
+            <div class="bg-white border border-slate-200/90 rounded-xl p-12 text-center text-slate-400 shadow-xs">
+                <div class="w-14 h-14 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-3 text-slate-400 text-2xl">
+                    <i class="ti ti-users-off"></i>
+                </div>
+                <h4 class="text-sm font-bold text-slate-800">Belum Ada Data Karyawan Ditemukan</h4>
+                <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Silakan sesuaikan filter pencarian atau klik tombol Tambah Karyawan di atas untuk menambahkan pegawai baru.</p>
+            </div>
+        @endforelse
+
+        <!-- Pagination -->
+        @if ($karyawan->hasPages())
+            <div class="bg-white border border-slate-200/90 rounded-xl p-4 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 mt-4">
+                <div class="text-xs text-slate-500 font-medium">
+                    Menampilkan <strong class="text-slate-800 font-bold">{{ $karyawan->firstItem() }}</strong> - <strong class="text-slate-800 font-bold">{{ $karyawan->lastItem() }}</strong> dari <strong class="text-slate-800 font-bold">{{ $karyawan->total() }}</strong> total data
+                </div>
+                <div>
+                    {{ $karyawan->links('vendor.pagination.custom-tailwind') }}
+                </div>
+            </div>
+        @endif
+    </div>
+
 </div>
 
-<x-modal-form id="mdlcreateKaryawan" size="" show="loadcreateKaryawan" title="Tambah Karyawan" icon="ti ti-user-plus" />
-<x-modal-form id="mdleditKaryawan" size="" show="loadeditKaryawan" title="Edit Karyawan" icon="ti ti-user-edit" />
-<x-modal-form id="mdlsetharikerja" size="" show="loadsetharikerja" title="Set Hari Kerja" icon="ti ti-calendar-check" />
-<x-modal-form id="modalSetJamkerja" show="loadmodalSetJamkerja" size="modal-lg" title="Set Jam Kerja" icon="ti ti-clock-plus" />
+<!-- ================= MODAL CONTAINERS ================= -->
+<x-modal-form id="mdlcreateKaryawan" size="modal-xl" show="loadcreateKaryawan" title="" icon="ti ti-user-plus" />
+<x-modal-form id="mdleditKaryawan" size="modal-xl" show="loadeditKaryawan" title="" icon="ti ti-user-edit" />
+<x-modal-form id="mdlsetharikerja" size="modal-lg" show="loadsetharikerja" title="" icon="ti ti-calendar-check" />
+<x-modal-form id="modalSetJamkerja" size="modal-xl" show="loadmodalSetJamkerja" title="" icon="ti ti-clock-plus" />
 
 @endsection
 
 @push('myscript')
 <script>
     $(function() {
+        const loading = `
+            <div class="p-12 text-center bg-white">
+                <div class="w-10 h-10 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                <div class="text-xs font-bold text-slate-700">Memuat Data Karyawan...</div>
+            </div>
+        `;
+
         $("#btncreateKaryawan").click(function(e) {
             e.preventDefault();
+            e.stopPropagation();
             $('#mdlcreateKaryawan').modal("show");
+            $("#mdlcreateKaryawan").find("#loadcreateKaryawan").html(loading);
+            $("#mdlcreateKaryawan").find(".modal-title").text("Tambah Data Karyawan Baru");
             $("#loadcreateKaryawan").load('/karyawan/create');
         });
 
         $(document).on('click', '.editKaryawan', function(e) {
-            var npp = $(this).attr("npp");
             e.preventDefault();
+            e.stopPropagation();
+            var npp = $(this).attr("npp");
             $('#mdleditKaryawan').modal("show");
+            $("#mdleditKaryawan").find("#loadeditKaryawan").html(loading);
+            $("#mdleditKaryawan").find(".modal-title").text("Edit Profil & Data Karyawan");
             $("#loadeditKaryawan").load('/karyawan/' + npp + '/edit');
         });
 
         $(document).on('click', ".btnSetharikerja", function(e) {
-            var npp = $(this).attr("npp");
             e.preventDefault();
+            e.stopPropagation();
+            var npp = $(this).attr("npp");
             $('#mdlsetharikerja').modal("show");
+            $("#mdlsetharikerja").find("#loadsetharikerja").html(loading);
+            $("#mdlsetharikerja").find(".modal-title").text("Atur Hari Kerja Pegawai");
             $("#loadsetharikerja").load('/karyawan/' + npp + '/setharikerja');
         });
 
-        $(document).on('click', ".btnSetJamkerja", function() {
+        $(document).on('click', ".btnSetJamkerja", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             const npp = $(this).attr("npp");
             $("#modalSetJamkerja").modal("show");
+            $("#modalSetJamkerja").find("#loadmodalSetJamkerja").html(loading);
+            $("#modalSetJamkerja").find(".modal-title").text("Atur Shift & Jadwal Jam Kerja");
             $("#loadmodalSetJamkerja").load(`/karyawan/${npp}/setjamkerja`);
         });
 
-        // Initialize tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-
-        // Delete Confirm
-        $(document).on('click', ".delete-confirm", function(e) {
+        // Delete Confirm with SweetAlert2
+        $(document).on('click', ".btn-delete-karyawan", function(e) {
             e.preventDefault();
+            e.stopPropagation();
             var form = $(this).closest('form');
+            var name = $(this).data('name') || 'karyawan ini';
+            var npp = $(this).data('npp') || '';
+
             Swal.fire({
-                title: 'Hapus data karyawan?',
-                text: "Seluruh data terkait karyawan ini akan dihapus permanen!",
+                title: 'Hapus Data Karyawan?',
+                html: `
+                    <div class="text-xs sm:text-sm text-slate-600 mt-2 space-y-2 text-center">
+                        <p>Apakah Anda yakin ingin menghapus data pegawai:</p>
+                        <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900">
+                            ${name} ${npp ? `<span class="text-xs text-slate-500 font-normal block mt-0.5">NPP: ${npp}</span>` : ''}
+                        </div>
+                        <p class="text-[11px] text-rose-500 font-semibold">Seluruh data presensi, akun login, dan riwayat karyawan akan dihapus permanen.</p>
+                    </div>
+                `,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#064e3b',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
+                confirmButtonColor: '#e11d48',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="ti ti-trash mr-1"></i> Ya, Hapus Data',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-2xl p-5',
+                    title: 'text-base font-bold text-slate-900',
+                    confirmButton: 'px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer',
+                    cancelButton: 'px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    form.submit();
+                    Swal.fire({
+                        title: 'Menghapus Data...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+                    form.get(0).submit();
                 }
             });
         });
@@ -595,16 +569,34 @@
         // Reset User Confirm
         $(document).on('click', ".reset-user-confirm", function(e) {
             e.preventDefault();
+            e.stopPropagation();
             var url = $(this).attr('href');
+            var name = $(this).data('name') || 'karyawan ini';
+
             Swal.fire({
                 title: 'Reset Password User?',
-                text: "Password user akan di-reset kembali ke default (12345678)!",
-                icon: 'warning',
+                html: `
+                    <div class="text-xs sm:text-sm text-slate-600 mt-2 space-y-2 text-center">
+                        <p>Password akun login untuk pegawai:</p>
+                        <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900">
+                            ${name}
+                        </div>
+                        <p class="text-[11px] text-amber-600 font-semibold">Password akan di-reset kembali ke default: <strong class="text-slate-900">12345678</strong>.</p>
+                    </div>
+                `,
+                icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#064e3b',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, reset!',
-                cancelButtonText: 'Batal'
+                confirmButtonColor: '#d97706',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="ti ti-rotate mr-1"></i> Ya, Reset Password',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-2xl p-5',
+                    title: 'text-base font-bold text-slate-900',
+                    confirmButton: 'px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer',
+                    cancelButton: 'px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = url;
@@ -615,29 +607,39 @@
         // Delete User Confirm
         $(document).on('click', ".delete-user-confirm", function(e) {
             e.preventDefault();
+            e.stopPropagation();
             var url = $(this).attr('href');
+            var name = $(this).data('name') || 'karyawan ini';
+
             Swal.fire({
                 title: 'Hapus Akses User?',
-                text: "Akun login karyawan ini akan dihapus permanen, tetapi data karyawan tetap ada!",
+                html: `
+                    <div class="text-xs sm:text-sm text-slate-600 mt-2 space-y-2 text-center">
+                        <p>Akun login sistem untuk pegawai:</p>
+                        <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900">
+                            ${name}
+                        </div>
+                        <p class="text-[11px] text-rose-500 font-semibold">Akses login akan dihapus, namun data profil karyawan tetap tersimpan.</p>
+                    </div>
+                `,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
+                confirmButtonColor: '#e11d48',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="ti ti-user-x mr-1"></i> Ya, Hapus Akses',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-2xl shadow-2xl p-5',
+                    title: 'text-base font-bold text-slate-900',
+                    confirmButton: 'px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer',
+                    cancelButton: 'px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = url;
                 }
             });
-        });
-
-        // Manage card z-index during dropdown toggle to prevent clipping and flickering
-        $(document).on('show.bs.dropdown', '.dropdown', function () {
-            $(this).closest('.karyawan-item-card').addClass('dropdown-open');
-        });
-        $(document).on('hidden.bs.dropdown', '.dropdown', function () {
-            $(this).closest('.karyawan-item-card').removeClass('dropdown-open');
         });
     });
 </script>
