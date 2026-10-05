@@ -69,13 +69,9 @@
                     <i class="ti ti-receipt-2 text-slate-400 text-sm"></i>
                     <span>Pos / Jenis Biaya <span class="text-rose-500 font-bold">*</span></span>
                 </label>
-                <div class="relative">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-emerald-600">
-                        <i class="ti ti-layers-subtract text-base"></i>
-                    </div>
-                    <select name="kode_biaya" id="kode_biaya" 
-                            class="w-full pl-9 pr-8 py-2 text-xs font-bold text-slate-800 bg-white border border-slate-300 rounded-xl shadow-2xs focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition cursor-pointer">
-                        <option value="">-- Pilih Pos Biaya --</option>
+                <div>
+                    <select name="kode_biaya" id="kode_biaya" class="select2-biaya w-full">
+                        <option value="">-- Pilih Pos / Jenis Biaya --</option>
                         @foreach ($biaya as $d)
                             <option value="{{ $d->kode_jenis_biaya . '|' . $d->kode_biaya }}">
                                 {{ $d->jenis_biaya }} {{ in_array($d->kode_jenis_biaya, ['B01', 'B07']) ? '(' . $d->tahun_ajaran . ')' : '' }}
@@ -218,11 +214,77 @@
     .flatpickr-calendar {
         z-index: 9999 !important;
     }
+    
+    /* Modern Emerald Theme for Select2 inside Modal */
+    .select2-container--default .select2-selection--single {
+        background-color: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 0.75rem !important;
+        height: 38px !important;
+        padding: 4px 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        transition: all 0.2s ease !important;
+    }
+    .select2-container--default.select2-container--open .select2-selection--single,
+    .select2-container--default.select2-container--focus .select2-selection--single {
+        border-color: #059669 !important;
+        box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15) !important;
+        outline: none !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #1e293b !important;
+        font-size: 0.75rem !important;
+        font-weight: 700 !important;
+        padding-left: 4px !important;
+        line-height: 28px !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 36px !important;
+        right: 8px !important;
+    }
+    .select2-dropdown {
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 0.75rem !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+        z-index: 99999 !important;
+        overflow: hidden !important;
+    }
+    .select2-results__option {
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        padding: 8px 12px !important;
+    }
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #059669 !important;
+        color: #ffffff !important;
+    }
+    .select2-search--dropdown .select2-search__field {
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 0.5rem !important;
+        padding: 6px 10px !important;
+        font-size: 0.75rem !important;
+        outline: none !important;
+    }
+    .select2-search--dropdown .select2-search__field:focus {
+        border-color: #059669 !important;
+    }
 </style>
 
 <script>
     $(function() {
         let sisatagihan;
+
+        // Initialize Select2 with Modal dropdownParent
+        if ($.fn.select2) {
+            $('.select2-biaya').select2({
+                dropdownParent: $('#modalpembayaran'),
+                width: '100%',
+                placeholder: '-- Pilih Pos / Jenis Biaya --',
+                allowClear: true
+            });
+        }
 
         function convertToRupiah(number) {
             if (number) {
@@ -286,7 +348,7 @@
             });
         }
 
-        $("#kode_biaya").change(function() {
+        $("#kode_biaya").on("change select2:select select2:clear", function() {
             if ($(this).val() != "") {
                 getsisatagihan();
             } else {
