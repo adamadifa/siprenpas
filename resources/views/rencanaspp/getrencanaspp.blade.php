@@ -16,7 +16,7 @@
     @if ($kode_ta != $d->kode_ta)
         <!-- TA Header Row -->
         <tr class="bg-slate-100/90 border-t border-slate-200">
-            <td colspan="4" class="py-2 px-3">
+            <td colspan="4" class="py-1.5 px-3">
                 <div class="flex items-center gap-2">
                     <span class="w-5 h-5 rounded-md bg-emerald-600 text-white flex items-center justify-center text-[10px]">
                         <i class="ti ti-calendar"></i>
@@ -26,30 +26,32 @@
                     </span>
                 </div>
             </td>
-            <td class="py-2 px-3 text-end">
-                <a href="#" class="editrencanaspp inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/80 text-[11px] font-bold transition active:scale-95 cursor-pointer shadow-2xs"
-                    kode_rencana_spp="{{ Crypt::encrypt($d->kode_rencana_spp) }}">
-                    <i class="ti ti-edit text-xs"></i>
-                    <span>Edit Rencana</span>
-                </a>
+            <td class="py-1.5 px-3 text-end">
+                @can('rencanaspp.edit')
+                    <a href="#" class="editrencanaspp inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200/80 text-[11px] font-bold transition active:scale-95 cursor-pointer shadow-2xs"
+                        kode_rencana_spp="{{ Crypt::encrypt($d->kode_rencana_spp) }}">
+                        <i class="ti ti-edit text-xs"></i>
+                        <span>Edit Rencana</span>
+                    </a>
+                @endcan
             </td>
         </tr>
     @endif
 
     <tr class="hover:bg-emerald-50/40 transition-colors">
-        <td class="py-2 px-3 font-semibold text-slate-800">
+        <td class="py-1.5 px-3 font-semibold text-slate-800">
             {{ $listbulan[$d->bulan] }} {{ $d->tahun }}
         </td>
-        <td class="text-end py-2 px-3 font-mono font-bold text-slate-800">
+        <td class="text-end py-1.5 px-3 font-mono font-bold text-slate-800">
             {{ formatAngka($d->jumlah) }}
         </td>
-        <td class="text-end py-2 px-3 font-mono text-slate-700">
+        <td class="text-end py-1.5 px-3 font-mono text-slate-700">
             {{ formatAngka($d->realisasi) }}
         </td>
-        <td class="text-end py-2 px-3 font-mono font-bold {{ $sisa_tagihan > 0 ? 'text-rose-600' : 'text-emerald-700' }}">
+        <td class="text-end py-1.5 px-3 font-mono font-bold {{ $sisa_tagihan > 0 ? 'text-rose-600' : 'text-emerald-700' }}">
             {{ formatAngka($sisa_tagihan) }}
         </td>
-        <td class="py-2 px-3 text-center whitespace-nowrap text-slate-500 font-mono text-xs">
+        <td class="py-1.5 px-3 text-center whitespace-nowrap text-slate-500 font-mono text-xs">
             <span class="inline-flex items-center gap-1">
                 <i class="ti ti-clock text-xs text-slate-400"></i> {{ date('d-m-Y', strtotime($jatuh_tempo)) }}
             </span>
@@ -59,12 +61,12 @@
     @if ($kode_tahun_ajaran != $d->kode_ta)
         <!-- Subtotal Row -->
         <tr class="bg-emerald-50/70 border-t border-b border-emerald-200/80 font-bold text-slate-900">
-            <td class="py-2 px-3 text-[11px] uppercase tracking-wider text-emerald-950 font-extrabold">
+            <td class="py-1.5 px-3 text-[11px] uppercase tracking-wider text-emerald-950 font-extrabold">
                 <span class="inline-flex items-center gap-1">
                     <i class="ti ti-calculator text-xs"></i> Subtotal {{ $d->tahun_ajaran }}
                 </span>
             </td>
-            <td class="text-end py-2 px-3 text-slate-900 font-mono font-bold">{{ formatAngka($total_spp_per_ta) }}</td>
+            <td class="text-end py-1.5 px-3 text-slate-900 font-mono font-bold">{{ formatAngka($total_spp_per_ta) }}</td>
             <td colspan="3"></td>
         </tr>
         @php
@@ -91,9 +93,12 @@
 
 @if(count($detailrencanaspp) > 0)
     <!-- Grand Total Row -->
-    <tr class="bg-slate-900 text-white font-bold border-t-2 border-slate-900 text-xs">
-        <td class="py-2.5 px-3 uppercase tracking-wider text-emerald-400 font-black">GRAND TOTAL SPP</td>
-        <td class="text-end py-2.5 px-3 font-mono font-black text-emerald-400 text-sm">{{ formatAngka($total_spp) }}</td>
+    <tr class="bg-emerald-700 text-white font-bold border-t-2 border-emerald-800 text-xs shadow-xs">
+        <td class="py-2 px-3 uppercase tracking-wider text-emerald-100 font-extrabold flex items-center gap-1.5">
+            <i class="ti ti-sum text-sm"></i>
+            <span>GRAND TOTAL SPP</span>
+        </td>
+        <td class="text-end py-2 px-3 font-mono font-black text-amber-300 text-sm">{{ formatAngka($total_spp) }}</td>
         <td colspan="3"></td>
     </tr>
 @endif

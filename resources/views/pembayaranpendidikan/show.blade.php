@@ -1,11 +1,15 @@
-<div class="bg-gradient-to-r from-emerald-50/60 via-slate-50/50 to-teal-50/40 border border-emerald-100/80 rounded-2xl p-4 sm:p-5 mb-5 shadow-2xs">
-    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+<div class="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 rounded-2xl p-4 sm:p-5 mb-5 text-white shadow-lg shadow-emerald-950/10 border border-emerald-500/40">
+    <!-- Subtle decorative glow -->
+    <div class="absolute -right-10 -top-10 w-48 h-48 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+    <div class="absolute right-1/3 -bottom-10 w-40 h-40 rounded-full bg-teal-400/15 blur-xl pointer-events-none"></div>
+
+    <div class="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-4">
         <!-- Student Avatar -->
         <div class="relative shrink-0">
             <img src="{{ asset('assets/img/avatars/No_Image_Available.jpg') }}" 
                 alt="{{ $pendaftaran->nama_lengkap }}" 
-                class="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl object-cover shadow-xs border-2 border-white ring-2 ring-emerald-600/10">
-            <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-white text-[10px]" title="Siswa Aktif">
+                class="w-20 h-20 sm:w-22 sm:h-22 rounded-2xl object-cover shadow-md border-2 border-white/80 ring-2 ring-white/20">
+            <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-400 border-2 border-emerald-800 flex items-center justify-center text-emerald-950 text-[10px] font-black" title="Siswa Aktif">
                 <i class="ti ti-check"></i>
             </span>
         </div>
@@ -14,18 +18,18 @@
         <div class="flex-1 text-center sm:text-left">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                    <h3 class="text-base sm:text-lg font-black text-slate-900 tracking-tight uppercase">{{ $pendaftaran->nama_lengkap }}</h3>
+                    <h3 class="text-base sm:text-lg font-black text-white tracking-tight uppercase">{{ $pendaftaran->nama_lengkap }}</h3>
                     <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-1">
-                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-mono font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-xs font-mono font-bold bg-white/20 text-white border border-white/25 backdrop-blur-xs">
                             <i class="ti ti-barcode text-xs"></i> {{ $pendaftaran->no_pendaftaran }}
                         </span>
-                        <span class="text-xs text-slate-500">
-                            NISN: <strong class="text-slate-800 font-mono">{{ $pendaftaran->nisn ?: '-' }}</strong>
+                        <span class="text-xs text-emerald-100">
+                            NISN: <strong class="text-white font-mono">{{ $pendaftaran->nisn ?: '-' }}</strong>
                         </span>
                         @if(!empty($pendaftaran->nis))
-                            <span class="text-slate-300">•</span>
-                            <span class="text-xs text-slate-500">
-                                NIS: <strong class="text-slate-800 font-mono">{{ $pendaftaran->nis }}</strong>
+                            <span class="text-emerald-300/60">•</span>
+                            <span class="text-xs text-emerald-100">
+                                NIS: <strong class="text-white font-mono">{{ $pendaftaran->nis }}</strong>
                             </span>
                         @endif
                     </div>
@@ -33,44 +37,44 @@
 
                 <!-- Tahun Ajaran Badge -->
                 <div class="shrink-0">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white border border-slate-200 shadow-2xs text-xs font-bold text-slate-800">
-                        <i class="ti ti-school text-emerald-600 text-sm"></i>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white/15 backdrop-blur-md border border-white/25 shadow-xs text-xs font-bold text-white">
+                        <i class="ti ti-school text-emerald-200 text-sm"></i>
                         <span>TA: {{ $pendaftaran->tahun_ajaran }}</span>
                     </span>
                 </div>
             </div>
 
             <!-- Meta Badges Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-3.5 pt-3 border-t border-slate-200/60 text-xs">
-                <div class="flex items-center gap-2 text-slate-600">
-                    <div class="w-6 h-6 rounded-md bg-white border border-slate-200 flex items-center justify-center text-emerald-600 shadow-2xs shrink-0">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-3.5 pt-3 border-t border-white/15 text-xs">
+                <div class="flex items-center gap-2 text-emerald-100">
+                    <div class="w-6.5 h-6.5 rounded-lg bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center text-emerald-200 shadow-2xs shrink-0">
                         <i class="ti ti-gender-femme text-xs"></i>
                     </div>
                     <div>
-                        <span class="text-[11px] text-slate-400 block leading-tight">Jenis Kelamin</span>
-                        <span class="font-bold text-slate-800">{{ $pendaftaran->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}</span>
+                        <span class="text-[11px] text-emerald-200/70 block leading-tight">Jenis Kelamin</span>
+                        <span class="font-bold text-white">{{ $pendaftaran->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}</span>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 text-slate-600">
-                    <div class="w-6 h-6 rounded-md bg-white border border-slate-200 flex items-center justify-center text-emerald-600 shadow-2xs shrink-0">
+                <div class="flex items-center gap-2 text-emerald-100">
+                    <div class="w-6.5 h-6.5 rounded-lg bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center text-emerald-200 shadow-2xs shrink-0">
                         <i class="ti ti-calendar-event text-xs"></i>
                     </div>
                     <div>
-                        <span class="text-[11px] text-slate-400 block leading-tight">Tempat, Tgl Lahir</span>
-                        <span class="font-bold text-slate-800 truncate block max-w-[180px]" title="{{ textCamelCase($pendaftaran->tempat_lahir) }}, {{ DateToIndo($pendaftaran->tanggal_lahir) }}">
+                        <span class="text-[11px] text-emerald-200/70 block leading-tight">Tempat, Tgl Lahir</span>
+                        <span class="font-bold text-white truncate block max-w-[180px]" title="{{ textCamelCase($pendaftaran->tempat_lahir) }}, {{ DateToIndo($pendaftaran->tanggal_lahir) }}">
                             {{ textCamelCase($pendaftaran->tempat_lahir) }}, {{ DateToIndo($pendaftaran->tanggal_lahir) }}
                         </span>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 text-slate-600">
-                    <div class="w-6 h-6 rounded-md bg-white border border-slate-200 flex items-center justify-center text-emerald-600 shadow-2xs shrink-0">
+                <div class="flex items-center gap-2 text-emerald-100">
+                    <div class="w-6.5 h-6.5 rounded-lg bg-white/15 backdrop-blur-md border border-white/20 flex items-center justify-center text-emerald-200 shadow-2xs shrink-0">
                         <i class="ti ti-building-community text-xs"></i>
                     </div>
                     <div>
-                        <span class="text-[11px] text-slate-400 block leading-tight">Jenjang / Unit</span>
-                        <span class="font-bold text-slate-800 uppercase">{{ $pendaftaran->nama_unit }}</span>
+                        <span class="text-[11px] text-emerald-200/70 block leading-tight">Jenjang / Unit</span>
+                        <span class="font-bold text-white uppercase">{{ $pendaftaran->nama_unit }}</span>
                     </div>
                 </div>
             </div>
@@ -145,16 +149,16 @@
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs border-collapse">
-                        <thead class="bg-slate-100/80 text-slate-700 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
+                        <thead class="bg-emerald-600 text-white font-bold uppercase tracking-wider text-[11px] border-b border-emerald-700/80">
                             <tr>
-                                <th class="py-2.5 px-3">Kode</th>
-                                <th class="py-2.5 px-3">Jenis Biaya</th>
-                                <th class="py-2.5 px-3 text-end">Jumlah</th>
-                                <th class="py-2.5 px-3 text-end">Potongan</th>
-                                <th class="py-2.5 px-3 text-end">Total Biaya</th>
-                                <th class="py-2.5 px-3 text-end">Mutasi</th>
-                                <th class="py-2.5 px-3 text-end">Bayar</th>
-                                <th class="py-2.5 px-3 text-end">Sisa Tagihan</th>
+                                <th class="py-2 px-3 text-emerald-100">Kode</th>
+                                <th class="py-2 px-3 text-emerald-100">Jenis Biaya</th>
+                                <th class="py-2 px-3 text-end text-emerald-100">Jumlah</th>
+                                <th class="py-2 px-3 text-end text-emerald-100">Potongan</th>
+                                <th class="py-2 px-3 text-end text-emerald-100">Total Biaya</th>
+                                <th class="py-2 px-3 text-end text-emerald-100">Mutasi</th>
+                                <th class="py-2 px-3 text-end text-emerald-100">Bayar</th>
+                                <th class="py-2 px-3 text-end text-emerald-100">Sisa Tagihan</th>
                             </tr>
                         </thead>
                         <tbody class="tabelbiaya divide-y divide-slate-100"></tbody>
@@ -171,21 +175,23 @@
                         <i class="ti ti-calendar-stats text-base"></i>
                         <h6 class="text-xs sm:text-sm font-extrabold text-white tracking-tight m-0">Jadwal &amp; Rencana Tagihan SPP Bulanan</h6>
                     </div>
-                    <button type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold rounded-lg text-xs shadow-xs transition active:scale-95 cursor-pointer" id="buatrencanaspp"
-                        no_pendaftaran="{{ Crypt::encrypt($pendaftaran->no_pendaftaran) }}">
-                        <i class="ti ti-plus text-xs"></i>
-                        <span>Buat Rencana SPP</span>
-                    </button>
+                    @can('rencanaspp.create')
+                        <button type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold rounded-lg text-xs shadow-xs transition active:scale-95 cursor-pointer" id="buatrencanaspp"
+                            no_pendaftaran="{{ Crypt::encrypt($pendaftaran->no_pendaftaran) }}">
+                            <i class="ti ti-plus text-xs"></i>
+                            <span>Buat Rencana SPP</span>
+                        </button>
+                    @endcan
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs border-collapse">
-                        <thead class="bg-slate-100/80 text-slate-700 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
+                        <thead class="bg-emerald-600 text-white font-bold uppercase tracking-wider text-[11px] border-b border-emerald-700/80">
                             <tr>
-                                <th class="py-2.5 px-3">Bulan / Tahun</th>
-                                <th class="py-2.5 px-3 text-end">Tagihan</th>
-                                <th class="py-2.5 px-3 text-end">Bayar</th>
-                                <th class="py-2.5 px-3 text-end">Sisa Tagihan</th>
-                                <th class="py-2.5 px-3 text-center">Jatuh Tempo</th>
+                                <th class="py-2 px-3 text-emerald-100">Bulan / Tahun</th>
+                                <th class="py-2 px-3 text-end text-emerald-100">Tagihan</th>
+                                <th class="py-2 px-3 text-end text-emerald-100">Bayar</th>
+                                <th class="py-2 px-3 text-end text-emerald-100">Sisa Tagihan</th>
+                                <th class="py-2 px-3 text-center text-emerald-100">Jatuh Tempo</th>
                             </tr>
                         </thead>
                         <tbody id="tabelrencanaspp" class="divide-y divide-slate-100"></tbody>
@@ -202,22 +208,24 @@
                         <i class="ti ti-history text-base"></i>
                         <h6 class="text-xs sm:text-sm font-extrabold text-white tracking-tight m-0">Log Riwayat Transaksi Pembayaran</h6>
                     </div>
-                    <a href="#" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold rounded-lg text-xs shadow-xs transition active:scale-95 cursor-pointer" id="btnBayar"
-                        no_pendaftaran="{{ Crypt::encrypt($pendaftaran->no_pendaftaran) }}">
-                        <i class="ti ti-plus text-xs"></i>
-                        <span>Input Pembayaran Baru</span>
-                    </a>
+                    @can('pembayaranpdd.create')
+                        <a href="#" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold rounded-lg text-xs shadow-xs transition active:scale-95 cursor-pointer" id="btnBayar"
+                            no_pendaftaran="{{ Crypt::encrypt($pendaftaran->no_pendaftaran) }}">
+                            <i class="ti ti-plus text-xs"></i>
+                            <span>Input Pembayaran Baru</span>
+                        </a>
+                    @endcan
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs border-collapse">
-                        <thead class="bg-slate-100/80 text-slate-700 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
+                        <thead class="bg-emerald-600 text-white font-bold uppercase tracking-wider text-[11px] border-b border-emerald-700/80">
                             <tr>
-                                <th class="py-2.5 px-3">No. Bukti</th>
-                                <th class="py-2.5 px-3">Tanggal</th>
-                                <th class="py-2.5 px-3 text-end">Jumlah Bayar</th>
-                                <th class="py-2.5 px-3">Keterangan</th>
-                                <th class="py-2.5 px-3">Petugas Kasir</th>
-                                <th class="py-2.5 px-3 text-center">Aksi</th>
+                                <th class="py-2 px-3 text-emerald-100">No. Bukti</th>
+                                <th class="py-2 px-3 text-emerald-100">Tanggal</th>
+                                <th class="py-2 px-3 text-end text-emerald-100">Jumlah Bayar</th>
+                                <th class="py-2 px-3 text-emerald-100">Keterangan</th>
+                                <th class="py-2 px-3 text-emerald-100">Petugas Kasir</th>
+                                <th class="py-2 px-3 text-center text-emerald-100">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="tabelhistoribayar" class="divide-y divide-slate-100"></tbody>
