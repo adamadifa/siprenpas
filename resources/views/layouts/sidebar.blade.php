@@ -815,11 +815,18 @@
 
                     <!-- Khusus Super Admin -->
                     @hasrole('super admin')
-                        @php $active = request()->is(['users', 'users/*']); @endphp
+                        @php $active = request()->is(['users', 'users/*']) && request('role') !== 'orang tua'; @endphp
                         <li>
                             <a href="{{ route('users.index') }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
                                 <i class="ti ti-users-group text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
                                 <span>User Management</span>
+                            </a>
+                        </li>
+                        @php $active = request()->is(['users', 'users/*']) && request('role') === 'orang tua'; @endphp
+                        <li>
+                            <a href="{{ route('users.index', ['role' => 'orang tua']) }}" class="flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-[13px] transition-all duration-150 {{ $active ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-emerald-100/80 hover:text-white hover:bg-emerald-800/60 font-medium' }}">
+                                <i class="ti ti-user-heart text-[17px] {{ $active ? 'text-white' : 'text-emerald-300' }}"></i>
+                                <span>User Orang Tua</span>
                             </a>
                         </li>
                         @php $active = request()->is(['roles', 'roles/*']); @endphp

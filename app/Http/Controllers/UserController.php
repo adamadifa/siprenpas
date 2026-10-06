@@ -30,7 +30,7 @@ class UserController extends Controller
         if (!empty($request->role)) {
             if ($request->role === 'lainnya') {
                 $query->whereDoesntHave('roles', function($q) {
-                    $q->where('name', 'karyawan');
+                    $q->whereIn('name', ['karyawan', 'orang tua']);
                 });
             } else {
                 $query->role($request->role);

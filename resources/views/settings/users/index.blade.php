@@ -132,6 +132,10 @@
                        class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition {{ request('role') == 'karyawan' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-emerald-100 hover:bg-emerald-600/60' }}">
                         Karyawan
                     </a>
+                    <a href="{{ route('users.index', array_merge(request()->query(), ['role' => 'orang tua'])) }}" 
+                       class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition {{ request('role') == 'orang tua' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-emerald-100 hover:bg-emerald-600/60' }}">
+                        Orang Tua
+                    </a>
                     <a href="{{ route('users.index', array_merge(request()->query(), ['role' => 'lainnya'])) }}" 
                        class="px-2.5 py-1 rounded-lg font-bold text-[11px] transition {{ request('role') == 'lainnya' ? 'bg-white text-emerald-800 shadow-2xs' : 'text-emerald-100 hover:bg-emerald-600/60' }}">
                         Lainnya
