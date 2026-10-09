@@ -475,7 +475,10 @@ Route::middleware('auth')->group(function () {
     Route::controller(BiayaController::class)->group(function () {
         Route::get('/biaya', 'index')->name('biaya.index')->can('biaya.index');
         Route::get('/biaya/create', 'create')->name('biaya.create')->can('biaya.create');
+        Route::get('/biaya/duplicate-ta', 'duplicateTaModal')->name('biaya.duplicate-ta')->can('biaya.create');
+        Route::post('/biaya/duplicate-ta', 'duplicateTaStore')->name('biaya.duplicate-ta.store')->can('biaya.create');
         Route::post('/biaya', 'store')->name('biaya.store')->can('biaya.store');
+        Route::get('/biaya/{kode_biaya}/duplicate', 'duplicate')->name('biaya.duplicate')->can('biaya.create');
         Route::get('/biaya/{kode_biaya}/edit', 'edit')->name('biaya.edit')->can('biaya.edit');
         Route::get('/biaya/{kode_biaya}/show', 'show')->name('biaya.show')->can('biaya.show');
         Route::put('/biaya/{kode_biaya}/update', 'update')->name('biaya.update')->can('biaya.update');

@@ -39,6 +39,10 @@
             <!-- Action Buttons -->
             <div class="flex flex-wrap items-center gap-2">
                 @can('biaya.create')
+                    <button type="button" id="btnDuplicateTa" class="inline-flex items-center gap-2 px-3.5 py-2.5 bg-sky-50 hover:bg-sky-100 text-sky-800 font-bold rounded-xl text-xs border border-sky-200/80 shadow-2xs transition-all duration-200 active:scale-95 cursor-pointer">
+                        <i class="ti ti-copy text-base text-sky-600"></i>
+                        <span>Duplikat dari TA Lain</span>
+                    </button>
                     <button type="button" id="btnCreate" class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-xs transition-all duration-200 active:scale-95 cursor-pointer border-0">
                         <i class="ti ti-plus text-base"></i>
                         <span>Tambah Data Biaya</span>
@@ -206,6 +210,15 @@
                                         </button>
                                     @endcan
 
+                                    @can('biaya.create')
+                                        <button type="button" 
+                                           class="w-7 h-7 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 flex items-center justify-center transition-colors border border-indigo-200/60 btnDuplicate cursor-pointer" 
+                                           kode_biaya="{{ Crypt::encrypt($d->kode_biaya) }}"
+                                           title="Duplikat Paket Biaya">
+                                            <i class="ti ti-copy text-sm"></i>
+                                        </button>
+                                    @endcan
+
                                     @can('biaya.edit')
                                         <button type="button" 
                                            class="w-7 h-7 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 flex items-center justify-center transition-colors border border-emerald-200/60 btnEdit cursor-pointer" 
@@ -250,6 +263,8 @@
 </div>
 
 <x-modal-form id="mdlCreate" size="modal-lg" show="loadCreate" title="Tambah Data Biaya" />
+<x-modal-form id="mdlDuplicateTa" size="modal-md" show="loadDuplicateTa" title="Duplikat Paket Biaya Antar Tahun Ajaran" />
+<x-modal-form id="mdlDuplicate" size="modal-lg" show="loadDuplicate" title="Duplikat Paket Biaya" />
 <x-modal-form id="mdlEdit" size="modal-lg" show="loadEdit" title="Edit Data Biaya" />
 <x-modal-form id="mdlShow" size="modal-lg" show="loadShow" title="Rincian Data Biaya" />
 @endsection
@@ -268,6 +283,21 @@
             $('#mdlCreate').modal("show");
             $("#mdlCreate").find("#loadCreate").html(loading);
             $("#loadCreate").load("{{ route('biaya.create') }}");
+        });
+
+        $("#btnDuplicateTa").click(function(e) {
+            e.preventDefault();
+            $('#mdlDuplicateTa').modal("show");
+            $("#mdlDuplicateTa").find("#loadDuplicateTa").html(loading);
+            $("#loadDuplicateTa").load("{{ route('biaya.duplicate-ta') }}");
+        });
+
+        $(document).on("click", ".btnDuplicate", function(e) {
+            e.preventDefault();
+            const kode_biaya = $(this).attr("kode_biaya");
+            $('#mdlDuplicate').modal("show");
+            $("#mdlDuplicate").find("#loadDuplicate").html(loading);
+            $("#loadDuplicate").load(`/biaya/${kode_biaya}/duplicate`);
         });
 
         $(document).on("click", ".btnEdit", function(e) {
