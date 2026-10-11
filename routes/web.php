@@ -279,6 +279,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/perlombaan/{id}/edit', 'edit')->name('perlombaan.edit')->can('perlombaan.edit');
         Route::put('/perlombaan/{id}/update', 'update')->name('perlombaan.update')->can('perlombaan.update');
         Route::delete('/perlombaan/{id}/delete', 'destroy')->name('perlombaan.delete')->can('perlombaan.delete');
+        Route::post('/perlombaan/reset-data', 'resetData')->name('perlombaan.reset-data')->can('perlombaan.delete');
     });
 
     Route::controller(PendaftaranGotTalentController::class)->group(function () {

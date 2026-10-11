@@ -40,7 +40,22 @@ class DashboardController extends Controller
             $units = Unit::whereIn('kode_unit', $accessibleUnits)->whereNotIn('kode_unit', ['U00'])->orderBy('kode_unit')->get();
         }
         
-        if ($user->hasRole('ketua koperasi')) {
+        if ($user->hasRole('peserta')) {
+            // Cek data pendaftaran got talent milik peserta
+            $userPendaftaran = \App\Models\UserPendaftaranGotTalent::where('id_user', $user->id)->first();
+            $idPendaftaran = $userPendaftaran ? $userPendaftaran->id_pendaftaran : null;
+            if (!$idPendaftaran) {
+                $pendaftaranPeserta = \App\Models\PendaftaranGotTalent::where('email', $user->email)
+                    ->orWhere('nomor_register', $user->username)
+                    ->first();
+                $idPendaftaran = $pendaftaranPeserta ? $pendaftaranPeserta->id : null;
+            }
+
+            if ($idPendaftaran) {
+                return redirect()->route('pendaftarangottalent.show', \Illuminate\Support\Facades\Crypt::encrypt($idPendaftaran));
+            }
+            return redirect()->route('pendaftarangottalent.index');
+        } else if ($user->hasRole('ketua koperasi')) {
             return view('dashboard.koperasi');
         } else if ($user->hasRole(['admin unit', 'admin tu'])) {
             return view('dashboard.admin_unit', compact('tahunajaran', 'activeTa', 'pengaturan', 'units'));

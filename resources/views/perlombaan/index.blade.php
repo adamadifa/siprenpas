@@ -36,6 +36,15 @@
 
             <!-- Action Buttons -->
             <div class="flex flex-wrap items-center gap-2">
+                @can('perlombaan.delete')
+                    <form id="formResetDataGotTalent" action="{{ route('perlombaan.reset-data') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="button" id="btnResetDataGotTalent" class="inline-flex items-center gap-2 px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 hover:text-rose-800 border border-rose-200 font-bold rounded-xl text-xs shadow-xs hover:shadow-md transition-all duration-200 active:scale-95 cursor-pointer">
+                            <i class="ti ti-trash-x text-base text-rose-600"></i>
+                            <span>Reset Data Got Talent</span>
+                        </button>
+                    </form>
+                @endcan
                 @can('perlombaan.create')
                     <button type="button" id="btncreatePerlombaan" class="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-xs hover:shadow-md transition-all duration-200 active:scale-95 cursor-pointer">
                         <i class="ti ti-plus text-base"></i>
@@ -401,6 +410,43 @@
                 </div>
             `);
             $("#loadeditPerlombaan").load('/perlombaan/' + id_perlombaan + '/edit');
+        });
+
+        // SweetAlert Reset Data Got Talent Confirmation
+        $(document).on("click", "#btnResetDataGotTalent", function(e) {
+            e.preventDefault();
+            var form = $("#formResetDataGotTalent");
+            Swal.fire({
+                title: 'Reset Semua Data Got Talent?',
+                html: `<div class="text-xs text-left text-slate-600 space-y-2">
+                        <p class="font-medium text-rose-600">Perhatian: Tindakan ini TIDAK DAPAT dibatalkan!</p>
+                        <p>Data berikut akan dihapus seluruhnya:</p>
+                        <ul class="list-disc list-inside space-y-1 text-slate-500">
+                            <li>Semua Cabang <b>Perlombaan</b> & file lampirannya (juknis, poster)</li>
+                            <li>Semua data <b>Pendaftaran Got Talent</b></li>
+                            <li>Semua <b>Konfirmasi Pembayaran Got Talent</b> & file bukti transfer</li>
+                            <li>Semua <b>Akun Pengguna (Users)</b> dari pendaftaran Got Talent / role peserta</li>
+                        </ul>
+                       </div>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e11d48',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Ya, Reset Bersih!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Mereset Data...',
+                        text: 'Mohon tunggu, proses penghapusan sedang berlangsung.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    form.submit();
+                }
+            });
         });
 
         // SweetAlert Delete Confirmation

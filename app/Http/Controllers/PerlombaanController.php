@@ -4,8 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Perlombaan;
 use App\Models\JenjangPendidikan;
+use App\Models\PendaftaranGotTalent;
+use App\Models\UserPendaftaranGotTalent;
+use App\Models\KonfirmasiPembayaranGotTalent;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 
@@ -191,6 +196,88 @@ class PerlombaanController extends Controller
             return Redirect::back()->with(['success' => 'Data Berhasil Dihapus']);
         } catch (\Exception $e) {
             return Redirect::back()->with(['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Reset semua data Al Amin Got Talent:
+     * - Perlombaan (beserta berkas juknis & thumbnail)
+     * - Pendaftaran Got Talent & pivot pendaftaran_lomba
+     * - Konfirmasi Pembayaran Got Talent (beserta berkas bukti pembayaran)
+     * - User akun peserta Got Talent (dari relasi user_pendaftaran_got_talent maupun role 'peserta')
+     */
+    public function resetData()
+    {
+        try {
+            DB::beginTransaction();
+
+            // 1. Ambil & hapus bukti pembayaran konfirmasi got talent
+            $konfirmasiList = KonfirmasiPembayaranGotTalent::all();
+            foreach ($konfirmasiList as $k) {
+                if ($k->bukti_pembayaran && Storage::disk('public')->exists($k->bukti_pembayaran)) {
+                    Storage::disk('public')->delete($k->bukti_pembayaran);
+                } elseif ($k->bukti_pembayaran && Storage::exists('public/' . $k->bukti_pembayaran)) {
+                    Storage::delete('public/' . $k->bukti_pembayaran);
+                }
+            }
+            KonfirmasiPembayaranGotTalent::query()->delete();
+
+            // 2. Kumpulkan ID User terkait peserta Got Talent
+            // a. Dari tabel penghubung user_pendaftaran_got_talent
+            $userFromRelations = UserPendaftaranGotTalent::pluck('id_user')->toArray();
+            
+            // b. Dari users yang memiliki role 'peserta'
+            $userFromRoles = [];
+            try {
+                $userFromRoles = User::role('peserta')->pluck('id')->toArray();
+            } catch (\Exception $e) {
+                // Abaikan jika spatie role peserta belum disetup
+            }
+
+            $userIdsToDelete = array_unique(array_merge($userFromRelations, $userFromRoles));
+
+            // Kosongkan tabel relasi user_pendaftaran_got_talent
+            DB::table('user_pendaftaran_got_talent')->delete();
+
+            // Hapus user yang terkumpul
+            if (!empty($userIdsToDelete)) {
+                foreach ($userIdsToDelete as $userId) {
+                    $u = User::find($userId);
+                    if ($u) {
+                        // Jangan hapus jika user tersebut adalah admin/karyawan/super admin
+                        if (method_exists($u, 'hasRole') && ($u->hasRole('admin') || $u->hasRole('super admin') || $u->hasRole('administrator') || $u->hasRole('karyawan'))) {
+                            continue;
+                        }
+                        $u->delete();
+                    }
+                }
+            }
+
+            // 3. Kosongkan tabel pendaftaran_lomba dan pendaftaran_got_talent
+            DB::table('pendaftaran_lomba')->delete();
+            DB::table('pendaftaran_got_talent')->delete();
+
+            // 4. Hapus file lampiran di perlombaan (juknis_juklak & thumbnail) dan kosongkan tabel perlombaan
+            $perlombaanList = Perlombaan::all();
+            foreach ($perlombaanList as $lomba) {
+                if ($lomba->juknis_juklak && Storage::exists('public/' . $lomba->juknis_juklak)) {
+                    Storage::delete('public/' . $lomba->juknis_juklak);
+                }
+                if ($lomba->thumbnail && Storage::exists('public/' . $lomba->thumbnail)) {
+                    Storage::delete('public/' . $lomba->thumbnail);
+                }
+            }
+            DB::table('perlombaan')->delete();
+
+            if (DB::transactionLevel() > 0) {
+                DB::commit();
+            }
+            return Redirect::back()->with(messageSuccess('Seluruh data Al Amin Got Talent (Perlombaan, Pendaftaran, Konfirmasi Pembayaran, dan Akun Peserta) berhasil di-reset bersih.'));
+        } catch (\Exception $e) {
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+            return Redirect::back()->with(messageError('Gagal mereset data: ' . $e->getMessage()));
         }
     }
 }
