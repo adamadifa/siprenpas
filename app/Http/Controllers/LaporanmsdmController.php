@@ -26,33 +26,148 @@ class LaporanmsdmController extends Controller
 
     public function cetakpresensi(Request $request)
     {
+        // Tingkatkan memory limit untuk mengantisipasi rentang periode panjang
+        ini_set('memory_limit', '1024M');
 
-        $bulan = $request->bulan;
-        $tahun = $request->tahun;
-        $periode_dari = $tahun . '-' . $bulan . '-01';
-        $periode_sampai = date('Y-m-t', strtotime($periode_dari));
+        // TENTUKAN PERIODE BERDASARKAN PILIHAN RADIO (presensi_tipe_periode)
+        $tipe_periode = $request->presensi_tipe_periode ?? 'bulan';
 
+        if ($tipe_periode === 'tanggal' && !empty($request->dari) && !empty($request->sampai)) {
+            // MODE: RENTANG TANGGAL CUSTOM
+            $periode_dari = date('Y-m-d', strtotime($request->dari));
+            $periode_sampai = date('Y-m-d', strtotime($request->sampai));
+            $bulan = date('m', strtotime($periode_dari));
+            $tahun = date('Y', strtotime($periode_dari));
+        } else {
+            // MODE: BULANAN (DEFAULT)
+            $bulan = $request->bulan ?? date('m');
+            $tahun = $request->tahun ?? date('Y');
+            $periode_dari = $tahun . '-' . str_pad($bulan, 2, '0', STR_PAD_LEFT) . '-01';
+            $periode_sampai = date('Y-m-t', strtotime($periode_dari));
+        }
 
+        $data['periode_dari'] = $periode_dari;
+        $data['periode_sampai'] = $periode_sampai;
+        $data['jmlhari'] = hitungJumlahHari($periode_dari, $periode_sampai) + 1;
 
-        $presensi_detail  = Presensi::join('konfigurasi_jam_kerja', 'presensi.kode_jam_kerja', '=', 'konfigurasi_jam_kerja.kode_jam_kerja')
+        $is_export = isset($_POST['exportButton']) || $request->has('exportButton');
+        $data['is_export'] = $is_export;
+
+        if ($is_export) {
+            header("Content-type: application/vnd-ms-excel");
+            if (!empty($request->npp)) {
+                $clean_npp = preg_replace('/[^a-zA-Z0-9_\-]/', '_', $request->npp);
+                header("Content-Disposition: attachment; filename=Presensi_Karyawan_{$clean_npp}_{$periode_dari}_{$periode_sampai}.xls");
+            } else {
+                header("Content-Disposition: attachment; filename=Rekap_Presensi_{$periode_dari}_{$periode_sampai}.xls");
+            }
+        }
+
+        // =====================================================
+        // JIKA NPP DIPILIH: LAPORAN PERORANGAN (RINGAN & CEPAT)
+        // =====================================================
+        if (!empty($request->npp)) {
+            $karyawan = Karyawan::leftJoin('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
+                ->leftJoin('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
+                ->where('karyawan.npp', $request->npp)
+                ->select('karyawan.*', 'jabatan.nama_jabatan', 'unit.nama_unit')
+                ->first();
+
+            $presensi_detail = Presensi::join('konfigurasi_jam_kerja', 'presensi.kode_jam_kerja', '=', 'konfigurasi_jam_kerja.kode_jam_kerja')
+                ->leftJoin('presensi_izinabsen_approve', 'presensi.id', '=', 'presensi_izinabsen_approve.id_presensi')
+                ->leftJoin('presensi_izinabsen', 'presensi_izinabsen_approve.kode_izin', '=', 'presensi_izinabsen.kode_izin')
+                ->leftJoin('presensi_izinsakit_approve', 'presensi.id', '=', 'presensi_izinsakit_approve.id_presensi')
+                ->leftJoin('presensi_izinsakit', 'presensi_izinsakit_approve.kode_izin_sakit', '=', 'presensi_izinsakit.kode_izin_sakit')
+                ->select(
+                    'presensi.*',
+                    'nama_jam_kerja',
+                    'konfigurasi_jam_kerja.jam_masuk',
+                    'konfigurasi_jam_kerja.jam_pulang',
+                    'lintas_hari',
+                    'total_jam',
+                    'presensi_izinabsen.keterangan as keterangan_izin_absen',
+                    'presensi_izinsakit.keterangan as keterangan_izin_sakit'
+                )
+                ->where('presensi.npp', $request->npp)
+                ->whereBetween('presensi.tanggal', [$periode_dari, $periode_sampai])
+                ->orderBy('presensi.tanggal', 'asc')
+                ->get();
+
+            $presensi_by_date = [];
+            $stats = [
+                'hadir' => 0,
+                'terlambat' => 0,
+                'sakit' => 0,
+                'izin' => 0,
+                'cuti' => 0,
+                'alpa' => 0,
+            ];
+
+            foreach ($presensi_detail as $p) {
+                $presensi_by_date[$p->tanggal] = [
+                    'status' => $p->status,
+                    'kode_jam_kerja' => $p->kode_jam_kerja,
+                    'nama_jam_kerja' => $p->nama_jam_kerja,
+                    'jam_masuk' => $p->jam_masuk,
+                    'jam_pulang' => $p->jam_pulang,
+                    'jam_in' => $p->jam_in,
+                    'jam_out' => $p->jam_out,
+                    'keterangan_izin_absen' => $p->keterangan_izin_absen,
+                    'keterangan_izin_sakit' => $p->keterangan_izin_sakit,
+                ];
+
+                if ($p->status == 'h') {
+                    $stats['hadir']++;
+                    $jam_masuk_ref = $p->tanggal . ' ' . $p->jam_masuk;
+                    $terlambat = hitungjamterlambat($p->jam_in, $jam_masuk_ref);
+                    if ($terlambat != null && isset($terlambat['menitterlambat']) && $terlambat['menitterlambat'] > 0) {
+                        $stats['terlambat']++;
+                    }
+                } elseif ($p->status == 'i') {
+                    $stats['izin']++;
+                } elseif ($p->status == 's') {
+                    $stats['sakit']++;
+                } elseif ($p->status == 'c') {
+                    $stats['cuti']++;
+                } elseif ($p->status == 'a') {
+                    $stats['alpa']++;
+                }
+            }
+
+            $data['karyawan'] = $karyawan;
+            $data['presensi_by_date'] = $presensi_by_date;
+            $data['stats'] = $stats;
+            $data['bulan'] = $bulan;
+            $data['tahun'] = $tahun;
+
+            return view('msdm.laporan.presensi_karyawan_cetak', $data);
+        }
+
+        // ============================================================
+        // FORMAT REKAPITULASI SEMUA KARYAWAN (MATRIKS HORIZONTAL)
+        // Batasi max 62 hari agar tidak memory exhaustion
+        // ============================================================
+        $jumlah_hari = (strtotime($periode_sampai) - strtotime($periode_dari)) / 86400 + 1;
+        if ($jumlah_hari > 62) {
+            return redirect()->back()->with('warning', 'Laporan matriks semua karyawan maksimal 2 bulan (62 hari). Untuk rentang lebih panjang, silakan pilih karyawan tertentu.');
+        }
+
+        $presensi_detail = Presensi::join('konfigurasi_jam_kerja', 'presensi.kode_jam_kerja', '=', 'konfigurasi_jam_kerja.kode_jam_kerja')
             ->leftJoin('presensi_izinabsen_approve', 'presensi.id', '=', 'presensi_izinabsen_approve.id_presensi')
             ->leftJoin('presensi_izinabsen', 'presensi_izinabsen_approve.kode_izin', '=', 'presensi_izinabsen.kode_izin')
             ->leftJoin('presensi_izinsakit_approve', 'presensi.id', '=', 'presensi_izinsakit_approve.id_presensi')
             ->leftJoin('presensi_izinsakit', 'presensi_izinsakit_approve.kode_izin_sakit', '=', 'presensi_izinsakit.kode_izin_sakit')
-
             ->select(
                 'presensi.*',
                 'nama_jam_kerja',
-                'jam_masuk',
-                'jam_pulang',
+                'konfigurasi_jam_kerja.jam_masuk',
+                'konfigurasi_jam_kerja.jam_pulang',
                 'lintas_hari',
                 'total_jam',
                 'presensi_izinabsen.keterangan as keterangan_izin_absen',
                 'presensi_izinsakit.keterangan as keterangan_izin_sakit'
             )
             ->whereBetween('presensi.tanggal', [$periode_dari, $periode_sampai]);
-
-
 
         $q_presensi = Karyawan::query();
         $q_presensi->select(
@@ -81,30 +196,12 @@ class LaporanmsdmController extends Controller
             $join->on('karyawan.npp', '=', 'presensi.npp');
         });
 
-
-
         if (!empty($request->kode_unit)) {
             $q_presensi->where('karyawan.kode_unit', $request->kode_unit);
-        }
-
-        if (!empty($request->npp)) {
-            $q_presensi->where('karyawan.npp', $request->npp);
         }
         $q_presensi->orderBy('karyawan.nama_lengkap');
         $q_presensi->orderBy('presensi.tanggal', 'asc');
         $presensi = $q_presensi->get();
-
-
-        $data['periode_dari'] = $periode_dari;
-        $data['periode_sampai'] = $periode_sampai;
-        $data['jmlhari'] = hitungJumlahHari($periode_dari, $periode_sampai) + 1;
-
-
-        if (isset($_POST['exportButton'])) {
-            header("Content-type: application/vnd-ms-excel");
-            // Mendefinisikan nama file ekspor "-SahabatEkspor.xls"
-            header("Content-Disposition: attachment; filename=Rekap Presensi $periode_dari - $periode_sampai.xls");
-        }
 
         $laporan_presensi = $presensi->groupBy('npp')->map(function ($rows) {
             $data = [
@@ -139,30 +236,24 @@ class LaporanmsdmController extends Controller
         });
         $data['laporan_presensi'] = $laporan_presensi;
 
-        // dd($data['laporan_presensi']);
         return view('msdm.laporan.presensi_cetak', $data);
-        // if (!empty($request->npp)) {
-        //     $karyawan = Karyawan::join('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan')
-        //         ->join('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit')
-        //         ->where('karyawan.npp', $request->npp)
-        //         ->first();
-        //     $data['karyawan'] = $karyawan;
-        //     $data['presensi'] = $presensi;
-        //     return view('laporan.presensi_karyawan_cetak', $data);
-        // } else {
-
-        // }
     }
 
     public function cetakchecklistibadah(Request $request)
     {
-        $bulan = $request->bulan;
-        $tahun = $request->tahun;
-
-
+        if (!empty($request->dari) && !empty($request->sampai)) {
+            $periode_dari = $request->dari;
+            $periode_sampai = $request->sampai;
+            $bulan = date('m', strtotime($periode_dari));
+            $tahun = date('Y', strtotime($periode_dari));
+        } else {
+            $bulan = $request->bulan ?? date('m');
+            $tahun = $request->tahun ?? date('Y');
+            $periode_dari = $tahun . '-' . str_pad($bulan, 2, '0', STR_PAD_LEFT) . '-01';
+            $periode_sampai = date('Y-m-t', strtotime($periode_dari));
+        }
 
         $kegiatan_ibadah =  Kegiatanibadah::orderBy('id')->get();
-
 
         $selectKegiatanibadah = [];
         $selectFieldKegiatanibadah   = [];
@@ -171,27 +262,43 @@ class LaporanmsdmController extends Controller
             $selectFieldKegiatanibadah[] = 'jml_kegiatan_' . $k->id;
         }
 
-
-
         $checklistData = Detailchecklistibadah::join('checklist_ibadah', 'checklist_ibadah_detail.kode_checklist_ibadah', '=', 'checklist_ibadah.kode_checklist_ibadah')
             ->select(
                 'npp',
                 ...$selectKegiatanibadah
             )
-            ->whereMonth('tanggal', $bulan)
-            ->whereYear('tanggal', $tahun)
+            ->whereBetween('tanggal', [$periode_dari, $periode_sampai])
             ->groupBy('npp');
 
 
         $rekap = Karyawan::query();
-        $rekap->select('karyawan.npp', 'karyawan.nama_lengkap', ...$selectFieldKegiatanibadah);
+        $rekap->select(
+            'karyawan.npp',
+            'karyawan.nama_lengkap',
+            'jabatan.nama_jabatan',
+            'unit.nama_unit',
+            ...$selectFieldKegiatanibadah
+        );
+        $rekap->leftJoin('jabatan', 'karyawan.kode_jabatan', '=', 'jabatan.kode_jabatan');
+        $rekap->leftJoin('unit', 'karyawan.kode_unit', '=', 'unit.kode_unit');
         $rekap->leftJoinSub($checklistData, 'checklist_ibadah_detail', function ($join) {
             $join->on('karyawan.npp', '=', 'checklist_ibadah_detail.npp');
         });
+        if (!empty($request->kode_unit)) {
+            $rekap->where('karyawan.kode_unit', $request->kode_unit);
+        }
+
+        if (!empty($request->npp)) {
+            $rekap->where('karyawan.npp', $request->npp);
+        }
+
         $rekap->orderBy('karyawan.nama_lengkap');
         $rekapkegiatanibadah = $rekap->get();
 
-
+        $data['periode_dari'] = $periode_dari;
+        $data['periode_sampai'] = $periode_sampai;
+        $data['bulan'] = $bulan;
+        $data['tahun'] = $tahun;
         $data['kegiatan_ibadah'] = $kegiatan_ibadah;
         $data['rekapkegiatanibadah'] = $rekapkegiatanibadah;
         return view('msdm.laporan.checklistibadah_cetak', $data);

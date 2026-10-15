@@ -1060,9 +1060,9 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(LaporanmsdmController::class)->group(function () {
-        Route::get('/laporanmsdm', 'index')->name('laporanmsdm.index')->can('presensi.index');
-        Route::post('/laporanmsdm/cetakpresensi', 'cetakpresensi')->name('laporanmsdm.cetakpresensi')->can('presensi.index');
-        Route::post('/laporanmsdm/cetakchecklistibadah', 'cetakchecklistibadah')->name('laporanmsdm.cetakchecklistibadah')->can('presensi.index');
+        Route::get('/laporanmsdm', 'index')->name('laporanmsdm.index')->can('laporanmsdm.index');
+        Route::post('/laporanmsdm/cetakpresensi', 'cetakpresensi')->name('laporanmsdm.cetakpresensi')->can('laporanmsdm.index');
+        Route::post('/laporanmsdm/cetakchecklistibadah', 'cetakchecklistibadah')->name('laporanmsdm.cetakchecklistibadah')->can('laporanmsdm.index');
     });
 
 
