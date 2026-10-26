@@ -1,199 +1,109 @@
 @extends('layouts.app')
-@section('titlepage', 'Dashboard')
+@section('titlepage', 'Dashboard Unit')
 @section('content')
-    <style>
-        /* Seamless & Cardless Executive Header */
-        .dash-page-header {
-            padding: 0.25rem 0 1.25rem 0;
-            margin-bottom: 0.5rem;
-        }
+<div class="space-y-6">
 
-        .dash-page-header .welcome-title {
-            font-size: 1.35rem;
-            font-weight: 700;
-            color: #0f172a;
-            letter-spacing: -0.02em;
-            line-height: 1.25;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+    <!-- ================= 1. EXECUTIVE WELCOME HEADER ================= -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs">
+        <div class="flex items-start sm:items-center gap-4">
+            <!-- User Avatar -->
+            <div class="relative w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-cyan-600 flex items-center justify-center text-white font-extrabold text-base shadow-sm overflow-hidden flex-shrink-0">
+                @if (auth()->check() && auth()->user()->foto)
+                    <img src="{{ asset('storage/' . auth()->user()->foto) }}" alt="Avatar" class="w-full h-full object-cover">
+                @else
+                    <span>{{ auth()->check() ? strtoupper(substr(auth()->user()->name, 0, 2)) : 'AD' }}</span>
+                @endif
+                <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+            </div>
 
-        .dash-page-header .welcome-meta {
-            font-size: 0.84rem;
-            color: #64748b;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 0.35rem;
-        }
-
-        .dash-page-header .meta-divider {
-            color: #cbd5e1;
-        }
-
-        .dash-page-header .badge-role {
-            font-size: 0.74rem;
-            font-weight: 600;
-            color: #047857;
-            background: #ecfdf5;
-            border: 1px solid #d1fae5;
-            padding: 0.15rem 0.55rem;
-            border-radius: 6px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-
-        .dash-page-header .clock-date {
-            font-size: 0.76rem;
-            font-weight: 500;
-            color: #64748b;
-            margin-bottom: 0.1rem;
-        }
-
-        .dash-page-header .clock-time {
-            font-size: 1.35rem;
-            font-weight: 800;
-            color: #0f172a;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: -0.02em;
-            line-height: 1.1;
-        }
-
-        /* Filter Toolbar Card */
-        .dash-filter-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-            padding: 0.9rem 1.25rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .dash-filter-card .icon-badge {
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            background: #f8fafc;
-            color: #0f172a;
-            border: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.15rem;
-        }
-
-        .dash-filter-card .custom-select-box {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #1e293b;
-            transition: all 0.2s ease;
-        }
-        .dash-filter-card .custom-select-box:focus {
-            background: #ffffff;
-            border-color: #0f172a;
-            box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
-        }
-
-        .btn-dash-refresh {
-            background: #0f172a;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            padding: 0.42rem 0.9rem;
-            font-weight: 600;
-            font-size: 0.82rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: all 0.2s ease;
-        }
-        .btn-dash-refresh:hover {
-            background: #1e293b;
-            color: #ffffff;
-        }
-    </style>
-
-    {{-- CARDLESS SEAMLESS WELCOME HEADER --}}
-    <div class="dash-page-header">
-        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
             <div>
-                <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <h4 class="welcome-title mb-0">
-                        <i class="ti ti-user-circle text-muted fs-3"></i>
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <h1 class="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
                         <span>Selamat Datang, {{ auth()->user()->name }}</span>
-                    </h4>
-                    <span class="badge-role">
-                        <i class="ti ti-shield-check fs-6"></i>
+                        <span class="inline-block animate-wave origin-[70%_70%]">👋</span>
+                    </h1>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                         {{ auth()->user()->getRoleNames()->first() ?? 'Admin Unit' }}
                     </span>
                 </div>
-                <div class="welcome-meta">
-                    <span>{{ auth()->user()->unit->nama_unit ?? ($pengaturan->nama_sekolah ?? 'Pesantren Persatuan Islam 80 Al Amin') }}</span>
-                    <span class="meta-divider">&bull;</span>
+                <div class="flex items-center gap-2 text-xs text-slate-500 mt-1 flex-wrap">
+                    <span class="font-medium text-slate-700">{{ auth()->user()->unit->nama_unit ?? ($pengaturan->nama_sekolah ?? 'Pesantren Persatuan Islam 80 Al Amin') }}</span>
+                    <span class="text-slate-300">•</span>
                     <span>Monitoring Administrasi & Kesiapan Unit</span>
                 </div>
             </div>
+        </div>
 
-            <div class="text-md-end d-none d-md-block">
-                <div class="clock-date" id="currentDate"></div>
-                <div class="clock-time" id="currentTime"></div>
+        <!-- Live Clock & Date Widget -->
+        <div class="flex items-center gap-3 self-end md:self-auto bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-2.5 text-right">
+            <div class="w-9 h-9 rounded-lg bg-emerald-100/60 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0">
+                <i class="ti ti-clock-play"></i>
+            </div>
+            <div>
+                <div id="currentDate" class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider"></div>
+                <div id="currentTime" class="text-base sm:text-lg font-extrabold text-slate-900 font-mono tracking-tight leading-none mt-0.5"></div>
             </div>
         </div>
     </div>
 
-    {{-- FILTER TOOLBAR --}}
-    <div class="dash-filter-card">
-        <div class="row align-items-center g-3">
-            <div class="col-12 col-md-6">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="icon-badge">
-                        <i class="ti ti-chart-dots-3"></i>
-                    </div>
-                    <div>
-                        <h6 class="mb-0 fw-bold" style="color: #0f172a; font-size: 0.98rem; letter-spacing: -0.2px;">Monitoring Kesiapan Unit</h6>
-                        <span style="font-size: 0.78rem; color: #64748b;">Status kurikulum, jadwal pelajaran, data santri & rombel</span>
-                    </div>
+    <!-- ================= 2. FILTER TOOLBAR CARD ================= -->
+    <div class="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-xs">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            
+            <!-- Left Info -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200/60 flex items-center justify-center text-xl flex-shrink-0">
+                    <i class="ti ti-chart-dots-3"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm sm:text-base font-bold text-slate-900 leading-snug">Monitoring Kesiapan Unit</h2>
+                    <p class="text-xs text-slate-500">Status kurikulum, jadwal pelajaran, data santri & rombel</p>
                 </div>
             </div>
-            <div class="col-12 col-md-6">
-                <div class="d-flex flex-wrap align-items-center justify-content-md-end gap-2">
-                    <div class="input-group input-group-merge" style="width: auto; min-width: 175px;">
-                        <span class="input-group-text" style="background-color: #f8fafc; border-color: #e2e8f0;"><i class="ti ti-calendar-event text-primary"></i></span>
-                        <select id="filter_kode_ta" class="form-select form-select-sm custom-select-box" style="border-radius: 0 8px 8px 0;">
-                            @foreach ($tahunajaran as $ta)
-                                <option value="{{ $ta->kode_ta }}" {{ ($activeTa && $activeTa->kode_ta == $ta->kode_ta) ? 'selected' : '' }}>
-                                    TA {{ $ta->tahun_ajaran }} {{ $ta->status == '1' ? '(Aktif)' : '' }}
-                                </option>
-                            @endforeach
-                        </select>
+
+            <!-- Right Controls -->
+            <div class="flex flex-wrap items-center gap-2.5">
+                <!-- Filter Tahun Ajaran -->
+                <div class="relative flex items-center">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <i class="ti ti-calendar text-sm"></i>
                     </div>
-
-                    <input type="hidden" id="filter_kode_unit" value="{{ auth()->user()->kode_unit }}">
-
-                    <button type="button" class="btn btn-dash-refresh" id="btnRefreshReport" title="Segarkan Data Kesiapan">
-                        <i class="ti ti-refresh fs-6"></i> <span>Refresh</span>
-                    </button>
+                    <select id="filter_kode_ta" 
+                            class="pl-8 pr-8 py-2 text-xs font-semibold bg-slate-50 hover:bg-slate-100/80 focus:bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition cursor-pointer">
+                        @foreach ($tahunajaran as $ta)
+                            <option value="{{ $ta->kode_ta }}" {{ ($activeTa && $activeTa->kode_ta == $ta->kode_ta) ? 'selected' : '' }}>
+                                TA {{ $ta->tahun_ajaran }} {{ $ta->status == '1' ? '(Aktif)' : '' }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
+
+                <input type="hidden" id="filter_kode_unit" value="{{ auth()->user()->kode_unit }}">
+
+                <!-- Refresh Button -->
+                <button type="button" 
+                        id="btnRefreshReport" 
+                        class="px-4 py-2 bg-slate-900 hover:bg-slate-800 active:scale-95 text-white text-xs font-semibold rounded-xl transition-all duration-150 shadow-xs flex items-center gap-1.5 cursor-pointer">
+                    <i class="ti ti-refresh text-sm transition-transform duration-300" id="refreshIcon"></i>
+                    <span>Segarkan Data</span>
+                </button>
             </div>
+
         </div>
     </div>
 
-    {{-- CONTAINER AJAX REPORT KELENGKAPAN --}}
-    <div id="loadReportKelengkapan" class="mb-4">
-        <div class="card p-5 text-center border-0 shadow-sm" style="border-radius: 1.1rem;">
-            <div class="spinner-border text-success mx-auto mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
-            <h6 class="fw-bold text-dark mb-1">Memuat Rekap Kelengkapan Data...</h6>
-            <small class="text-muted">Menghitung kelengkapan mata pelajaran, jadwal, santri & kelas</small>
+    <!-- ================= 3. CONTAINER AJAX REPORT KELENGKAPAN ================= -->
+    <div id="loadReportKelengkapan" class="transition-opacity duration-200">
+        <!-- Skeleton Loading Card -->
+        <div class="bg-white border border-slate-200/80 rounded-2xl p-10 text-center shadow-xs">
+            <div class="w-12 h-12 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <h3 class="text-sm font-bold text-slate-800">Menghitung Kesiapan Data Unit...</h3>
+            <p class="text-xs text-slate-400 mt-1 max-w-md mx-auto">Memvalidasi kurikulum, jadwal pelajaran, kelengkapan berkas santri & rombel unit.</p>
         </div>
     </div>
 
-    {{-- MODAL DRILL-DOWN REPORT --}}
+    <!-- ================= 4. MODAL DRILL-DOWN REPORT ================= -->
     <div class="modal fade" id="modalDetailReport" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content border-0 shadow-2xl rounded-2xl overflow-hidden" id="modalDetailReportContent">
@@ -205,10 +115,11 @@
         </div>
     </div>
 
-    {{-- MODAL EDIT DATA SISWA (IN-PLACE DARI REPORT) --}}
+    <!-- ================= 5. MODAL EDIT DATA SISWA (IN-PLACE DARI REPORT) ================= -->
     <x-modal-form id="modalEditSiswa" size="modal-lg" show="loadmodaleditsiswa" title="Edit Data Siswa" icon="ti ti-user-edit" />
     <x-modal-form id="modalSekolah" size="" show="loadmodal" title="" icon="ti ti-school" />
 
+</div>
 @endsection
 
 @push('myscript')
@@ -222,7 +133,7 @@
                 ];
 
                 const dayName = days[now.getDay()];
-                const day = now.getDate();
+                const day = String(now.getDate()).padStart(2, '0');
                 const month = months[now.getMonth()];
                 const year = now.getFullYear();
 
@@ -242,11 +153,13 @@
                 let kode_ta = $('#filter_kode_ta').val();
                 let kode_unit = $('#filter_kode_unit').val();
 
+                $('#refreshIcon').addClass('animate-spin');
+
                 $("#loadReportKelengkapan").html(`
-                    <div class="card p-5 text-center border-0 shadow-sm" style="border-radius: 1.1rem;">
-                        <div class="spinner-border text-success mx-auto mb-3" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
-                        <h6 class="fw-bold text-dark mb-1">Memperbarui Rekap Kelengkapan Data...</h6>
-                        <small class="text-muted">Tahun Ajaran: ${$('#filter_kode_ta option:selected').text()}</small>
+                    <div class="bg-white border border-slate-200/80 rounded-2xl p-10 text-center shadow-xs">
+                        <div class="w-12 h-12 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <h3 class="text-sm font-bold text-slate-800">Memperbarui Rekap Kelengkapan Data...</h3>
+                        <p class="text-xs text-slate-400 mt-1">Tahun Ajaran: ${$('#filter_kode_ta option:selected').text().trim()}</p>
                     </div>
                 `);
 
@@ -261,13 +174,15 @@
                     cache: false,
                     success: function(response) {
                         $('#loadReportKelengkapan').html(response);
+                        $('#refreshIcon').removeClass('animate-spin');
                     },
                     error: function() {
+                        $('#refreshIcon').removeClass('animate-spin');
                         $('#loadReportKelengkapan').html(`
-                            <div class="alert alert-danger d-flex align-items-center" role="alert">
-                                <i class="ti ti-alert-circle fs-3 me-2"></i>
-                                <div>
-                                    <strong>Gagal memuat data report.</strong> Silakan refresh halaman atau hubungi administrator.
+                            <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 flex items-center gap-3">
+                                <i class="ti ti-alert-circle text-xl flex-shrink-0"></i>
+                                <div class="text-xs">
+                                    <span class="font-bold">Gagal memuat data report.</span> Silakan refresh halaman atau hubungi administrator.
                                 </div>
                             </div>
                         `);
